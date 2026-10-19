@@ -1,0 +1,11 @@
+<section data-step="2" aria-labelledby="drinks-title" hidden>
+  <h2 id="drinks-title" tabindex="-1">Something to sip?</h2>
+  <p class="step-description">Add a fountain favorite, or continue with just your pizza.</p>
+  <% for (const [intIndex, strDrink] of arrDrinks.entries()) { %>
+    <fieldset class="drink-group"><legend><%= strDrink %></legend><div class="size-grid">
+      <% for (const [strSize, objSize] of Object.entries(objSizes)) { %>
+        <div class="field"><label for="drink-<%= intIndex %>-<%= strSize %>"><%= strSize[0].toUpperCase() + strSize.slice(1) %><span class="visually-hidden"> <%= strDrink.toLowerCase() %> quantity</span></label><span class="field-hint">$<%= (objSize.centsDrink / 100).toFixed(2) %> each</span><input id="drink-<%= intIndex %>-<%= strSize %>" type="number" class="form-control" data-drink="<%= strDrink %>" data-size="<%= strSize %>" min="0" step="1" value="0" inputmode="numeric" required></div>
+      <% } %>
+    </div></fieldset>
+  <% } %>
+</section>

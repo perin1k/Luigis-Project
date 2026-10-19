@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="/css/ordering.css">
+  <script type="module" src="/js/ordering/order-wizard.js"></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" class="container order-page" tabindex="-1">
+    <div class="order-intro"><p class="eyebrow">A little more you. A little more Luigi’s.</p><h1>Your next favorite pizza.</h1><p>Choose your favorites. We’ll bring the Italian warmth.</p></div>
+    <p id="order-fallback" class="notice">Please enable JavaScript to customize your order. You can still <a href="/#menu">explore our menu</a>.</p>
+    <div id="order-app" hidden>
+      <nav class="order-progress" aria-label="Order progress"><ol>
+        <% for (const [intIndex, strStep] of ['Service', 'Pizza', 'Drinks', 'Details', 'Review', 'Payment'].entries()) { %>
+          <li><span data-progress="<%= intIndex %>" <%- intIndex === 0 ? 'aria-current="step"' : '' %>><b aria-hidden="true"><%= intIndex + 1 %></b><%= strStep %></span></li>
+        <% } %>
+      </ol></nav>
+      <div class="order-layout">
+        <div class="order-panel">
+          <p id="step-count" class="eyebrow">Step 1 of 6</p>
+          <form id="order-form" novalidate>
+            <div id="form-error" class="form-error" role="alert" hidden></div>
+            <%- include('../partials/ordering/service-type') %>
+            <%- include('../partials/ordering/pizza-builder') %>
+            <%- include('../partials/ordering/drinks') %>
+            <%- include('../partials/ordering/customer-details') %>
+            <%- include('../partials/ordering/order-review') %>
+            <%- include('../partials/ordering/payment') %>
+            <div class="wizard-actions"><button type="button" id="back-button" class="btn btn-outline-primary" hidden>Back</button><button type="submit" id="next-button" class="btn btn-primary">Continue <span aria-hidden="true">→</span></button></div>
+          </form>
+        </div>
+        <aside class="order-summary" aria-label="Order summary">
+          <p class="eyebrow">Made your way</p><h2>Your order</h2><p id="summary-service">Carry-out</p>
+          <ul id="summary-items" class="summary-items"></ul>
+          <div class="subtotal"><span>Subtotal</span><strong id="summary-total">$0.00</strong></div>
+          <p class="summary-note">Marinara, cheese, and a little Italian warmth in every pizza.</p>
+          <p id="cart-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+        </aside>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

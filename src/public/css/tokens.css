@@ -1,0 +1,65 @@
+:root,
+[data-bs-theme="light"] {
+  color-scheme: light;
+  --color-paper: #f5efdf;
+  --color-surface: #fffbf2;
+  --color-ink: #35233d;
+  --color-muted: #69586a;
+  --color-accent: #873e27;
+  --color-accent-hover: #642c1c;
+  --color-on-accent: #fffaf0;
+  --color-line: #a79b9e;
+  --color-control-border: #87727e;
+  --color-panel: #e8dbcc;
+  --color-selected: #eadedc;
+  --color-banner: #35233d;
+  --color-banner-text: #f8ecd8;
+  --color-gold: #bf8c38;
+  --color-error: #7e2028;
+  --color-error-bg: #f9e6df;
+  --color-focus: #873e27;
+  --color-hero: #e9d5bd;
+  --color-art-ink: #35233d;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
+  --content-width: 74rem;
+}
+
+[data-bs-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: #1c1722;
+  --color-surface: #28212f;
+  --color-ink: #f5ebd9;
+  --color-muted: #c7b6c6;
+  --color-accent: #e6ab83;
+  --color-accent-hover: #f4c6a5;
+  --color-on-accent: #241a22;
+  --color-line: #8f7b91;
+  --color-control-border: #a18aa1;
+  --color-panel: #332938;
+  --color-selected: #443141;
+  --color-banner: #e0ad71;
+  --color-banner-text: #281c2d;
+  --color-gold: #dbb366;
+  --color-error: #ffc4be;
+  --color-error-bg: #472933;
+  --color-focus: #efbc76;
+  --color-hero: #40303b;
+  --color-art-ink: #f4d5a5;
+}
+
+/* Keep Bootstrap components on the same semantic palette as project styles. */
+:root,
+[data-bs-theme] {
+  --bs-body-font-family: var(--font-body);
+  --bs-body-color: var(--color-ink);
+  --bs-body-bg: var(--color-paper);
+  --bs-emphasis-color: var(--color-ink);
+  --bs-secondary-color: var(--color-muted);
+  --bs-secondary-bg: var(--color-panel);
+  --bs-tertiary-bg: var(--color-surface);
+  --bs-border-color: var(--color-line);
+  --bs-link-color: var(--color-accent);
+  --bs-link-hover-color: var(--color-accent-hover);
+  --bs-border-radius: .35rem;
+}

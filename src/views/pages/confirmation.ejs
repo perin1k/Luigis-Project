@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/ordering.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" class="container order-page" tabindex="-1">
+    <% if (bDesignPreview) { %><p class="notice">Design preview using sample information. No order has been placed or charged.</p><% } %>
+    <div class="confirmation-layout">
+      <p class="eyebrow">Good food. Good things ahead.</p>
+      <div class="confirmation-mark" aria-hidden="true">✓</div>
+      <h1>Thank you, <%= objConfirmation.strName %>.</h1>
+      <p class="confirmation-message">We’ve got your order.</p>
+      <p>A little Italian warmth is on its way to your table or your favorite spot at home.</p>
+      <section class="confirmation-card" aria-labelledby="confirmation-details">
+        <h2 id="confirmation-details">Your order details</h2>
+        <p><strong><%= objConfirmation.strService %></strong> · <%= objConfirmation.strName %></p>
+        <ul class="summary-items">
+          <% for (const objItem of objConfirmation.arrItems) { %>
+            <li><span><%= objItem.strDescription %></span><strong><%= objItem.strPrice %></strong></li>
+          <% } %>
+        </ul>
+        <div class="subtotal"><span>Order subtotal</span><strong><%= objConfirmation.strSubtotal %></strong></div>
+      </section>
+      <a class="btn btn-primary" href="/#menu">Back to the menu</a>
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>
