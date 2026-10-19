@@ -29,7 +29,7 @@ h1 { font-size: clamp(3.2rem, 6vw, 5.5rem); margin-bottom: 1.5rem; }
 h2 { font-size: clamp(2.2rem, 4vw, 3.4rem); margin-bottom: 1rem; }
 h3 { font-size: 1.15rem; margin-bottom: .65rem; }
 .hero-description { max-width: 29rem; color: var(--color-muted); font-size: 1.05rem; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 1.5rem; min-height: 48px; padding: .8rem 1.3rem; font-weight: 650; font-size: .9rem; border-radius: .25rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 1.5rem; min-height: 48px; padding: .8rem 1.3rem; font-weight: 650; font-size: .9rem; border-radius: .35rem; }
 .btn-primary { --bs-btn-color: var(--color-on-accent); --bs-btn-bg: var(--color-accent); --bs-btn-border-color: var(--color-accent); --bs-btn-hover-color: var(--color-on-accent); --bs-btn-hover-bg: var(--color-accent-hover); --bs-btn-hover-border-color: var(--color-accent-hover); --bs-btn-active-color: var(--color-on-accent); --bs-btn-active-bg: var(--color-accent-hover); --bs-btn-active-border-color: var(--color-accent-hover); --bs-btn-disabled-color: var(--color-on-accent); --bs-btn-disabled-bg: var(--color-accent); --bs-btn-disabled-border-color: var(--color-accent); }
 .btn-outline-primary { --bs-btn-color: var(--color-ink); --bs-btn-border-color: var(--color-ink); --bs-btn-hover-color: var(--color-paper); --bs-btn-hover-bg: var(--color-ink); --bs-btn-hover-border-color: var(--color-ink); --bs-btn-active-color: var(--color-paper); --bs-btn-active-bg: var(--color-ink); --bs-btn-active-border-color: var(--color-ink); }
 .btn:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; box-shadow: none; }
@@ -65,8 +65,19 @@ tbody th { font: 1.5rem var(--font-display); }
 tbody th span { display: inline-block; margin-left: .5rem; font: .8rem var(--font-body); color: var(--color-muted); }
 .menu-details { margin-top: 1rem; }
 .menu-details p { color: var(--color-muted); font-size: .95rem; }
+.menu-card { height: 100%; padding: 1.5rem; border: 1px solid var(--color-line); border-radius: .75rem; background: var(--color-surface); }
+.menu-card h3 { font: 1.8rem/1.15 var(--font-display); letter-spacing: -.025em; }
+.menu-card .eyebrow { color: var(--color-accent); font-size: .73rem; margin-bottom: .65rem; }
+.topping-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem 1.5rem; margin: 1.25rem 0 0; padding-left: 1.15rem; font-size: .9rem; }
+.topping-list li { padding-left: .15rem; overflow-wrap: anywhere; }
+.topping-list li::marker { color: var(--color-accent); }
+.drink-prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; margin: 1.25rem 0 0; padding-top: 1rem; border-top: 1px solid var(--color-line); }
+.drink-prices dt { font-size: .8rem; font-weight: 500; color: var(--color-muted); }
+.drink-prices dd { margin: .3rem 0 0; font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .visit-section { padding-block: 3.5rem; background: var(--color-panel); }
-.hours { border-left: 1px solid var(--color-line); padding-left: 3rem; }
+.hours { padding: 1.5rem; border: 1px solid var(--color-line); border-radius: .75rem; background: var(--color-surface); }
+.hours .eyebrow { color: var(--color-accent); }
+.hours strong { display: inline-block; margin-top: .35rem; font-variant-numeric: tabular-nums; }
 .site-footer { padding-block: 2rem; }
 .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-size: .8rem; }
 .footer-inner p { margin: 0; }
@@ -83,7 +94,7 @@ tbody th span { display: inline-block; margin-left: .5rem; font: .8rem var(--fon
   .pizza { width: 270px; height: 270px; }
   .section { padding-block: 3rem; }
   .section-heading { display: block; }
-  .hours { border-left: 0; border-top: 1px solid var(--color-line); padding: 1.5rem 0 0; }
+  .menu-card, .hours { padding: 1.25rem; }
   .footer-inner { flex-direction: column; align-items: flex-start; }
   tbody th span { display: block; margin: .3rem 0 0; }
   .table > :not(caption) > * > * { padding: .9rem .4rem; }

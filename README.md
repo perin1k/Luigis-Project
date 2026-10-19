@@ -17,6 +17,15 @@ tables, form controls, and hidden-text utility; project CSS defines the Luigi's
 parchment/aubergine/copper identity and ordering-specific layouts. The unused
 Bootstrap JavaScript bundle is not loaded.
 
+The customer menu retains a semantic price table. Toppings use a named HTML
+list, and drink sizes/prices use a description list (`dl`, `dt`, `dd`) inside
+named sections. These are informational elements rather than selection controls;
+customization stays in the ordering wizard. `global.css` styles the menu/hours
+cards, while `ordering.css` styles the current-step emphasis, customization
+separators, choice cards, and summary. Both reuse the semantic theme colors.
+The empty order summary gives a direct instruction to add a pizza; pricing and
+wizard state remain the responsibility of the existing browser modules.
+
 ## Run locally
 
 Install Node.js 22.19 or newer with npm, then run:
@@ -85,7 +94,7 @@ playwright.config.js
 | `package.json` | Application metadata, runtime requirements, dependencies, and scripts. |
 | `package-lock.json` | Exact dependency tree for reproducible `npm ci` installs. |
 | `.gitignore` | Excludes dependencies, local secrets, caches, and generated test/audit reports. |
-| `src/app.js` | Configures Express, EJS, security headers, public assets, view data, and error responses. Serves only the pinned Bootstrap stylesheet at `/vendor/bootstrap.min.css`, with gzip when supported; does not expose `node_modules`. Runs on the server. |
+| `src/app.js` | Configures Express, EJS, security headers, public assets, view data, and error responses. Negotiates gzip/identity for rendered pages and explicitly listed public CSS/JavaScript, including only the intended Bootstrap stylesheet at `/vendor/bootstrap.min.css`. Runs on the server. |
 | `src/server.js` | Validates the port and starts the HTTP listener. Runs on the server. |
 | `src/views/pages/home.ejs` | Assembles the homepage: introduction, menu, toppings, drinks, hours, and service information. Rendered on the server. |
 | `src/views/pages/order.ejs` | Assembles the six ordering sections, progress indicator, navigation buttons, and live cart summary. Includes the browser module and order stylesheet. |
@@ -113,6 +122,7 @@ playwright.config.js
 | `tests/e2e/confirmation.spec.js` | Checks the isolated confirmation preview's accessibility, sample disclaimer, navigation, indexing exclusion, and browser screenshots. |
 | `tests/e2e/theme.spec.js` | Checks theme preference persistence, system changes, storage failure recovery, dark-mode ordering accessibility, and dark visual references. |
 | `tests/unit/order-pricing.test.js` | Verifies size/topping pricing, combined subtotals, and invalid inputs for browser previews. |
+| `tests/unit/http-hosting.test.js` | Starts an ephemeral local HTTP server to verify raw compressed/uncompressed content, encoding negotiation, caching, HEAD/range handling, and private-file protection. Uses Node's test runner. |
 | `tests/e2e/*-snapshots/` | Reviewed Windows browser/viewport reference images for visual comparisons. |
 | `README.md` | Setup, file explanations, and verification instructions. |
 
@@ -155,6 +165,22 @@ and control colors are maintained in `tokens.css`; avoid adding fixed light-only
 colors to components. Bootstrap is installed through the lockfile, so `npm ci`
 provides the required asset without a CDN or manual file copy.
 
+### Text response hosting
+
+Express sends rendered EJS pages and the explicitly listed public CSS/JavaScript
+as gzip when the visitor accepts it, or identity when preferred. The response
+varies by `Accept-Encoding`; requests rejecting both supported encodings receive
+406. The HTML, styles, and browser code are unchanged after decoding.
+
+Public text assets are read and compressed once at server startup, cached for one
+hour by clients, and retain representation-specific ETag validation. Restart the
+server after editing an asset in this list; add new CSS/JavaScript paths to
+`mapTextAssets` to enable the same handling. Rendered HTML is compressed per
+request and does not receive the public asset cache policy. Other public files
+and byte-range requests for project assets retain Express static handling.
+Only the Bootstrap stylesheet is exposed from `node_modules`. No compression
+dependency, order-processing endpoint, or payment integration is introduced.
+
 ### Current implementation boundaries and integration handoff
 
 - All ordering state lives in browser memory. Back/Continue and review edits
@@ -193,6 +219,7 @@ control; generated reports, traces, and failure captures are ignored by Git.
 | Reusable test | What it protects |
 | --- | --- |
 | `tests/unit/order-pricing.test.js` | Browser price previews: size/topping arithmetic, quantities, combined pizza/drink subtotals, formatting, and rejection of unsupported inputs. Uses Node's built-in test runner without opening a browser. |
+| `tests/unit/http-hosting.test.js` | HTTP integration coverage run by the same Node test script: gzip content integrity, identity fallback/refusals, cache validation, HEAD/ranges, and private-file protection. Uses an ephemeral loopback port without a browser. |
 | `tests/e2e/home.spec.js` | Homepage menu content, navigation to ordering, keyboard skip navigation, automated accessibility, no-JavaScript fallback, private-file protection, and layout appearance. |
 | `tests/e2e/ordering.spec.js` | Carry-out and dine-in journeys, edits/removal, required contact fields, keyboard behavior, invalid quantities, safe text rendering, payment-error recovery, per-step accessibility, and narrow-screen layouts. |
 | `tests/e2e/confirmation.spec.js` | Confirmation design preview: clear sample labeling, accessibility, navigation, indexing exclusion, and appearance. It does not verify a real submitted order. |

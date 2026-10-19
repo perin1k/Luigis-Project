@@ -30,6 +30,7 @@ test('carry-out journey preserves edits and reaches secure checkout presentation
     if (objRequest.method() !== 'GET') arrSubmissions.push(objRequest.url());
   });
   await objPage.goto('/order');
+  await expect(objPage.getByLabel('Order summary')).toContainText('Your order is empty. Add a pizza to get started.');
   await checkStep(objPage);
   await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
   await expect(objPage.getByRole('heading', { name: 'Build something delicious.' })).toBeFocused();

@@ -93,7 +93,7 @@ function renderSummary(strAnnouncement = '') {
       createElement('strong', formatCurrency(SIZES[objDrink.strSize].centsDrink * objDrink.intQuantity)));
     elItems.append(elItem);
   }
-  if (!elItems.children.length) elItems.append(createElement('li', 'Your favorites belong here.', 'empty-cart'));
+  if (!elItems.children.length) elItems.append(createElement('li', 'Your order is empty. Add a pizza to get started.', 'empty-cart'));
   const strSubtotal = formatCurrency(calculateSubtotal(objOrder));
   document.querySelector('#summary-total').textContent = strSubtotal;
   document.querySelector('#payment-subtotal').textContent = strSubtotal;

@@ -1,6 +1,6 @@
 <section data-step="2" aria-labelledby="drinks-title" hidden>
   <h2 id="drinks-title" tabindex="-1">Something to sip?</h2>
-  <p class="step-description">Add a fountain favorite, or continue with just your pizza.</p>
+  <p class="step-description">Choose a quantity for each drink size, or leave them at zero to skip drinks.</p>
   <% for (const [intIndex, strDrink] of arrDrinks.entries()) { %>
     <fieldset class="drink-group"><legend><%= strDrink %></legend><div class="size-grid">
       <% for (const [strSize, objSize] of Object.entries(objSizes)) { %>

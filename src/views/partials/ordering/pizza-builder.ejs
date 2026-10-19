@@ -1,16 +1,16 @@
 <section data-step="1" aria-labelledby="pizza-title" hidden>
   <h2 id="pizza-title" tabindex="-1">Build something delicious.</h2>
   <p class="step-description">Every pizza starts with marinara and cheese. The rest is up to you.</p>
-  <fieldset><legend>1. Pick your size</legend><div class="size-grid">
+  <fieldset class="customization-group"><legend>1. Pick your size</legend><div class="size-grid">
     <% for (const [strSize, objSize] of Object.entries(objSizes)) { %>
       <label class="choice-card"><input type="radio" name="size" value="<%= strSize %>" <%= strSize === 'medium' ? 'checked' : '' %>><span><strong><%= objSize.strLabel %></strong><small>$<%= (objSize.centsBase / 100).toFixed(2) %> base</small></span></label>
     <% } %>
   </div></fieldset>
-  <fieldset><legend>2. Choose your crust</legend><div class="choice-grid">
+  <fieldset class="customization-group"><legend>2. Choose your crust</legend><div class="choice-grid">
     <label class="choice-card"><input type="radio" name="crust" value="regular" checked><span>Regular</span></label>
     <label class="choice-card"><input type="radio" name="crust" value="new-york"><span>New York-style</span></label>
   </div></fieldset>
-  <fieldset><legend>3. Make it yours</legend><p id="topping-price" class="field-hint">$2.00 per topping</p><div class="topping-grid">
+  <fieldset class="customization-group"><legend>3. Make it yours</legend><p id="topping-price" class="field-hint">$2.00 per topping</p><div class="topping-grid">
     <% for (const [strId, strLabel] of Object.entries(objToppings)) { %>
       <label class="choice-card topping"><input type="checkbox" name="topping" value="<%= strId %>" aria-describedby="topping-price"><span><%= strLabel %></span></label>
     <% } %>

@@ -42,14 +42,36 @@
         </table>
       </div>
       <div class="menu-details row g-4">
-        <div class="col-md-6"><h3>Make it yours</h3><p>Pepperoni, sausage, beef crumbles, green peppers, jalapeños, pineapple, onion, black olives, and diced tomatoes.</p></div>
-        <div class="col-md-6"><h3>Something to sip</h3><p>Fountain drinks: small $1.00, medium $2.00, large $3.00. Choices include Coca-Cola products, iced tea, and Dr Pepper.</p></div>
+        <div class="col-md-7">
+          <section class="menu-card" aria-labelledby="toppings-title">
+            <p class="eyebrow">The finishing touches</p>
+            <h3 id="toppings-title">Make it yours</h3>
+            <p>Mix your favorites. Toppings are priced by pizza size above.</p>
+            <ul class="topping-list" aria-label="Available toppings">
+              <li>Pepperoni</li><li>Sausage</li><li>Beef crumbles</li>
+              <li>Green peppers</li><li>Jalapeños</li><li>Pineapple</li>
+              <li>Onion</li><li>Black olives</li><li>Diced tomatoes</li>
+            </ul>
+          </section>
+        </div>
+        <div class="col-md-5">
+          <section class="menu-card" aria-labelledby="drinks-menu-title">
+            <p class="eyebrow">A fountain favorite</p>
+            <h3 id="drinks-menu-title">Something to sip</h3>
+            <p>Choices include Coca-Cola products, iced tea, and Dr Pepper.</p>
+            <dl class="drink-prices">
+              <div><dt>Small</dt><dd>$1.00</dd></div>
+              <div><dt>Medium</dt><dd>$2.00</dd></div>
+              <div><dt>Large</dt><dd>$3.00</dd></div>
+            </dl>
+          </section>
+        </div>
       </div>
     </section>
     <section id="visit" class="visit-section" aria-labelledby="visit-title">
       <div class="container"><div class="row g-4 visit-grid">
         <div class="col-md-8"><p class="eyebrow">Stay a while. Or take a little warmth home.</p><h2 id="visit-title">We’ll save you a slice.</h2><p>Dine-in and carry-out, seven days a week.</p></div>
-        <div class="col-md-4 hours"><h3>Hours</h3><p>Monday–Sunday<br><strong>10:00 AM–11:00 PM</strong></p><a href="/order">Start your order</a></div>
+        <div class="col-md-4"><div class="hours"><p class="eyebrow">Seven days a week</p><h3>Hours</h3><p>Monday–Sunday<br><strong>10:00 AM–11:00 PM</strong></p><a class="btn btn-outline-primary" href="/order">Start your order</a></div></div>
       </div></div>
     </section>
   </main>
