@@ -52,7 +52,8 @@ drives. There is no hosted database or application startup integration yet.
 
 The migrations create catalog, order, financial, scheduling, access and audit
 tables. They create no accounts, credentials, customer records or sample rows.
-Menu seeding/configuration and final DATA-02 acceptance remain separate work.
+The explicit menu seed command below adds only the approved baseline catalog.
+Final DATA-02 acceptance remains separate review work.
 The existing browser menu and server routes are unchanged.
 
 | File | Responsibility |
@@ -65,11 +66,46 @@ The existing browser menu and server routes are unchanged.
 | `src/data/migrations/004-scheduling.sql` | America/Chicago service dates, UTC hour boundaries, original booking promises, 20-minute capacity windows, 30-minute hold histories, append-only events and explicit fulfillment reviews. |
 | `src/data/migrations/005-access-and-audit.sql` | Staff/session/MFA references, tracking digests, preview-only notification outbox and actor-linked append-only audit records with allowlisted summaries. |
 | `scripts/migrate.js` | Explicit local initialization/upgrade command; no automatic migration during web requests. |
+| `src/data/seed-menu.js` | Server-only approved menu initialization in one immediate transaction. Stable identities, exact approved prices/portions, manual ingredient dependencies and structural verification on reruns. Independent of browser preview data. |
+| `scripts/seed-menu.js` | Explicit `db:seed` command against an already migrated local file; creates no accounts or customer fixtures. |
 | `tests/unit/database.test.js` | Isolated temporary-file persistence and in-memory constraint, repeatability, tamper and rollback checks. |
 | `tests/unit/order-storage.test.js` | Upgrade from the actual catalog migration, persistent order snapshots, invalid/mismatched rows, aggregate limits, contact presence, replacement writes and atomic rollback. All records are synthetic. |
 | `tests/unit/payment-storage.test.js` | Actual order-schema upgrades, persistence, duplicate references, cancellation holds, refund bounds, append-only accounting, competing connections and rollback. All provider evidence and identities are synthetic. |
 | `tests/unit/scheduling-storage.test.js` | Actual financial-schema upgrade, retained promises, date/hold constraints, half-open window relationships, explicit review decisions, immutable histories and rollback using synthetic records. |
 | `tests/unit/access-storage.test.js` | Actual scheduling-schema upgrade, digest/session constraints, disable/revoke behavior, tracking deadlines, preview deduplication, audit protection, persistence and rollback. No real credentials or tokens. |
+| `tests/unit/menu-seed.test.js` | Approved menu values, ingredient dependencies, non-destructive repeat runs, conflicting/incomplete structure, rollback and isolated CLI persistence. |
+
+Initialize menu data explicitly after migrating:
+
+```sh
+npm run db:migrate
+npm run db:seed
+```
+
+Both commands use `DATABASE_PATH` or the same default local file. Seeding does not
+run migrations or create a missing file; migrate first. The reserved baseline
+catalog ID is `luigis:menu:v1`, revision 1. Its `published_at` remains null until
+a later approved catalog service defines publishing/selection; this command does
+not activate a customer-facing menu. Deterministic IDs are reserved for the seed.
+It adds three pizza sizes, two crusts, nine toppings, six approved drinks, three
+drink sizes and 19 manual ingredient flags with 23 requirement relationships.
+New ingredients start available for the synthetic demo. Existing ingredients
+with matching reserved ID/code keep their names, flags and revisions.
+
+The first seed inserts everything atomically. A rerun verifies required IDs,
+version/code relationships and ingredient requirements without updating values.
+Later price, label and availability edits are preserved; extra records are left
+alone. Conflicting revision 1/identities or missing required seeded structure stop
+the command without saved changes. Review conflicts explicitly; never delete a
+catalog version with purchased history or use the seed as an automatic repair.
+Future menu revisions require their own approved catalog workflow. The browser's
+older drink labels remain unchanged until the real-data integration story.
+
+No order/customer fixtures, user accounts, hours, tax settings, secrets, payment
+records or discount policies are inserted. Tests create their synthetic records
+only in isolated temporary/in-memory databases. Database files stay ignored by
+Git. Restoring a preserved database should use its matching migrations and data;
+do not reseed over a restore as a substitute for verifying it.
 
 Order-storage integration: a future server service writes a draft order, contact,
 lines and matching detail rows inside `runTransaction`. Draft `fulfillment_status`
