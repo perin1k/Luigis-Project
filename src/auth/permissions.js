@@ -1,0 +1,13 @@
+const STAFF_ACTIONS = new Set(['orders.read', 'orders.prepare', 'availability.update']);
+const ADMIN_ACTIONS = new Set([
+  ...STAFF_ACTIONS, 'employees.manage', 'menu.edit', 'hours.manage',
+  'cancellation.decide', 'refund.approve', 'analytics.read',
+]);
+
+/** Internal policy only: the role must come from a validated persisted session. */
+export function canPerformAction(strRole, strAction) {
+  if (typeof strAction !== 'string') return false;
+  if (strRole === 'admin') return ADMIN_ACTIONS.has(strAction);
+  if (strRole === 'employee') return STAFF_ACTIONS.has(strAction);
+  return false;
+}

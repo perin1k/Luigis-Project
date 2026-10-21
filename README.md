@@ -42,6 +42,47 @@ Production hosting and HTTPS configuration remain future decisions.
 
 ## File guide
 
+### Session validation (BE-08, first increment)
+
+`src/auth/session-service.js` provides server-only `createSessionService`, with
+`validateSession`, `authorizeSession` and `revokeSession` methods. Pass the open
+server database connection; callers own its lifecycle. This module creates no
+accounts or sessions and adds no route, cookie, login, provider or MFA challenge.
+Session issuance must follow actual verified sign-in/MFA in a later increment.
+
+The future issuer must generate a random 32-byte token, encode it as 64 lowercase
+hexadecimal characters, and store its SHA-256 digest. The validator hashes the
+supplied bearer value and looks up the persisted session, returning only the
+session ID, staff ID and current role. Never log/store the raw bearer value or
+accept roles, clock values, MFA markers or session rows from a browser.
+
+Validation acquires an immediate transaction before reading the trusted server
+clock. It enforces active staff, revocation, canonical stored timestamps,
+30-minute idle expiry, fixed eight-hour absolute expiry and admin MFA markers.
+Expiry is enforced at the boundary, not one request later. A valid request
+advances activity without extending absolute expiry; denied permissions do not
+refresh it. Expired sessions are revoked with an allowlisted audit record in the
+same transaction. Explicit revocation is repeatable and also audited atomically.
+Invalid/backward clocks fail closed. Database/clock errors propagate: handlers
+must deny access on errors, never treat them as an authenticated identity.
+
+`src/auth/permissions.js` defines allowed employee/admin actions. Employees can
+read/prepare orders and update availability; admins additionally manage employees,
+menu, hours, cancellation decisions, refunds and analytics. Unknown roles/actions
+are denied, including admin creation. Use `authorizeSession` for protected work;
+the standalone role helper assumes its role came from trusted session validation.
+This is a capability check, not order-level authorization or a fulfillment state
+machine. Returned identity is not a reusable authorization grant: future handlers
+must integrate fresh checks with their transactional mutations. These methods
+own their transactions and are not called inside another `runTransaction`.
+
+Tests in `tests/unit/auth-session.test.js` exercise persisted synthetic identities,
+timeout boundaries, current roles, missing MFA, invalid bearer values, revocation,
+backward clocks and audit rollback. The trusted clock dependency is injectable for
+tests only. MFA markers record a later verifier's result; this module does not
+prove a second factor, implement login rate limits or configure secure cookies.
+It is not wired into Express until the sign-in and protected-route increments.
+
 ### Local database foundation (DATA-02)
 
 Run `npm run db:migrate` to create the ignored local file
