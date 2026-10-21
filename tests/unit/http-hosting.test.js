@@ -79,3 +79,24 @@ test('encoding negotiation honors refusals and compression does not expose priva
     assert.equal((await requestText(strPath, 'gzip')).intStatus, 404);
   }
 });
+
+test('unconfigured availability stays unknown and error pages retain safe HTTP semantics', async () => {
+  const objOrder = await requestText('/order', 'identity');
+  assert.match(objOrder.objBody.toString(), /data-known="false"/);
+  assert.equal(objOrder.objHeaders['cache-control'], 'no-store');
+  const objMissing = await requestText('/missing', 'gzip');
+  assert.equal(objMissing.intStatus, 404);
+  assert.match(gunzipSync(objMissing.objBody).toString(), /This page isn’t on the menu/);
+  assert.equal(objMissing.objHeaders['x-robots-tag'], 'noindex');
+  assert.equal(objMissing.objHeaders['cache-control'], 'no-store');
+  const fnPrevious = objApp.locals.fnGetAvailability;
+  try {
+    objApp.locals.fnGetAvailability = async () => { throw new Error('PRIVATE_TEST_ERROR'); };
+    const objFailed = await requestText('/order', 'identity');
+    assert.equal(objFailed.intStatus, 500);
+    assert.match(objFailed.objBody.toString(), /A little trouble in the kitchen/);
+    assert.doesNotMatch(objFailed.objBody.toString(), /PRIVATE_TEST_ERROR/);
+    assert.equal(objFailed.objHeaders['x-robots-tag'], 'noindex');
+    assert.equal(objFailed.objHeaders['cache-control'], 'no-store');
+  } finally { objApp.locals.fnGetAvailability = fnPrevious; }
+});

@@ -2,9 +2,11 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
-import { SIZES, TOPPINGS, DRINKS } from './public/js/ordering/order-model.js';
+import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
 const objApp = express();
+// Integration seam: BE supplies current ingredient flags. No inventory is invented here.
+objApp.locals.fnGetAvailability = async () => null;
 
 function prepareText(objBody, strType) {
   return { objBody, objGzip: gzipSync(objBody), strType };
@@ -65,11 +67,13 @@ objApp.get('/', (objRequest, objResponse, fnNext) => {
   });
 });
 // View serving only: no order submission, persistence, or payment endpoints.
-objApp.get('/order', (objRequest, objResponse, fnNext) => {
+objApp.get('/order', async (objRequest, objResponse, fnNext) => {
+  const objAvailability = normalizeAvailability(await objApp.locals.fnGetAvailability(objRequest));
+  objResponse.set('Cache-Control', 'no-store');
   renderPage(objRequest, objResponse, fnNext, 'pages/order', {
     strTitle: "Order Online | Luigi's Pizza",
     strDescription: "Build your Luigi's pizza, choose drinks, and review your dine-in or carry-out order.",
-    objSizes: SIZES, objToppings: TOPPINGS, arrDrinks: DRINKS,
+    objSizes: SIZES, objToppings: TOPPINGS, arrDrinks: DRINKS, objAvailability,
   });
 });
 // Isolated visual reference only. Checkout never redirects to this route.
@@ -85,12 +89,25 @@ objApp.get('/preview/confirmation', (objRequest, objResponse, fnNext) => {
     },
   });
 });
-objApp.use((objRequest, objResponse) => {
-  objResponse.status(404).type('text').send('Page not found. Visit / for Luigi’s Pizza.');
+objApp.use((objRequest, objResponse, fnNext) => {
+  objResponse.status(404).set({ 'X-Robots-Tag': 'noindex', 'Cache-Control': 'no-store' });
+  renderPage(objRequest, objResponse, fnNext, 'pages/error', {
+    strTitle: "Page not found | Luigi's Pizza", strDescription: 'Find your way back to the Luigi’s Pizza menu.',
+    intStatus: 404, strHeading: 'This page isn’t on the menu.',
+    strMessage: 'We couldn’t find that page. Let’s get you back to something delicious.',
+  });
 });
 objApp.use((objError, objRequest, objResponse, fnNext) => {
   if (objResponse.headersSent) return fnNext(objError);
-  objResponse.status(500).type('text').send('Something went wrong. Please try again later.');
+  objResponse.status(500).set({ 'X-Robots-Tag': 'noindex', 'Cache-Control': 'no-store' });
+  renderPage(objRequest, objResponse, () => {
+    // Keep a safe fallback if the template itself cannot render.
+    objResponse.status(500).type('text').send('Something went wrong. Please try again later.');
+  }, 'pages/error', {
+    strTitle: "Something went wrong | Luigi's Pizza", strDescription: 'Return to the Luigi’s Pizza menu and try again.',
+    intStatus: 500, strHeading: 'A little trouble in the kitchen.',
+    strMessage: 'We couldn’t load this page. Please try again later, or return to our menu.',
+  });
 });
 
 export default objApp;

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <meta name="robots" content="noindex">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" class="container error-page" tabindex="-1">
+    <div class="error-card">
+      <p class="eyebrow">Luigi’s Pizza · <%= intStatus %></p>
+      <h1><%= strHeading %></h1>
+      <p><%= strMessage %></p>
+      <div class="error-actions">
+        <a class="btn btn-primary" href="/">Back to Luigi’s</a>
+        <a class="btn btn-outline-primary" href="/#menu">Explore the menu</a>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

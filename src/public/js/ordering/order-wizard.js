@@ -1,4 +1,4 @@
-import { SIZES, TOPPINGS, calculatePizzaPrice, calculateSubtotal, formatCurrency } from './order-model.js';
+import { SIZES, TOPPINGS, calculatePizzaPrice, calculateSubtotal, formatCurrency, validatePizzaAvailability } from './order-model.js';
 import { openSecureCheckout } from '../checkout/payment.js';
 
 const elForm = document.querySelector('#order-form');
@@ -9,6 +9,12 @@ const elAdd = document.querySelector('#add-pizza');
 const elCancel = document.querySelector('#cancel-edit');
 const arrSections = [...document.querySelectorAll('[data-step]')];
 const objOrder = { strService: 'carry-out', arrPizzas: [], arrDrinks: [], strName: '', strPhone: '' };
+const elAvailability = document.querySelector('#ingredient-availability');
+const objAvailability = {
+  bKnown: elAvailability.dataset.known === 'true',
+  arrUnavailableBases: elAvailability.dataset.bases.split(',').filter(Boolean),
+  arrUnavailableToppings: elAvailability.dataset.toppings.split(',').filter(Boolean),
+};
 let intStep = 0;
 let intEditingIndex = null;
 let bOpeningPayment = false;
@@ -104,7 +110,7 @@ function renderSummary(strAnnouncement = '') {
 function resetPizzaEditor() {
   intEditingIndex = null;
   elForm.elements.size.value = 'medium';
-  elForm.elements.crust.value = 'regular';
+  elForm.elements.crust.value = objAvailability.arrUnavailableBases.includes('regular') ? 'new-york' : 'regular';
   for (const elInput of elForm.querySelectorAll('[name="topping"]')) elInput.checked = false;
   document.querySelector('#pizza-quantity').value = '1';
   elAdd.textContent = 'Add pizza';
@@ -200,6 +206,11 @@ function showStep(intNextStep) {
 }
 
 function validateCurrentStep() {
+  if ((intStep === 1 && objAvailability.bKnown) || intStep === 5) {
+    try {
+      for (const objPizza of objOrder.arrPizzas) validatePizzaAvailability(objPizza, objAvailability);
+    } catch (objError) { showError(objError.message); return false; }
+  }
   if (intStep === 1 && intEditingIndex !== null) {
     showError('Save your pizza changes or cancel editing before continuing.', elAdd);
     return false;
@@ -234,6 +245,10 @@ function validateCurrentStep() {
 elAdd.addEventListener('click', () => {
   clearError();
   const objPizza = getPizzaDraft();
+  if (objAvailability.bKnown) {
+    try { validatePizzaAvailability(objPizza, objAvailability); }
+    catch (objError) { showError(objError.message, elAdd); return; }
+  }
   try { calculatePizzaPrice(objPizza); } catch (objError) {
     showError(objError.message, document.querySelector('#pizza-quantity'));
     return;
@@ -305,7 +320,7 @@ elForm.addEventListener('submit', async (objEvent) => {
   }
 });
 
-updatePizzaPreview();
+resetPizzaEditor();
 renderSummary();
 document.querySelector('#order-app').hidden = false;
 document.querySelector('#order-fallback').hidden = true;

@@ -1,21 +1,34 @@
 <section data-step="1" aria-labelledby="pizza-title" hidden>
   <h2 id="pizza-title" tabindex="-1">Build something delicious.</h2>
   <p class="step-description">Every pizza starts with marinara and cheese. The rest is up to you.</p>
+  <% const bBaseUnavailable = objAvailability.arrUnavailableBases.some((strId) => ['marinara', 'cheese'].includes(strId)); %>
+  <div id="ingredient-availability" data-known="<%= objAvailability.bKnown %>" data-bases="<%= objAvailability.arrUnavailableBases.join(',') %>" data-toppings="<%= objAvailability.arrUnavailableToppings.join(',') %>">
+    <% if (!objAvailability.bKnown) { %>
+      <p class="availability-notice" role="status">We can’t confirm ingredient availability right now. You can build your order, but availability must be confirmed before payment.</p>
+    <% } else if (bBaseUnavailable) { %>
+      <p class="availability-notice" role="status">Pizzas are currently unavailable because a required base ingredient is unavailable. Your selections will stay here.</p>
+    <% } else if (objAvailability.arrUnavailableToppings.length || objAvailability.arrUnavailableBases.length) { %>
+      <p class="availability-notice" role="status">Some ingredients are unavailable. Choose from the available options below.</p>
+    <% } %>
+  </div>
   <fieldset class="customization-group"><legend>1. Pick your size</legend><div class="size-grid">
     <% for (const [strSize, objSize] of Object.entries(objSizes)) { %>
       <label class="choice-card"><input type="radio" name="size" value="<%= strSize %>" <%= strSize === 'medium' ? 'checked' : '' %>><span><strong><%= objSize.strLabel %></strong><small>$<%= (objSize.centsBase / 100).toFixed(2) %> base</small></span></label>
     <% } %>
   </div></fieldset>
   <fieldset class="customization-group"><legend>2. Choose your crust</legend><div class="choice-grid">
-    <label class="choice-card"><input type="radio" name="crust" value="regular" checked><span>Regular</span></label>
-    <label class="choice-card"><input type="radio" name="crust" value="new-york"><span>New York-style</span></label>
+    <% for (const [strCrust, strLabel] of [['regular', 'Regular'], ['new-york', 'New York-style']]) { %>
+      <% const bUnavailable = objAvailability.arrUnavailableBases.includes(strCrust); %>
+      <label class="choice-card"><input type="radio" name="crust" value="<%= strCrust %>" <%= strCrust === 'regular' ? 'checked' : '' %> <%= bUnavailable ? 'disabled' : '' %>><span><%= strLabel %><% if (bUnavailable) { %><small>Currently unavailable</small><% } %></span></label>
+    <% } %>
   </div></fieldset>
   <fieldset class="customization-group"><legend>3. Make it yours</legend><p id="topping-price" class="field-hint">$2.00 per topping</p><div class="topping-grid">
     <% for (const [strId, strLabel] of Object.entries(objToppings)) { %>
-      <label class="choice-card topping"><input type="checkbox" name="topping" value="<%= strId %>" aria-describedby="topping-price"><span><%= strLabel %></span></label>
+      <% const bUnavailable = objAvailability.arrUnavailableToppings.includes(strId); %>
+      <label class="choice-card topping"><input type="checkbox" name="topping" value="<%= strId %>" aria-describedby="topping-price" <%= bUnavailable ? 'disabled' : '' %>><span><%= strLabel %><% if (bUnavailable) { %><small>Currently unavailable</small><% } %></span></label>
     <% } %>
   </div></fieldset>
   <div class="builder-footer"><div class="field quantity-field"><label for="pizza-quantity" class="form-label">Pizza quantity</label><input id="pizza-quantity" class="form-control" type="number" min="1" step="1" value="1" inputmode="numeric" required></div><p class="pizza-price">Pizza price <strong id="pizza-price" aria-live="polite" aria-atomic="true">$7.00</strong></p><button type="button" id="add-pizza" class="btn btn-primary">Add pizza</button></div>
   <button type="button" id="cancel-edit" class="text-button" hidden>Cancel editing</button>
-  <div id="pizza-list" class="pizza-list" aria-label="Your pizzas"></div>
+  <div id="pizza-list" class="pizza-list" role="group" aria-label="Your pizzas"></div>
 </section>

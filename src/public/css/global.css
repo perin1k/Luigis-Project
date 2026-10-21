@@ -78,6 +78,11 @@ tbody th span { display: inline-block; margin-left: .5rem; font: .8rem var(--fon
 .hours { padding: 1.5rem; border: 1px solid var(--color-line); border-radius: .75rem; background: var(--color-surface); }
 .hours .eyebrow { color: var(--color-accent); }
 .hours strong { display: inline-block; margin-top: .35rem; font-variant-numeric: tabular-nums; }
+.error-page { padding-block: clamp(3rem, 10vw, 7rem); min-height: 65vh; }
+.error-card { max-width: 42rem; padding: clamp(1.5rem, 5vw, 3rem); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: .75rem; }
+.error-card h1 { font-family: var(--font-display); font-size: clamp(2rem, 6vw, 3.5rem); }
+.error-card p { max-width: 36rem; }
+.error-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
 .site-footer { padding-block: 2rem; }
 .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-size: .8rem; }
 .footer-inner p { margin: 0; }

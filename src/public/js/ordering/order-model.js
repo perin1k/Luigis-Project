@@ -11,6 +11,31 @@ export const TOPPINGS = {
 };
 export const DRINKS = ['Coca-Cola fountain drink', 'Iced tea', 'Dr Pepper'];
 
+// Presentation contract only. Unknown/malformed data never means "in stock".
+export function normalizeAvailability(objAvailability) {
+  const arrBases = ['marinara', 'cheese', 'regular', 'new-york'];
+  if (objAvailability?.bKnown !== true
+    || !Array.isArray(objAvailability.arrUnavailableToppings)
+    || !Array.isArray(objAvailability.arrUnavailableBases)
+    || objAvailability.arrUnavailableToppings.some((strId) => !Object.hasOwn(TOPPINGS, strId))
+    || objAvailability.arrUnavailableBases.some((strId) => !arrBases.includes(strId))) {
+    return { bKnown: false, arrUnavailableToppings: [], arrUnavailableBases: [] };
+  }
+  return { bKnown: true,
+    arrUnavailableToppings: [...new Set(objAvailability.arrUnavailableToppings)],
+    arrUnavailableBases: [...new Set(objAvailability.arrUnavailableBases)] };
+}
+
+export function validatePizzaAvailability(objPizza, objSuppliedAvailability) {
+  const objAvailability = normalizeAvailability(objSuppliedAvailability);
+  if (!objAvailability.bKnown) throw new Error('We can’t confirm ingredient availability right now. Your selections are still here. Please try again later.');
+  if (objAvailability.arrUnavailableBases.some((strId) => ['marinara', 'cheese', objPizza.strCrust].includes(strId))) {
+    throw new Error('A required ingredient for this pizza is unavailable. Please choose another available pizza.');
+  }
+  const strUnavailable = objPizza.arrToppings.find((strId) => objAvailability.arrUnavailableToppings.includes(strId));
+  if (strUnavailable) throw new Error(`${TOPPINGS[strUnavailable]} is unavailable. Please edit this pizza before continuing.`);
+}
+
 export function formatCurrency(centsAmount) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(centsAmount / 100);
 }

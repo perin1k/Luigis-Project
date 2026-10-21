@@ -22,7 +22,7 @@ export default defineConfig({
       },
     }))),
   webServer: {
-    command: 'node src/server.js',
+    command: 'node tests/fixtures/server.js',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: false,
     env: { NODE_ENV: 'production', HOST: '127.0.0.1', PORT: '3000' },
