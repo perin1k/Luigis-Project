@@ -116,6 +116,28 @@ and its audit trail must be integrated by a later authorized service. Run
 `tests/unit/password-service.test.js` covers actual hash verification, malformed
 inputs/costs, salts, Unicode byte limits, relationships and migration rollback.
 
+### MFA foundation (BE-08)
+
+`src/auth/mfa-service.js` supplies internal TOTP enrollment confirmation and
+verification using pinned OTPAuth 9.5.2. Migration `007-mfa-secrets.sql` stores
+AES-256-GCM encrypted factor material and consumed counters; it creates no actual
+factor or encryption key. Tests in `tests/unit/mfa-service.test.js` use isolated
+synthetic keys and check replay, encryption binding, expiry and rollback.
+Run `npm ci` for the updated lockfile and `npm run db:migrate` for the schema.
+
+The factory requires the environment-provided `MFA_ENCRYPTION_KEY_HEX` (32 random
+bytes encoded as 64 lowercase hex characters). No real key is provisioned yet;
+the existing website does not instantiate this service. Keep the key outside Git
+and the database. Enrollment returns a sensitive provisioning URI only for a
+future authorized setup page; do not log it or send it to another service.
+See [the authentication design](docs/authentication-design.md) for configuration,
+ten-minute pending enrollment expiry, one-step TOTP window, revocation and limits.
+
+There is no public enrollment/login route, QR service, automatic session issuance,
+recovery bypass or brute-force protection here. A later login service must bind
+verified passwords and MFA results to one attempt and add throttling before
+exposing them. This module's boolean result is not a client-provided proof.
+
 ### Local database foundation (DATA-02)
 
 Run `npm run db:migrate` to create the ignored local file

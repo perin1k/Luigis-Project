@@ -57,6 +57,9 @@ sign-in endpoint or proof of MFA.
 
 ## Recommended follow-up increments — not implemented
 
+The TOTP primitive described below has now been implemented; its protected routes,
+key provisioning, login integration and recovery remain follow-up work.
+
 1. Enrollment/password policy: recommend a minimum of 15 Unicode characters for
    all staff, allow long passphrases/paste/password managers, no forced character
    mixtures or periodic password changes, and reject common/compromised passwords
@@ -68,8 +71,8 @@ sign-in endpoint or proof of MFA.
    again after asynchronous hashing before issuing any session; a password reset
    or deactivation during verification must invalidate the attempt. Never hold a
    synchronous SQLite transaction open across an await.
-3. Admin TOTP: recommend an established library such as
-   [OTPAuth](https://github.com/hectorm/otpauth), separately reviewed and pinned.
+3. Admin TOTP integration: the user approved
+   [OTPAuth](https://github.com/hectorm/otpauth), now pinned to 9.5.2.
    Protect enrollment challenges and time windows, record consumed counters to
    reject replay, and issue an admin session only after successful verification.
    Store factor secrets encrypted under an environment-owned key outside Git;
@@ -89,9 +92,68 @@ sign-in endpoint or proof of MFA.
    and the required Lighthouse gates before accepting the web flow. Storage and
    unit checks do not establish authentication accessibility or security.
 
-No new dependency is added in the password-foundation increment. There is no
+No new dependency was added in the password-foundation increment; the subsequent
+MFA-foundation increment adds OTPAuth 9.5.2. There is no
 account creation, credential provisioning, MFA enrollment, recovery code, login
 route or external communication yet. Neither TECH-04 nor BE-08 is complete.
+
+## Implemented MFA foundation
+
+`src/auth/mfa-service.js` provides `createMfaService`, with `beginEnrollment`,
+`confirmEnrollment`, `verifyCode` and `destroy`. All are internal server methods;
+they are not Express endpoints. The caller must establish a verified identity and
+authorize enrollment/factor changes before calling them. Never take a browser's
+claimed staff ID as sufficient authorization. The service additionally checks
+that the persisted identity is an active admin.
+
+Configuration requires `MFA_ENCRYPTION_KEY_HEX`: a separately provisioned random
+32-byte key encoded as 64 lowercase hexadecimal characters. Tests pass explicit
+synthetic keys; no actual environment key was generated or saved. A trusted
+constructor option selects the key ID (default `local-v1`). There is no generated
+fallback or automatic rotation. Missing/malformed keys fail initialization;
+wrong IDs, modified ciphertext and authentication failures throw generic
+decryption errors and must deny authentication. Keep the real key outside Git,
+database files, logs, command arguments and user-facing configuration. Rotation
+and recovery after key loss require a separate reviewed procedure.
+
+Migration 007 stores 20-byte TOTP secrets encrypted with AES-256-GCM, random
+12-byte IVs and 16-byte tags. Authenticated additional data binds the format,
+factor ID, staff ID and key ID, so copying another factor's encrypted payload
+does not decrypt under a new owner. Mutable buffers are cleared where possible;
+JavaScript/library copies and returned provisioning strings cannot be guaranteed
+erased from memory.
+
+Enrollment returns a provisioning URI containing the secret **once** for the
+eventual protected enrollment page. Do not log it, place it in third-party QR
+services, analytics, screenshots, notification previews or ordinary audit rows.
+No URI for a real account was generated in this increment. The pending enrollment
+expires after ten minutes, creates no active reference until a correct code, and
+cannot replace an already active factor. Expiry clears its encrypted payload;
+metadata remains for history. Successful confirmation links an active reference,
+consumes the accepted counter and records an audit event atomically.
+
+Codes use SHA-1, six digits and 30-second periods with a one-step clock window
+in either direction. Only counters strictly greater than the stored consumed
+counter succeed, including after confirmation, across connections and restarts.
+The database transaction serializes validation/counter updates. Invalid input,
+unknown/inactive identities, revoked factors, wrong codes and backward clocks
+cannot authenticate. The constructor clock is trusted server state, not request
+input. Revoking the MFA reference clears the encrypted secret and invokes the
+existing session-revocation behavior; do not bypass that path with manual updates
+to the secret row.
+
+Verification returns an internal boolean and creates no session or MFA marker.
+A future login service must bind the result to the same password-authenticated
+attempt/user and enforce throttling before exposing code validation. Enrollment
+routes also require reauthentication, CSRF protection and authorization. The
+service deliberately supplies no factor-replacement/recovery bypass. `destroy`
+clears its key buffer at application teardown; do not share it after destruction.
+
+`tests/unit/mfa-service.test.js` covers confirmation, encrypted persistence,
+correct/incorrect/expired/replayed codes, clock drift, account/factor state,
+cross-factor ciphertext substitution, key failures, audit rollback, migration
+rollback and consumed counters shared by two database connections. All keys,
+accounts and provisioning URIs are isolated synthetic test artifacts.
 
 ## Verification and sources
 

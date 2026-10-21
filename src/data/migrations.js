@@ -38,9 +38,15 @@ const CREDENTIALS_MIGRATION = Object.freeze({
   strSql: readFileSync(new URL('./migrations/006-auth-credentials.sql', import.meta.url), 'utf8'),
 });
 
+const MFA_MIGRATION = Object.freeze({
+  intVersion: 7,
+  strName: 'mfa-secrets',
+  strSql: readFileSync(new URL('./migrations/007-mfa-secrets.sql', import.meta.url), 'utf8'),
+});
+
 export function applyMigrations(objDatabase, arrMigrations = [
   CATALOG_MIGRATION, ORDERS_MIGRATION, PAYMENTS_MIGRATION, SCHEDULING_MIGRATION, ACCESS_MIGRATION,
-  CREDENTIALS_MIGRATION,
+  CREDENTIALS_MIGRATION, MFA_MIGRATION,
 ]) {
   let intPrevious = 0;
   for (const objMigration of arrMigrations) {
