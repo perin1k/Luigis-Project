@@ -30,6 +30,7 @@ test('carry-out journey preserves edits and reaches secure checkout presentation
     if (objRequest.method() !== 'GET') arrSubmissions.push(objRequest.url());
   });
   await objPage.goto('/order');
+  await expect(objPage.locator('#payment-disclosure')).toBeHidden();
   await expect(objPage.getByLabel('Order summary')).toContainText('Your order is empty. Add a pizza to get started.');
   await checkStep(objPage);
   await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
@@ -59,10 +60,15 @@ test('carry-out journey preserves edits and reaches secure checkout presentation
   await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
   await checkStep(objPage);
   await objPage.getByRole('button', { name: 'Continue to payment' }).click();
+  await expect(objPage.locator('#payment-disclosure')).toHaveText('Demonstration checkout—use test payment details. No charge will be made.');
+  await expect(objPage.locator('#payment-disclosure')).toBeVisible();
+  await expect(objPage.getByRole('group', { name: 'Payment method' })).toHaveAttribute('aria-describedby', 'payment-disclosure');
   await checkStep(objPage);
   await objPage.getByRole('button', { name: 'Continue to secure payment' }).click();
   await expect(objPage.getByRole('alert')).toContainText('We couldn’t open secure checkout');
   await objPage.getByLabel('Apple Pay', { exact: true }).check();
+  await expect(objPage.locator('#apple-pay-hint')).toContainText('No Apple Wallet charge');
+  await expect(objPage.locator('#payment-disclosure')).toBeVisible();
   await objPage.getByRole('button', { name: 'Continue with Apple Pay' }).click();
   await expect(objPage.getByRole('alert')).toContainText('Your selections are still here');
   await checkStep(objPage);

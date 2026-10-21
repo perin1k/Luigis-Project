@@ -1,11 +1,12 @@
 <section data-step="5" aria-labelledby="payment-title" hidden>
   <h2 id="payment-title" tabindex="-1">The last little step.</h2>
   <p class="step-description">Choose how you’d like to pay.</p>
-  <fieldset><legend>Payment method</legend><div class="payment-options">
-    <label class="choice-card"><input type="radio" name="payment" value="card" aria-labelledby="card-label" aria-describedby="card-hint" checked><span><strong id="card-label">Credit or debit card</strong><small id="card-hint">Continue to secure card entry.</small></span><span class="payment-symbol" aria-hidden="true">▤</span></label>
-    <label class="choice-card"><input type="radio" name="payment" value="apple-pay" aria-labelledby="apple-pay-label" aria-describedby="apple-pay-hint"><span><strong id="apple-pay-label">Apple Pay</strong><small id="apple-pay-hint">Use a card in your Apple Wallet.</small></span></label>
+  <p id="payment-disclosure" class="notice">Demonstration checkout—use test payment details. No charge will be made.</p>
+  <fieldset aria-describedby="payment-disclosure"><legend>Payment method</legend><div class="payment-options">
+    <label class="choice-card"><input type="radio" name="payment" value="card" aria-labelledby="card-label" aria-describedby="card-hint" checked><span><strong id="card-label">Credit or debit card</strong><small id="card-hint">Use synthetic card details only.</small></span><span class="payment-symbol" aria-hidden="true">▤</span></label>
+    <label class="choice-card"><input type="radio" name="payment" value="apple-pay" aria-labelledby="apple-pay-label" aria-describedby="apple-pay-hint"><span><strong id="apple-pay-label">Apple Pay</strong><small id="apple-pay-hint">Demonstration method. No Apple Wallet charge.</small></span></label>
   </div></fieldset>
   <div class="payment-recap"><span>Order subtotal</span><strong id="payment-subtotal">$0.00</strong></div>
-  <p class="field-hint">Review the final total in secure checkout before authorizing payment.</p>
+  <p class="field-hint">Review your order before continuing.</p>
   <p class="payment-status" id="payment-status" role="status" aria-live="polite"></p>
 </section>

@@ -3,9 +3,18 @@
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.
-The repository currently implements the presentation layer. Express serves views
-and static assets; order submission, storage, payment processing, and backend
-business rules remain integration work for the team.
+Express currently serves the presentation layer. The repository also contains
+SQLite migration/menu-seed foundations and staff password/session/permission
+primitives developed in separate group increments. These are not yet connected
+to public ordering, payment or complete staff sign-in flows.
+
+The approved delivery is a publicly hosted GCP/DuckDNS application with realistic
+customer, employee and admin screens. Data entry, validation, persistence and
+permissions must work; external services may use documented demonstration
+adapters. Live Stripe setup and actual charges are not required. Read
+[the integration boundary](docs/integrations.md) and
+[DECISION-07](https://trello.com/c/NKGL91hy) for current requirements, including
+encrypted full synthetic-number storage, which is not implemented yet.
 
 This is a three-person group project. Shared documentation describes the project,
 architecture, and contributor standards. Individual assignments and personal
@@ -38,9 +47,16 @@ npm start
 Visit http://127.0.0.1:3000. For automatic server restarts during development,
 use `npm run dev`. `PORT` and `HOST` environment variables override the local
 defaults. No database, secret, or payment credentials are needed for this page.
-Production hosting and HTTPS configuration remain future decisions.
+Public GCP/DuckDNS hosting is required; exact resources, HTTPS, costs and deployment
+are still implementation work. Staff/admin functions stay authenticated even
+though customer pages are public. No site-wide preview password gate is required.
 
 ## File guide
+
+`AGENTS.md` defines shared contributor practices, including preserving other
+members' incremental work and synchronizing authorized Trello/GitHub updates.
+`docs/integrations.md` describes actual/demo services and future Stripe replacement.
+A card or design approval is not proof of implemented behavior.
 
 ### Session validation (BE-08, first increment)
 
@@ -185,19 +201,22 @@ separate and can be redacted without erasing purchased snapshots; this increment
 does not schedule retention jobs. Use canonical UTC timestamps at write boundaries.
 No public order API or customer flow is enabled by these tables.
 
-Financial integration: future server handlers must verify provider signatures,
-test environment, event semantics, amount/currency and the owning order before
-writing confirmation markers. An event row's `verified_at` is a record of that
-service check, not signature verification performed by SQLite. No Stripe SDK,
-credentials, webhook endpoint, hosted checkout or real charge/refund is added.
-Keep raw card data, unfiltered provider payloads and contact data out of these
-tables. Admin actor references are opaque text until the identity migration;
-server authorization remains mandatory before approvals or refunds.
+Financial storage was implemented for Stripe test-event references, not the
+newly approved provider-free demonstration processor. Its existing event/mode
+constraints and confirmation markers remain enforced; `verified_at` is a service
+record, not signature verification by SQLite. An additive schema/service design
+must accommodate genuine server demo outcomes without forging Stripe evidence.
+No SDK, webhook, public checkout, encrypted card store or real charge/refund is
+implemented by these tables. Keep real cards, security codes, plaintext synthetic
+numbers, unfiltered payloads and contact data out of these financial tables.
+Required full synthetic numbers need a separately reviewed encrypted record.
+Server authorization remains mandatory before approvals or refunds.
 
 Payment attempts must match an accepted quote. Their state is separate from
-fulfillment and never advances order preparation automatically. Multiple genuine
-successful provider payments can be recorded for reconciliation; a future service
-must prevent duplicate collection and flag unexpected extra successes. Provider
+fulfillment and never advances order preparation automatically. The existing
+schema can record multiple successful test-provider references for reconciliation;
+the future demo service must prevent duplicate submissions and flag unexpected
+extra successes rather than pretending money was collected. Provider
 IDs and scoped retry keys are unique and cannot be replaced after assignment.
 Confirmed financial records, processed events and allocation rows retain history.
 Deleting an entire disposable demo database at teardown is separate from deleting
@@ -209,9 +228,9 @@ explicit decision. Restaurant-caused requests remain possible after preparation.
 Refunds require an approved request on the same paid order. Demo refunds must
 equal the full payment, including tax/tip, with no retained-fee recovery.
 Pending refunds reserve that amount, succeeded refunds consume it, and confirmed
-failures release it for retry. Only record failure after verifying the provider
-outcome. An unexpected late success conflicting with a newer reservation needs
-provider-event reconciliation; never discard it or manufacture a successful row.
+failures release it for retry. Only record failure after confirming the actual
+adapter outcome. An unexpected late success conflicting with a newer reservation
+needs reconciliation; never discard it or invent Stripe confirmation evidence.
 
 Positive item/tax/tip allocations represent captured consideration; negative
 reversals reference their own original component exactly once after refund
@@ -221,7 +240,7 @@ database bounds each captured component and makes allocations append-only;
 the future service must write all allocations, verify their complete sums against
 the payment/refund, and mark the provider event processed in one transaction.
 Partial ledger writes cannot be identified as complete merely because a payment
-or refund has a succeeded marker. Provider event dates drive payment/refund
+or refund has a succeeded marker. Confirmed adapter event dates drive payment/refund
 accounting; record canonical UTC instants and preserve the original payment date.
 
 Scheduling integration: service dates identify America/Chicago calendar days;
@@ -384,7 +403,7 @@ playwright.config.js
 | `src/views/partials/ordering/drinks.ejs` | Separate quantities for each listed beverage and size; drinks are optional. |
 | `src/views/partials/ordering/customer-details.ejs` | Name and carry-out phone controls with browser autocomplete hints. |
 | `src/views/partials/ordering/order-review.ejs` | Container for the editable order review, populated using safe DOM text insertion. |
-| `src/views/partials/ordering/payment.ejs` | Provider-independent card/Apple Pay choices, subtotal, final-total guidance, and payment status presentation. Collects no card information. |
+| `src/views/partials/ordering/payment.ejs` | Card/Apple Pay presentation, subtotal and public test-data/no-charge disclosure associated with the method group. Currently collects no card information or native Wallet payment. |
 | `src/views/partials/head.ejs` | Shared HTML metadata, title, viewport settings, and stylesheet links. |
 | `src/views/partials/header.ejs` | Brand, section navigation, and keyboard skip link. |
 | `src/views/partials/footer.ejs` | Shared footer and back-to-top link. |
@@ -393,7 +412,7 @@ playwright.config.js
 | `src/public/css/ordering.css` | Ordering cards, form fields, progress indicator, responsive cart, validation, and checkout styling. |
 | `src/public/js/ordering/order-model.js` | Approved menu display data and pure integer-cent pricing preview functions. The view route reuses display data; future backend pricing must be independently authoritative. |
 | `src/public/js/ordering/order-wizard.js` | Browser-only in-memory state, step navigation, focus, cart edits, validation, price previews, review, and payment status. |
-| `src/public/js/checkout/payment.js` | Explicit frontend integration boundary. Currently rejects checkout attempts with a recoverable error; sends no requests and never manufactures success. |
+| `src/public/js/checkout/payment.js` | Unwired boundary that rejects recoverably and sends no requests. A reviewed server demo processor must replace it before persistent orders/payments and success are enabled. |
 | `src/public/js/theme.js` | Applies the initial theme before painting and manages the shared System/Light/Dark radio group, system changes, and saved appearance preference. Runs in the browser. |
 | `src/public/favicon.svg` | Small local brand icon shown in the browser tab. |
 | `playwright.config.js` | Starts an isolated server and configures desktop/mobile viewport tests for Chromium, Firefox, and WebKit. |
@@ -468,16 +487,21 @@ dependency, order-processing endpoint, or payment integration is introduced.
   information is not stored in local storage or sent anywhere.
 - Add or save a pizza explicitly before continuing. Multiple pizzas can have
   different sizes, crusts, toppings, and quantities. Prices are browser previews.
-- The checkout screen shows a subtotal, not an invented tax-inclusive total.
-  Taxes, discounts, rewards requirements, cutoff/queue policy, and final totals
-  remain product/backend decisions. No pickup estimates are invented.
+- The checkout screen currently shows a subtotal. Approved tax/rounding,
+  six-pizza capacity, retention and tracking refinements are recorded in the dated
+  schema document; implementation remains separate. Do not invent pickup times
+  or claim authoritative totals before the relevant server service exists.
 - `payment.js` is deliberately unwired. Both payment choices preserve the cart
   and display a recoverable checkout error. There are no raw card inputs, fake
   order numbers, charges, success confirmations, or order/payment endpoints.
-- A future approved backend increment must replace that boundary with secure
-  provider checkout, server price validation, final totals, availability checks,
-  order persistence, verified payment results, and eligible Apple Pay behavior.
-- The customer checkout never displays confirmation without a verified result.
+- Checkout now discloses test data/no charge before either method can be used.
+  Apple Pay wording does not promise a Wallet charge. This increment adds no
+  capture form, encryption, endpoint, successful payment or order record.
+- A future approved backend increment must provide validated server demonstration
+  processing, encrypted synthetic-number storage, authoritative totals/availability
+  and actual order/payment persistence. Real Stripe/Apple Pay setup is deferred.
+- The intended screen may say “Payment successful” after a committed server demo
+  result, not a browser-only redirect or forged Stripe event.
   Review its visual design separately at `/preview/confirmation`: this is a
   clearly labeled sample with no order number or charge, excluded from indexing.
   Its `confirmation.ejs` template accepts display data for the future integration.
@@ -552,6 +576,7 @@ Record Lighthouse version and configuration with the report. All four categories
 must reach 100 under the project gate; report actual scores and outstanding
 manual checks before accepting application work. Keep run-specific evidence out
 of this README; share it at the agreed team review or release milestone. Tests
-for provider checkout, verified order confirmation, and backend behavior must be
-added alongside those integrations. Browser previews and automated accessibility
-checks do not establish payment readiness or full WCAG conformance.
+for demo processing, encrypted synthetic storage, persisted order confirmation
+and backend behavior must accompany those implementations. Actual provider/Apple
+Pay tests belong to future integration. Browser previews and automated checks
+do not establish full WCAG conformance or readiness to process real payments.
