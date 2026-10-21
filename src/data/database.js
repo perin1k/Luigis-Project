@@ -6,7 +6,7 @@ export function openDatabase(strPath) {
   if (typeof strPath !== 'string' || !strPath.trim()) throw new TypeError('Database path is required.');
   const objDatabase = new DatabaseSync(strPath);
   try {
-    objDatabase.exec('PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;');
+    objDatabase.exec('PRAGMA foreign_keys = ON; PRAGMA recursive_triggers = ON; PRAGMA busy_timeout = 5000;');
     return objDatabase;
   } catch (objError) {
     objDatabase.close();

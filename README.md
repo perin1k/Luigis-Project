@@ -42,7 +42,7 @@ Production hosting and HTTPS configuration remain future decisions.
 
 ## File guide
 
-### Local database foundation (DATA-02, first increment)
+### Local database foundation (DATA-02, catalog and order increments)
 
 Run `npm run db:migrate` to create the ignored local file
 `data/luigis-demo.sqlite`. Set `DATABASE_PATH` to another local file path if needed;
@@ -50,18 +50,40 @@ its parent directory is created by the command. Keep it outside `src/public/`.
 Use one Express server with local storage; do not share SQLite files over network
 drives. There is no hosted database or application startup integration yet.
 
-This increment creates empty catalog/ingredient tables only, not orders, users,
+The migrations create empty catalog/ingredient and order/quote tables, not users,
 payments or sample records. No admin credentials or customer data are seeded.
 Future approved migrations will add the remaining DATA-01 entities and menu seed
 strategy. The existing browser menu and server routes are unchanged.
 
 | File | Responsibility |
 | --- | --- |
-| `src/data/database.js` | Server-only SQLite connections, foreign-key enforcement, five-second lock wait and synchronous immediate transactions. Callers close connections. |
+| `src/data/database.js` | Server-only SQLite connections, foreign-key enforcement, recursive triggers (including replacement-write deletion guards), five-second lock wait and synchronous immediate transactions. Callers close connections. |
 | `src/data/migrations.js` | Applies ordered migrations atomically; records names and SHA-256 checksums and rejects changed/unknown applied migrations. |
 | `src/data/migrations/001-catalog.sql` | Strict catalog/availability tables, safe integer-cent checks, unique versioned codes and version-consistent ingredient references. Staff actor fields are text until a later identity migration adds relationships. |
+| `src/data/migrations/002-orders.sql` | Orders, isolated contacts, pizza/drink details and quotes. Constraints/triggers enforce six-pizza/ten-drink aggregate limits, matching catalog versions, quote reconciliation and immutable accepted snapshots. |
 | `scripts/migrate.js` | Explicit local initialization/upgrade command; no automatic migration during web requests. |
 | `tests/unit/database.test.js` | Isolated temporary-file persistence and in-memory constraint, repeatability, tamper and rollback checks. |
+| `tests/unit/order-storage.test.js` | Upgrade from the actual catalog migration, persistent order snapshots, invalid/mismatched rows, aggregate limits, contact presence, replacement writes and atomic rollback. All records are synthetic. |
+
+Order-storage integration: a future server service writes a draft order, contact,
+lines and matching detail rows inside `runTransaction`. Draft `fulfillment_status`
+and fulfillment timestamps remain null. It then calculates prices/taxes on the
+server, inserts a draft quote and updates its `accepted_at` only after customer
+review. Acceptance validates required contact presence, complete detail rows,
+pizza-price arithmetic and the item subtotal, then links `accepted_quote_id` on
+the order automatically. Full phone/email validation, current catalog price and
+availability checks, quote expiration and verified payment/fulfillment transitions
+remain backend responsibilities. The database does not calculate Tennessee tax
+or authorize a payment. Zero-tax fixture values are not a customer pricing rule.
+
+Accepted quotes and their order lines are immutable, even when current catalog
+prices/names change. Use a new draft order for changes after acceptance in this
+storage increment; do not clear acceptance or rewrite history. A later checkout
+retry/edit service must explicitly manage abandoned checkout and replacement
+drafts. Unaccepted quotes cannot authorize fulfillment. Customer contacts remain
+separate and can be redacted without erasing purchased snapshots; this increment
+does not schedule retention jobs. Use canonical UTC timestamps at write boundaries.
+No public order API or customer flow is enabled by these tables.
 
 Requires the repository's Node 22.19+ runtime; built-in `node:sqlite` is experimental
 and may emit a warning. No dependency was added. Database operations are synchronous

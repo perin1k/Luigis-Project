@@ -8,7 +8,13 @@ const CATALOG_MIGRATION = Object.freeze({
   strSql: readFileSync(new URL('./migrations/001-catalog.sql', import.meta.url), 'utf8'),
 });
 
-export function applyMigrations(objDatabase, arrMigrations = [CATALOG_MIGRATION]) {
+const ORDERS_MIGRATION = Object.freeze({
+  intVersion: 2,
+  strName: 'orders',
+  strSql: readFileSync(new URL('./migrations/002-orders.sql', import.meta.url), 'utf8'),
+});
+
+export function applyMigrations(objDatabase, arrMigrations = [CATALOG_MIGRATION, ORDERS_MIGRATION]) {
   let intPrevious = 0;
   for (const objMigration of arrMigrations) {
     if (!Number.isSafeInteger(objMigration.intVersion) || objMigration.intVersion !== intPrevious + 1
