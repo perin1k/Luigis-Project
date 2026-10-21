@@ -42,6 +42,11 @@ Production hosting and HTTPS configuration remain future decisions.
 
 ## File guide
 
+The [DATA-01 storage schema proposal](docs/data-schema-proposal.md) documents
+proposed server-side persistence relationships, financial snapshots, scheduling,
+access controls, and acceptance scenarios. The proposal is approved, not a database
+implementation; database selection and migrations remain separate approvals.
+
 ```text
 src/
 ├── app.js
