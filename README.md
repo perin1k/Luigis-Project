@@ -42,7 +42,7 @@ Production hosting and HTTPS configuration remain future decisions.
 
 ## File guide
 
-### Local database foundation (DATA-02, catalog, orders, payments and scheduling)
+### Local database foundation (DATA-02)
 
 Run `npm run db:migrate` to create the ignored local file
 `data/luigis-demo.sqlite`. Set `DATABASE_PATH` to another local file path if needed;
@@ -50,10 +50,10 @@ its parent directory is created by the command. Keep it outside `src/public/`.
 Use one Express server with local storage; do not share SQLite files over network
 drives. There is no hosted database or application startup integration yet.
 
-The migrations create empty catalog/ingredient, order/quote, financial and scheduling tables,
-not user accounts or sample records. No admin credentials or customer data are seeded.
-Future approved migrations will add the remaining DATA-01 entities and menu seed
-strategy. The existing browser menu and server routes are unchanged.
+The migrations create catalog, order, financial, scheduling, access and audit
+tables. They create no accounts, credentials, customer records or sample rows.
+Menu seeding/configuration and final DATA-02 acceptance remain separate work.
+The existing browser menu and server routes are unchanged.
 
 | File | Responsibility |
 | --- | --- |
@@ -63,11 +63,13 @@ strategy. The existing browser menu and server routes are unchanged.
 | `src/data/migrations/002-orders.sql` | Orders, isolated contacts, pizza/drink details and quotes. Constraints/triggers enforce six-pizza/ten-drink aggregate limits, matching catalog versions, quote reconciliation and immutable accepted snapshots. |
 | `src/data/migrations/003-payments.sql` | Test-mode payment attempts/events, cancellation decisions, full refunds and append-only allocations. Enforces quote/order references, retry uniqueness, confirmation markers and one pending/succeeded full-refund reservation per payment. |
 | `src/data/migrations/004-scheduling.sql` | America/Chicago service dates, UTC hour boundaries, original booking promises, 20-minute capacity windows, 30-minute hold histories, append-only events and explicit fulfillment reviews. |
+| `src/data/migrations/005-access-and-audit.sql` | Staff/session/MFA references, tracking digests, preview-only notification outbox and actor-linked append-only audit records with allowlisted summaries. |
 | `scripts/migrate.js` | Explicit local initialization/upgrade command; no automatic migration during web requests. |
 | `tests/unit/database.test.js` | Isolated temporary-file persistence and in-memory constraint, repeatability, tamper and rollback checks. |
 | `tests/unit/order-storage.test.js` | Upgrade from the actual catalog migration, persistent order snapshots, invalid/mismatched rows, aggregate limits, contact presence, replacement writes and atomic rollback. All records are synthetic. |
 | `tests/unit/payment-storage.test.js` | Actual order-schema upgrades, persistence, duplicate references, cancellation holds, refund bounds, append-only accounting, competing connections and rollback. All provider evidence and identities are synthetic. |
 | `tests/unit/scheduling-storage.test.js` | Actual financial-schema upgrade, retained promises, date/hold constraints, half-open window relationships, explicit review decisions, immutable histories and rollback using synthetic records. |
+| `tests/unit/access-storage.test.js` | Actual scheduling-schema upgrade, digest/session constraints, disable/revoke behavior, tracking deadlines, preview deduplication, audit protection, persistence and rollback. No real credentials or tokens. |
 
 Order-storage integration: a future server service writes a draft order, contact,
 lines and matching detail rows inside `runTransaction`. Draft `fulfillment_status`
@@ -162,6 +164,51 @@ cancellation holds before preparation. Late payments require review; a confirmed
 hold alone is not payment evidence. Order events are append-only records with
 unique positive sequences, not an automatic fulfillment state machine. Write the
 event and its authorized state mutation in the same transaction.
+
+Access integration: migration 005 stores staff identities and references only.
+There is no login endpoint, password store, authenticator secret, MFA challenge,
+provider setup or admin bootstrap. `identity_subject`/`provider_reference` are
+opaque identity-system references, not credentials. Session/tracking digest
+columns require 64 lowercase hexadecimal characters; this validates format,
+not that a value was securely generated or hashed. A later service must generate
+strong random bearer tokens, persist only their cryptographic digests, transport
+them safely, and validate them on every protected request.
+
+Sessions use canonical UTC timestamps and a fixed eight-hour absolute expiry.
+Stored activity must advance monotonically without bridging a 30-minute idle
+gap. The application must also compare the current trusted server time to the
+last activity and expiry before accepting a request; an unchanged row does not
+prove a session is still valid. Admin sessions require an MFA-verification marker,
+which records a future service check rather than performing MFA. Disabling staff
+revokes their unrevoked sessions; revoking an MFA reference revokes all of that
+user's MFA-marked sessions. Roles cannot change until sessions are explicitly
+revoked. These constraints do not grant anyone account-management permission.
+
+Tracking grants permit one unrevoked grant per order. A retention deadline may
+remain null while the final outcome and pending cancellation/refund resolution
+are unknown; the future service must establish the approved seven-day deadline
+after resolution and reject links at that deadline. Null expiry is not permission
+for permanent access. Replacement requires revocation and cannot extend any
+established deadline. Retention jobs and manual admin recovery are not implemented.
+Grant rows may be deleted during approved cleanup, so the service must also check
+the order's retention state before issuing a new grant after cleanup.
+
+The notification outbox stores only source-event/template/channel/state metadata,
+with no recipient address, message body, bearer link or provider-delivery fields.
+Its outcomes are pending, previewed or failed; it cannot claim sent/delivered.
+Later preview rendering resolves restricted contact data at the point of use;
+no worker or email/SMS sender runs here. Delete preview metadata with contacts
+under the approved retention job. Audit summaries/reasons use explicit allowlists;
+actor references link to staff (null for system actions). Other identifiers must
+still be validated as opaque IDs by the service, never filled with customer data
+or secrets. Audits retain history until project teardown.
+
+Existing catalog, financial and scheduling actor fields remain opaque text;
+migration 005 does not rewrite historical rows or retrofit those fields with
+foreign keys. New session, MFA and audit relationships have foreign keys. Future
+authorized services must validate active actors and admin permissions for the
+older records as well, with a separately reviewed migration for historical actor
+mapping if needed. Storage existence is not authentication or authorization.
 
 Requires the repository's Node 22.19+ runtime; built-in `node:sqlite` is experimental
 and may emit a warning. No dependency was added. Database operations are synchronous

@@ -26,7 +26,15 @@ const SCHEDULING_MIGRATION = Object.freeze({
   strSql: readFileSync(new URL('./migrations/004-scheduling.sql', import.meta.url), 'utf8'),
 });
 
-export function applyMigrations(objDatabase, arrMigrations = [CATALOG_MIGRATION, ORDERS_MIGRATION, PAYMENTS_MIGRATION, SCHEDULING_MIGRATION]) {
+const ACCESS_MIGRATION = Object.freeze({
+  intVersion: 5,
+  strName: 'access-and-audit',
+  strSql: readFileSync(new URL('./migrations/005-access-and-audit.sql', import.meta.url), 'utf8'),
+});
+
+export function applyMigrations(objDatabase, arrMigrations = [
+  CATALOG_MIGRATION, ORDERS_MIGRATION, PAYMENTS_MIGRATION, SCHEDULING_MIGRATION, ACCESS_MIGRATION,
+]) {
   let intPrevious = 0;
   for (const objMigration of arrMigrations) {
     if (!Number.isSafeInteger(objMigration.intVersion) || objMigration.intVersion !== intPrevious + 1
