@@ -18,7 +18,7 @@ test('catalog survives reopening and migrations are repeatable', () => {
     objDatabase = openDatabase(strPath);
     applyMigrations(objDatabase);
     assert.equal(objDatabase.prepare('SELECT revision FROM catalog_versions WHERE id = ?').get('menu-1').revision, 1);
-    assert.equal(objDatabase.prepare('SELECT count(*) AS total FROM schema_migrations').get().total, 2);
+    assert.equal(objDatabase.prepare('SELECT count(*) AS total FROM schema_migrations').get().total, 3);
   } finally {
     objDatabase?.close();
     rmSync(strDirectory, { recursive: true, force: true });

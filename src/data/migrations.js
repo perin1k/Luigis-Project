@@ -14,7 +14,13 @@ const ORDERS_MIGRATION = Object.freeze({
   strSql: readFileSync(new URL('./migrations/002-orders.sql', import.meta.url), 'utf8'),
 });
 
-export function applyMigrations(objDatabase, arrMigrations = [CATALOG_MIGRATION, ORDERS_MIGRATION]) {
+const PAYMENTS_MIGRATION = Object.freeze({
+  intVersion: 3,
+  strName: 'payments',
+  strSql: readFileSync(new URL('./migrations/003-payments.sql', import.meta.url), 'utf8'),
+});
+
+export function applyMigrations(objDatabase, arrMigrations = [CATALOG_MIGRATION, ORDERS_MIGRATION, PAYMENTS_MIGRATION]) {
   let intPrevious = 0;
   for (const objMigration of arrMigrations) {
     if (!Number.isSafeInteger(objMigration.intVersion) || objMigration.intVersion !== intPrevious + 1

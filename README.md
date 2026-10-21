@@ -42,7 +42,7 @@ Production hosting and HTTPS configuration remain future decisions.
 
 ## File guide
 
-### Local database foundation (DATA-02, catalog and order increments)
+### Local database foundation (DATA-02, catalog, order and payment increments)
 
 Run `npm run db:migrate` to create the ignored local file
 `data/luigis-demo.sqlite`. Set `DATABASE_PATH` to another local file path if needed;
@@ -50,8 +50,8 @@ its parent directory is created by the command. Keep it outside `src/public/`.
 Use one Express server with local storage; do not share SQLite files over network
 drives. There is no hosted database or application startup integration yet.
 
-The migrations create empty catalog/ingredient and order/quote tables, not users,
-payments or sample records. No admin credentials or customer data are seeded.
+The migrations create empty catalog/ingredient, order/quote and financial tables,
+not user accounts or sample records. No admin credentials or customer data are seeded.
 Future approved migrations will add the remaining DATA-01 entities and menu seed
 strategy. The existing browser menu and server routes are unchanged.
 
@@ -61,9 +61,11 @@ strategy. The existing browser menu and server routes are unchanged.
 | `src/data/migrations.js` | Applies ordered migrations atomically; records names and SHA-256 checksums and rejects changed/unknown applied migrations. |
 | `src/data/migrations/001-catalog.sql` | Strict catalog/availability tables, safe integer-cent checks, unique versioned codes and version-consistent ingredient references. Staff actor fields are text until a later identity migration adds relationships. |
 | `src/data/migrations/002-orders.sql` | Orders, isolated contacts, pizza/drink details and quotes. Constraints/triggers enforce six-pizza/ten-drink aggregate limits, matching catalog versions, quote reconciliation and immutable accepted snapshots. |
+| `src/data/migrations/003-payments.sql` | Test-mode payment attempts/events, cancellation decisions, full refunds and append-only allocations. Enforces quote/order references, retry uniqueness, confirmation markers and one pending/succeeded full-refund reservation per payment. |
 | `scripts/migrate.js` | Explicit local initialization/upgrade command; no automatic migration during web requests. |
 | `tests/unit/database.test.js` | Isolated temporary-file persistence and in-memory constraint, repeatability, tamper and rollback checks. |
 | `tests/unit/order-storage.test.js` | Upgrade from the actual catalog migration, persistent order snapshots, invalid/mismatched rows, aggregate limits, contact presence, replacement writes and atomic rollback. All records are synthetic. |
+| `tests/unit/payment-storage.test.js` | Actual order-schema upgrades, persistence, duplicate references, cancellation holds, refund bounds, append-only accounting, competing connections and rollback. All provider evidence and identities are synthetic. |
 
 Order-storage integration: a future server service writes a draft order, contact,
 lines and matching detail rows inside `runTransaction`. Draft `fulfillment_status`
@@ -84,6 +86,45 @@ drafts. Unaccepted quotes cannot authorize fulfillment. Customer contacts remain
 separate and can be redacted without erasing purchased snapshots; this increment
 does not schedule retention jobs. Use canonical UTC timestamps at write boundaries.
 No public order API or customer flow is enabled by these tables.
+
+Financial integration: future server handlers must verify provider signatures,
+test environment, event semantics, amount/currency and the owning order before
+writing confirmation markers. An event row's `verified_at` is a record of that
+service check, not signature verification performed by SQLite. No Stripe SDK,
+credentials, webhook endpoint, hosted checkout or real charge/refund is added.
+Keep raw card data, unfiltered provider payloads and contact data out of these
+tables. Admin actor references are opaque text until the identity migration;
+server authorization remains mandatory before approvals or refunds.
+
+Payment attempts must match an accepted quote. Their state is separate from
+fulfillment and never advances order preparation automatically. Multiple genuine
+successful provider payments can be recorded for reconciliation; a future service
+must prevent duplicate collection and flag unexpected extra successes. Provider
+IDs and scoped retry keys are unique and cannot be replaced after assignment.
+Confirmed financial records, processed events and allocation rows retain history.
+Deleting an entire disposable demo database at teardown is separate from deleting
+individual financial records, which is blocked.
+
+Cancellation requests start pending. Customer requests after preparation are
+rejected, and a pending request blocks preparation/status advancement until an
+explicit decision. Restaurant-caused requests remain possible after preparation.
+Refunds require an approved request on the same paid order. Demo refunds must
+equal the full payment, including tax/tip, with no retained-fee recovery.
+Pending refunds reserve that amount, succeeded refunds consume it, and confirmed
+failures release it for retry. Only record failure after verifying the provider
+outcome. An unexpected late success conflicting with a newer reservation needs
+provider-event reconciliation; never discard it or manufacture a successful row.
+
+Positive item/tax/tip allocations represent captured consideration; negative
+reversals reference their own original component exactly once after refund
+confirmation. Item allocations reference the same order's line. Negative
+processor costs remain a separate expense, never a customer surcharge. The
+database bounds each captured component and makes allocations append-only;
+the future service must write all allocations, verify their complete sums against
+the payment/refund, and mark the provider event processed in one transaction.
+Partial ledger writes cannot be identified as complete merely because a payment
+or refund has a succeeded marker. Provider event dates drive payment/refund
+accounting; record canonical UTC instants and preserve the original payment date.
 
 Requires the repository's Node 22.19+ runtime; built-in `node:sqlite` is experimental
 and may emit a warning. No dependency was added. Database operations are synchronous
