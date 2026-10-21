@@ -83,6 +83,23 @@ tests only. MFA markers record a later verifier's result; this module does not
 prove a second factor, implement login rate limits or configure secure cookies.
 It is not wired into Express until the sign-in and protected-route increments.
 
+### Password foundation (BE-08)
+
+The approved local authentication approach and remaining MFA/bootstrap/recovery
+work are documented in [the authentication design](docs/authentication-design.md).
+`src/auth/password-service.js` provides asynchronous salted scrypt hashing and
+constant-time derived-key comparison. It bounds inputs and accepts only its
+versioned hash format; strength/blocklist policy and login throttling are later
+work. No dependency, account or sign-in route is added.
+
+Migration `006-auth-credentials.sql`, registered in `src/data/migrations.js`, adds
+server-only staff usernames, hashes, UTC change timestamps and revisions. Password
+or username changes revoke existing sessions atomically; credential management
+and its audit trail must be integrated by a later authorized service. Run
+`npm run db:migrate` to upgrade. No credential is seeded by migration or menu seed.
+`tests/unit/password-service.test.js` covers actual hash verification, malformed
+inputs/costs, salts, Unicode byte limits, relationships and migration rollback.
+
 ### Local database foundation (DATA-02)
 
 Run `npm run db:migrate` to create the ignored local file
