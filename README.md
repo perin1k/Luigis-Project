@@ -42,6 +42,40 @@ Production hosting and HTTPS configuration remain future decisions.
 
 ## File guide
 
+### Local database foundation (DATA-02, first increment)
+
+Run `npm run db:migrate` to create the ignored local file
+`data/luigis-demo.sqlite`. Set `DATABASE_PATH` to another local file path if needed;
+its parent directory is created by the command. Keep it outside `src/public/`.
+Use one Express server with local storage; do not share SQLite files over network
+drives. There is no hosted database or application startup integration yet.
+
+This increment creates empty catalog/ingredient tables only, not orders, users,
+payments or sample records. No admin credentials or customer data are seeded.
+Future approved migrations will add the remaining DATA-01 entities and menu seed
+strategy. The existing browser menu and server routes are unchanged.
+
+| File | Responsibility |
+| --- | --- |
+| `src/data/database.js` | Server-only SQLite connections, foreign-key enforcement, five-second lock wait and synchronous immediate transactions. Callers close connections. |
+| `src/data/migrations.js` | Applies ordered migrations atomically; records names and SHA-256 checksums and rejects changed/unknown applied migrations. |
+| `src/data/migrations/001-catalog.sql` | Strict catalog/availability tables, safe integer-cent checks, unique versioned codes and version-consistent ingredient references. Staff actor fields are text until a later identity migration adds relationships. |
+| `scripts/migrate.js` | Explicit local initialization/upgrade command; no automatic migration during web requests. |
+| `tests/unit/database.test.js` | Isolated temporary-file persistence and in-memory constraint, repeatability, tamper and rollback checks. |
+
+Requires the repository's Node 22.19+ runtime; built-in `node:sqlite` is experimental
+and may emit a warning. No dependency was added. Database operations are synchronous
+and serialize writers; suitable for the small disposable demo, not a multi-server
+deployment assumption.
+
+Recovery: failed migration batches roll back, including their version records.
+Applied migration files must never be edited; add a new numbered migration instead.
+There is no destructive down-migration command. For a disposable test database,
+stop all users, move the database aside and rerun migrations to create an empty
+one. To preserve data before a future upgrade, close all database connections
+before copying the file, retain matching application/migration versions, and
+verify reopening and integrity before use. Automated backups are not configured.
+
 The [DATA-01 storage schema proposal](docs/data-schema-proposal.md) documents
 proposed server-side persistence relationships, financial snapshots, scheduling,
 access controls, and acceptance scenarios. The proposal is approved, not a database

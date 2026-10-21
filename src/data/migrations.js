@@ -1,0 +1,42 @@
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { runTransaction } from './database.js';
+
+const CATALOG_MIGRATION = Object.freeze({
+  intVersion: 1,
+  strName: 'catalog',
+  strSql: readFileSync(new URL('./migrations/001-catalog.sql', import.meta.url), 'utf8'),
+});
+
+export function applyMigrations(objDatabase, arrMigrations = [CATALOG_MIGRATION]) {
+  let intPrevious = 0;
+  for (const objMigration of arrMigrations) {
+    if (!Number.isSafeInteger(objMigration.intVersion) || objMigration.intVersion !== intPrevious + 1
+      || typeof objMigration.strName !== 'string' || typeof objMigration.strSql !== 'string') {
+      throw new TypeError('Migrations must have consecutive versions and text names/SQL.');
+    }
+    intPrevious = objMigration.intVersion;
+  }
+  runTransaction(objDatabase, () => {
+    objDatabase.exec(`CREATE TABLE IF NOT EXISTS schema_migrations (
+      version INTEGER PRIMARY KEY, name TEXT NOT NULL, checksum TEXT NOT NULL,
+      applied_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+    ) STRICT`);
+  });
+  runTransaction(objDatabase, () => {
+    const arrApplied = objDatabase.prepare('SELECT version, name, checksum FROM schema_migrations ORDER BY version').all();
+    for (const objApplied of arrApplied) {
+      const objMigration = arrMigrations.find((objCandidate) => objCandidate.intVersion === objApplied.version);
+      if (!objMigration || objMigration.strName !== objApplied.name
+        || createHash('sha256').update(objMigration.strSql).digest('hex') !== objApplied.checksum) {
+        throw new Error('Applied migration changed or is unknown; restore matching application code.');
+      }
+    }
+    for (const objMigration of arrMigrations) {
+      if (arrApplied.some((objApplied) => objApplied.version === objMigration.intVersion)) continue;
+      objDatabase.exec(objMigration.strSql);
+      objDatabase.prepare('INSERT INTO schema_migrations (version, name, checksum) VALUES (?, ?, ?)')
+        .run(objMigration.intVersion, objMigration.strName, createHash('sha256').update(objMigration.strSql).digest('hex'));
+    }
+  });
+}

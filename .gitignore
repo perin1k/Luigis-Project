@@ -18,6 +18,12 @@ coverage/
 reports/
 
 # Logs and operating-system files
+# Local demo database files and SQLite journals
+/data/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
 *.log
 .DS_Store
 Thumbs.db
