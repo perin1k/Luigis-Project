@@ -42,7 +42,7 @@ Production hosting and HTTPS configuration remain future decisions.
 
 ## File guide
 
-### Local database foundation (DATA-02, catalog, order and payment increments)
+### Local database foundation (DATA-02, catalog, orders, payments and scheduling)
 
 Run `npm run db:migrate` to create the ignored local file
 `data/luigis-demo.sqlite`. Set `DATABASE_PATH` to another local file path if needed;
@@ -50,7 +50,7 @@ its parent directory is created by the command. Keep it outside `src/public/`.
 Use one Express server with local storage; do not share SQLite files over network
 drives. There is no hosted database or application startup integration yet.
 
-The migrations create empty catalog/ingredient, order/quote and financial tables,
+The migrations create empty catalog/ingredient, order/quote, financial and scheduling tables,
 not user accounts or sample records. No admin credentials or customer data are seeded.
 Future approved migrations will add the remaining DATA-01 entities and menu seed
 strategy. The existing browser menu and server routes are unchanged.
@@ -62,10 +62,12 @@ strategy. The existing browser menu and server routes are unchanged.
 | `src/data/migrations/001-catalog.sql` | Strict catalog/availability tables, safe integer-cent checks, unique versioned codes and version-consistent ingredient references. Staff actor fields are text until a later identity migration adds relationships. |
 | `src/data/migrations/002-orders.sql` | Orders, isolated contacts, pizza/drink details and quotes. Constraints/triggers enforce six-pizza/ten-drink aggregate limits, matching catalog versions, quote reconciliation and immutable accepted snapshots. |
 | `src/data/migrations/003-payments.sql` | Test-mode payment attempts/events, cancellation decisions, full refunds and append-only allocations. Enforces quote/order references, retry uniqueness, confirmation markers and one pending/succeeded full-refund reservation per payment. |
+| `src/data/migrations/004-scheduling.sql` | America/Chicago service dates, UTC hour boundaries, original booking promises, 20-minute capacity windows, 30-minute hold histories, append-only events and explicit fulfillment reviews. |
 | `scripts/migrate.js` | Explicit local initialization/upgrade command; no automatic migration during web requests. |
 | `tests/unit/database.test.js` | Isolated temporary-file persistence and in-memory constraint, repeatability, tamper and rollback checks. |
 | `tests/unit/order-storage.test.js` | Upgrade from the actual catalog migration, persistent order snapshots, invalid/mismatched rows, aggregate limits, contact presence, replacement writes and atomic rollback. All records are synthetic. |
 | `tests/unit/payment-storage.test.js` | Actual order-schema upgrades, persistence, duplicate references, cancellation holds, refund bounds, append-only accounting, competing connections and rollback. All provider evidence and identities are synthetic. |
+| `tests/unit/scheduling-storage.test.js` | Actual financial-schema upgrade, retained promises, date/hold constraints, half-open window relationships, explicit review decisions, immutable histories and rollback using synthetic records. |
 
 Order-storage integration: a future server service writes a draft order, contact,
 lines and matching detail rows inside `runTransaction`. Draft `fulfillment_status`
@@ -125,6 +127,41 @@ the payment/refund, and mark the provider event processed in one transaction.
 Partial ledger writes cannot be identified as complete merely because a payment
 or refund has a succeeded marker. Provider event dates drive payment/refund
 accounting; record canonical UTC instants and preserve the original payment date.
+
+Scheduling integration: service dates identify America/Chicago calendar days;
+all timestamp fields in migration 004 use canonical UTC text with milliseconds
+(`YYYY-MM-DDTHH:mm:ss.sssZ`). The future scheduling service must resolve local
+hours with DST and verify that instants belong to the intended local day. The
+database validates date/timestamp formats, ordered hours, cutoff at closing minus
+30 minutes and latest pickup at closing minus ten minutes. It does not generate
+normal hours, holiday exceptions, scheduled slots or next-open-day options.
+
+Bookings preserve one original promise per order, including off-grid ASAP times.
+This storage increment blocks changing/deleting the promise; a later explicit
+rescheduling design must retain original history and review affected paid orders.
+Hours changes do not rewrite bookings. The service must open deduplicated reviews
+for affected orders and obtain a recorded decision; the database does not create
+reviews or notify anyone automatically. Staff actor fields remain opaque text
+until identity relationships are implemented.
+
+Capacity windows describe half-open 20-minute spans with six demo pizza units.
+Holds must match the booking's service day/window, reserve one to six units and
+start active with exactly 30 minutes to expiry. One active/confirmed hold per
+booking is allowed; drink-only bookings need no pizza hold. Confirmation must
+precede expiry; release preserves prior confirmation; expired/released holds
+cannot reopen. Early checkout expiry/failure uses released, not expired. History
+is retained, and no automatic expiry worker runs in this increment.
+
+These row checks do **not** enforce either per-window aggregate capacity or the
+six-pizza rolling limit. Before accepting bookings, a later service must serialize
+competing writes, expire/release stale holds explicitly, count all active and
+confirmed reservations across every affected rolling span and verify held units
+against actual pizza quantities. Fixed clock buckets are insufficient. It must
+also enforce lead/cutoff rules, current availability, verified payment and
+cancellation holds before preparation. Late payments require review; a confirmed
+hold alone is not payment evidence. Order events are append-only records with
+unique positive sequences, not an automatic fulfillment state machine. Write the
+event and its authorized state mutation in the same transaction.
 
 Requires the repository's Node 22.19+ runtime; built-in `node:sqlite` is experimental
 and may emit a warning. No dependency was added. Database operations are synchronous
