@@ -1,5 +1,10 @@
 # Luigi's Pizza
 
+The internal staff sign-in orchestration lives in `src/auth/login-service.js`;
+migration 008 persists throttles, short-lived MFA challenges and identity epochs.
+See `docs/authentication-design.md` for contracts, limits and pending HTTP/security
+integration. It does not yet provide a browser sign-in flow or create accounts.
+
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.

@@ -55,7 +55,7 @@ hashes supplied by a browser, put passwords on a command line or commit real
 credentials/fixture secrets. The module is a cryptographic primitive, not a
 sign-in endpoint or proof of MFA.
 
-## Recommended follow-up increments — not implemented
+## Remaining integration work
 
 The TOTP primitive described below has now been implemented; its protected routes,
 key provisioning, login integration and recovery remain follow-up work.
@@ -64,7 +64,7 @@ key provisioning, login integration and recovery remain follow-up work.
    all staff, allow long passphrases/paste/password managers, no forced character
    mixtures or periodic password changes, and reject common/compromised passwords
    using an explicitly selected blocklist strategy. Validate before hashing.
-2. Sign-in orchestration: generic failure responses, comparable handling of
+2. Web sign-in integration (internal orchestration is implemented below): generic failure responses, comparable handling of
    unknown accounts, bounded concurrent expensive hash operations, per-account
    and source throttling, secure CSRF-protected forms, fresh random session tokens
    and server-set cookie protections. Verify current account/credential revision
@@ -155,7 +155,60 @@ cross-factor ciphertext substitution, key failures, audit rollback, migration
 rollback and consumed counters shared by two database connections. All keys,
 accounts and provisioning URIs are isolated synthetic test artifacts.
 
-## Verification and sources
+## Implemented internal sign-in service
+
+`src/auth/login-service.js` exports `createLoginService(database, options)` with
+`beginSignIn(username, password, source)` and `completeMfa(challenge, code, source)`.
+These are internal server methods, not routes. Expected rejection returns `null`;
+system/crypto/database errors propagate and callers must deny access. The source
+must be derived from trusted transport/proxy configuration, never request form
+fields or untrusted forwarded headers. No real account was provisioned.
+
+Employees receive a fresh 32-byte random session token after password verification;
+admins receive only a five-minute random challenge until the existing MFA service
+verifies a code. Challenges are source-bound and single-use. Raw tokens are returned
+only to the trusted caller; SQLite stores SHA-256 digests. Session issuance uses the
+existing eight-hour absolute and 30-minute idle policies. Never expose these tokens
+in URLs, logs, analytics or browser storage. HTTP integration must set secure,
+HttpOnly, SameSite cookies, protect forms against CSRF, and rotate/revoke any old
+session; none of those HTTP behaviors is implemented in this increment.
+
+Migration 008 adds transient `login_limits`, `login_challenges`, and an identity
+epoch. Staff updates and credential updates increment the epoch and delete pending
+challenges, including disable/re-enable changes that restore previous field values.
+After asynchronous password work, a synchronous transaction rechecks account,
+credentials, revisions and epoch before granting any result. No SQLite transaction
+is held across an await. MFA counter consumption precedes issuance in its own
+synchronous transaction; an issuance failure can consume a code without granting a
+session. Retrying requires a new code. Challenge consumption and session insertion
+commit together. This fail-closed trade-off avoids nested transactions.
+
+Conservative demo limits allow five attempts per account and 30 per source in a
+fixed 15-minute window, separately for password and MFA stages. Successful attempts
+also count; limits are not reset on success. Expired transient rows are removed on
+subsequent attempts; there is no cleanup worker. A 5,000-row throttle-table cap denies
+new attempts under saturation. Source digests are pseudonymous, not anonymous (low
+entropy addresses can be guessed). No raw source address or username is stored in
+these transient rows. Two expensive password checks may run concurrently per Node
+process, with no queued excess work. Multiple processes require a separately reviewed
+shared resource limit. Fixed windows permit bursts around boundaries and account
+throttling can deny legitimate access temporarily; these limits need operational
+review before public exposure. Unknown accounts perform the same scrypt verification
+using a synthetic dummy hash; this reduces obvious timing differences but is not a
+constant-time end-to-end guarantee.
+
+No new dependency, web route, cookie, account setup, recovery flow or sign-in screen
+is included. BE-08 remains incomplete. Browser, visual, accessibility and Lighthouse
+acceptance remains required for the eventual web flow, not established by these
+internal-service tests. Migration rollback for disposable local data is recreation
+from reviewed migrations/seed; do not edit applied checksums or roll code back to a
+version that does not recognize migration 008.
+
+`tests/unit/login-service.test.js` covers employee issuance, admin MFA, expiry,
+replay, source binding, generic rejections, persistent throttling, hash concurrency,
+and credential changes during hashing. Synthetic fixtures are isolated in memory.
+
+## Verification references
 
 `tests/unit/password-service.test.js` uses only synthetic values. It covers
 random salts, actual correct/incorrect verification, Unicode/byte limits,
