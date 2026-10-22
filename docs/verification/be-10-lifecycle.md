@@ -37,3 +37,24 @@ BE-10 remains open for complete browser/visual/manual and platform acceptance.
 This test-only increment adds no UI and claims no fresh Lighthouse or browser pass.
 Firefox, Windows/Linux and manual accessibility gates remain intact. Existing
 concurrent role-hierarchy implementation is not changed or claimed here.
+
+## Scheduling browser follow-up
+
+At commit `39929f9`, the existing isolated SQLite scheduling fixture passed
+**20 functional cases (50.4 seconds)** across desktop/mobile Chromium and WebKit:
+
+```sh
+npx playwright test --config=playwright.scheduling.config.js --project=chromium-desktop --project=chromium-mobile --project=webkit-desktop --project=webkit-mobile --grep 'ready time is required|competing reservation|expired saved hold|empty availability|after cutoff'
+```
+
+Verified required ready-time selection and retained booking on retry; competing
+reservations force explicit reselection; failed pickup requests preserve the basket;
+expired holds cannot renew through replay; empty availability clears stale choices
+and recovers; after-cutoff selection offers the next open day in Central time even
+when the device timezone differs. No runtime, tests or visual baselines changed
+for this follow-up. Fixture-only controls are not production routes.
+
+This does not exercise asynchronous provider late success, native Wallet, a hosted
+environment, Windows/Linux, Firefox, new visual comparisons or manual accessibility.
+The known Firefox startup blocker was not redundantly retried. The full card stays
+open for those applicable retained acceptance checks and complete journey review.
