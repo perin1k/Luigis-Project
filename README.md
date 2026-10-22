@@ -673,3 +673,9 @@ and final acceptance remain separate; use invented contacts only.
 Pickup scheduling (BE-10): [rules, API, transaction and file guide](docs/scheduling-design.md).
 Configured order submission now requires an available ready-time selection and
 saves a 30-minute capacity hold atomically; payment confirmation remains separate.
+
+Demonstration payments (BE-03): [payment, encryption and operator key guide](docs/demo-payment-design.md).
+The configured database runtime supports generated test identities and committed
+payment/order confirmation. Set `DEMO_PAYMENT_KEYS_PATH` to an operator-owned,
+private external key-ring file; checkout fails safely when it is not configured.
+No real card entry, charge or native Apple Wallet operation occurs.

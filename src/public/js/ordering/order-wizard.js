@@ -5,6 +5,9 @@ let objCatalog = JSON.parse(document.querySelector('#order-app').dataset.catalog
 if (objCatalog) configureMenu(objCatalog);
 let objPricing = null;
 let bCheckingPrice = false;
+const bDemoPayments = document.querySelector('#order-app').dataset.demoPayments === 'true';
+let objPendingPayment = null;
+let bPaymentUnknown = false;
 let bCheckingPickup = false;
 let objPickupSelection = null;
 let arrPickupOptions = [];
@@ -203,7 +206,7 @@ function updateContactFields() {
 }
 
 function updateNextButton() {
-  elNext.textContent = intStep === 5
+  elNext.textContent = intStep === 5 && bDemoPayments ? (bPaymentUnknown ? 'Check demo payment result' : elForm.elements.payment.value === 'apple-pay' ? 'Confirm demo Apple Pay' : 'Confirm demo payment') : intStep === 5
     ? (elForm.elements.payment.value === 'apple-pay' ? 'Continue with Apple Pay' : 'Continue to secure payment')
     : intStep === 4 ? 'Continue to payment' : 'Continue';
 }
@@ -337,6 +340,7 @@ elForm.addEventListener('submit', async (objEvent) => {
   objEvent.preventDefault();
   if (bOpeningPayment || bCheckingPrice || bCheckingPickup) return;
   clearError();
+  if (bDemoPayments && bPaymentUnknown && intStep === 5) { await startPayment(); return; }
   if (!validateCurrentStep()) return;
   if (bScheduling && intStep >= 4 && !objPickupSelection) { if (intStep === 5) showStep(4); showError('Choose an available pickup time before continuing.', document.querySelector('#pickup-time')); return; }
   if (objCatalog && intStep >= 4) {
@@ -349,23 +353,49 @@ elForm.addEventListener('submit', async (objEvent) => {
     }
   }
   if (intStep < 5) { showStep(intStep + 1); return; }
-  bOpeningPayment = true;
-  elNext.disabled = true;
-  elBack.disabled = true;
-  elForm.setAttribute('aria-busy', 'true');
-  document.querySelector('#payment-status').textContent = 'Opening secure checkout…';
-  try {
-    if (bOrderSubmission) await saveUnpaidOrder();
-    await openSecureCheckout();
-  } catch (objError) { showError(objError.message); }
-  finally {
-    bOpeningPayment = false;
-    elNext.disabled = false;
-    elBack.disabled = false;
-    elForm.removeAttribute('aria-busy');
-    document.querySelector('#payment-status').textContent = '';
-  }
+  await startPayment();
 });
+
+async function startPayment() {
+  bOpeningPayment = true; elNext.disabled = true; elBack.disabled = true; elForm.setAttribute('aria-busy','true');
+  document.querySelector('#payment-status').textContent = bDemoPayments ? 'Processing demonstration payment…' : 'Opening secure checkout…';
+  try {
+    if (bDemoPayments) {
+      if (!objPendingPayment) {
+        await saveUnpaidOrder();
+        objPendingPayment = { strOrderId: objPendingSubmission.strRequestId, strRequestId: crypto.randomUUID(), strMethod: elForm.elements.payment.value };
+      }
+      bPaymentUnknown = true;
+      const objReceipt = await openSecureCheckout(objPendingPayment);
+      showDemoReceipt(objReceipt); bPaymentUnknown = false; objPendingPayment = null;
+    } else {
+      if (bOrderSubmission) await saveUnpaidOrder();
+      await openSecureCheckout();
+    }
+  } catch (objError) {
+    if (objError.bKnownResponse) { bPaymentUnknown = false; objPendingPayment = null; }
+    if (objError.bNeedsReview) { objPendingSubmission = null; objPickupSelection = null; clearPickupReceipt(); showStep(4); }
+    showError(objError.message);
+  } finally {
+    bOpeningPayment = false; elNext.disabled = false; elBack.disabled = bPaymentUnknown;
+    for (const elInput of elForm.querySelectorAll('[name="payment"]')) elInput.disabled = bPaymentUnknown;
+    elForm.removeAttribute('aria-busy'); document.querySelector('#payment-status').textContent = ''; updateNextButton();
+  }
+}
+function showDemoReceipt(objReceipt) {
+  const elReceipt = document.querySelector('#demo-receipt'); const elDetails = document.querySelector('#receipt-details'); elDetails.replaceChildren();
+  const elReference = createElement('p','Order '); const elReferenceValue = createElement('span',objReceipt.strReference,'font-monospace'); elReferenceValue.id = 'receipt-reference'; elReference.append(elReferenceValue); elDetails.append(elReference);
+  for (const strText of [objReceipt.strService === 'carry-out' ? 'Carry-out' : 'Dine-in', `Ready: ${formatPickup(objReceipt.objPickup.dtPromisedAt)}`]) elDetails.append(createElement('p',strText));
+  const elMethod = createElement('p',`${objReceipt.strMethod === 'apple-pay' ? 'Demonstration Apple Pay' : 'Generated test card'} `); const elMasked = createElement('span',objReceipt.strMaskedIdentity,'font-monospace'); elMasked.id = 'receipt-identity'; elMethod.append(elMasked); elDetails.append(elMethod);
+  const elItems = createElement('ul','');
+  for (const objItem of objReceipt.arrItems) elItems.append(createElement('li',`${objItem.intQuantity} × ${objItem.strLabel} · ${formatCurrency(objItem.centsTotal)}`));
+  elDetails.append(elItems);
+  for (const [strLabel,centsAmount] of [['Items',objReceipt.objTotals.centsSubtotal],['Tax',objReceipt.objTotals.centsTax],['Optional tip',objReceipt.objTotals.centsTip],['Total',objReceipt.objTotals.centsTotal]]) {
+    const elLine = createElement('div','','subtotal'); elLine.append(createElement('span',strLabel),createElement('strong',formatCurrency(centsAmount))); elDetails.append(elLine);
+  }
+  elForm.hidden = true; document.querySelector('.order-progress').hidden = true; document.querySelector('#step-count').textContent = 'Order confirmed · demonstration';
+  elReceipt.hidden = false; elReceipt.focus();
+}
 
 function pricingInput() {
   return { strCatalogFingerprint: objCatalog.strFingerprint,

@@ -23,7 +23,7 @@ use demonstration adapters, not application persistence or authorization.
 | Customer UI | Homepage, database-backed menu/pricing review, themes, availability/errors, isolated confirmation preview | Persisted order/payment/tracking integration and remaining screens |
 | Database | SQLite migrations, transactions, constraints and non-destructive menu seed | Reviewed services and additive schema changes |
 | Staff access | Mounted HTTPS staff/MFA/enrollment/recovery/account-management screens and real permissions | Firefox/runtime and manual accessibility acceptance; operator-owned real setup |
-| Payments | Recoverable unwired browser adapter; test-event storage foundation | Server demo processing, encrypted synthetic-number storage and committed order association |
+| Payments | Generated-identity local demo adapter, encrypted synthetic-number storage, committed order/hold confirmation | Refund/reconciliation integrations and final acceptance |
 | Notifications | Pending/previewed/failed outbox storage | Restricted internal previews generated from actual events; no email/SMS sending |
 | Hosting | GCP/DuckDNS direction selected; no deployment claimed | Public HTTPS deployment, protected staff functions and reviewed costs |
 | Stripe/Apple Pay | Future provider/native Wallet integration | Separately authorized replacement and verification before live money |
@@ -45,19 +45,23 @@ failure recovery. Only then render “Payment successful,” receipt and trackin
 from the committed result. No actual authorization, charge, settlement, payout
 or refund occurs. Do not accept a browser price/outcome or invent an order.
 
-This increment adds disclosure and accurate method wording only. Collection,
-encryption, public order/payment endpoints and success are not implemented.
-The current browser adapter still rejects recoverably. `/preview/confirmation`
-remains a labelled, isolated design reference, not proof of an order.
+The approved generated-identity BE-03 increment now records local demo payments
+and confirms orders/holds atomically; see [payment design](demo-payment-design.md).
+It accepts no browser card numbers. `/preview/confirmation` remains a labelled,
+isolated design reference, not proof of an order. The actual checkout receipt is
+built from committed application records.
 
-## Synthetic payment-data storage design still required
+## Synthetic payment-data safeguards and current design
 
-Store the full synthetic number as encrypted database data, not just last four
-digits. Before enabling collection, review:
+The user approved generated synthetic identities after TECH-06 review. Full
+server-generated numbers are encrypted; only masked details are returned. This
+resolves public-input exposure without a tiny fixed allowlist. The following
+original review requirements remain relevant to future public card entry or
+hosted operations; current details and limitations are in the payment design:
 
 - Server validation and public-input safeguards. The user rejected silently
-  requiring a tiny predefined-number list. Resolve the policy explicitly; a
-  disclaimer alone cannot prove that input is synthetic or authorize real cards.
+  requiring a tiny predefined-number list. Generated identities resolve the
+  current flow; any future public number entry needs a separate reviewed policy.
 - Authenticated encryption, fresh per-record randomness, integrity verification,
   external key custody, key/version metadata, rotation and failure handling.
   Never commit keys or put them alongside ciphertext in the database.
@@ -71,9 +75,8 @@ digits. Before enabling collection, review:
 
 Migration 003 currently constrains provider references to Stripe test mode and
 requires event/confirmation evidence. It does not implement Stripe or a demo
-processor. Do not forge Stripe events to bypass it; approve a separate demo
-identity/evidence model and compatible additive migration. Applied SQL and its
-checksums stay unchanged. Existing password hashing is not reversible card
+processor. Migration 011 now adds the separately approved local demo records;
+no Stripe events or signatures are forged. Applied SQL/checksums stay unchanged. Existing password hashing is not reversible card
 encryption, and no current module establishes secure card collection.
 
 ## Approved refinements recorded by the group

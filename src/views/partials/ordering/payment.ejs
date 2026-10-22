@@ -3,7 +3,7 @@
   <p class="step-description">Choose how you’d like to pay.</p>
   <p id="payment-disclosure" class="notice">Demonstration checkout—use test payment details. No charge will be made.</p>
   <fieldset aria-describedby="payment-disclosure"><legend>Payment method</legend><div class="payment-options">
-    <label class="choice-card"><input type="radio" name="payment" value="card" aria-labelledby="card-label" aria-describedby="card-hint" checked><span><strong id="card-label">Credit or debit card</strong><small id="card-hint">Use synthetic card details only.</small></span><span class="payment-symbol" aria-hidden="true">▤</span></label>
+    <label class="choice-card"><input type="radio" name="payment" value="card" aria-labelledby="card-label" aria-describedby="card-hint" checked><span><strong id="card-label">Credit or debit card</strong><small id="card-hint"><%= bDemoPayments ? 'A generated test identity is used. No card number or security code is requested.' : 'Use synthetic card details only.' %></small></span><span class="payment-symbol" aria-hidden="true">▤</span></label>
     <label class="choice-card"><input type="radio" name="payment" value="apple-pay" aria-labelledby="apple-pay-label" aria-describedby="apple-pay-hint"><span><strong id="apple-pay-label">Apple Pay</strong><small id="apple-pay-hint">Demonstration method. No Apple Wallet charge.</small></span></label>
   </div></fieldset>
   <div class="payment-recap"><span>Order subtotal</span><strong id="payment-subtotal">$0.00</strong></div>

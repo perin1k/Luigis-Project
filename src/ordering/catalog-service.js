@@ -116,10 +116,10 @@ export function createCatalogService(objDatabase) {
         strTaxPolicy: objCatalog.strTaxPolicy, intTaxBasisPoints: 975, centsSubtotal, centsTax, centsTip, centsTotal, arrLines };
     } catch (objError) { if (!bWithinTransaction) objDatabase.exec('ROLLBACK'); throw objError; }
   }
-  function readCatalog() {
-    objDatabase.exec('BEGIN');
-    try { const objCatalog = readCatalogSnapshot(); objDatabase.exec('COMMIT'); return objCatalog; }
-    catch (objError) { objDatabase.exec('ROLLBACK'); throw objError; }
+  function readCatalog({ bWithinTransaction = false } = {}) {
+    if (!bWithinTransaction) objDatabase.exec('BEGIN');
+    try { const objCatalog = readCatalogSnapshot(); if (!bWithinTransaction) objDatabase.exec('COMMIT'); return objCatalog; }
+    catch (objError) { if (!bWithinTransaction) objDatabase.exec('ROLLBACK'); throw objError; }
   }
   return { readCatalog, priceOrder };
 }

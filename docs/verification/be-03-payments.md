@@ -1,0 +1,68 @@
+# BE-03 generated-identity payment increment — 2026-10-21
+
+Implemented: encrypted server-generated test identities, persisted local demo
+outcomes, atomic payment/hold/order confirmation, safe browser recovery and a
+receipt from committed snapshots. This is not a live payment integration or final
+card acceptance; remaining gates/integrations below are not waived.
+
+## Verified passes
+
+- Full `npm run test:unit`: 187/187 tests after updating the existing migration
+  count expectations from ten to eleven. No applied migration was modified.
+- New tests cover authenticated encryption/decryption, tampering and identity
+  binding, versioned keys, fresh nonces, private key-file permissions/symlinks,
+  exact totals, declines, expiry, changed prices/inventory, immutable history,
+  seven-day ciphertext deletion, rollback on encryption/event failures, malformed
+  and oversized/cross-site requests, rejected number/outcome/total fields and
+  no-key failure. Fourteen focused payment/scheduling cases passed after the
+  final receipt-description changes.
+- Real file-database competing worker connections both receive the original
+  success while only one payment, encrypted identity and order event persist.
+  Reopening/migration checks and foreign-key integrity pass.
+- Chromium/WebKit desktop/mobile: 16/16 browser cases passed. They cover card and
+  demonstration Apple Pay for carry-out/dine-in, committed receipts, safe retry
+  after an actual server commit followed by lost response, no repricing on that
+  retry, decline recovery and expired checkout. No browser card/CVV fields exist.
+  Confirmation receives focus; page-error checks pass on successful journeys.
+- Eight light/dark actual receipt captures were inspected before creating new
+  baselines. Four baseline-generation cases passed; a separate no-update run
+  passed all four comparisons. Only variable order references and masked last
+  four digits are masked. These tests also check 320px horizontal reflow.
+- Automated axe checks passed on successful receipt states for both methods.
+  A focused four-profile run additionally checks both payment-choice states and
+  receipts: all four focused cases passed.
+- Lighthouse 13.5.0, default mobile simulated throttling, production-mode isolated
+  database `/order`: Performance 100, Accessibility 100, Best Practices 100,
+  SEO 100. [Configuration/advisories](be-03-lighthouse.json). This navigation
+  audit covers initial `/order`; dynamic states use separate browser/axe tests.
+- Actual configured loopback application and existing demo database: a clearly
+  synthetic runtime-check order returned 201; demo payment returned succeeded,
+  confirmed hold and 201; identical retry returned 200 and the same reference.
+  One synthetic Received order was intentionally retained in disposable demo data.
+  The reviewed additive migration and a dedicated private external local-demo key
+  were used. No key data or full number was printed, posted or committed.
+- Syntax/diff review; no new dependency. Node 24.14.1, macOS 27.0.1 arm64.
+  Existing team commits for password bytes and FE-10 recovery/status work retained.
+
+## Failures resolved and checks pending
+
+- First browser visual-capture cases used a button locator for appearance radio
+  labels and timed out. The test locator was corrected to the existing labelled
+  Appearance group; all local cases/captures/comparisons then passed.
+- Eight Firefox cases failed before navigation with the existing local profile
+  folder launch error. Firefox UI behavior remains unverified on this machine.
+- Representative screen-reader review, full manual keyboard/zoom/contrast and
+  remaining three-engine release acceptance are pending. Axe/Lighthouse alone
+  do not establish WCAG conformance.
+- Hosted key custody/HTTPS, scheduled retention work, staff refund/accounting
+  integrations, protected tracking and notification previews remain separate.
+  Stripe/native Apple Wallet activation is future PAY-01, not claimed here.
+- Generated-number ciphertext expires after seven days and is purged by successful
+  payment work or the internal cleanup method; no scheduled retention worker is
+  installed. Local preview key custody is temporary and outside Git/database;
+  losing that key prevents decryption, while masked financial history remains.
+
+Reproduce: `npx playwright test -c playwright.payments.config.js`.
+For Lighthouse, start `NODE_ENV=production node tests/fixtures/payments-server.js`
+then `node tests/audit-payments.js`; stop it before Playwright starts its fixture.
+[Design/API/file/key/recovery guide](../demo-payment-design.md).

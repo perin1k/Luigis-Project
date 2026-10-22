@@ -37,7 +37,7 @@ export function createSchedulingService(objDatabase, { fnNow = () => new Date().
       cutoff_at: iso(Date.parse(dtCloses) - 30 * 60000), latest_pickup_at: iso(Date.parse(dtCloses) - 10 * 60000), is_closed: 0, revision: 1 };
   }
   function reservations(strDayId, dtNow) {
-    return objDatabase.prepare(`SELECT b.promised_at, h.reserved_units FROM capacity_holds h JOIN fulfillment_bookings b ON b.id=h.booking_id
+    return objDatabase.prepare(`SELECT b.id AS strBookingId, b.promised_at, h.reserved_units FROM capacity_holds h JOIN fulfillment_bookings b ON b.id=h.booking_id
       WHERE b.service_day_id=? AND (h.state='confirmed' OR (h.state='active' AND h.expires_at>?)) ORDER BY b.promised_at`).all(strDayId, dtNow);
   }
   function fits(arrReservations, numPromise, intPizzas) {
@@ -110,5 +110,10 @@ export function createSchedulingService(objDatabase, { fnNow = () => new Date().
     return { dtPromisedAt: objHold.promised_at, dtExpiresAt: objHold.expires_at,
       strHoldState: objHold.state === 'active' && objHold.expires_at <= dtNow ? 'expired' : objHold.state };
   }
-  return { listOptions, reserve, readReservation, now };
+  function hasCapacity(strOrderId, dtNow) {
+    const objHold = objDatabase.prepare(`SELECT b.id,b.service_day_id,b.promised_at,h.reserved_units FROM fulfillment_bookings b JOIN capacity_holds h ON h.booking_id=b.id
+      WHERE b.order_id=? AND h.state='active' AND h.expires_at>?`).get(strOrderId,dtNow);
+    return Boolean(objHold && fits(reservations(objHold.service_day_id,dtNow).filter((objRow)=>objRow.strBookingId!==objHold.id),Date.parse(objHold.promised_at),objHold.reserved_units));
+  }
+  return { listOptions, reserve, readReservation, hasCapacity, now };
 }
