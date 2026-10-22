@@ -761,3 +761,7 @@ Decision completion does not replace payment, refund, security or release accept
 Scheduling, tracking and notification decisions (TECH-05):
 [policy, concurrency, private-access and worker contract map](docs/scheduling-tracking-decisions.md).
 Feature and release acceptance remain on their implementation and QA cards.
+
+Retention and disposable-data decisions (TECH-02):
+[cleanup, sanitized history, key and copy lifecycle map](docs/retention-decisions.md).
+Broader privacy and hosted-operation acceptance remain separate.
