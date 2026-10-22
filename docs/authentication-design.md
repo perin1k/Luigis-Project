@@ -1,5 +1,9 @@
 # TECH-04 / BE-08 — Local staff authentication
 
+Latest approved target: [TECH-04 consolidated authentication decisions](authentication-decisions.md).
+The Owner/Admin/Employee rollout and its acceptance are distinct from the historical
+implementation milestones below; verify the coordinated BE-08/FE-08 work before use.
+
 Decision recorded October 21, 2026: the user approved individual local
 usernames/passwords and authenticator-app MFA for admins, starting with the
 password foundation. Scope is the synthetic, test-payment class demonstration.

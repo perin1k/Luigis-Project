@@ -749,3 +749,7 @@ These do not configure alert delivery, log rotation or a hosted monitor.
 Disposable-data recreation (OPS-05):
 [isolated rehearsal, safe operator sequence and recovery limits](docs/disposable-data-recreation.md).
 A fresh seeded database is not restoration of order history or lost keys.
+
+Authentication decision record (TECH-04):
+[approved identity, hierarchy, MFA and recovery choices](docs/authentication-decisions.md).
+Decision completion does not establish acceptance of the coordinated BE-08/FE-08 rollout.
