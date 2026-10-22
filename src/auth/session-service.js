@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { types } from 'node:util';
 import { runTransaction } from '../data/database.js';
 import { canPerformAction } from './permissions.js';
 
@@ -39,7 +40,7 @@ export function createSessionService(objDatabase, { fnNow = () => new Date() } =
       .run(strEventId, objSession.id, dtNow.toISOString(), strEventId, strReason);
   }
 
-  function resolveSession(strToken, strAction, bCheckPermission) {
+  function resolveSession(strToken, strAction, bCheckPermission, fnWork) {
     const strDigest = tokenDigest(strToken);
     if (!strDigest) return null;
     return runTransaction(objDatabase, () => {
@@ -64,13 +65,19 @@ export function createSessionService(objDatabase, { fnNow = () => new Date() } =
       }
       if (bCheckPermission && !canPerformAction(objSession.role, strAction)) return null;
       objDatabase.prepare('UPDATE staff_sessions SET last_activity_at = ? WHERE id = ?').run(dtNow.toISOString(), objSession.id);
-      return Object.freeze({ strSessionId: objSession.id, strUserId: objSession.user_id, strRole: objSession.role });
+      const objIdentity = Object.freeze({ strSessionId: objSession.id, strUserId: objSession.user_id, strRole: objSession.role });
+      return fnWork ? fnWork(objIdentity, dtNow) : objIdentity;
     });
   }
 
   return Object.freeze({
     validateSession(strToken) { return resolveSession(strToken, null, false); },
     authorizeSession(strToken, strAction) { return resolveSession(strToken, strAction, true); },
+    // Internal synchronous transaction boundary: authorization and mutation share the lock.
+    executeAuthorized(strToken, strAction, fnWork) {
+      if (typeof fnWork !== 'function' || types.isAsyncFunction(fnWork)) throw new TypeError('Authorized work must be synchronous.');
+      return resolveSession(strToken, strAction, true, fnWork);
+    },
     revokeSession(strToken) {
       const strDigest = tokenDigest(strToken);
       if (!strDigest) return false;

@@ -10,6 +10,11 @@ authentication routes and cookie/CSRF helpers. They are deliberately not mounted
 in `src/app.js`. Direct TLS and an explicitly configured HTTPS origin are required;
 proxy deployment, sign-in screens, setup and recovery remain separate increments.
 
+`src/auth/staff-account-service.js` implements internal, admin-authorized employee
+deactivation. It uses the session service's synchronous `executeAuthorized` boundary
+to commit permissions, session/challenge revocation and audit history atomically.
+It is not yet connected to an employee-management route or screen.
+
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.

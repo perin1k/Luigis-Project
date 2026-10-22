@@ -282,7 +282,53 @@ Implementation references reviewed October 21, 2026:
 The HMAC, origin/header checks and host cookie prefix are layered defenses, not a
 claim of complete security conformance.
 
-## Earlier foundation verification
+## Implemented employee deactivation
+
+`src/auth/staff-account-service.js` exports `createStaffAccountService(database,
+{ fnNow })` with `deactivateEmployee(sessionToken, employeeId)`. The clock is a
+trusted server dependency. The caller supplies a bearer token, never a claimed
+actor ID, role or permission. The factory creates its own session service against
+the same database/clock; callers cannot substitute a permissive authorization result.
+
+The new internal `executeAuthorized(token, action, synchronousWork)` method in
+`src/auth/session-service.js` validates the persisted session and permission, touches
+activity, and executes trusted synchronous work under the same SQLite write lock.
+This avoids a separate authorize-then-write race and nested transactions. Async
+callbacks are rejected before invocation; thenable results trigger rollback. Do not
+start asynchronous work inside these callbacks. Failed/expired session handling
+retains the existing denial/revocation behavior. Business services must hardcode
+their required action rather than accept a caller's action name as authority.
+
+Deactivation requires `employees.manage`, currently admin-only, and accepts only
+an employee target. Self and all admin targets are protected, including other
+admins. Unknown/malformed targets and denied authorization return `null`, without
+target state changes. The first successful request returns `{ strState: 'disabled' }`;
+subsequent authorized requests return `{ strState: 'already_disabled' }` without
+another revision, revocation or audit entry. Valid authorization may still update
+the requesting admin's activity timestamp on target rejection or repeat requests.
+
+The mutation sets disabled state/time, increments the staff revision, and writes an
+attributed `staff_change` audit with the allowlisted summary `Staff account changed`.
+Existing database triggers revoke every active target session, advance its login
+epoch and delete pending challenges. A password verification already in progress
+must fail its post-hash account/epoch checks. The update and audit commit together;
+audit failure rolls back target state, revocations, epoch/challenges and admin
+activity. Future target session activity, a future creation timestamp or exhausted
+revision prevents an inconsistent write. Errors propagate for fail-closed handling.
+No credentials, tokens, contact details or free-form reasons enter the audit summary.
+
+No migration, dependency, web endpoint, screen, reactivation, account creation,
+password change or admin lifecycle operation is included. The future employee
+management route must apply the existing transport/CSRF protections before calling
+this service; identity lookup alone is insufficient. This internal module does not
+complete BE-08 or its user-facing browser/accessibility/Lighthouse acceptance.
+
+`tests/unit/staff-account-service.test.js` uses isolated synthetic records to verify
+permission/target boundaries, revocation, stale challenge deletion, idempotency,
+clock/revision boundaries, transactional rollback, synchronous callback rules and
+deactivation racing an actual asynchronous password check.
+
+## Earlier foundation checks
 
 `tests/unit/password-service.test.js` uses only synthetic values. It covers
 random salts, actual correct/incorrect verification, Unicode/byte limits,
