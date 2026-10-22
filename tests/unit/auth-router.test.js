@@ -16,6 +16,7 @@ import { createMfaService } from '../../src/auth/mfa-service.js';
 import { createSessionService } from '../../src/auth/session-service.js';
 import { createAuthRouter } from '../../src/auth/auth-router.js';
 import { AUTH_COOKIES } from '../../src/auth/auth-transport.js';
+import { createStaffAccountService } from '../../src/auth/staff-account-service.js';
 
 // Disposable self-signed TLS materials, generated locally; never real credentials.
 const strDirectory = mkdtempSync(join(tmpdir(), 'luigis-auth-tls-'));
@@ -50,7 +51,7 @@ async function fixture({ bTls = true, bFailure = false } = {}) {
   objApp.set('trust proxy', true);
   objApp.use('/auth', createAuthRouter({ objLoginService: bFailure ? { ...objLogin,
     beginSignIn() { throw new Error('synthetic-private-database-detail'); } } : objLogin,
-  objSessionService: objSessions, strOrigin: ORIGIN }));
+  objSessionService: objSessions, objStaffAccountService: createStaffAccountService(objDb, { fnNow }), strOrigin: ORIGIN }));
   const objServer = bTls ? createServer(objTls, objApp) : objApp;
   const objListener = await new Promise((fnResolve) => { const objListening = objServer.listen(0, '127.0.0.1', () => fnResolve(objListening)); });
   const mapCookies = new Map();
@@ -207,5 +208,87 @@ test('logout blocks server-side reuse of a copied session cookie', async () => {
     const strCopiedCookie = `${AUTH_COOKIES.strSession}=${obj.mapCookies.get(AUTH_COOKIES.strSession)}`;
     await obj.post('/logout', {});
     assert.equal((await obj.send('/session', { objHeaders: { cookie: strCopiedCookie } })).intStatus, 401);
+  } finally { await obj.close(); }
+});
+
+async function signInAdmin(objFixture) {
+  assert.equal((await objFixture.post('/login', { strUsername: 'admin', strPassword: PASSWORD })).intStatus, 200);
+  assert.equal((await objFixture.post('/mfa', { strCode: objFixture.code() })).intStatus, 200);
+}
+
+test('admin HTTPS deactivation revokes an existing employee session and repeats without duplicate audits', async () => {
+  const obj = await fixture();
+  try {
+    await obj.post('/login', { strUsername: 'employee', strPassword: PASSWORD });
+    const strEmployeeCookie = `${AUTH_COOKIES.strSession}=${obj.mapCookies.get(AUTH_COOKIES.strSession)}`;
+    // Separate browser identities: admin sign-in must not itself revoke the target's session.
+    obj.mapCookies.delete(AUTH_COOKIES.strSession);
+    await signInAdmin(obj);
+    assert.equal((await obj.send('/session', { objHeaders: { cookie: strEmployeeCookie }, bStore: false })).intStatus, 200);
+    const objResult = await obj.post('/employees/deactivate', { strEmployeeId: 'employee' });
+    assert.equal(objResult.intStatus, 200); assert.deepEqual(objResult.objBody, { strState: 'disabled' });
+    assert.equal(objResult.objHeaders['cache-control'], 'no-store');
+    assert.equal((await obj.send('/session', { objHeaders: { cookie: strEmployeeCookie } })).intStatus, 401);
+    assert.deepEqual((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).objBody, { strState: 'already_disabled' });
+    assert.equal(obj.objDb.prepare("SELECT count(*) AS total FROM audit_events WHERE action='staff_change'").get().total, 1);
+    assert.equal((await obj.send('/session')).objBody.strRole, 'admin');
+  } finally { await obj.close(); }
+});
+
+test('deactivation denies unauthenticated, employee and MFA-pending callers without mutation', async () => {
+  const obj = await fixture();
+  try {
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    await obj.post('/login', { strUsername: 'employee', strPassword: PASSWORD });
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    await obj.post('/logout', {});
+    await obj.post('/login', { strUsername: 'admin', strPassword: PASSWORD });
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    assert.equal(obj.objDb.prepare("SELECT state FROM staff_users WHERE id='employee'").get().state, 'active');
+  } finally { await obj.close(); }
+});
+
+test('deactivation rejects expired and revoked admin cookies', async () => {
+  const obj = await fixture();
+  try {
+    await signInAdmin(obj);
+    const strCopied = obj.mapCookies.get(AUTH_COOKIES.strSession);
+    obj.advance(30 * 60000);
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    obj.mapCookies.set(AUTH_COOKIES.strSession, strCopied);
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    assert.equal(obj.objDb.prepare("SELECT state FROM staff_users WHERE id='employee'").get().state, 'active');
+  } finally { await obj.close(); }
+});
+
+test('deactivation protects admin/unknown targets and rejects role injection and invalid bodies', async () => {
+  const obj = await fixture();
+  try {
+    await signInAdmin(obj);
+    for (const strTarget of ['admin', 'unknown']) {
+      assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: strTarget })).intStatus, 403);
+    }
+    for (const objBody of [{}, { strEmployeeId: '' }, { strEmployeeId: [] }, { strEmployeeId: 'x'.repeat(129) },
+      { strEmployeeId: 'employee', strRole: 'admin' }, { strEmployeeId: 'employee', strActorId: 'admin' }]) {
+      assert.equal((await obj.post('/employees/deactivate', objBody)).intStatus, 400);
+    }
+    assert.equal(obj.objDb.prepare("SELECT count(*) AS total FROM audit_events WHERE action='staff_change'").get().total, 0);
+  } finally { await obj.close(); }
+});
+
+test('deactivation requires CSRF and POST, and audit failure returns a safe error with no partial changes', async () => {
+  const obj = await fixture();
+  try {
+    await signInAdmin(obj);
+    assert.equal((await obj.send('/employees/deactivate', { strMethod: 'POST', objBody: { strEmployeeId: 'employee' },
+      objHeaders: { origin: ORIGIN } })).intStatus, 403);
+    assert.equal((await obj.send('/employees/deactivate')).intStatus, 404);
+    obj.objDb.exec("CREATE TRIGGER synthetic_deactivation_failure BEFORE INSERT ON audit_events WHEN NEW.action='staff_change' BEGIN SELECT RAISE(ABORT, 'private audit failure'); END");
+    const objResult = await obj.post('/employees/deactivate', { strEmployeeId: 'employee' });
+    assert.equal(objResult.intStatus, 503); assert.ok(!objResult.strText.includes('private'));
+    assert.equal(obj.objDb.prepare("SELECT state FROM staff_users WHERE id='employee'").get().state, 'active');
+    assert.equal(obj.objDb.prepare("SELECT epoch FROM login_identity_versions WHERE user_id='employee'").get().epoch, 1);
+    obj.objDb.exec('DROP TRIGGER synthetic_deactivation_failure');
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 200);
   } finally { await obj.close(); }
 });

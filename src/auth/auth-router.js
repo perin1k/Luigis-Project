@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { AUTH_COOKIES, COOKIE_OPTIONS, createCsrfProtection, readAuthCookies } from './auth-transport.js';
 
 /** Isolated JSON router. Not mounted by app.js; requires direct TLS and a pinned origin. */
-export function createAuthRouter({ objLoginService, objSessionService, strOrigin }) {
+export function createAuthRouter({ objLoginService, objSessionService, objStaffAccountService, strOrigin }) {
   const objOrigin = new URL(strOrigin);
   if (objOrigin.protocol !== 'https:' || objOrigin.origin !== strOrigin || objOrigin.username || objOrigin.password) {
     throw new TypeError('An exact HTTPS origin is required.');
@@ -14,6 +14,7 @@ export function createAuthRouter({ objLoginService, objSessionService, strOrigin
   for (const strMethod of ['validateSession', 'revokeSession']) {
     if (typeof objSessionService?.[strMethod] !== 'function') throw new TypeError('Session service required.');
   }
+  if (typeof objStaffAccountService?.deactivateEmployee !== 'function') throw new TypeError('Staff account service required.');
   const objRouter = express.Router();
   const objCsrf = createCsrfProtection();
   function reject(objResponse, intStatus) {
@@ -89,6 +90,15 @@ export function createAuthRouter({ objLoginService, objSessionService, strOrigin
     const objIdentity = objSessionService.validateSession(objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession]);
     if (!objIdentity) return reject(objResponse, 401);
     objResponse.json({ strUserId: objIdentity.strUserId, strRole: objIdentity.strRole });
+  });
+  objRouter.post('/employees/deactivate', (objRequest, objResponse) => {
+    if (!validBody(objRequest.body, ['strEmployeeId']) || !objRequest.body.strEmployeeId.length
+      || objRequest.body.strEmployeeId.length > 128) return reject(objResponse, 400);
+    const objResult = objStaffAccountService.deactivateEmployee(
+      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strEmployeeId);
+    // Use one denial for missing permission/session and protected/unknown targets.
+    if (!objResult) return reject(objResponse, 403);
+    return objResponse.json(objResult);
   });
   objRouter.post('/logout', (objRequest, objResponse) => {
     if (!validBody(objRequest.body, [])) return reject(objResponse, 400);

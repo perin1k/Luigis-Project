@@ -211,7 +211,7 @@ and credential changes during hashing. Synthetic fixtures are isolated in memory
 ## Implemented isolated HTTP boundary
 
 `src/auth/auth-router.js` exports `createAuthRouter({ objLoginService,
-objSessionService, strOrigin })`. `src/auth/auth-transport.js` holds strict cookie
+objSessionService, objStaffAccountService, strOrigin })`. `src/auth/auth-transport.js` holds strict cookie
 parsing and CSRF helpers. No dependency or migration is added. The router is not
 mounted in `src/app.js`, so customer pages and the running application's exposed
 routes are unchanged. The internal login service now also provides
@@ -226,6 +226,7 @@ Proposed mount prefix is `/auth`, with these relative contracts:
 | POST `/mfa` | `{ strCode }` plus protected challenge cookie | `{ strState: 'authenticated' }` |
 | GET `/session` | Protected session cookie | `{ strUserId, strRole }` from persisted identity |
 | POST `/logout` | `{}` plus CSRF | 204, revocation and cookie clearing |
+| POST `/employees/deactivate` | `{ strEmployeeId }` plus session cookie and CSRF | `{ strState: 'disabled' }` or `'already_disabled'` |
 
 POST requests require exact configured `Origin`, a valid `X-CSRF-Token` header,
 and JSON (at most 4 KiB, compressed bodies rejected). Extra fields, wrong field
@@ -317,16 +318,30 @@ activity. Future target session activity, a future creation timestamp or exhaust
 revision prevents an inconsistent write. Errors propagate for fail-closed handling.
 No credentials, tokens, contact details or free-form reasons enter the audit summary.
 
-No migration, dependency, web endpoint, screen, reactivation, account creation,
-password change or admin lifecycle operation is included. The future employee
-management route must apply the existing transport/CSRF protections before calling
-this service; identity lookup alone is insufficient. This internal module does not
+The isolated auth router now requires `objStaffAccountService` and exposes the
+relative POST `/employees/deactivate` endpoint. Its body accepts exactly one string
+`strEmployeeId` (1–128 characters), with no client actor or role. The service performs
+the authoritative admin/target checks inside its transaction; the router does not
+substitute a separate identity lookup. Expected denial returns generic 403 for
+missing/expired/revoked sessions, employee callers, and protected/unknown targets.
+Malformed bodies return 400; internal failures return sanitized 503. The endpoint
+inherits direct TLS, pinned origin, signed CSRF, protected cookies, JSON limits and
+no-store headers. Repeated authorized requests return 200 with `already_disabled`.
+This contract remains isolated because the router is not mounted in `src/app.js`.
+
+No migration, dependency, screen, reactivation, account creation,
+password change or admin lifecycle operation is included. This internal module does not
 complete BE-08 or its user-facing browser/accessibility/Lighthouse acceptance.
 
 `tests/unit/staff-account-service.test.js` uses isolated synthetic records to verify
 permission/target boundaries, revocation, stale challenge deletion, idempotency,
 clock/revision boundaries, transactional rollback, synchronous callback rules and
 deactivation racing an actual asynchronous password check.
+`tests/unit/auth-router.test.js` additionally verifies the complete HTTPS boundary
+using actual password/MFA/session/account services: administrator sign-in through
+deactivation, a separately active employee session becoming invalid, idempotency,
+unauthenticated/employee/MFA-pending/expired/revoked callers, protected targets,
+role/actor injection, CSRF and method rejection, and audit-failure rollback/retry.
 
 ## Earlier foundation checks
 

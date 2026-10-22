@@ -13,7 +13,8 @@ proxy deployment, sign-in screens, setup and recovery remain separate increments
 `src/auth/staff-account-service.js` implements internal, admin-authorized employee
 deactivation. It uses the session service's synchronous `executeAuthorized` boundary
 to commit permissions, session/challenge revocation and audit history atomically.
-It is not yet connected to an employee-management route or screen.
+The isolated auth router exposes POST `/employees/deactivate` through this service;
+the router is not mounted and the employee-management screen remains separate work.
 
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
