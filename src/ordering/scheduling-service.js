@@ -9,7 +9,7 @@ export function chicagoDate(dtInstant) {
   const objParts = parts(dtInstant); return `${objParts.year}-${objParts.month}-${objParts.day}`;
 }
 // Service hours avoid the ambiguous/missing 01:00–03:00 DST transition period.
-function localHour(strDate, intHour) {
+export function localHour(strDate, intHour) {
   const numLocal = Date.parse(`${strDate}T${String(intHour).padStart(2, '0')}:00:00.000Z`);
   let numInstant = numLocal;
   for (let intPass = 0; intPass < 3; intPass++) {

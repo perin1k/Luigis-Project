@@ -49,3 +49,9 @@
 .analytics-table tbody th { font: 650 1rem var(--font-body); }
 .staff-page .analytics-table > :not(caption) > * > * { padding: .5rem .25rem; }
 @media (max-width: 47.99rem) { .tracking-cancellation-area { min-height: 16rem; } }
+
+/* Menu controls retain comfortable targets without stretching checkbox controls. */
+.menu-ingredients { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); column-gap: 1.5rem; }
+.menu-price-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 1rem; align-items: start; }
+.menu-price-form > button { grid-column: 1 / -1; justify-self: start; }
+.menu-page .form-check-input { min-height: 1.25rem; height: 1.25rem; }

@@ -1,3 +1,4 @@
+import {createMenuRouter} from './staff/menu-router.js';
 import {createAnonymousLimits} from './security/anonymous-limits.js';
 import express from 'express';
 import {createTrackingRouter} from './tracking/tracking-router.js';
@@ -12,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService } = {}) {
+export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService } = {}) {
 const objApp = express();
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
@@ -122,6 +123,7 @@ objApp.get('/preview/confirmation', (objRequest, objResponse, fnNext) => {
   });
 });
 if (objTrackingService) objApp.use(createTrackingRouter(objTrackingService,renderPage));
+if (objAuthRuntime && objMenuService) objApp.use(createMenuRouter({objMenuService,strOrigin:objAuthRuntime.strOrigin,fnRender:renderPage}));
 if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage }));
 if (objAuthRuntime) {
   objApp.use('/auth', objAuthRuntime.objRouter);
