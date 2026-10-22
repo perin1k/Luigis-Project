@@ -24,6 +24,12 @@ creating the first admin. It has no default password or public route. See
 one-time setup, offline password-policy files and incomplete recovery/UI work.
 The implementation tests created only disposable synthetic accounts.
 
+Employee enrollment is implemented in `src/auth/staff-enrollment-service.js` and
+migration 009. The isolated auth router can issue/revoke admin-authorized 24-hour
+invitations and accept them with an employee-chosen password. Only token digests
+are stored. Tokens require private manual handoff; no notifications are sent.
+These routes remain unmounted pending enrollment/account-management UI integration.
+
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.

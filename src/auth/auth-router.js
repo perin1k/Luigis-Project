@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { AUTH_COOKIES, COOKIE_OPTIONS, createCsrfProtection, readAuthCookies } from './auth-transport.js';
 
 /** Isolated JSON router. Not mounted by app.js; requires direct TLS and a pinned origin. */
-export function createAuthRouter({ objLoginService, objSessionService, objStaffAccountService, strOrigin }) {
+export function createAuthRouter({ objLoginService, objSessionService, objStaffAccountService, objStaffEnrollmentService, strOrigin }) {
   const objOrigin = new URL(strOrigin);
   if (objOrigin.protocol !== 'https:' || objOrigin.origin !== strOrigin || objOrigin.username || objOrigin.password) {
     throw new TypeError('An exact HTTPS origin is required.');
@@ -15,6 +15,9 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     if (typeof objSessionService?.[strMethod] !== 'function') throw new TypeError('Session service required.');
   }
   if (typeof objStaffAccountService?.deactivateEmployee !== 'function') throw new TypeError('Staff account service required.');
+  for (const strMethod of ['issueInvitation', 'revokeInvitation', 'acceptInvitation']) {
+    if (typeof objStaffEnrollmentService?.[strMethod] !== 'function') throw new TypeError('Staff enrollment service required.');
+  }
   const objRouter = express.Router();
   const objCsrf = createCsrfProtection();
   function reject(objResponse, intStatus) {
@@ -90,6 +93,27 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     const objIdentity = objSessionService.validateSession(objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession]);
     if (!objIdentity) return reject(objResponse, 401);
     objResponse.json({ strUserId: objIdentity.strUserId, strRole: objIdentity.strRole });
+  });
+  objRouter.post('/employees/invitations', (objRequest, objResponse) => {
+    if (!validBody(objRequest.body, ['strUsername'])) return reject(objResponse, 400);
+    const objResult = objStaffEnrollmentService.issueInvitation(
+      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strUsername);
+    if (!objResult) return reject(objResponse, 403);
+    return objResponse.status(201).json(objResult);
+  });
+  objRouter.post('/employees/invitations/revoke', (objRequest, objResponse) => {
+    if (!validBody(objRequest.body, ['strInvitationId'])) return reject(objResponse, 400);
+    const objResult = objStaffEnrollmentService.revokeInvitation(
+      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strInvitationId);
+    if (!objResult) return reject(objResponse, 403);
+    return objResponse.json(objResult);
+  });
+  objRouter.post('/employees/enroll', async (objRequest, objResponse) => {
+    if (!validBody(objRequest.body, ['strInvitationToken', 'strPassword'])) return reject(objResponse, 400);
+    const objResult = await objStaffEnrollmentService.acceptInvitation(
+      objRequest.body.strInvitationToken, objRequest.body.strPassword, objRequest.socket.remoteAddress);
+    if (!objResult) return reject(objResponse, 403);
+    return objResponse.status(201).json(objResult);
   });
   objRouter.post('/employees/deactivate', (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strEmployeeId']) || !objRequest.body.strEmployeeId.length

@@ -59,7 +59,7 @@ sign-in endpoint or proof of MFA.
 
 Password, MFA, sign-in, the isolated transport router, deactivation and local
 first-admin setup are implemented below. Application mounting, public transport
-configuration, employee enrollment, recovery and UI acceptance remain unfinished.
+configuration, employee enrollment UI, recovery and UI acceptance remain unfinished.
 
 1. Apply the implemented enrollment policy below to future employee creation and
    password changes as those services are added. The finite offline common-password
@@ -96,8 +96,9 @@ configuration, employee enrollment, recovery and UI acceptance remain unfinished
 No new dependency was added in the password-foundation increment; the subsequent
 MFA-foundation increment adds OTPAuth 9.5.2. The local setup command can now
 provision the first admin with verified MFA. No actual project account was created
-during implementation. There is no mounted login UI, recovery flow, general employee
-enrollment or external communication yet. Neither TECH-04 nor BE-08 is complete.
+during implementation. Employee invitation/enrollment services and isolated routes
+are now implemented below. There is no mounted login/enrollment UI, recovery flow
+or external communication yet. Neither TECH-04 nor BE-08 is complete.
 
 ## Implemented MFA foundation
 
@@ -213,7 +214,8 @@ and credential changes during hashing. Synthetic fixtures are isolated in memory
 ## Implemented isolated HTTP boundary
 
 `src/auth/auth-router.js` exports `createAuthRouter({ objLoginService,
-objSessionService, objStaffAccountService, strOrigin })`. `src/auth/auth-transport.js` holds strict cookie
+objSessionService, objStaffAccountService, objStaffEnrollmentService, strOrigin })`.
+`src/auth/auth-transport.js` holds strict cookie
 parsing and CSRF helpers. No dependency or migration is added. The router is not
 mounted in `src/app.js`, so customer pages and the running application's exposed
 routes are unchanged. The internal login service now also provides
@@ -229,6 +231,9 @@ Proposed mount prefix is `/auth`, with these relative contracts:
 | GET `/session` | Protected session cookie | `{ strUserId, strRole }` from persisted identity |
 | POST `/logout` | `{}` plus CSRF | 204, revocation and cookie clearing |
 | POST `/employees/deactivate` | `{ strEmployeeId }` plus session cookie and CSRF | `{ strState: 'disabled' }` or `'already_disabled'` |
+| POST `/employees/invitations` | `{ strUsername }` plus admin session and CSRF | 201, invitation ID, one-time token and expiry |
+| POST `/employees/invitations/revoke` | `{ strInvitationId }` plus admin session and CSRF | `{ strState: 'revoked' }` |
+| POST `/employees/enroll` | `{ strInvitationToken, strPassword }` plus CSRF | 201, `{ strState: 'enrolled' }` |
 
 POST requests require exact configured `Origin`, a valid `X-CSRF-Token` header,
 and JSON (at most 4 KiB, compressed bodies rejected). Extra fields, wrong field
@@ -426,7 +431,79 @@ output; a second run interrupted at the code prompt and verified zero accounts.
 Neither run used the real project database. No browser page changed; the eventual
 mounted account UI still needs browser/visual/manual accessibility/Lighthouse checks.
 
-## Earlier foundation test evidence
+## Implemented employee invitations and enrollment
+
+`src/auth/staff-enrollment-service.js` provides `issueInvitation(sessionToken,
+username)`, `revokeInvitation(sessionToken, invitationId)` and asynchronous
+`acceptInvitation(token, password, source)`. Issue/revoke require the existing
+`employees.manage` permission under the session service's atomic authorization
+boundary. The proposed username is canonicalized to lowercase ASCII, 3–64 characters,
+with letters, digits, dot, underscore or hyphen. An existing credential (including
+a disabled user's) or pending invitation reserves that username. Expired pending
+invitations for that username are marked expired before issuing a replacement.
+Explicit revocation also permits a replacement. No account is created at issue time.
+
+Migration 009 adds `staff_invitations`: random ID, username, SHA-256 token digest,
+issuer and issuer epoch, canonical UTC issue/24-hour expiry timestamps, bounded attempt
+counter and pending/accepted/revoked/expired state. Terminal state retains its closing
+time and either revoking admin or accepted employee reference. Identity fields and
+terminal rows are immutable; deletion is blocked. These attributed issue/revoke/accept
+records are invitation lifecycle evidence, not new general audit action types.
+Acceptance additionally writes the existing sanitized `staff_change` audit event.
+No raw invitation token, password or free-form message enters the database history.
+
+The service returns the 32-byte random invitation token only when issued. Hand it
+directly to the intended demo teammate through a private manual handoff; no email,
+SMS, notification preview, URL link or automated delivery is implemented. Treat it
+as a bearer credential: anyone holding it can enroll the named employee before
+expiry. Do not post it to Trello, logs, analytics, screenshots, browser storage or
+shared notes. Lost tokens cannot be retrieved; revoke using the returned invitation
+ID and issue another. Management listing/UI and delivery remain future integration.
+
+Acceptance needs the token and a password satisfying the existing enrollment policy;
+it does not need an admin session and never accepts a requested username, actor or
+role. It creates an active **employee only**, with the reserved username and fresh
+salted password hash. It does not issue a session; normal sign-in follows enrollment.
+Token consumption, account/credential insertion and audit commit together. SQLite's
+write lock serializes concurrent acceptance; at most one can commit. The token and
+issuer's active admin role/epoch are checked before hashing and again inside the
+final transaction. Revocation, expiry or issuer account/credential changes during
+hashing invalidate the attempt. A password/account change advancing the issuer
+epoch invalidates old invitations even if the issuer is later restored; explicitly
+revoke/reissue rather than restoring an old token. No transaction spans an await.
+
+Each invitation permits five admitted password-hash attempts. Invalid password-policy
+inputs are cheap rejections and do not count. Expensive acceptance also permits at
+most 30 attempts per trusted socket source in a fixed 15-minute window, stored as
+a namespaced digest in the existing transient `login_limits` table. The existing
+5,000-row saturation cap fails closed. Two enrollment hashes run at once per process
+without queued excess work; this is separate from the two-login-hash cap, so combined
+memory/concurrency must be assessed before public deployment or multi-process use.
+Source digests are pseudonymous, not anonymous. No raw source address is retained.
+Audit/system failure rolls back enrollment and consumption, but the previously
+reserved attempt/source budget stays consumed; retry within the remaining budget.
+
+The isolated router requires `objStaffEnrollmentService` and exposes the three POST
+contracts above under the same TLS, origin, signed CSRF, JSON-size, cookie and
+no-store protections. Admin issue returns the sensitive token in its authenticated
+201 JSON response once; enrollment success returns only `enrolled`. Missing authority,
+unknown/expired/revoked/used tokens, conflicts and policy failures receive generic
+403; unexpected body fields return 400, and system errors sanitized 503. No actual
+team invitation or employee account was created during implementation. Router
+mounting and finished enrollment/account-management screens remain separate work,
+with the required browser, visual, manual accessibility and Lighthouse gates.
+
+`tests/unit/staff-enrollment-service.test.js` covers authorization, digest-only storage,
+24-hour expiry, revocation/replay, issuer invalidation, password races, two-connection
+acceptance, username collision, audit rollback, password/source/attempt/concurrency
+limits and migration upgrade/rollback. `tests/unit/auth-router.test.js` covers an
+actual HTTPS admin-to-anonymous-recipient handoff, employee sign-in after enrollment,
+admin escalation rejection, CSRF, revocation and expiration. All records are synthetic.
+The disposable local database upgrades additively with `npm run db:migrate`; rollback
+is recreation from reviewed migrations/seed, not editing checksums or deleting staff
+history. Never run older code unaware of migration 009 against the upgraded database.
+
+## Earlier foundation verification
 
 `tests/unit/password-service.test.js` uses only synthetic values. It covers
 random salts, actual correct/incorrect verification, Unicode/byte limits,

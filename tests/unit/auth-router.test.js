@@ -17,6 +17,7 @@ import { createSessionService } from '../../src/auth/session-service.js';
 import { createAuthRouter } from '../../src/auth/auth-router.js';
 import { AUTH_COOKIES } from '../../src/auth/auth-transport.js';
 import { createStaffAccountService } from '../../src/auth/staff-account-service.js';
+import { createStaffEnrollmentService } from '../../src/auth/staff-enrollment-service.js';
 
 // Disposable self-signed TLS materials, generated locally; never real credentials.
 const strDirectory = mkdtempSync(join(tmpdir(), 'luigis-auth-tls-'));
@@ -51,7 +52,8 @@ async function fixture({ bTls = true, bFailure = false } = {}) {
   objApp.set('trust proxy', true);
   objApp.use('/auth', createAuthRouter({ objLoginService: bFailure ? { ...objLogin,
     beginSignIn() { throw new Error('synthetic-private-database-detail'); } } : objLogin,
-  objSessionService: objSessions, objStaffAccountService: createStaffAccountService(objDb, { fnNow }), strOrigin: ORIGIN }));
+  objSessionService: objSessions, objStaffAccountService: createStaffAccountService(objDb, { fnNow }),
+  objStaffEnrollmentService: createStaffEnrollmentService(objDb, { fnNow }), strOrigin: ORIGIN }));
   const objServer = bTls ? createServer(objTls, objApp) : objApp;
   const objListener = await new Promise((fnResolve) => { const objListening = objServer.listen(0, '127.0.0.1', () => fnResolve(objListening)); });
   const mapCookies = new Map();
@@ -290,5 +292,42 @@ test('deactivation requires CSRF and POST, and audit failure returns a safe erro
     assert.equal(obj.objDb.prepare("SELECT epoch FROM login_identity_versions WHERE user_id='employee'").get().epoch, 1);
     obj.objDb.exec('DROP TRIGGER synthetic_deactivation_failure');
     assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 200);
+  } finally { await obj.close(); }
+});
+
+test('HTTPS admin invitation handoff lets an anonymous employee choose a password, enroll once and sign in', async () => {
+  const obj = await fixture();
+  try {
+    await signInAdmin(obj);
+    const objIssued = await obj.post('/employees/invitations', { strUsername: 'joined.employee' });
+    assert.equal(objIssued.intStatus, 201); assert.ok(objIssued.objBody.strInvitationToken);
+    assert.equal(objIssued.objHeaders['cache-control'], 'no-store');
+    obj.mapCookies.clear(); // Separate invite recipient, not the issuing admin's browser.
+    const objBody = { strInvitationToken: objIssued.objBody.strInvitationToken, strPassword: PASSWORD };
+    assert.equal((await obj.post('/employees/enroll', { ...objBody, strRole: 'admin' })).intStatus, 400);
+    assert.equal((await obj.post('/employees/enroll', objBody)).intStatus, 201);
+    assert.equal((await obj.send('/session')).intStatus, 401); // Enrollment does not issue a session.
+    assert.equal((await obj.post('/employees/enroll', objBody)).intStatus, 403);
+    assert.equal((await obj.post('/login', { strUsername: 'joined.employee', strPassword: PASSWORD })).intStatus, 200);
+    assert.equal((await obj.send('/session')).objBody.strRole, 'employee');
+    assert.equal((await obj.post('/employees/invitations', { strUsername: 'blocked.employee' })).intStatus, 403);
+  } finally { await obj.close(); }
+});
+
+test('HTTPS invitation revocation, CSRF and expiration protect enrollment', async () => {
+  const obj = await fixture();
+  try {
+    assert.equal((await obj.post('/employees/invitations', { strUsername: 'joined.employee' })).intStatus, 403);
+    await signInAdmin(obj);
+    assert.equal((await obj.send('/employees/invitations', { strMethod: 'POST', objBody: { strUsername: 'joined.employee' },
+      objHeaders: { origin: ORIGIN } })).intStatus, 403);
+    const objIssued = await obj.post('/employees/invitations', { strUsername: 'joined.employee' });
+    assert.equal((await obj.post('/employees/invitations/revoke', { strInvitationId: objIssued.objBody.strInvitationId })).intStatus, 200);
+    const objNext = await obj.post('/employees/invitations', { strUsername: 'joined.employee' });
+    obj.mapCookies.clear();
+    assert.equal((await obj.post('/employees/enroll', { strInvitationToken: objIssued.objBody.strInvitationToken, strPassword: PASSWORD })).intStatus, 403);
+    obj.advance(86400000);
+    assert.equal((await obj.post('/employees/enroll', { strInvitationToken: objNext.objBody.strInvitationToken, strPassword: PASSWORD })).intStatus, 403);
+    assert.equal(obj.objDb.prepare('SELECT count(*) AS total FROM staff_users').get().total, 2);
   } finally { await obj.close(); }
 });

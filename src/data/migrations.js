@@ -50,9 +50,15 @@ const LOGIN_MIGRATION = Object.freeze({
   strSql: readFileSync(new URL('./migrations/008-login-controls.sql', import.meta.url), 'utf8'),
 });
 
+const INVITATIONS_MIGRATION = Object.freeze({
+  intVersion: 9,
+  strName: 'staff-invitations',
+  strSql: readFileSync(new URL('./migrations/009-staff-invitations.sql', import.meta.url), 'utf8'),
+});
+
 export function applyMigrations(objDatabase, arrMigrations = [
   CATALOG_MIGRATION, ORDERS_MIGRATION, PAYMENTS_MIGRATION, SCHEDULING_MIGRATION, ACCESS_MIGRATION,
-  CREDENTIALS_MIGRATION, MFA_MIGRATION, LOGIN_MIGRATION,
+  CREDENTIALS_MIGRATION, MFA_MIGRATION, LOGIN_MIGRATION, INVITATIONS_MIGRATION,
 ]) {
   let intPrevious = 0;
   for (const objMigration of arrMigrations) {
