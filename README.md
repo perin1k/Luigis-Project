@@ -737,3 +737,7 @@ full-story acceptance remains open.
 
 Disposable-demo contact, tracking, preview and ciphertext cleanup (SEC-02 increment):
 [retention rules, worker integration and verification](docs/retention-enforcement.md).
+
+Deployment preparation (OPS-01–07): [GCP/DuckDNS runbook](docs/deployment-runbook.md).
+This follows the approved Spot/direct-HTTPS design; it does not authorize or claim
+resource provisioning, publication, spending or completed hosted verification.
