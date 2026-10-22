@@ -745,3 +745,7 @@ resource provisioning, publication, spending or completed hosted verification.
 Local health probes and safe operational events (OPS-04):
 [contracts, incident procedures and remaining hosted gates](docs/operations-monitoring.md).
 These do not configure alert delivery, log rotation or a hosted monitor.
+
+Disposable-data recreation (OPS-05):
+[isolated rehearsal, safe operator sequence and recovery limits](docs/disposable-data-recreation.md).
+A fresh seeded database is not restoration of order history or lost keys.
