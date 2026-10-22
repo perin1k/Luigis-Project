@@ -775,3 +775,5 @@ DATA-02: [current storage verification and remaining platform evidence](docs/ver
 FE-02: [persisted availability and stale-draft server integration evidence](docs/verification/fe-02-integration.md).
 
 BE-10: [inventory review, cancellation and full-refund lifecycle evidence](docs/verification/be-10-lifecycle.md).
+
+FE-10: [connected private inventory, cancellation and refund status evidence](docs/verification/fe-10-connected-status.md).

@@ -105,17 +105,45 @@ test('a superseded parsed tracking body cannot repaint the newly opened link',as
 });
 
 async function adminSignIn(objPage,objRequest){await objPage.goto('/staff/sign-in');await objPage.getByLabel('Username',{exact:true}).fill('admin');await objPage.getByLabel('Password',{exact:true}).fill('Synthetic staff browser passphrase only');await objPage.getByRole('button',{name:'Sign in',exact:true}).click();await objPage.getByLabel('Authenticator code',{exact:true}).fill(await(await objRequest.get('/__test/code')).text());await objPage.getByRole('button',{name:'Verify and sign in',exact:true}).click();await expect(objPage).toHaveURL(/\/staff\/account$/);await objPage.getByRole('link',{name:'Order queue',exact:true}).click();}
+test('private tracking explains persisted inventory review without revealing ingredient details',async({page:objPage,request:objRequest})=>{
+  const arrPaths=await(await objRequest.get('/__test/tracking')).json();
+  await signIn(objPage);await objPage.goto('/staff/menu');
+  await objPage.getByRole('button',{name:'Mark Pepperoni unavailable',exact:true}).click();
+  await expect(objPage.locator('#menu-status')).toContainText('Saved.');
+  await objPage.goto(arrPaths[0]);
+  await expect(objPage.locator('#tracking-content')).toContainText('We’re sorry. An ingredient needed for your order is unavailable.');
+  await expect(objPage.locator('#tracking-content')).toContainText('no substitution or refund is automatic');
+  await expect(objPage.locator('#tracking-content')).not.toContainText('Pepperoni');
+  expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
+  await expect(objPage.locator('#tracking-content')).toHaveScreenshot('tracking-inventory-review.png',{mask:[objPage.locator('.tracking-reference')]});
+  await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText('Dark',{exact:true}).click();
+  await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter((objAnimation)=>objAnimation.playState==='running').length)).toBe(0);
+  expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
+  await expect(objPage.locator('#tracking-content')).toHaveScreenshot('tracking-inventory-review-dark.png',{mask:[objPage.locator('.tracking-reference')]});
+});
 async function cancelForRefund(objPage,objRequest){await adminSignIn(objPage,objRequest);await objPage.getByRole('link',{name:/Synthetic Guest 1 ·/}).click();await objPage.getByLabel('Decision',{exact:true}).selectOption('cancel');await objPage.getByLabel('I reviewed this order and the selected decision.').check();await objPage.getByRole('button',{name:'Save reviewed decision',exact:true}).click();await expect(objPage.locator('#admin-order-result')).toContainText('Refund review is still required');await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();await expect(objPage.locator('#refund-panel')).toBeVisible();}
 test('private customer cancellation holds preparation until the admin denies it',async({page:objPage,request:objRequest})=>{
   const arrPaths=await(await objRequest.get('/__test/tracking')).json();await objPage.goto(arrPaths[1]);await expect(objPage.locator('#tracking-status')).toHaveText('Progress refreshed.');await objPage.getByLabel('I want to request cancellation.',{exact:true}).check();await objPage.getByRole('button',{name:'Request cancellation review',exact:true}).click();await expect(objPage.locator('#tracking-status')).toContainText('Preparation is held');
+  await objPage.getByRole('button',{name:'Refresh progress',exact:true}).click();
+  await expect(objPage.locator('#tracking-content')).toContainText('Cancellation awaiting team review. It has not been approved.');
   await signIn(objPage);await objPage.getByRole('link',{name:/Synthetic Guest 2 ·/}).click();await expect(objPage.getByRole('button',{name:'Mark Preparing',exact:true})).toBeDisabled();
   await adminSignIn(objPage,objRequest);await objPage.getByRole('link',{name:/Synthetic Guest 2 ·/}).click();await objPage.getByLabel('I reviewed this order and the selected decision.').check();await objPage.getByRole('button',{name:'Save reviewed decision',exact:true}).click();await expect(objPage.locator('#admin-order-result')).toContainText('Decision saved');await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();await expect(objPage.getByRole('button',{name:'Mark Preparing',exact:true})).toBeEnabled();
+  await objPage.goto(arrPaths[1]);
+  await expect(objPage.locator('#tracking-content')).toContainText('Cancellation denied. Follow the order progress and ready time shown here.');
+  await expect(objPage.locator('#tracking-content')).not.toContainText('Cancellation awaiting team review');
 });
 test('lost refund response safely replays one request and guest sees confirmed demo refund',async({page:objPage,request:objRequest})=>{
   const arrPaths=await(await objRequest.get('/__test/tracking')).json();await cancelForRefund(objPage,objRequest);await objPage.getByLabel('I approve the full demonstration refund.',{exact:true}).check();let strRequestId;
   await objPage.route('**/api/staff/orders/*/refund',async(objRoute)=>{strRequestId=objRoute.request().postDataJSON().strRequestId;await objRoute.fetch();await objRoute.abort();});await objPage.getByRole('button',{name:'Approve demo refund',exact:true}).click();await expect(objPage.getByRole('button',{name:'Check refund result',exact:true})).toBeEnabled();await objPage.unroute('**/api/staff/orders/*/refund');
   const pRetry=objPage.waitForRequest('**/api/staff/orders/*/refund');await objPage.getByRole('button',{name:'Check refund result',exact:true}).click();expect((await pRetry).postDataJSON().strRequestId).toBe(strRequestId);await expect(objPage.locator('#refund-status')).toContainText('Demonstration refund completed');await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();await expect(objPage.locator('#refund-summary')).toContainText('Recorded net: $0.00');
   await objPage.goto(arrPaths[0]);await expect(objPage.locator('#tracking-content')).toContainText('Demonstration refund completed. No money was transferred.');
+  await expect(objPage.locator('#tracking-content')).toContainText('Cancellation approved. Refund processing is a separate step.');
+  expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
+  await expect(objPage.locator('#tracking-content')).toHaveScreenshot('tracking-cancellation-refund.png',{mask:[objPage.locator('.tracking-reference')]});
+  await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText('Dark',{exact:true}).click();
+  await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter((objAnimation)=>objAnimation.playState==='running').length)).toBe(0);
+  expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
+  await expect(objPage.locator('#tracking-content')).toHaveScreenshot('tracking-cancellation-refund-dark.png',{mask:[objPage.locator('.tracking-reference')]});
 });
 test('failed demo refund stays visible and can be retried after a fresh review',async({page:objPage,request:objRequest})=>{
   await cancelForRefund(objPage,objRequest);await objRequest.get('/__test/refund-decline');await objPage.getByLabel('I approve the full demonstration refund.',{exact:true}).check();await objPage.getByRole('button',{name:'Approve demo refund',exact:true}).click();await expect(objPage.locator('#refund-status')).toContainText('refund failed');await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();await expect(objPage.locator('#refund-summary')).toContainText('State: failed');
