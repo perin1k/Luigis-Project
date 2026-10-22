@@ -44,8 +44,9 @@ their respective access controls. No dependency or database schema was added.
   treated as permission for broader personal-data export.
 - Review accurate public privacy/contact copy and designate verified contact
   information before publication. Do not invent an address or claim legal compliance.
-- Review operator, proxy/hosting log access and external-copy/key lifecycle before
-  hosting. Fixed application cleanup errors do not establish host-log privacy.
+- Complete hosted verification of operator, proxy/log and external-copy/key controls
+  before hosting. The [repository operator review](privacy-operator-review.md) records
+  inspected controls and outstanding deployment checks.
 - Complete the existing application browser/accessibility acceptance work, including
   the recorded Firefox startup blocker. Server retention tests do not waive it.
 
