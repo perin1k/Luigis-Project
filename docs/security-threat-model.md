@@ -31,7 +31,7 @@ or verified here.
 | Script injection or framing | Escaped EJS text, self-only CSP, no objects/framing, same-origin form actions | Consolidate dynamic-field XSS tests; browser/manual acceptance |
 | Source, secrets or database exposed as assets | Intended static directory and explicit vendor asset; HTTP probes below | Artifact/commit secret scan and hosted routing verification |
 | Forged proxy headers | No proxy trust enabled in current app; staff runtime requires configured HTTPS | Explicit reviewed proxy topology before public hosting |
-| Resource exhaustion / error disclosure | Route-specific strict JSON size limits without inflation; fixed error responses; password work limits | Endpoint abuse/rate-limit inventory and load/failure checks |
+| Resource exhaustion / error disclosure | Route-specific strict JSON size limits without inflation; fixed error responses; password work limits | Anonymous API limits added; load/failure and hosted controls remain |
 
 ## New reproducible evidence
 
@@ -67,3 +67,5 @@ cross-route authorization/CSRF/abuse matrix, configured-host/proxy review and
 integrated acceptance. Keep this card open. See also
 [privacy operator boundaries](privacy-operator-review.md). Do not claim security
 compliance from a passing scan or these HTTP probes.
+
+Anonymous API abuse refinement: [request limits and operational constraints](anonymous-request-limits.md).

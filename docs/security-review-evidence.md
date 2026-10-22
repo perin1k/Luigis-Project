@@ -57,7 +57,9 @@ The app does not enable Express proxy trust. Auth and staff transport checks use
 actual socket TLS and pinned host, not forwarded-protocol claims. Public checkout
 transport uses the actual socket scheme and request host; future host/proxy routing
 must be explicitly reviewed before hosting. Same-origin checks are not general
-bot protection. There is no claim of an application-wide anonymous rate limiter.
+bot protection. Anonymous API limits were subsequently added in the scoped
+[request-limit increment](anonymous-request-limits.md); they do not cover all
+application paths or distributed hosting.
 
 ## Acceptance status
 

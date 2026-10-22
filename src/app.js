@@ -1,3 +1,4 @@
+import {createAnonymousLimits} from './security/anonymous-limits.js';
 import express from 'express';
 import {createTrackingRouter} from './tracking/tracking-router.js';
 import { createStaffOrdersRouter } from './staff/orders-router.js';
@@ -86,6 +87,7 @@ objApp.get('/', (objRequest, objResponse, fnNext) => {
     strDescription: "Explore Luigi's Pizza: 12, 14, and 18-inch pizzas, your choice of toppings, and fountain drinks. Dine-in and carry-out, daily 10 AM to 11 PM.",
   });
 });
+objApp.use(createAnonymousLimits());
 if (objCatalogService) objApp.use('/api/pricing', createPricingRouter(objCatalogService));
 if (objPaymentService) objApp.use('/api/demo-payments', createDemoPaymentRouter(objPaymentService));
 if (objSchedulingService) objApp.use('/api/pickup-times', createSchedulingRouter(objSchedulingService));

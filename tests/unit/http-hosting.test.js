@@ -2,7 +2,7 @@ import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { get } from 'node:http';
 import { gunzipSync, brotliDecompressSync } from 'node:zlib';
-import objApp from '../../src/app.js';
+import objApp, {createApp} from '../../src/app.js';
 
 let objServer;
 let intPort;
@@ -146,4 +146,16 @@ test('forwarded headers cannot enable staff access or alter public response secu
     assert.equal(objResponse.objHeaders['cache-control'],'no-store',strPath);
     assert.match(objResponse.objHeaders['content-security-policy'],/frame-ancestors 'none'/,strPath);
   }
+});
+
+test('anonymous checkout limit rejects before another service call and preserves a safe retry response',async()=>{
+  let intCalls=0;const objLimitedApp=createApp({objOrderService:{submitOrder(){intCalls++;return {strState:'unpaid',bReplayed:false};}}});
+  const objLimitedServer=objLimitedApp.listen(0,'127.0.0.1');await new Promise((fnResolve,fnReject)=>{objLimitedServer.once('listening',fnResolve);objLimitedServer.once('error',fnReject);});
+  const strOrigin=`http://127.0.0.1:${objLimitedServer.address().port}`;
+  try{
+    for(let intIndex=0;intIndex<60;intIndex++)assert.equal((await fetch(`${strOrigin}/api/orders`,{method:'POST',headers:{Origin:strOrigin,'Content-Type':'application/json'},body:'{}'})).status,201);
+    const objBlocked=await fetch(`${strOrigin}/API/ORDERS`,{method:'POST',headers:{Origin:strOrigin,'Content-Type':'application/json','X-Forwarded-For':'another-peer'},body:'{}'});
+    assert.equal(objBlocked.status,429);assert.equal(intCalls,60);assert.ok(Number(objBlocked.headers.get('retry-after'))>=1);assert.equal(objBlocked.headers.get('cache-control'),'no-store');assert.equal((await objBlocked.json()).strCode,'request_limit');
+    assert.equal((await fetch(`${strOrigin}/order`)).status,200);
+  }finally{await new Promise((fnResolve)=>objLimitedServer.close(fnResolve));}
 });
