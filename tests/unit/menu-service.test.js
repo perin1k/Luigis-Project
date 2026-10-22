@@ -11,10 +11,39 @@ import {seedStaffOrders} from '../fixtures/staff-orders-data.js';
 import {createSessionService} from '../../src/auth/session-service.js';
 import {createMenuService} from '../../src/staff/menu-service.js';
 import {createCatalogService} from '../../src/ordering/catalog-service.js';
+import {createOrderProgressService} from '../../src/staff/order-progress-service.js';
+import {createOrderExceptionService} from '../../src/staff/order-exception-service.js';
+import {createDemoRefundService} from '../../src/payments/demo-refund-service.js';
 function fixture(fnWork){const objDatabase=openDatabase(':memory:');applyMigrations(objDatabase);const fnNow=()=>new Date('2026-10-21T15:00:00.000Z');const arrOrders=seedStaffOrders(objDatabase,{intCount:1,fnNow});const objTokens={};
   for(const strRole of ['admin','employee']){objDatabase.prepare('INSERT INTO staff_users (id,identity_subject,role,created_at) VALUES (?,?,?,?)').run(strRole,strRole,strRole,fnNow().toISOString());const strToken=randomBytes(32).toString('hex');objTokens[strRole]=strToken;objDatabase.prepare('INSERT INTO staff_sessions (id,user_id,session_token_digest,authenticated_at,last_activity_at,mfa_verified_at,expires_at) VALUES (?,?,?,?,?,?,?)').run(randomUUID(),strRole,createHash('sha256').update(strToken).digest('hex'),fnNow().toISOString(),fnNow().toISOString(),strRole==='admin'?fnNow().toISOString():null,'2026-10-21T23:00:00.000Z');}
   try{fnWork({objDatabase,arrOrders,objTokens,objService:createMenuService(objDatabase,createSessionService(objDatabase,{fnNow})),objCatalog:createCatalogService(objDatabase)});}finally{objDatabase.close();}}
 function prices(objSnapshot){return {strFingerprint:objSnapshot.objCatalog.strFingerprint,arrSizes:objSnapshot.objCatalog.arrSizes.map(({strCode,centsBase,centsTopping})=>({strCode,centsBase:centsBase+100,centsTopping})),arrDrinkSizes:objSnapshot.objCatalog.arrDrinkSizes.map(({strCode,centsPrice})=>({strCode,centsPrice}))};}
+test('inventory review blocks preparation then permits authorized whole-order cancellation and exact refund',()=>fixture(({objDatabase,arrOrders,objTokens,objService})=>{
+  const objSessions=createSessionService(objDatabase,{fnNow:()=>new Date('2026-10-21T15:00:00.000Z')});
+  const objOrder=arrOrders[0];
+  const objPurchased=objDatabase.prepare('SELECT q.* FROM order_quotes q JOIN orders o ON o.accepted_quote_id=q.id WHERE o.id=?').get(objOrder.strOrderId);
+  const strLines=JSON.stringify(objDatabase.prepare('SELECT * FROM order_lines WHERE order_id=? ORDER BY id').all(objOrder.strOrderId));
+  const objIngredient=objService.read(objTokens.employee).arrIngredients.find((objRow)=>objRow.strLabel==='Pepperoni');
+  objService.availability(objTokens.employee,{strId:objIngredient.strId,intRevision:objIngredient.intRevision,bAvailable:false});
+  const fnRevision=()=>objDatabase.prepare('SELECT revision FROM orders WHERE id=?').get(objOrder.strOrderId).revision;
+  assert.throws(()=>createOrderProgressService(objDatabase,objSessions).advanceOrder(objTokens.employee,objOrder.strReference,{intRevision:fnRevision(),strStatus:'Preparing'}),/held for review/);
+  const objExceptions=createOrderExceptionService(objDatabase,objSessions);
+  assert.equal(objExceptions.decide(objTokens.employee,objOrder.strReference,{intRevision:fnRevision(),strAction:'cancel'}),null);
+  objExceptions.decide(objTokens.admin,objOrder.strReference,{intRevision:fnRevision(),strAction:'cancel'});
+  assert.equal(objDatabase.prepare('SELECT fulfillment_status FROM orders WHERE id=?').get(objOrder.strOrderId).fulfillment_status,'Cancelled');
+  assert.equal(objDatabase.prepare("SELECT count(*) AS n FROM capacity_holds h JOIN fulfillment_bookings b ON b.id=h.booking_id WHERE b.order_id=? AND h.state='confirmed'").get(objOrder.strOrderId).n,0);
+  assert.equal(objDatabase.prepare('SELECT count(*) AS n FROM demo_refund_attempts').get().n,0);
+  const objRefunds=createDemoRefundService(objDatabase,objSessions);
+  const objRequest={intRevision:fnRevision(),strRequestId:randomUUID()};
+  const objResult=objRefunds.refund(objTokens.admin,objOrder.strReference,objRequest);
+  assert.equal(objResult.strState,'succeeded');
+  assert.equal(objResult.centsAmount,objPurchased.total_cents);
+  assert.equal(objRefunds.refund(objTokens.admin,objOrder.strReference,objRequest).bReplayed,true);
+  assert.equal(objDatabase.prepare('SELECT count(*) AS n FROM demo_refund_attempts').get().n,1);
+  assert.equal(objDatabase.prepare('SELECT sum(signed_cents) AS centsNet FROM demo_financial_allocations').get().centsNet,0);
+  assert.equal(JSON.stringify(objDatabase.prepare('SELECT * FROM order_lines WHERE order_id=? ORDER BY id').all(objOrder.strOrderId)),strLines);
+  assert.equal(objDatabase.prepare('PRAGMA foreign_key_check').all().length,0);
+}));
 test('admin price publication clones recipes, changes authoritative fingerprint and preserves paid snapshots',()=>fixture(({objDatabase,objTokens,objService,objCatalog})=>{
   const objBefore=objService.read(objTokens.admin);const strHistory=JSON.stringify(objDatabase.prepare('SELECT * FROM order_quotes').all());const objInput=prices(objBefore);
   assert.equal(objService.prices(objTokens.employee,objInput),null);assert.equal(objService.prices('invalid',objInput),null);

@@ -773,3 +773,5 @@ Hosting is not activated and uninterrupted availability is not promised.
 DATA-02: [current storage verification and remaining platform evidence](docs/verification/data-02-storage.md).
 
 FE-02: [persisted availability and stale-draft server integration evidence](docs/verification/fe-02-integration.md).
+
+BE-10: [inventory review, cancellation and full-refund lifecycle evidence](docs/verification/be-10-lifecycle.md).
