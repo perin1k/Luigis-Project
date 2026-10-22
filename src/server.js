@@ -2,6 +2,7 @@ import { createServer as createHttpsServer } from 'node:https';
 import { createServer as createHttpServer } from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
 import { createApp } from './app.js';
+import { createOrderService } from './ordering/order-service.js';
 import { createCatalogService } from './ordering/catalog-service.js';
 import { openDatabase } from './data/database.js';
 import { applyMigrations } from './data/migrations.js';
@@ -32,11 +33,11 @@ try {
     applyMigrations(objDatabase);
     objRuntime = createAuthRuntime(objDatabase, { strOrigin: process.env.AUTH_ORIGIN,
       strEncryptionKeyHex: process.env.MFA_ENCRYPTION_KEY_HEX });
-    objServer = createHttpsServer(objTls, createApp({ objAuthRuntime: objRuntime, objCatalogService: createCatalogService(objDatabase) }));
+    objServer = createHttpsServer(objTls, createApp({ objAuthRuntime: objRuntime, objCatalogService: createCatalogService(objDatabase), objOrderService: createOrderService(objDatabase, createCatalogService(objDatabase)) }));
   } else if (process.env.DATABASE_PATH !== undefined) {
     if (!process.env.DATABASE_PATH || !existsSync(process.env.DATABASE_PATH)) throw new Error('Existing catalog database required.');
     objDatabase = openDatabase(process.env.DATABASE_PATH); applyMigrations(objDatabase);
-    objServer = createHttpServer(createApp({ objCatalogService: createCatalogService(objDatabase) }));
+    objServer = createHttpServer(createApp({ objCatalogService: createCatalogService(objDatabase), objOrderService: createOrderService(objDatabase, createCatalogService(objDatabase)) }));
   } else {
     // Preserve the existing view-only HTTP fixture and availability injection seam.
     const { default: objApp } = await import('./app.js');

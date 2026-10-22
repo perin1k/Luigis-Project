@@ -661,7 +661,11 @@ current catalog/ingredient availability and computes integer-cent totals;
 `src/ordering/pricing-router.js` provides no-store catalog/preview endpoints.
 `src/app.js` supplies menu data to ordering EJS; the browser model/wizard show
 previews and require current server totals plus explicit review before payment.
-`DATABASE_PATH` alone enables this public read-only runtime without mounting staff
-authentication. Order persistence and payment remain separate integrations.
+`DATABASE_PATH` alone enables public catalog/pricing and the BE-02 unpaid order
+submission below, without mounting staff authentication. Payment remains separate.
 See [pricing design](docs/pricing-design.md) for the request contract, tax policy,
 configuration and verification commands.
+
+BE-02 unpaid persistence: [service/API and browser integration guide](docs/order-submission-design.md).
+Order saving is enabled with a configured database. Scheduling, payment confirmation
+and final acceptance remain separate; use invented contacts only.

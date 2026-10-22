@@ -787,7 +787,8 @@ configuration fails startup instead of downgrading transport:
 | `DATABASE_PATH` | Existing private SQLite file; reviewed migrations are checksum-verified/applied at startup. |
 | `MFA_ENCRYPTION_KEY_HEX` | Separately provisioned private 32-byte lowercase-hex MFA key. |
 
-`DATABASE_PATH` alone enables the public, read-only catalog/pricing runtime on HTTP;
+`DATABASE_PATH` alone enables public catalog/pricing and BE-02 unpaid order
+submission on loopback HTTP;
 staff authentication stays unmounted. Any authentication-specific setting still
 requires complete direct HTTPS configuration. Public hosting requires the separately
 reviewed HTTPS deployment. Set `HOST` to the intended interface; its default remains loopback. The Node

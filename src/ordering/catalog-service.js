@@ -58,14 +58,14 @@ export function createCatalogService(objDatabase) {
     objCatalog.strFingerprint = createHash('sha256').update(JSON.stringify(objCatalog)).digest('hex');
     return objCatalog;
   }
-  function priceOrder(objInput) {
+  function priceOrder(objInput, { bWithinTransaction = false } = {}) {
     if (!hasExactKeys(objInput, ['strCatalogFingerprint', 'arrPizzas', 'arrDrinks', 'intTipPercent'])
       || typeof objInput.strCatalogFingerprint !== 'string' || !/^[a-f0-9]{64}$/.test(objInput.strCatalogFingerprint)
       || !Array.isArray(objInput.arrPizzas) || objInput.arrPizzas.length < 1 || objInput.arrPizzas.length > 6
       || !Array.isArray(objInput.arrDrinks) || objInput.arrDrinks.length > 10
       || !Number.isSafeInteger(objInput.intTipPercent) || objInput.intTipPercent < 0) fail('Check the order options, quantities and optional tip.');
     // One synchronous read transaction gives a coherent catalog/availability snapshot.
-    objDatabase.exec('BEGIN');
+    if (!bWithinTransaction) objDatabase.exec('BEGIN');
     try {
       const objCatalog = readCatalogSnapshot();
       if (objInput.strCatalogFingerprint !== objCatalog.strFingerprint) {
@@ -111,10 +111,10 @@ export function createCatalogService(objDatabase) {
       const centsTip = roundedRatio(centsSubtotal + centsTax, objInput.intTipPercent, 100);
       const centsTotal = centsSubtotal + centsTax + centsTip;
       if (!Number.isSafeInteger(centsTotal)) fail('The amount is too large.');
-      objDatabase.exec('COMMIT');
+      if (!bWithinTransaction) objDatabase.exec('COMMIT');
       return { strCatalogFingerprint: objCatalog.strFingerprint, strCatalogVersionId: objCatalog.strCatalogVersionId,
         strTaxPolicy: objCatalog.strTaxPolicy, intTaxBasisPoints: 975, centsSubtotal, centsTax, centsTip, centsTotal, arrLines };
-    } catch (objError) { objDatabase.exec('ROLLBACK'); throw objError; }
+    } catch (objError) { if (!bWithinTransaction) objDatabase.exec('ROLLBACK'); throw objError; }
   }
   function readCatalog() {
     objDatabase.exec('BEGIN');

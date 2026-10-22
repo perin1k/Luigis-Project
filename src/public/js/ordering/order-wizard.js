@@ -12,7 +12,7 @@ const elError = document.querySelector('#form-error');
 const elAdd = document.querySelector('#add-pizza');
 const elCancel = document.querySelector('#cancel-edit');
 const arrSections = [...document.querySelectorAll('[data-step]')];
-const objOrder = { strService: 'carry-out', arrPizzas: [], arrDrinks: [], strName: '', strPhone: '' };
+const objOrder = { strService: 'carry-out', arrPizzas: [], arrDrinks: [], strName: '', strPhone: '', strEmail: '' };
 const elAvailability = document.querySelector('#ingredient-availability');
 const objAvailability = {
   bKnown: elAvailability.dataset.known === 'true',
@@ -174,7 +174,8 @@ function renderReview() {
   elFood.append(createEditButton('Edit pizzas', () => showStep(1)), createEditButton('Edit drinks', () => showStep(2)));
   const elContact = createElement('div', '', 'review-block');
   elContact.append(createElement('h3', 'Contact details'), createElement('p', objOrder.strName));
-  if (objOrder.strService === 'carry-out') elContact.append(createElement('p', objOrder.strPhone));
+  if (objOrder.strPhone) elContact.append(createElement('p', objOrder.strPhone));
+  if (objOrder.strEmail) elContact.append(createElement('p', objOrder.strEmail));
   elContact.append(createEditButton('Edit contact details', () => showStep(3)));
   const elTotal = createElement('div', '', 'subtotal');
   elTotal.append(createElement('span', 'Subtotal'), createElement('strong', formatCurrency(calculateSubtotal(objOrder))));
@@ -182,13 +183,17 @@ function renderReview() {
   if (!objCatalog) elReview.append(elTotal);
 }
 
+const bOrderSubmission = document.querySelector('#order-app').dataset.orderSubmission === 'true';
+let objPendingSubmission = null;
+
 function updateContactFields() {
   const bCarryOut = objOrder.strService === 'carry-out';
-  document.querySelector('#phone-field').hidden = !bCarryOut;
+  document.querySelector('#phone-field').hidden = !bCarryOut && !bOrderSubmission;
+  if (bOrderSubmission) document.querySelector('#email-field').hidden = bCarryOut;
   document.querySelector('#customer-phone').required = bCarryOut;
   document.querySelector('#contact-intro').textContent = bCarryOut
     ? 'Who’s picking up? We’ll use your number if we need to reach you about your order.'
-    : 'Who’s joining us? Your name helps us match you with your order.';
+    : bOrderSubmission ? 'Who’s joining us? Provide your name and a phone number or email address.' : 'Who’s joining us? Your name helps us match you with your order.';
 }
 
 function updateNextButton() {
@@ -242,6 +247,12 @@ function validateCurrentStep() {
     const elPhone = document.querySelector('#customer-phone');
     objOrder.strName = elName.value.trim();
     objOrder.strPhone = elPhone.value.trim();
+    objOrder.strEmail = bOrderSubmission && objOrder.strService === 'dine-in' ? document.querySelector('#customer-email').value.trim() : '';
+    if (bOrderSubmission) {
+      if (objOrder.strPhone && (!/^[+()0-9 .-]{7,40}$/.test(objOrder.strPhone) || objOrder.strPhone.replace(/[^0-9]/g, '').length < 7 || objOrder.strPhone.replace(/[^0-9]/g, '').length > 15)) { showError('Enter a usable phone number, including your area code.', elPhone); return false; }
+      if (objOrder.strEmail && !document.querySelector('#customer-email').validity.valid) { showError('Enter a usable email address.', document.querySelector('#customer-email')); return false; }
+      if (objOrder.strService === 'dine-in' && !objOrder.strPhone && !objOrder.strEmail) { showError('Provide a phone number or email address for dine-in.', elPhone); return false; }
+    }
     if (!objOrder.strName) { showError('Please enter your name.', elName); return false; }
     if (objOrder.strService === 'carry-out' && !objOrder.strPhone) {
       showError('Please enter a phone number for carry-out.', elPhone);
@@ -334,7 +345,10 @@ elForm.addEventListener('submit', async (objEvent) => {
   elBack.disabled = true;
   elForm.setAttribute('aria-busy', 'true');
   document.querySelector('#payment-status').textContent = 'Opening secure checkout…';
-  try { await openSecureCheckout(); } catch (objError) { showError(objError.message); }
+  try {
+    if (bOrderSubmission) await saveUnpaidOrder();
+    await openSecureCheckout();
+  } catch (objError) { showError(objError.message); }
   finally {
     bOpeningPayment = false;
     elNext.disabled = false;
@@ -423,3 +437,28 @@ resetPizzaEditor();
 renderSummary();
 document.querySelector('#order-app').hidden = false;
 document.querySelector('#order-fallback').hidden = true;
+
+elForm.addEventListener('input', () => { if (bOrderSubmission) document.querySelector('#order-save-status').textContent = ''; });
+
+async function saveUnpaidOrder() {
+  const objBody = { strService: objOrder.strService,
+    objContact: { strName: objOrder.strName, strPhone: objOrder.strPhone, strEmail: objOrder.strEmail }, objPricing: pricingInput() };
+  const strBody = JSON.stringify(objBody);
+  if (objPendingSubmission?.strBody !== strBody) objPendingSubmission = { strBody, strRequestId: crypto.randomUUID() };
+  const objAbort = new AbortController(); const intTimer = setTimeout(() => objAbort.abort(), 10000);
+  try {
+    const objResponse = await fetch('/api/orders', { method: 'POST', credentials: 'same-origin', cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' }, signal: objAbort.signal,
+      body: JSON.stringify({ strRequestId: objPendingSubmission.strRequestId, ...objBody }) });
+    const objResult = await objResponse.json();
+    if (objResponse.status === 409 && objResult.objCatalog) {
+      refreshCatalog(objResult.objCatalog); objPricing = null; showStep(4);
+      throw new Error('The menu changed. Review the current total before saving your order.');
+    }
+    if (!objResponse.ok) throw new Error(objResult.strMessage ?? 'Unable to save your order. Please try again.');
+    document.querySelector('#order-save-status').textContent = `${objResult.strMessage} Reference: ${objResult.strReference}`;
+  } catch (objError) {
+    if (objError instanceof TypeError || objError.name === 'AbortError' || objError instanceof SyntaxError) throw new Error('Unable to confirm whether your order details were saved. Your selections are here; retry to safely check the same request.');
+    throw objError;
+  } finally { clearTimeout(intTimer); }
+}

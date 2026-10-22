@@ -10,7 +10,7 @@
   <main id="main-content" class="container order-page" tabindex="-1">
     <div class="order-intro"><p class="eyebrow">A little more you. A little more Luigi’s.</p><h1>Your next favorite pizza.</h1><p>Choose dine-in or carry-out, build your pizza, then review your order.</p></div>
     <p id="order-fallback" class="notice">Please enable JavaScript to customize your order. You can still <a href="/#menu">explore our menu</a>.</p>
-    <div id="order-app" data-catalog="<%= JSON.stringify(objCatalog) %>" hidden>
+    <div id="order-app" data-order-submission="<%= bOrderSubmission %>" data-catalog="<%= JSON.stringify(objCatalog) %>" hidden>
       <nav class="order-progress" aria-label="Order progress"><ol>
         <% for (const [intIndex, strStep] of ['Service', 'Pizza', 'Drinks', 'Details', 'Review', 'Payment'].entries()) { %>
           <li><span data-progress="<%= intIndex %>" <%- intIndex === 0 ? 'aria-current="step"' : '' %>><b aria-hidden="true"><%= intIndex + 1 %></b><%= strStep %></span></li>
@@ -20,6 +20,7 @@
         <div class="order-panel">
           <p id="step-count" class="eyebrow">Step 1 of 6</p>
           <form id="order-form" novalidate>
+            <% if (bOrderSubmission) { %><p class="notice">Class demonstration: use invented contact details only. No real orders or payments.</p><% } %>
             <div id="form-error" class="form-error" role="alert" hidden></div>
             <%- include('../partials/ordering/service-type') %>
             <%- include('../partials/ordering/pizza-builder') %>

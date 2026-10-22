@@ -2,7 +2,8 @@
 
 [Story](https://trello.com/c/RuhnxuTd). The user approved the complete service,
 endpoint and ordering-wizard integration increment. This implements current menu
-pricing and review; BE-02/03 still own persisted order/quote acceptance and payment.
+pricing and review; [BE-02](order-submission-design.md) adds unpaid order/quote
+acceptance, while payment and scheduling integration remain separate.
 
 ## Files and boundaries
 
