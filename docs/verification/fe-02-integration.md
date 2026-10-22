@@ -31,4 +31,26 @@ not prove browser draft/focus behavior, live updates on an already-open page or
 manual screen-reader acceptance. Existing visual/browser coverage is separate;
 Firefox, Windows/Linux and retained manual quality gates remain unverified here.
 FE-02 stays open for those acceptance checks. No new UI or runtime behavior changed,
-so this test-only checkpoint does not claim a fresh Lighthouse/browser audit.
+so this test-only checkpoint does not claim a fresh Lighthouse audit.
+
+## Browser integration follow-up
+
+At commit `d8611eb`, the existing database-backed pricing fixture was exercised
+without changing tests, runtime or visual baselines:
+
+```sh
+npx playwright test --config=playwright.pricing.config.js --project=chromium-desktop --project=chromium-mobile --project=webkit-desktop --project=webkit-mobile --grep 'unavailable selected topping|changed database prices|network failures retain|withdraws stale prices'
+```
+
+**16 passed (34.7 seconds)**, zero failures. These four scenarios ran in desktop
+and mobile Chromium/WebKit on macOS: stale payment totals are withdrawn after
+failed/changed checks; unavailable recipes cannot proceed; network failure retains
+the basket and retry recovers; removing an unavailable selected topping preserves
+the remaining pizza/drink choices and produces the authoritative total.
+The fixture changes actual isolated SQLite ingredient rows, not a presentation-only
+availability stub. No working dataset or authentication rollout was touched.
+
+This is functional integration evidence, not new visual, axe, manual accessibility,
+Firefox or Windows/Linux evidence. The known Firefox launch blocker was not
+repeated. FE-02 remains open for retained acceptance checks; no new acceptance
+scope or indexing exception is inferred from these passes.
