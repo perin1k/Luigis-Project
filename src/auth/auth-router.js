@@ -1,6 +1,7 @@
 import express from 'express';
 import { randomBytes } from 'node:crypto';
 import { AUTH_COOKIES, COOKIE_OPTIONS, createCsrfProtection, readAuthCookies } from './auth-transport.js';
+import { validPage } from './staff-account-service.js';
 
 /** Isolated JSON router. Not mounted by app.js; requires direct TLS and a pinned origin. */
 export function createAuthRouter({ objLoginService, objSessionService, objStaffAccountService, objStaffEnrollmentService, strOrigin }) {
@@ -14,8 +15,10 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   for (const strMethod of ['validateSession', 'revokeSession']) {
     if (typeof objSessionService?.[strMethod] !== 'function') throw new TypeError('Session service required.');
   }
-  if (typeof objStaffAccountService?.deactivateEmployee !== 'function') throw new TypeError('Staff account service required.');
-  for (const strMethod of ['issueInvitation', 'revokeInvitation', 'acceptInvitation']) {
+  for (const strMethod of ['deactivateEmployee', 'listEmployees', 'changeOwnPassword']) {
+    if (typeof objStaffAccountService?.[strMethod] !== 'function') throw new TypeError('Staff account service required.');
+  }
+  for (const strMethod of ['issueInvitation', 'revokeInvitation', 'acceptInvitation', 'listInvitations']) {
     if (typeof objStaffEnrollmentService?.[strMethod] !== 'function') throw new TypeError('Staff enrollment service required.');
   }
   const objRouter = express.Router();
@@ -93,6 +96,40 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     const objIdentity = objSessionService.validateSession(objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession]);
     if (!objIdentity) return reject(objResponse, 401);
     objResponse.json({ strUserId: objIdentity.strUserId, strRole: objIdentity.strRole });
+  });
+  function page(objQuery) {
+    if (Object.keys(objQuery).some((strKey) => !['intOffset', 'intLimit'].includes(strKey))) return null;
+    const strOffset = objQuery.intOffset ?? '0'; const strLimit = objQuery.intLimit ?? '50';
+    if (typeof strOffset !== 'string' || typeof strLimit !== 'string'
+      || !/^(0|[1-9][0-9]{0,6})$/.test(strOffset) || !/^[1-9][0-9]{0,2}$/.test(strLimit)) return null;
+    const intOffset = Number(strOffset); const intLimit = Number(strLimit);
+    return validPage(intOffset, intLimit) && String(intOffset) === strOffset && String(intLimit) === strLimit
+      ? { intOffset, intLimit } : null;
+  }
+  objRouter.get('/employees', (objRequest, objResponse) => {
+    const objPage = page(objRequest.query);
+    if (!objPage) return reject(objResponse, 400);
+    const objResult = objStaffAccountService.listEmployees(
+      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objPage.intOffset, objPage.intLimit);
+    if (!objResult) return reject(objResponse, 403);
+    return objResponse.json(objResult);
+  });
+  objRouter.get('/employees/invitations', (objRequest, objResponse) => {
+    const objPage = page(objRequest.query);
+    if (!objPage) return reject(objResponse, 400);
+    const objResult = objStaffEnrollmentService.listInvitations(
+      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objPage.intOffset, objPage.intLimit);
+    if (!objResult) return reject(objResponse, 403);
+    return objResponse.json(objResult);
+  });
+  objRouter.post('/account/password', async (objRequest, objResponse) => {
+    if (!validBody(objRequest.body, ['strCurrentPassword', 'strNewPassword', 'strCode'])) return reject(objResponse, 400);
+    const objResult = await objStaffAccountService.changeOwnPassword(
+      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strCurrentPassword,
+      objRequest.body.strNewPassword, objRequest.body.strCode, objRequest.socket.remoteAddress);
+    if (!objResult) return reject(objResponse, 403);
+    for (const strName of Object.values(AUTH_COOKIES)) clearCookie(objResponse, strName);
+    return objResponse.json(objResult);
   });
   objRouter.post('/employees/invitations', (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strUsername'])) return reject(objResponse, 400);

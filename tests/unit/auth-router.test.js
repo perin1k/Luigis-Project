@@ -52,7 +52,7 @@ async function fixture({ bTls = true, bFailure = false } = {}) {
   objApp.set('trust proxy', true);
   objApp.use('/auth', createAuthRouter({ objLoginService: bFailure ? { ...objLogin,
     beginSignIn() { throw new Error('synthetic-private-database-detail'); } } : objLogin,
-  objSessionService: objSessions, objStaffAccountService: createStaffAccountService(objDb, { fnNow }),
+  objSessionService: objSessions, objStaffAccountService: createStaffAccountService(objDb, { fnNow, objMfaService: objMfa }),
   objStaffEnrollmentService: createStaffEnrollmentService(objDb, { fnNow }), strOrigin: ORIGIN }));
   const objServer = bTls ? createServer(objTls, objApp) : objApp;
   const objListener = await new Promise((fnResolve) => { const objListening = objServer.listen(0, '127.0.0.1', () => fnResolve(objListening)); });
@@ -329,5 +329,57 @@ test('HTTPS invitation revocation, CSRF and expiration protect enrollment', asyn
     obj.advance(86400000);
     assert.equal((await obj.post('/employees/enroll', { strInvitationToken: objNext.objBody.strInvitationToken, strPassword: PASSWORD })).intStatus, 403);
     assert.equal(obj.objDb.prepare('SELECT count(*) AS total FROM staff_users').get().total, 2);
+  } finally { await obj.close(); }
+});
+
+test('HTTPS admin lists are paginated, deny employees and never expose hashes or invitation tokens', async () => {
+  const obj = await fixture();
+  try {
+    assert.equal((await obj.send('/employees')).intStatus, 403);
+    await signInAdmin(obj);
+    const objInvitation = await obj.post('/employees/invitations', { strUsername: 'joined.employee' });
+    const objEmployees = await obj.send('/employees?intOffset=0&intLimit=1');
+    assert.equal(objEmployees.intStatus, 200); assert.equal(objEmployees.objBody.arrEmployees.length, 1);
+    const objInvites = await obj.send('/employees/invitations?intLimit=1');
+    assert.equal(objInvites.intStatus, 200); assert.equal(objInvites.objBody.arrInvitations.length, 1);
+    for (const strSecret of [STR_HASH, objInvitation.objBody.strInvitationToken, 'token_digest', 'password_hash']) {
+      assert.ok(!objEmployees.strText.includes(strSecret)); assert.ok(!objInvites.strText.includes(strSecret));
+    }
+    for (const strQuery of ['intLimit=101', 'intOffset=-1', 'intLimit=1&intLimit=2', 'strRole=admin', 'intLimit=1%0a']) {
+      assert.equal((await obj.send(`/employees?${strQuery}`)).intStatus, 400);
+    }
+    await obj.post('/logout', {});
+    await obj.post('/login', { strUsername: 'employee', strPassword: PASSWORD });
+    assert.equal((await obj.send('/employees')).intStatus, 403);
+    assert.equal((await obj.send('/employees/invitations')).intStatus, 403);
+  } finally { await obj.close(); }
+});
+
+test('HTTPS own-password change clears cookies, revokes copied session and requires the new password', async () => {
+  const obj = await fixture();
+  try {
+    await obj.post('/login', { strUsername: 'employee', strPassword: PASSWORD });
+    const strCopied = `${AUTH_COOKIES.strSession}=${obj.mapCookies.get(AUTH_COOKIES.strSession)}`;
+    const objBody = { strCurrentPassword: PASSWORD, strNewPassword: 'Synthetic replacement olive orchard', strCode: '' };
+    assert.equal((await obj.post('/account/password', { ...objBody, strUserId: 'admin' })).intStatus, 400);
+    assert.equal((await obj.send('/account/password', { strMethod: 'POST', objBody, objHeaders: { origin: ORIGIN } })).intStatus, 403);
+    assert.equal((await obj.post('/account/password', objBody)).intStatus, 200);
+    assert.equal(obj.mapCookies.size, 0);
+    assert.equal((await obj.send('/session', { objHeaders: { cookie: strCopied } })).intStatus, 401);
+    assert.equal((await obj.post('/login', { strUsername: 'employee', strPassword: PASSWORD })).intStatus, 401);
+    assert.equal((await obj.post('/login', { strUsername: 'employee', strPassword: objBody.strNewPassword })).intStatus, 200);
+  } finally { await obj.close(); }
+});
+
+test('HTTPS admin password change rejects reused MFA and accepts a fresh code without partial failure', async () => {
+  const obj = await fixture();
+  try {
+    await signInAdmin(obj);
+    const objBody = { strCurrentPassword: PASSWORD, strNewPassword: 'Synthetic replacement olive orchard', strCode: obj.code() };
+    assert.equal((await obj.post('/account/password', objBody)).intStatus, 403);
+    assert.equal(obj.objDb.prepare("SELECT revision FROM staff_credentials WHERE user_id='admin'").get().revision, 1);
+    obj.advance(30000);
+    assert.equal((await obj.post('/account/password', { ...objBody, strCode: obj.code() })).intStatus, 200);
+    assert.equal(obj.mapCookies.size, 0);
   } finally { await obj.close(); }
 });

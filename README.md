@@ -30,6 +30,12 @@ invitations and accept them with an employee-chosen password. Only token digests
 are stored. Tokens require private manual handoff; no notifications are sent.
 These routes remain unmounted pending enrollment/account-management UI integration.
 
+Account maintenance also provides admin-only paginated employee/invitation lists
+and self-service password changes through the isolated router. Staff must verify
+their current password; admins additionally verify a fresh MFA code. Successful
+changes revoke sessions and require sign-in again. These services expose no hash
+or saved invitation token; see the authentication guide for contracts and limits.
+
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.

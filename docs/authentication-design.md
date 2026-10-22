@@ -234,6 +234,9 @@ Proposed mount prefix is `/auth`, with these relative contracts:
 | POST `/employees/invitations` | `{ strUsername }` plus admin session and CSRF | 201, invitation ID, one-time token and expiry |
 | POST `/employees/invitations/revoke` | `{ strInvitationId }` plus admin session and CSRF | `{ strState: 'revoked' }` |
 | POST `/employees/enroll` | `{ strInvitationToken, strPassword }` plus CSRF | 201, `{ strState: 'enrolled' }` |
+| GET `/employees` | Admin session; optional `intOffset`/`intLimit` query | Paginated employee summaries |
+| GET `/employees/invitations` | Admin session; optional `intOffset`/`intLimit` query | Paginated invitation summaries, never tokens |
+| POST `/account/password` | `{ strCurrentPassword, strNewPassword, strCode }` plus session and CSRF | `{ strState: 'password_changed' }`; cookies cleared |
 
 POST requests require exact configured `Origin`, a valid `X-CSRF-Token` header,
 and JSON (at most 4 KiB, compressed bodies rejected). Extra fields, wrong field
@@ -503,7 +506,85 @@ The disposable local database upgrades additively with `npm run db:migrate`; rol
 is recreation from reviewed migrations/seed, not editing checksums or deleting staff
 history. Never run older code unaware of migration 009 against the upgraded database.
 
-## Earlier foundation verification
+## Implemented account maintenance
+
+`src/auth/staff-account-service.js` now additionally provides
+`listEmployees(sessionToken, offset = 0, limit = 50)` and asynchronous
+`changeOwnPassword(sessionToken, currentPassword, newPassword, code, source)`.
+`src/auth/staff-enrollment-service.js` provides
+`listInvitations(sessionToken, offset = 0, limit = 50)`. Its shared `validPage` helper
+is exported from the account service to keep the service/router bounds consistent.
+No migration or npm dependency is added.
+
+Lists require `employees.manage`; employee callers and absent/expired/revoked
+sessions cannot read them. SQL selects explicit fields only. Employee summaries
+contain user ID, username (nullable for a legacy identity without credentials),
+state, creation and disabled timestamps, excluding admin identities. Invitation
+summaries contain ID, username, persisted state, issuing admin ID, issue/expiry/closing
+timestamps and accepted employee ID. No password hash, token/digest, MFA material,
+source bucket or internal epoch is returned. Persisted `pending` state does not
+override expiry or issuer invalidation: acceptance always rechecks those conditions.
+An expired invitation may remain stored as pending until replacement; use its expiry
+timestamp when designing the eventual status presentation.
+
+Both lists return `{ arrEmployees | arrInvitations, intOffset, intLimit, bHasMore }`.
+Offsets are safe integers 0–1,000,000; limits 1–100, default 50. Queries use bound
+parameters, order by creation time then ID, and read one extra row for `bHasMore`.
+Each page is authorized/read atomically, but separate requests are not a snapshot:
+concurrent inserts can affect offset pagination. The router accepts only canonical
+decimal strings for those two query parameters; duplicates, unknown keys, fractions,
+whitespace or out-of-range values return 400. Unauthorized list requests return
+generic 403. Responses inherit no-store/noindex and the existing HTTPS/origin checks.
+
+The new `account.password.change` permission is available to both recognized staff
+roles, but only the service's session owner can be changed: there is no target ID,
+username, actor or role input. The current password is verified exactly and the new
+password must satisfy the existing enrollment policy and differ from the supplied
+current password. Invalid/rejected attempts return `null` internally and generic
+403 over HTTP. Employee requests pass an empty `strCode`; admin requests must supply
+a fresh six-digit code verified by the real MFA service. The factory accepts its
+trusted `objMfaService` dependency for this purpose and fails closed if unavailable.
+It never treats a client flag or session's previous MFA marker as a fresh code.
+
+Initial session authorization, credential snapshot and throttle reservation occur
+synchronously under a write lock. Password verification/new hashing run outside a
+transaction. After MFA verification where applicable, a final authorized transaction
+rechecks the same owner, role, credential revision/hash and login epoch, current
+session validity, monotonic time and a five-minute attempt deadline before updating.
+Future password/session timestamps or exhausted revisions prevent an inconsistent
+write. Credentials update and an attributed sanitized `staff_change` audit commit
+together; audit failure rolls both back. Existing credential triggers revoke all
+sessions (including the current one), delete pending login challenges and advance
+the login epoch, invalidating outstanding issuer-bound invitations as well. No
+replacement session is issued: the router clears all auth cookies, then the user
+must fetch CSRF and sign in again. Admin MFA counters may be consumed before a later
+failure, so retry with a fresh code. There is no transaction across an await.
+
+Password-change hashing permits two concurrent operations per Node process, five
+admitted attempts per account and 30 per trusted source in a fixed 15-minute window,
+with the existing transient 5,000-row saturation cap. Source/account buckets contain
+namespaced digests. Weak/same-password inputs rejected before hashing do not consume
+the expensive-work budget. Failed verification and downstream failures do consume
+admitted budget, and success does not reset it. Login, enrollment and password-change
+caps are separate: deployment must size memory for their combined worst case (up to
+six simultaneous scrypt operations), or review a shared cap before public use.
+Source must be the trusted socket address, not request data/forwarded headers.
+
+The router remains unmounted, so no customer page or visible account screen changed.
+Recovery, reactivation, admin-created password resets and role changes are outside
+this increment. No actual user password was changed. Future screens must preserve
+recoverable inputs safely, permit paste/password managers, explain required sign-in
+after change, and pass browser/visual/manual accessibility/Lighthouse acceptance.
+
+`tests/unit/account-maintenance.test.js` covers admin-only pagination, secret exclusion,
+own-password behavior, current/new password failures, fresh admin MFA, invitation
+invalidation, concurrent/deactivated attempts, audit rollback, session expiry and
+persistent account/source/concurrency throttles. HTTPS integration checks in
+`tests/unit/auth-router.test.js` verify strict list queries, missing permissions,
+CSRF and target injection rejection, cleared cookies, copied-session revocation,
+new-password sign-in and fresh/replayed admin MFA behavior.
+
+## Earlier foundation evidence
 
 `tests/unit/password-service.test.js` uses only synthetic values. It covers
 random salts, actual correct/incorrect verification, Unicode/byte limits,

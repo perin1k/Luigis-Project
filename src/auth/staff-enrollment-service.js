@@ -4,6 +4,7 @@ import { createSessionService } from './session-service.js';
 import { hashPassword } from './password-service.js';
 import { validateNewPassword } from './password-policy.js';
 import { isToken } from './auth-transport.js';
+import { validPage } from './staff-account-service.js';
 
 const WINDOW_MS = 900000;
 let intActiveEnrollments = 0;
@@ -27,6 +28,16 @@ export function createStaffEnrollmentService(objDatabase, { fnNow = () => new Da
       WHERE u.id = ? AND u.role = 'admin' AND u.state = 'active' AND v.epoch = ?`).get(objInvite.issued_by, objInvite.issuer_epoch));
   }
   return Object.freeze({
+    listInvitations(strSessionToken, intOffset = 0, intLimit = 50) {
+      if (!validPage(intOffset, intLimit)) return null;
+      return objSessions.executeAuthorized(strSessionToken, 'employees.manage', () => {
+        const arrRows = objDatabase.prepare(`SELECT id AS strInvitationId, username AS strUsername,
+          state AS strState, issued_by AS strIssuedBy, created_at AS strCreatedAt, expires_at AS strExpiresAt,
+          closed_at AS strClosedAt, accepted_user_id AS strAcceptedUserId FROM staff_invitations
+          ORDER BY created_at, id LIMIT ? OFFSET ?`).all(intLimit + 1, intOffset);
+        return { arrInvitations: arrRows.slice(0, intLimit), intOffset, intLimit, bHasMore: arrRows.length > intLimit };
+      });
+    },
     issueInvitation(strSessionToken, strUsername) {
       const strCanonical = username(strUsername);
       if (!strCanonical) return null;
