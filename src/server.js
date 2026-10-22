@@ -9,6 +9,7 @@ import { openDatabase } from './data/database.js';
 import { applyMigrations } from './data/migrations.js';
 import { createDemoPaymentService } from './payments/demo-payment-service.js';
 import { loadPaymentVault } from './payments/payment-config.js';
+import { createStaffOrdersService } from './staff/orders-service.js';
 import { createAuthRuntime } from './auth/auth-runtime.js';
 
 const intPort = Number(process.env.PORT ?? 3000);
@@ -25,6 +26,7 @@ function application(objAuthRuntime) {
   const objSchedulingService = createSchedulingService(objDatabase);
   const objPaymentService = createDemoPaymentService(objDatabase, { objVault: loadPaymentVault(process.env.DEMO_PAYMENT_KEYS_PATH), objCatalogService, objSchedulingService });
   return createApp({ objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
+    objStaffOrdersService: objAuthRuntime ? createStaffOrdersService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService) });
 }
 function closeResources() {

@@ -679,3 +679,7 @@ The configured database runtime supports generated test identities and committed
 payment/order confirmation. Set `DEMO_PAYMENT_KEYS_PATH` to an operator-owned,
 private external key-ring file; checkout fails safely when it is not configured.
 No real card entry, charge or native Apple Wallet operation occurs.
+
+Authorized staff queue (BE-04): [queue/API/privacy and file guide](docs/staff-orders-design.md).
+Available through the configured direct-HTTPS staff runtime and individual staff
+login; the public HTTP ordering preview does not expose employee order records.

@@ -8,6 +8,7 @@
 <body>
   <%- include('../partials/header') %>
   <main id="main-content" class="container staff-page" tabindex="-1" data-staff-mode="<%= strMode %>" data-staff-lists="<%= JSON.stringify(objInitialLists) %>">
+    <% if (bOrderQueue && strMode === 'account') { %><nav aria-label="Staff navigation"><a class="staff-secondary" href="/staff/orders">Order queue</a></nav><% } %>
     <div class="staff-intro"><p class="eyebrow">Behind the counter</p><h1><%= ({'sign-in': 'Welcome back.', enroll: 'Join the team.', recovery: 'Recover your access.', account: 'Your staff account.'})[strMode] %></h1>
     <p>Good service starts with a team you can trust.</p></div>
     <noscript><p class="staff-notice">Enable JavaScript to use secure staff forms. Your password and authentication codes are never saved in browser storage.</p></noscript>

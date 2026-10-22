@@ -1,4 +1,5 @@
 import express from 'express';
+import { createStaffOrdersRouter } from './staff/orders-router.js';
 import { createDemoPaymentRouter } from './payments/demo-payment-router.js';
 import { createSchedulingRouter } from './ordering/scheduling-router.js';
 import { createOrderRouter } from './ordering/order-router.js';
@@ -9,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService } = {}) {
+export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService } = {}) {
 const objApp = express();
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
@@ -21,7 +22,7 @@ function prepareText(objBody, strType) {
 // Cache only these public text assets. Other public files retain Express static handling.
 const mapTextAssets = new Map();
 for (const strPath of ['/css/tokens.css', '/css/global.css', '/css/ordering.css',
-  '/js/theme.js', '/js/ordering/order-wizard.js', '/js/ordering/order-model.js',
+  '/js/theme.js', '/js/staff-orders.js', '/js/ordering/order-wizard.js', '/js/ordering/order-model.js',
   '/js/checkout/payment.js', '/css/staff.css', '/js/staff.js']) {
   const objBody = readFileSync(fileURLToPath(new URL(`./public${strPath}`, import.meta.url)));
   mapTextAssets.set(strPath, prepareText(objBody, strPath.endsWith('.css') ? 'css' : 'js'));
@@ -112,6 +113,7 @@ objApp.get('/preview/confirmation', (objRequest, objResponse, fnNext) => {
     },
   });
 });
+if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage }));
 if (objAuthRuntime) {
   objApp.use('/auth', objAuthRuntime.objRouter);
   objApp.get(['/staff/sign-in', '/staff/enroll', '/staff/recovery', '/staff/account'], (objRequest, objResponse, fnNext) => {
@@ -131,7 +133,7 @@ if (objAuthRuntime) {
     if (!objInitialLists) return objResponse.redirect(303, '/staff/sign-in');
     renderPage(objRequest, objResponse, fnNext, 'pages/staff', {
       strTitle: 'Staff access | Luigi’s Pizza', strDescription: 'Secure staff account access for Luigi’s Pizza.',
-      strMode, bAdmin: objIdentity?.strRole === 'admin', objInitialLists,
+      strMode, bOrderQueue: Boolean(objStaffOrdersService), bAdmin: objIdentity?.strRole === 'admin', objInitialLists,
     });
   });
 }

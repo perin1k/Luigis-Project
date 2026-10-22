@@ -21,3 +21,9 @@
 .staff-card .btn-outline-primary { --bs-btn-disabled-color: var(--color-muted); --bs-btn-disabled-border-color: var(--color-line); --bs-btn-disabled-opacity: 1; }
 
 .staff-card h2:focus-visible, .staff-notice:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }
+.staff-queue-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem; margin-bottom: 1rem; }
+.staff-queue-filters > div { flex: 1 1 14rem; min-width: 0; }
+.staff-queue-filters select { background-image: none; appearance: auto; min-height: 2.75rem; color: var(--color-ink); background-color: var(--color-surface); border-color: var(--color-control-border); }
+.staff-records h3, #detail-reference { font-size: 1.1rem; overflow-wrap: anywhere; }
+.staff-records li li { border: 0; padding-block: .25rem; }
+.staff-pagination { margin-top: 1rem; }

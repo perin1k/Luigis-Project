@@ -10,7 +10,7 @@ import { createApp } from '../../src/app.js';
 export const PASSWORD = 'Synthetic staff browser passphrase only';
 const PASSWORD_HASH = await hashPassword(PASSWORD);
 /** Isolated synthetic identities. Never mounted by the application runtime. */
-export function createStaffFixture(strOrigin) {
+export function createStaffFixture(strOrigin, { fnCreateApp = createApp } = {}) {
   const objDatabase = openDatabase(':memory:'); applyMigrations(objDatabase);
   let numNow = Date.parse('2026-10-21T18:00:00.000Z');
   const fnNow = () => new Date(numNow);
@@ -27,7 +27,7 @@ export function createStaffFixture(strOrigin) {
   numNow += 30000;
   const arrRecoveryCodes = runTransaction(objDatabase, () => issueRecoveryCodes(objDatabase, 'admin', fnNow()));
   const objRuntime = createAuthRuntime(objDatabase, { strOrigin, strEncryptionKeyHex: 'ab'.repeat(32), fnNow });
-  return { objApp: createApp({ objAuthRuntime: objRuntime }), objDatabase, arrRecoveryCodes,
+  return { objApp: fnCreateApp({ objAuthRuntime: objRuntime }, objDatabase, { fnNow }), objDatabase, arrRecoveryCodes,
     code(strSecret) { numNow += 30000; return (strSecret ? new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(strSecret) }) : objTotp).generate({ timestamp: numNow }); },
     seedEmployees() {
       for (let intIndex = 0; intIndex < 12; intIndex += 1) {
