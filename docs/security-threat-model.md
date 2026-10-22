@@ -60,8 +60,9 @@ completed work here.
 
 ## Open SEC-01 release checks
 
-Complete dependency vulnerability and source/commit secret scanning without
-printing secrets; investigate or explicitly accept actual findings. Complete the
+The first dependency advisory and bounded source/history credential-pattern review
+is recorded in [security review evidence](security-review-evidence.md). Re-run before
+release and investigate any findings. Complete the
 cross-route authorization/CSRF/abuse matrix, configured-host/proxy review and
 integrated acceptance. Keep this card open. See also
 [privacy operator boundaries](privacy-operator-review.md). Do not claim security
