@@ -16,6 +16,14 @@ to commit permissions, session/challenge revocation and audit history atomically
 The isolated auth router exposes POST `/employees/deactivate` through this service;
 the router is not mounted and the employee-management screen remains separate work.
 
+Initial admin setup is available with `npm run admin:setup` after database migration
+and private provisioning of `MFA_ENCRYPTION_KEY_HEX`. The interactive command asks
+for hidden password input and verifies authenticator enrollment before atomically
+creating the first admin. It has no default password or public route. See
+`docs/authentication-design.md` before running it, including secret handling,
+one-time setup, offline password-policy files and incomplete recovery/UI work.
+The implementation tests created only disposable synthetic accounts.
+
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.

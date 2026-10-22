@@ -57,13 +57,13 @@ sign-in endpoint or proof of MFA.
 
 ## Remaining integration work
 
-The TOTP primitive described below has now been implemented; its protected routes,
-key provisioning, login integration and recovery remain follow-up work.
+Password, MFA, sign-in, the isolated transport router, deactivation and local
+first-admin setup are implemented below. Application mounting, public transport
+configuration, employee enrollment, recovery and UI acceptance remain unfinished.
 
-1. Enrollment/password policy: recommend a minimum of 15 Unicode characters for
-   all staff, allow long passphrases/paste/password managers, no forced character
-   mixtures or periodic password changes, and reject common/compromised passwords
-   using an explicitly selected blocklist strategy. Validate before hashing.
+1. Apply the implemented enrollment policy below to future employee creation and
+   password changes as those services are added. The finite offline common-password
+   blocklist is not an exhaustive compromised-password database.
 2. Web sign-in integration (internal orchestration is implemented below): generic failure responses, comparable handling of
    unknown accounts, bounded concurrent expensive hash operations, per-account
    and source throttling, secure CSRF-protected forms, fresh random session tokens
@@ -71,17 +71,18 @@ key provisioning, login integration and recovery remain follow-up work.
    again after asynchronous hashing before issuing any session; a password reset
    or deactivation during verification must invalidate the attempt. Never hold a
    synchronous SQLite transaction open across an await.
-3. Admin TOTP integration: the user approved
+3. Admin TOTP: the user approved
    [OTPAuth](https://github.com/hectorm/otpauth), now pinned to 9.5.2.
    Protect enrollment challenges and time windows, record consumed counters to
    reject replay, and issue an admin session only after successful verification.
    Store factor secrets encrypted under an environment-owned key outside Git;
    the current MFA-reference table alone does not store or verify those secrets.
-   Key provisioning, rotation and encrypted-secret schema need approval first.
-4. Bootstrap: explicit local setup for the first admin, without a default password
-   or public bootstrap route. Confirm the intended identity and let the user
-   enter credentials directly through the eventual protected setup mechanism.
-   Do not grant admins the general ability to create further admins by inference.
+   Encrypted-secret storage and local bootstrap enrollment are implemented. Actual
+   environment key provisioning, rotation and protected factor-management routes
+   remain separate work.
+4. Run the implemented local first-admin command only when the operator is ready,
+   with their own identity and a separately provisioned MFA encryption key. The
+   implementation/tests did not create an actual project admin or production key.
 5. Recovery: single-use random recovery codes, shown once and stored as hashes;
    audited recovery overseen by Brody, session revocation and factor re-enrollment.
    Recovery must not become a bypass that accepts an order number, name, security
@@ -93,9 +94,10 @@ key provisioning, login integration and recovery remain follow-up work.
    unit checks do not establish authentication accessibility or security.
 
 No new dependency was added in the password-foundation increment; the subsequent
-MFA-foundation increment adds OTPAuth 9.5.2. There is no
-account creation, credential provisioning, MFA enrollment, recovery code, login
-route or external communication yet. Neither TECH-04 nor BE-08 is complete.
+MFA-foundation increment adds OTPAuth 9.5.2. The local setup command can now
+provision the first admin with verified MFA. No actual project account was created
+during implementation. There is no mounted login UI, recovery flow, general employee
+enrollment or external communication yet. Neither TECH-04 nor BE-08 is complete.
 
 ## Implemented MFA foundation
 
@@ -343,7 +345,88 @@ deactivation, a separately active employee session becoming invalid, idempotency
 unauthenticated/employee/MFA-pending/expired/revoked callers, protected targets,
 role/actor injection, CSRF and method rejection, and audit-failure rollback/retry.
 
-## Earlier foundation checks
+## Implemented local first-admin setup
+
+Run `npm run db:migrate` for the intended `DATABASE_PATH`, then `npm run admin:setup`
+in a private interactive terminal. Configure `MFA_ENCRYPTION_KEY_HEX` beforehand
+through your private environment/secret manager: a separately provisioned random
+32-byte key encoded as 64 lowercase hex characters. Never put the key/password on
+a command line, in Git, terminal recordings or this chat. The command does not
+generate or persist a fallback key. Keep the same key available for later sign-in;
+losing it does not enable a recovery bypass. Actual environment provisioning and
+recovery procedures remain a separate reviewed activity.
+
+`scripts/setup-admin.js` requires terminal input/output, rejects arguments and piped
+input, and uses the existing database path (default `data/luigis-demo.sqlite`). It
+verifies/applies reviewed migrations, asks for an individual username and hidden
+password/confirmation, then displays a secret `otpauth:` URI only in that private
+terminal. Import directly into an authenticator supporting URI import; no external
+QR service or QR dependency is used. The URI remains in terminal scrollback until
+the operator clears it, so disable recording/screen sharing and clear it afterward.
+No secret file is created. Code input is hidden. Ctrl-C, end-of-input, five rejected
+codes, or the ten-minute command timeout abort setup; restart rather than bypassing
+MFA. The setup command creates no login session or recovery codes.
+
+`src/auth/password-policy.js` validates new passwords before hashing: at least 15
+Unicode code points and at most 1024 UTF-8 bytes, well-formed Unicode, no terminal
+control characters, offline case-insensitive common-password matching, and rejection
+of single repeated characters and simple username/project-only variants. Spaces,
+Unicode passphrases, paste and password managers are supported. No required character
+mixtures or periodic changes are introduced. Matching trims/lowercases a temporary
+comparison only; the original password is hashed and verified exactly, with no
+trimming/normalization/truncation. A finite blocklist cannot identify every weak or
+compromised password. Historical credentials are not silently rehashed or rejected
+at login under a new enrollment policy.
+
+The reviewed `src/auth/blocklists/common-passwords.txt` is imported from a pinned
+SecLists revision, with its MIT license in `LICENSE-SecLists`, source/checksum in
+`SOURCE.md`, and a load-time SHA-256 integrity check. Missing/changed list bytes fail
+closed. Passwords never leave the process for a breach-check service. Updating this
+static list requires review and maintenance; a future online service or larger list
+is a separate choice. These text data are not executed.
+
+`src/auth/bootstrap-service.js` reuses the real migrations/password/MFA services in
+an isolated in-memory staging database. After password hashing it stages a random
+admin identity, salted credential and encrypted pending factor, then returns the
+provisioning URI once. The application database remains unchanged until a correct
+authenticator code. Confirmation replays the pending-to-active factor transition
+under existing schema guards and commits account, credential, factor/reference and
+two sanitized system audit events in one application transaction. No transaction
+spans asynchronous password work. Cancellation/disposal closes the staging database
+and destroys the MFA service key buffer; JavaScript/SQLite internal copies cannot be
+guaranteed erased. The CLI also drops password/provisioning-string references after
+use, without claiming secure string erasure.
+
+Confirmation rechecks the ten-minute window, monotonic clock and absence of an
+existing admin after taking the application write lock. Any existing admin, including
+a disabled admin, prevents setup. A durable `local-bootstrap:` identity subject
+also prevents repeating setup after a later role change. Competing connections may
+stage candidates but only one can commit. No employee/admin-management endpoint can
+invoke bootstrap or create additional admins. Local filesystem/database access is
+the operator's authority boundary; do not expose this service as a public API.
+
+On audit/database failure the entire application write rolls back. A valid code may
+already have been consumed in staging; a retry requires a fresh code and remains
+within the original time/attempt limit. A username conflict, interruption or process
+crash does not leave a partial application account. After successful commit, a later
+terminal failure does not undo the account: rerunning safely refuses duplicate setup.
+Recovery from a completed-but-lost enrollment must use the future reviewed recovery
+procedure, not manual deletion or another bootstrap admin. No schema migration or
+new npm dependency is added by setup.
+
+Verification: `tests/unit/bootstrap-service.test.js` covers password boundaries and
+blocklist rejection, no writes before MFA, real post-setup sign-in, cancellation,
+expiry/code limits/backward clocks, full rollback/retry, separate-connection first
+admin contention, durable bootstrap marker, invalid/key failures, concurrent begin,
+cancellation during hashing, and rejection of piped input without secret echo.
+Additional terminal verification used a disposable database/key and pseudo-terminal:
+entered synthetic credentials, imported the returned URI locally, generated a current
+code, checked one committed admin, and checked password/code absence from captured
+output; a second run interrupted at the code prompt and verified zero accounts.
+Neither run used the real project database. No browser page changed; the eventual
+mounted account UI still needs browser/visual/manual accessibility/Lighthouse checks.
+
+## Earlier foundation test evidence
 
 `tests/unit/password-service.test.js` uses only synthetic values. It covers
 random salts, actual correct/incorrect verification, Unicode/byte limits,
