@@ -58,3 +58,38 @@ This does not exercise asynchronous provider late success, native Wallet, a host
 environment, Windows/Linux, Firefox, new visual comparisons or manual accessibility.
 The known Firefox startup blocker was not redundantly retried. The full card stays
 open for those applicable retained acceptance checks and complete journey review.
+
+## Native visual, accessibility and keyboard follow-up
+
+The complete server suite at `fb02245` passed **256 tests**, zero failures/skips.
+The existing scheduling visual tests initially failed eight cases because macOS
+references were missing. Missing-only generation preserved every Windows baseline
+and produced 16 light/dark Chromium/WebKit desktop/mobile references. The images
+were inspected together for layout consistency and representative light/dark
+320px reviews were inspected at readable scale.
+
+Generation exposed a real WebKit keyboard failure in two cases: Tab from the ready
+time select skipped Refresh pickup times. The native button now has `tabindex="0"`,
+consistent with other explicitly keyboard-reachable project controls. This keeps
+natural DOM order and adds no positive tabindex or scripted Tab interception.
+
+Normal comparison, without snapshot updating, then passed **8 cases (29.4s)**:
+
+```sh
+npx playwright test --config=playwright.scheduling.config.js --project=chromium-desktop --project=chromium-mobile --project=webkit-desktop --project=webkit-mobile --grep 'visual scheduled status|scheduling policy and recovery'
+```
+
+The checks cover both themes, 320px reflow, axe WCAG-tagged checks, skip-link focus
+and select-to-refresh Tab order. These complement manual accessibility review;
+they do not replace it. Fixture status examples are not persisted customer cases
+or proof that the reusable status partial is integrated into guest tracking.
+
+With the keyboard change, production-mode scheduling-enabled `/order` scored
+**100 Performance, Accessibility, Best Practices and SEO** using Lighthouse
+13.5.0's default simulated mobile profile. [Retained report](be-10-keyboard-lighthouse.json)
+includes configuration and optimization advisories; a perfect category score does
+not mean no advisory exists. The disposable fixture was stopped after the audit.
+
+Only the template button attribute, new macOS references and verification records
+change. Firefox/Linux/Windows execution and representative manual screen-reader
+acceptance remain unverified here. BE-10 and FE-10 retain full-card acceptance.
