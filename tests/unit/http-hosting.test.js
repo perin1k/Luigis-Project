@@ -112,3 +112,38 @@ test('Brotli public assets preserve exact bytes, negotiation, caching and HEAD w
   const objGzip=await requestText('/order','br, gzip');assert.equal(objGzip.objHeaders['content-encoding'],'gzip');
   assert.equal((await requestText('/vendor/bootstrap.min.css','br;q=0, gzip;q=0, identity;q=0')).intStatus,406);
 });
+
+test('security headers cover public assets, pages and failures without exposing the framework',async()=>{
+  for(const strPath of ['/','/order','/js/theme.js','/missing-security-fixture']){
+    const objResponse=await requestText(strPath,'identity');
+    assert.equal(objResponse.objHeaders['x-powered-by'],undefined,strPath);
+    assert.equal(objResponse.objHeaders['x-content-type-options'],'nosniff',strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/default-src 'self'/,strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/frame-ancestors 'none'/,strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/object-src 'none'/,strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/form-action 'self'/,strPath);
+    assert.ok(objResponse.objHeaders['referrer-policy'],strPath);
+  }
+});
+
+test('private source, templates, database and encoded traversal paths are never served as assets',async()=>{
+  for(const strPath of ['/.git/config','/package.json','/src/server.js','/src/views/pages/order.ejs',
+    '/data/luigis.sqlite','/src/data/migrations/005-access-and-audit.sql',
+    '/%2e%2e/package.json','/css/%2e%2e/%2e%2e/package.json','/%2eenv']){
+    const objResponse=await requestText(strPath,'identity');
+    assert.equal(objResponse.intStatus,404,strPath);
+    assert.equal(objResponse.objHeaders['cache-control'],'no-store',strPath);
+    assert.doesNotMatch(objResponse.objBody.toString(),/BEGIN PRIVATE KEY|CREATE TABLE audit_events|"dependencies"\s*:/,strPath);
+  }
+});
+
+test('forwarded headers cannot enable staff access or alter public response security on an unconfigured HTTP server',async()=>{
+  for(const strPath of ['/api/staff/orders','/api/auth/session','/staff/analytics']){
+    const objResponse=await requestText(strPath,'identity',{objHeaders:{
+      'X-Forwarded-Proto':'https','X-Forwarded-Host':'staff.example.invalid','X-Forwarded-For':'127.0.0.1',
+      Cookie:'staff_session=forged-security-fixture',Origin:'https://staff.example.invalid'}});
+    assert.equal(objResponse.intStatus,404,strPath);
+    assert.equal(objResponse.objHeaders['cache-control'],'no-store',strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/frame-ancestors 'none'/,strPath);
+  }
+});
