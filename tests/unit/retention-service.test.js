@@ -1,3 +1,6 @@
+import {createCatalogService} from '../../src/ordering/catalog-service.js';
+import {createSchedulingService} from '../../src/ordering/scheduling-service.js';
+import {createOrderService} from '../../src/ordering/order-service.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomBytes,randomUUID,createHash} from 'node:crypto';
@@ -39,3 +42,28 @@ test('cleanup bounds each batch and does not erase explicit grant caps on active
   objDatabase.prepare('UPDATE tracking_grants SET expires_at=? WHERE order_id=?').run('2026-10-22T15:00:00.000Z',arrOrders[0].strOrderId);setNow('2026-10-23T15:00:00.000Z');assert.equal(objCleanup.cleanup().intTrackingGrants,0);assert.throws(()=>objTracking.replaceGrant(token(),arrOrders[0].strReference),/expired/);
   for(const objOrder of arrOrders)complete(objOrder);setNow('2026-10-30T15:00:00.000Z');assert.equal(objCleanup.cleanup().intOrders,50);assert.equal(objCleanup.cleanup().intOrders,5);assert.equal(objCleanup.cleanup().intOrders,0);assert.equal(objTracking.readTracking(arrPaths[0].split('#')[1]),null);assert.equal(objDatabase.prepare('PRAGMA integrity_check').get().integrity_check,'ok');
 },55));
+
+function unpaid(objDatabase){
+  const objCatalog=createCatalogService(objDatabase);
+  const objScheduling=createSchedulingService(objDatabase,{fnNow:()=> '2026-10-21T15:00:00.000Z'});
+  const strOrderId=randomUUID();
+  createOrderService(objDatabase,objCatalog,objScheduling).submitOrder({strRequestId:strOrderId,strService:'carry-out',objContact:{strName:'Synthetic abandoned guest',strPhone:'2025550100',strEmail:''},objPricing:{strCatalogFingerprint:objCatalog.readCatalog().strFingerprint,arrPizzas:[{strSize:'medium',strCrust:'regular',arrToppings:[],intQuantity:1}],arrDrinks:[],intTipPercent:0},objPickup:{strServiceDate:'2026-10-21',intRevision:1,strSelectionType:'scheduled',dtPromisedAt:'2026-10-21T16:00:00.000Z'}});
+  return objDatabase.prepare('SELECT * FROM orders WHERE id=?').get(strOrderId);
+}
+test('abandoned checkout contacts expire exactly seven days after checkout expiry without deleting history',()=>fixture(({objDatabase,objCleanup,setNow})=>{
+  const objOrder=unpaid(objDatabase);const strHistory=JSON.stringify(objDatabase.prepare('SELECT * FROM order_quotes').all());
+  setNow('2026-10-28T15:29:59.999Z');assert.equal(objCleanup.cleanup().intContacts,0);
+  setNow('2026-10-28T15:30:00.000Z');assert.equal(objCleanup.cleanup().intContacts,1);
+  assert.equal(objDatabase.prepare('SELECT customer_name FROM order_contacts WHERE order_id=?').get(objOrder.id).customer_name,null);
+  assert.equal(JSON.stringify(objDatabase.prepare('SELECT * FROM order_quotes').all()),strHistory);assert.equal(objCleanup.cleanup().intOrders,0);
+},0));
+test('unresolved payment protects abandoned contacts and later confirmed failure restarts the seven-day clock',()=>fixture(({objDatabase,objCleanup,setNow})=>{
+  const objOrder=unpaid(objDatabase);
+  // Synthetic pending/failure storage only: no provider verification or successful charge is fabricated.
+  objDatabase.prepare("INSERT INTO payment_attempts (id,order_id,quote_id,provider,idempotency_key,amount_cents,currency,created_at) VALUES ('pending-fixture',?,?,'stripe','pending-fixture',768,'USD','2026-10-21T15:00:00.000Z')").run(objOrder.id,objOrder.accepted_quote_id);
+  setNow('2026-10-29T15:00:00.000Z');assert.equal(objCleanup.cleanup().intContacts,0);
+  objDatabase.prepare("UPDATE payment_attempts SET state='failed',failed_at='2026-10-29T15:00:00.000Z' WHERE id='pending-fixture'").run();
+  setNow('2026-11-05T14:59:59.999Z');assert.equal(objCleanup.cleanup().intContacts,0);
+  setNow('2026-11-05T15:00:00.000Z');assert.equal(objCleanup.cleanup().intContacts,1);
+  assert.equal(objDatabase.prepare("SELECT state FROM payment_attempts WHERE id='pending-fixture'").get().state,'failed');assert.deepEqual(objDatabase.prepare('PRAGMA foreign_key_check').all(),[]);
+},0));

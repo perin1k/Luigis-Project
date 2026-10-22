@@ -53,6 +53,22 @@ Do not restore old contact/grant snapshots or treat record deletion as guarantee
 secure physical erasure of SQLite pages, filesystem snapshots or external copies.
 No application-managed backup or hosted recovery guarantee is introduced.
 
+## Approved unpaid-checkout refinement (October 22, 2026)
+
+Saved unpaid orders with no fulfillment status now use seven days after accepted
+checkout expiry or the latest confirmed payment failure, whichever is later.
+Capacity-hold expiry and resolved case timestamps can extend that baseline; a
+confirmed hold, pending/successful payment, open fulfillment review or unresolved
+cancellation/refund case prevents abandoned-checkout cleanup. Missing accepted
+quotes fail conservatively without deletion. Paid active orders keep their
+existing lifecycle. The same transaction, audit and 50-order mutation cap apply;
+no migration, financial-history deletion or public route is introduced.
+
+The two additional retention tests verify the exact abandoned-checkout boundary,
+preservation of quote/payment history, pending-payment protection and delayed
+failure restarting the clock. See [the internal inventory](privacy-data-inventory.md)
+for field purposes, access boundaries and unresolved privacy work.
+
 ## Verification and remaining work
 
 `tests/unit/retention-service.test.js` exercises actual isolated demo orders,
@@ -69,14 +85,14 @@ removes it while retaining active contact/notification behavior; staff APIs rema
 unavailable over public HTTP. The expiry fixture changes only the disposable
 secret's lifecycle marker, never applied SQL or confirmed financial history.
 
-`npm run test:unit`: **230 pass**, zero failures/skips. Syntax, documentation,
+`npm run test:unit`: **232 pass**, zero failures/skips. Syntax, documentation,
 naming, scoped diff and whitespace review also pass. Run the same command to
 reproduce the server regression suite. There is no new
 HTML/component/interaction to screenshot or audit with Lighthouse in this worker
 increment. Existing application browser/manual acceptance is still open, including
 the known local Firefox startup blocker; this does not waive those gates.
 
-Full SEC-02 still needs review of the overall field/purpose/access inventory,
+Full SEC-02 still needs acceptance review of the internal field/purpose/access inventory,
 applicable correction/export workflows, public privacy/contact/policy information
 and broader operational/log/audit access checks. No legal compliance claim follows
 from these tests. Keep the full card open. Any future real customers, provider
