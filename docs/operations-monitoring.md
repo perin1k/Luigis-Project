@@ -125,18 +125,34 @@ Current notifications are internal previews, never external deliveries; a previe
 worker failure makes readiness false until its next successful run. Inspect safe
 state, resolve the cause and use existing admin retry without claiming a message
 was sent. A healthy last run does not prove every historical failed preview was
-resolved. No aged-backlog threshold is selected here.
+resolved. The later approved preview-worker failure threshold below does not claim that
+every aged individual preview has been resolved.
 
 Payments are synchronous demonstration processing, not real webhooks. Review
 persisted payment/order/refund state and original request IDs; never start a new
 payment solely because the response was interrupted. Provider-event/webhook backlog
 monitoring is future integration scope and cannot be tested as real delivery here.
 
+## Approved monitoring decision — October 22, 2026
+
+The human approved these thresholds for later hosted monitoring:
+
+- Notify the project sponsor after three failed one-minute readiness checks.
+- Notify the project sponsor after ten minutes of preview-worker failure.
+- Escalate any confirmed-payment/order mismatch for immediate review.
+
+These are operator response thresholds, not availability guarantees. Approval
+records the policy only: no probe scheduler, external alert delivery, recipient
+address or hosting resource is configured or authorized by this decision. Keep
+individual preview backlog review distinct from sustained worker failure. A
+payment mismatch requires review of committed records, not a replacement payment
+or automatic financial action.
+
 ## Unresolved full-card gates
 
-The team still must approve probe interval/failure and backlog thresholds, alert
-recipient/contact and permitted response actions; this document does not invent
-service guarantees or send alerts. Hosted log capture must implement the approved
+The actual alert contact/channel, failure/reset semantics and permitted incident
+response actions still need configuration review before implementation. The
+hosting hold remains in force. Hosted log capture must implement the approved
 seven-day local rotation, access and cost limits. It is not installed by emitting
 stderr JSON. No external log collector, alert provider, account or billable resource
 is configured. Do not enable request/body logging or optional snapshots by default.
