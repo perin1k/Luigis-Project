@@ -27,3 +27,7 @@
 .staff-records h3, #detail-reference { font-size: 1.1rem; overflow-wrap: anywhere; }
 .staff-records li li { border: 0; padding-block: .25rem; }
 .staff-pagination { margin-top: 1rem; }
+
+/* Reserve asynchronous progress space so loading does not move the footer. */
+.tracking-content { min-height: 18rem; }
+.tracking-refresh-area { min-height: 2.75rem; }

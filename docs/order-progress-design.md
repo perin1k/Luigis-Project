@@ -1,9 +1,9 @@
 # BE-05 — staff fulfillment progress increment
 
 Story: https://trello.com/c/HwkXU6Mn. This increment adds staff progress writes to
-BE-04's queue/detail. Guest private-link tracking, admin cancellation/recovery
-exceptions, Not collected at closing and retention enforcement remain separate
-BE-05/BE-09 work. It does not implement the entire card or alter payment/refund
+BE-04's queue/detail. Guest private-link tracking, administrator decisions and Not collected are now
+implemented in the companion [tracking/exception guide](tracking-and-exceptions.md).
+Refund processing, booking recovery and background retention remain separate work. It does not implement the entire card or alter payment/refund
 states. No migration, dependency, real account creation or deployment is required.
 
 ## Integration and file guide

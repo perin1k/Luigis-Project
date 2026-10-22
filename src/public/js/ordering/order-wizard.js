@@ -387,6 +387,7 @@ function showDemoReceipt(objReceipt) {
   const elReference = createElement('p','Order '); const elReferenceValue = createElement('span',objReceipt.strReference,'font-monospace'); elReferenceValue.id = 'receipt-reference'; elReference.append(elReferenceValue); elDetails.append(elReference);
   for (const strText of [objReceipt.strService === 'carry-out' ? 'Carry-out' : 'Dine-in', `Ready: ${formatPickup(objReceipt.objPickup.dtPromisedAt)}`]) elDetails.append(createElement('p',strText));
   const elMethod = createElement('p',`${objReceipt.strMethod === 'apple-pay' ? 'Demonstration Apple Pay' : 'Generated test card'} `); const elMasked = createElement('span',objReceipt.strMaskedIdentity,'font-monospace'); elMasked.id = 'receipt-identity'; elMethod.append(elMasked); elDetails.append(elMethod);
+  if(typeof objReceipt.strTrackingPath==='string'&&/^\/track#[a-f0-9]{64}$/.test(objReceipt.strTrackingPath)){const elLink=createElement('a','Track your order','btn btn-primary');elLink.href=objReceipt.strTrackingPath;elDetails.append(elLink);}
   const elItems = createElement('ul','');
   for (const objItem of objReceipt.arrItems) elItems.append(createElement('li',`${objItem.intQuantity} × ${objItem.strLabel} · ${formatCurrency(objItem.centsTotal)}`));
   elDetails.append(elItems);

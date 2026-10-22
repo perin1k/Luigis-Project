@@ -4,7 +4,7 @@ import { PricingError } from '../ordering/catalog-service.js';
 import { generateSyntheticNumber } from './synthetic-vault.js';
 const UUID_PATTERN=/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
 function problem(strCode,strMessage,intStatus=409) { return new PricingError(strCode,strMessage,intStatus); }
-export function createDemoPaymentService(objDatabase,{objVault,objCatalogService,objSchedulingService,fnProcess=()=>true}) {
+export function createDemoPaymentService(objDatabase,{objVault,objCatalogService,objSchedulingService,objTrackingService,fnProcess=()=>true}) {
   function pay(objInput) {
     if(!objVault)throw problem('payment_unavailable','Demonstration checkout is temporarily unavailable. Your selections are preserved.',503);
     if (!objInput || typeof objInput!=='object' || Object.keys(objInput).length!==3 || !['strRequestId','strOrderId','strMethod'].every((strKey)=>Object.hasOwn(objInput,strKey))
@@ -55,7 +55,9 @@ export function createDemoPaymentService(objDatabase,{objVault,objCatalogService
         const intSequence=objDatabase.prepare('SELECT coalesce(max(sequence),0)+1 AS n FROM order_events WHERE order_id=?').get(objInput.strOrderId).n;
         objDatabase.prepare("INSERT INTO order_events (id,order_id,sequence,event_type,to_status,occurred_at,reason_code) VALUES (?,?,?,'demo_payment_confirmed','Received',?,'demo_payment')").run(randomUUID(),objInput.strOrderId,intSequence,dtNow);
       }
-      return receipt(objDatabase.prepare('SELECT * FROM demo_payment_attempts WHERE id=?').get(strId),false);
+      const objReceipt=receipt(objDatabase.prepare('SELECT * FROM demo_payment_attempts WHERE id=?').get(strId),false);
+      if(bApproved&&objTrackingService)objReceipt.strTrackingPath=objTrackingService.issueForPayment(objInput.strOrderId,dtNow);
+      return objReceipt;
     });
     if(objResult.objError)throw objResult.objError;return objResult;
   }

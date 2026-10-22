@@ -34,6 +34,13 @@ test('HTTPS queue endpoints require actual staff cookies, pin origin, escape nam
     assert.equal((await get(intPort,strProgress,{...objWriteHeaders,Origin:'https://other.invalid'},objBody)).intStatus,403);
     assert.equal((await get(intPort,strProgress,objWriteHeaders,objBody)).intStatus,200);
     assert.equal((await get(intPort,strProgress,objWriteHeaders,objBody)).intStatus,409);
+    assert.equal((await get(intPort,`/api/staff/orders/${strReference}/exception`,objWriteHeaders,{intRevision:objCurrent.intRevision+1,strAction:'cancel'})).intStatus,403);
+    assert.equal((await get(intPort,`/api/staff/orders/${strReference}/tracking-replacement`,objWriteHeaders,{bReviewed:true})).intStatus,403);
+    const strTrackingToken=objFixture.arrTrackingPaths[1].split('#')[1];
+    const objPublic=await get(intPort,'/api/tracking',{Origin:'https://localhost:3444','Content-Type':'application/json'},{strToken:strTrackingToken});
+    assert.equal(objPublic.intStatus,200);assert.doesNotMatch(objPublic.strBody,/202555|Guest|cents|ciphertext|token_digest/);
+    assert.equal((await get(intPort,'/api/tracking',{Origin:'https://other.invalid','Content-Type':'application/json'},{strToken:strTrackingToken})).intStatus,403);
+
     assert.equal((await get(intPort,'/api/staff/orders?role=admin',objHeaders)).intStatus,400);
     assert.equal((await get(intPort,'/api/staff/orders',{Cookie:`__Host-luigis-session=${strToken}; __Host-luigis-session=${strToken}`})).intStatus,400);
   }finally{if(objServer)await new Promise((fnResolve)=>objServer.close(fnResolve));objFixture.close();rmSync(strDirectory,{recursive:true,force:true});}

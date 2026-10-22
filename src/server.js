@@ -1,6 +1,7 @@
 import { createServer as createHttpsServer } from 'node:https';
 import { createServer as createHttpServer } from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
+import {createTrackingService} from './tracking/tracking-service.js';
 import { createApp } from './app.js';
 import { createSchedulingService } from './ordering/scheduling-service.js';
 import { createOrderService } from './ordering/order-service.js';
@@ -9,6 +10,7 @@ import { openDatabase } from './data/database.js';
 import { applyMigrations } from './data/migrations.js';
 import { createDemoPaymentService } from './payments/demo-payment-service.js';
 import { loadPaymentVault } from './payments/payment-config.js';
+import {createOrderExceptionService} from './staff/order-exception-service.js';
 import { createOrderProgressService } from './staff/order-progress-service.js';
 import { createStaffOrdersService } from './staff/orders-service.js';
 import { createAuthRuntime } from './auth/auth-runtime.js';
@@ -25,8 +27,9 @@ let bClosed = false;
 function application(objAuthRuntime) {
   const objCatalogService = createCatalogService(objDatabase);
   const objSchedulingService = createSchedulingService(objDatabase);
-  const objPaymentService = createDemoPaymentService(objDatabase, { objVault: loadPaymentVault(process.env.DEMO_PAYMENT_KEYS_PATH), objCatalogService, objSchedulingService });
-  return createApp({ objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
+  const objTrackingService=createTrackingService(objDatabase,objAuthRuntime?.objSessionService);
+  const objPaymentService = createDemoPaymentService(objDatabase, { objTrackingService, objVault: loadPaymentVault(process.env.DEMO_PAYMENT_KEYS_PATH), objCatalogService, objSchedulingService });
+  return createApp({ objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
     objOrderProgressService: objAuthRuntime ? createOrderProgressService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objStaffOrdersService: objAuthRuntime ? createStaffOrdersService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService) });

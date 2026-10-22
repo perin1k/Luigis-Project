@@ -1,5 +1,6 @@
 import {createServer} from 'node:http';
 import {randomBytes} from 'node:crypto';
+import {createTrackingService} from '../../src/tracking/tracking-service.js';
 import {createApp} from '../../src/app.js';
 import {openDatabase} from '../../src/data/database.js';
 import {applyMigrations} from '../../src/data/migrations.js';
@@ -12,8 +13,9 @@ import {createSyntheticVault} from '../../src/payments/synthetic-vault.js';
 let objDatabase;let objApp;let bApprove;let dtNow;
 function reset(){objDatabase?.close();objDatabase=openDatabase(':memory:');applyMigrations(objDatabase);seedMenu(objDatabase);bApprove=true;dtNow='2026-10-21T15:00:00.000Z';
   const objCatalogService=createCatalogService(objDatabase);const objSchedulingService=createSchedulingService(objDatabase,{fnNow:()=>dtNow});
-  const objPaymentService=createDemoPaymentService(objDatabase,{objCatalogService,objSchedulingService,fnProcess:()=>bApprove,objVault:createSyntheticVault({strActiveKeyId:'fixture',mapKeys:{fixture:randomBytes(32).toString('hex')}})});
-  objApp=createApp({objCatalogService,objSchedulingService,objPaymentService,objOrderService:createOrderService(objDatabase,objCatalogService,objSchedulingService)});
+  const objTrackingService=createTrackingService(objDatabase,undefined,{fnNow:()=>new Date(dtNow)});
+  const objPaymentService=createDemoPaymentService(objDatabase,{objTrackingService,objCatalogService,objSchedulingService,fnProcess:()=>bApprove,objVault:createSyntheticVault({strActiveKeyId:'fixture',mapKeys:{fixture:randomBytes(32).toString('hex')}})});
+  objApp=createApp({objTrackingService,objCatalogService,objSchedulingService,objPaymentService,objOrderService:createOrderService(objDatabase,objCatalogService,objSchedulingService)});
 }
 reset();const objServer=createServer((objRequest,objResponse)=>{
   if(objRequest.url==='/__test/reset'){reset();return objResponse.end('reset');}

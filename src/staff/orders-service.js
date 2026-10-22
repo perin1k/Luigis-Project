@@ -55,7 +55,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
           strDescription=`${objPizza.size_name_snapshot} pizza · ${objPizza.crust_name_snapshot} · ${arrToppings.join(', ')||'Marinara & cheese'}`;
         }return {intQuantity:objLine.quantity,strDescription};
       });
-      return {...summary(objRow,dtNow),intRevision:objRow.revision,dtCheckedAt:dtNow.toISOString(),arrItems,
+      return {...summary(objRow,dtNow),intRevision:objRow.revision,bCanAdminister:objIdentity.strRole==='admin',dtCheckedAt:dtNow.toISOString(),arrItems,
         objContact:objRow.redacted_at||!objRow.contact_order_id?null:{strName:objRow.customer_name??'',strPhone:objRow.phone??'',strEmail:objRow.phone?'':objRow.email??''}};
     });
   }

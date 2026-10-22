@@ -685,3 +685,5 @@ Available through the configured direct-HTTPS staff runtime and individual staff
 login; the public HTTP ordering preview does not expose employee order records.
 
 Staff fulfillment progress and its integration boundaries: [BE-05 progress guide](docs/order-progress-design.md).
+
+Private guest tracking and administrator decisions: [BE-05 integration guide](docs/tracking-and-exceptions.md).

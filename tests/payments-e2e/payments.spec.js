@@ -17,7 +17,7 @@ test('both methods show committed demo confirmation with no card fields or brows
     await objPage.getByRole('button',{name:bDineIn?'Confirm demo Apple Pay':'Confirm demo payment',exact:true}).click();
     await expect(objPage.locator('#demo-receipt')).toBeVisible();await expect(objPage.locator('#receipt-status')).toContainText('No money was charged');await expect(objPage.locator('#receipt-details')).toContainText('$9.88');
     expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
-    await expect(objPage.locator('#demo-receipt')).toBeFocused();
+    await expect(objPage.locator('#demo-receipt')).toBeFocused();await objPage.getByRole('link',{name:'Track your order',exact:true}).click();await expect(objPage.locator('#tracking-content')).toContainText('Received');await expect(objPage.locator('#tracking-content')).not.toContainText('2025550100');
   }
   expect((await(await objRequest.get('/__test/count')).json()).intConfirmed).toBe(2);expect(arrErrors).toEqual([]);
 });
@@ -38,6 +38,6 @@ test('server decline and expiry never confirm the order and require reviewed che
 });
 test('receipt light/dark visual capture and narrow reflow',async({page:objPage})=>{
   await checkout(objPage);await objPage.getByRole('button',{name:'Confirm demo payment',exact:true}).click();await expect(objPage.locator('#demo-receipt')).toBeVisible();
-  for(const strTheme of ['Light','Dark']){await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText(strTheme,{exact:true}).click();await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter((objAnimation)=>objAnimation.playState==='running').length)).toBe(0);await objPage.screenshot({path:test.info().outputPath(`receipt-${strTheme}.png`),fullPage:true});await expect.soft(objPage).toHaveScreenshot(`receipt-${strTheme}.png`,{fullPage:true,mask:[objPage.locator('#receipt-reference'),objPage.locator('#receipt-identity')]});}
+  for(const strTheme of ['Light','Dark']){await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText(strTheme,{exact:true}).click();await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter((objAnimation)=>objAnimation.playState==='running').length)).toBe(0);await objPage.screenshot({path:test.info().outputPath(`receipt-${strTheme}.png`),fullPage:true});await expect.soft(objPage).toHaveScreenshot(`receipt-tracking-${strTheme}.png`,{fullPage:true,mask:[objPage.locator('#receipt-reference'),objPage.locator('#receipt-identity')]});}
   await objPage.setViewportSize({width:320,height:900});expect(await objPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
