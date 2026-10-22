@@ -2,6 +2,7 @@ import { createServer as createHttpsServer } from 'node:https';
 import { createServer as createHttpServer } from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
 import { createApp } from './app.js';
+import { createSchedulingService } from './ordering/scheduling-service.js';
 import { createOrderService } from './ordering/order-service.js';
 import { createCatalogService } from './ordering/catalog-service.js';
 import { openDatabase } from './data/database.js';
@@ -17,6 +18,12 @@ let objDatabase;
 let objRuntime;
 let objServer;
 let bClosed = false;
+function application(objAuthRuntime) {
+  const objCatalogService = createCatalogService(objDatabase);
+  const objSchedulingService = createSchedulingService(objDatabase);
+  return createApp({ objAuthRuntime, objCatalogService, objSchedulingService,
+    objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService) });
+}
 function closeResources() {
   if (bClosed) return;
   bClosed = true; objRuntime?.destroy(); objDatabase?.close();
@@ -33,11 +40,11 @@ try {
     applyMigrations(objDatabase);
     objRuntime = createAuthRuntime(objDatabase, { strOrigin: process.env.AUTH_ORIGIN,
       strEncryptionKeyHex: process.env.MFA_ENCRYPTION_KEY_HEX });
-    objServer = createHttpsServer(objTls, createApp({ objAuthRuntime: objRuntime, objCatalogService: createCatalogService(objDatabase), objOrderService: createOrderService(objDatabase, createCatalogService(objDatabase)) }));
+    objServer = createHttpsServer(objTls, application(objRuntime));
   } else if (process.env.DATABASE_PATH !== undefined) {
     if (!process.env.DATABASE_PATH || !existsSync(process.env.DATABASE_PATH)) throw new Error('Existing catalog database required.');
     objDatabase = openDatabase(process.env.DATABASE_PATH); applyMigrations(objDatabase);
-    objServer = createHttpServer(createApp({ objCatalogService: createCatalogService(objDatabase), objOrderService: createOrderService(objDatabase, createCatalogService(objDatabase)) }));
+    objServer = createHttpServer(application());
   } else {
     // Preserve the existing view-only HTTP fixture and availability injection seam.
     const { default: objApp } = await import('./app.js');

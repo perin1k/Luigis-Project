@@ -1,4 +1,5 @@
 import express from 'express';
+import { createSchedulingRouter } from './ordering/scheduling-router.js';
 import { createOrderRouter } from './ordering/order-router.js';
 import { createPricingRouter } from './ordering/pricing-router.js';
 import { AUTH_COOKIES, readAuthCookies } from './auth/auth-transport.js';
@@ -7,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime, objCatalogService, objOrderService } = {}) {
+export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService } = {}) {
 const objApp = express();
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
@@ -78,6 +79,7 @@ objApp.get('/', (objRequest, objResponse, fnNext) => {
   });
 });
 if (objCatalogService) objApp.use('/api/pricing', createPricingRouter(objCatalogService));
+if (objSchedulingService) objApp.use('/api/pickup-times', createSchedulingRouter(objSchedulingService));
 if (objOrderService) objApp.use('/api/orders', createOrderRouter(objOrderService));
 objApp.get('/order', async (objRequest, objResponse, fnNext) => {
   const objCatalog = objCatalogService?.readCatalog() ?? null;
@@ -92,7 +94,7 @@ objApp.get('/order', async (objRequest, objResponse, fnNext) => {
     strTitle: "Order Online | Luigi's Pizza",
     strDescription: "Build your Luigi's pizza, choose drinks, and review your dine-in or carry-out order.",
     objSizes, objToppings: objCatalog ? Object.fromEntries(objCatalog.arrToppings.map((objItem) => [objItem.strCode, objItem.strLabel])) : TOPPINGS,
-    arrDrinks: objCatalog ? objCatalog.arrBeverages.map((objItem) => objItem.strLabel) : DRINKS, objAvailability, objCatalog, bOrderSubmission: Boolean(objOrderService),
+    arrDrinks: objCatalog ? objCatalog.arrBeverages.map((objItem) => objItem.strLabel) : DRINKS, objAvailability, objCatalog, bOrderSubmission: Boolean(objOrderService), bScheduling: Boolean(objSchedulingService),
   });
 });
 // Isolated visual reference only. Checkout never redirects to this route.

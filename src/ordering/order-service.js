@@ -23,25 +23,25 @@ export function validateContact(objContact, strService) {
   return objClean;
 }
 
-/** Persist an unpaid accepted snapshot. Scheduling and payment are separate gates. */
-export function createOrderService(objDatabase, objCatalogService) {
+/** Persist an unpaid accepted snapshot and, when configured, its atomic capacity hold. */
+export function createOrderService(objDatabase, objCatalogService, objSchedulingService) {
   function submitOrder(objInput) {
-    if (!exact(objInput, ['strRequestId', 'strService', 'objContact', 'objPricing'])
+    if (!exact(objInput, ['strRequestId', 'strService', 'objContact', 'objPricing', ...(objSchedulingService ? ['objPickup'] : [])])
       || typeof objInput.strRequestId !== 'string' || !UUID_PATTERN.test(objInput.strRequestId)) invalid('Use a valid order request identifier.');
     const objContact = validateContact(objInput.objContact, objInput.strService);
     // Keyed by an unguessable request UUID; the hash detects changed retries without storing raw requests.
     const strOrderId = objInput.strRequestId;
-    const strQuoteId = createHash('sha256').update(JSON.stringify([strOrderId, objInput.strService, objContact, objInput.objPricing])).digest('hex');
+    const strQuoteId = createHash('sha256').update(JSON.stringify([strOrderId, objInput.strService, objContact, objInput.objPricing, ...(objSchedulingService ? [objInput.objPickup] : [])])).digest('hex');
     return runTransaction(objDatabase, () => {
       const objExisting = objDatabase.prepare('SELECT public_reference, accepted_quote_id FROM orders WHERE id=?').get(strOrderId);
       if (objExisting) {
         if (objExisting.accepted_quote_id !== strQuoteId) throw new PricingError('request_conflict', 'This request already saved a different order. Review your changes and try again.', 409);
-        return result(objExisting.public_reference, true);
+        return result(objExisting.public_reference, true, strOrderId);
       }
       const objPrice = objCatalogService.priceOrder(objInput.objPricing, { bWithinTransaction: true });
       const strVersion = objPrice.strCatalogVersionId;
       const strReference = randomUUID();
-      const dtNow = new Date().toISOString();
+      const dtNow = objSchedulingService?.now() ?? new Date().toISOString();
       const dtExpires = new Date(Date.parse(dtNow) + 30 * 60 * 1000).toISOString();
       objDatabase.prepare('INSERT INTO orders (id, public_reference, service_type, catalog_version_id, created_at) VALUES (?,?,?,?,?)')
         .run(strOrderId, strReference, objInput.strService, strVersion, dtNow);
@@ -79,13 +79,18 @@ export function createOrderService(objDatabase, objCatalogService) {
       objDatabase.prepare(`INSERT INTO order_quotes (id,order_id,catalog_version_id,item_subtotal_cents,tax_cents,tip_cents,total_cents,currency,tax_policy_reference,rounding_policy_reference,created_at,expires_at)
         VALUES (?,?,?,?,?,?,?,'USD',?,?,?,?)`).run(strQuoteId, strOrderId, strVersion, objPrice.centsSubtotal, objPrice.centsTax, objPrice.centsTip, objPrice.centsTotal,
         objPrice.strTaxPolicy, 'invoice-half-up-v1', dtNow, dtExpires);
+      if (objSchedulingService) objSchedulingService.reserve(strOrderId, objInput.objPickup, objInput.objPricing.arrPizzas.reduce((intSum, objPizza) => intSum + objPizza.intQuantity, 0), dtNow);
       objDatabase.prepare('UPDATE order_quotes SET accepted_at=? WHERE id=?').run(dtNow, strQuoteId);
-      return result(strReference, false);
+      return result(strReference, false, strOrderId);
     });
   }
-  function result(strReference, bReplayed) {
+  function result(strReference, bReplayed, strOrderId) {
+    const objPickup = objSchedulingService?.readReservation(strOrderId);
     return { strReference, strState: 'unpaid', bReplayed,
-      strMessage: 'Your order details are saved. Payment and a pickup time are still required; your order is not confirmed.' };
+      ...(objPickup ? { objPickup } : {}),
+      strMessage: objPickup?.strHoldState === 'active' ? 'Your order details and pickup hold are saved. Payment is still required; your order is not confirmed.'
+        : objPickup ? 'Your order details are saved, but the pickup hold is no longer active. Refresh pickup times before starting a new checkout; your order is not confirmed.'
+        : 'Your order details are saved. Payment and a pickup time are still required; your order is not confirmed.' };
   }
   return { submitOrder };
 }

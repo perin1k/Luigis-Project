@@ -2,6 +2,9 @@
   <h2 id="review-title" tabindex="-1">Looking delicious.</h2>
   <p class="step-description">Give everything one last look before payment.</p>
   <div id="order-review" aria-label="Order review"></div>
+  <% if (bScheduling) { %>
+  <div class="field"><label for="pickup-time" class="form-label">Pickup or dine-in ready time</label><select id="pickup-time" class="form-select" aria-describedby="pickup-help" required><option value="">Choose a time</option></select><p id="pickup-help" class="field-hint">All times are Central (America/Chicago). A time is held for 30 minutes when you continue to checkout; payment is required to confirm your order.</p><button id="refresh-pickup" type="button" class="btn btn-outline-primary">Refresh pickup times</button><p id="pickup-status" role="status" aria-live="polite"></p></div>
+  <% } %>
   <% if (objCatalog) { %>
   <div class="field"><label for="tip-percent" class="form-label">Optional tip percentage</label><input id="tip-percent" class="form-control" type="number" value="0" min="0" step="1" inputmode="numeric" aria-describedby="tip-help"><p id="tip-help" class="field-hint">Optional, calculated on items plus tax. Tips go entirely to service staff.</p></div>
   <p id="pricing-status" role="status" aria-live="polite"></p>

@@ -669,3 +669,7 @@ configuration and verification commands.
 BE-02 unpaid persistence: [service/API and browser integration guide](docs/order-submission-design.md).
 Order saving is enabled with a configured database. Scheduling, payment confirmation
 and final acceptance remain separate; use invented contacts only.
+
+Pickup scheduling (BE-10): [rules, API, transaction and file guide](docs/scheduling-design.md).
+Configured order submission now requires an available ready-time selection and
+saves a 30-minute capacity hold atomically; payment confirmation remains separate.
