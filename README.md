@@ -101,6 +101,10 @@ integrated features; do not bypass their configuration to make a platform run.
 Public GCP/DuckDNS hosting is required; exact resources, HTTPS, costs and deployment
 are still implementation work. Staff/admin functions stay authenticated even
 though customer pages are public. No site-wide preview password gate is required.
+The approved hosting direction now uses a Compute Engine Spot VM funded through
+the sponsor's GCP credits. See [the hosting decision record](docs/hosting-design.md)
+for confirmed choices, interruption/restart limits and outstanding configuration.
+No deployment or continuous availability is established by that decision.
 
 ## File guide
 
@@ -109,6 +113,8 @@ members' incremental work and synchronizing authorized Trello/GitHub updates.
 `docs/integrations.md` describes actual/demo services and future Stripe replacement.
 `docs/cross-platform.md` describes portable setup, platform-specific security
 prerequisites and the evidence required for Windows/macOS/Linux support.
+`docs/hosting-design.md` records TECH-01 ownership/funding/Spot decisions and the
+remaining storage, HTTPS, cost and recovery choices before deployment.
 A card or design approval is not proof of implemented behavior.
 
 ### Session validation (BE-08, first increment)
