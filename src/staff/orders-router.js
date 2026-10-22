@@ -2,10 +2,10 @@ import express from 'express';
 import {randomBytes} from 'node:crypto';
 import {AUTH_COOKIES,COOKIE_OPTIONS,createCsrfProtection,readAuthCookies} from '../auth/auth-transport.js';
 import {StaffOrderError} from './orders-service.js';
-export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,objDemoRefundService,objNotificationService,strOrigin,fnRender}){
+export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,objDemoRefundService,objNotificationService,objAnalyticsService,strOrigin,fnRender}){
   const objOrigin=new URL(strOrigin);if(objOrigin.protocol!=='https:'||objOrigin.origin!==strOrigin)throw new Error('Exact staff HTTPS origin required.');
   const objRouter=express.Router();const objCsrf=createCsrfProtection();
-  objRouter.use(['/staff/orders','/api/staff/orders'],(objRequest,objResponse,fnNext)=>{
+  objRouter.use(['/staff/orders','/api/staff/orders','/api/staff/analytics'],(objRequest,objResponse,fnNext)=>{
     objResponse.set({'Cache-Control':'no-store','Pragma':'no-cache','X-Robots-Tag':'noindex, nofollow','Referrer-Policy':'no-referrer','Vary':'Cookie, Origin'});
     if(!objRequest.socket.encrypted||objRequest.headers.host!==objOrigin.host||(objRequest.headers.origin!==undefined&&objRequest.headers.origin!==strOrigin)
       ||(objRequest.headers['sec-fetch-site']&&!['same-origin','none'].includes(objRequest.headers['sec-fetch-site'])))return objResponse.status(403).type('text').send('A secure staff connection is required.');
@@ -64,6 +64,10 @@ export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressS
     });
     objRouter.use('/api/staff/orders/:reference/notifications/retry',(objError,objRequest,objResponse,fnNext)=>{if(!objError)return fnNext();return objResponse.status(objError.status===413?413:400).json({strMessage:'Check the preview request.'});});
   }
+  if(objAnalyticsService)objRouter.get('/api/staff/analytics',(objRequest,objResponse)=>{
+    try{const objResult=objAnalyticsService.read(objResponse.locals.strSessionToken,objRequest.query);return objResult?objResponse.json(objResult):objResponse.status(403).json({strMessage:'Administrative access is required.'});}
+    catch(objError){return objResponse.status(objError instanceof StaffOrderError?objError.intStatus:503).json({strMessage:objError instanceof StaffOrderError?objError.message:'Analytics could not be loaded.'});}
+  });
   objRouter.get('/api/staff/orders',(objRequest,objResponse,fnNext)=>serve(objRequest,objResponse,fnNext,true,false));
   objRouter.get('/api/staff/orders/:reference',(objRequest,objResponse,fnNext)=>serve(objRequest,objResponse,fnNext,true,true));
   objRouter.get('/staff/orders',(objRequest,objResponse,fnNext)=>serve(objRequest,objResponse,fnNext,false,false));

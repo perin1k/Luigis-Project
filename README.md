@@ -695,3 +695,7 @@ Administrators review cancellations and refunds separately; no real money moves.
 Internal confirmation, Ready, cancellation and refund previews (BE-11):
 [notification processor, private UI, retention and file guide](docs/notification-preview-design.md).
 These are internal previews only; no email or SMS is sent.
+
+Admin-only sales reporting API (BE-06 increment):
+[metric definitions, integration points and verification](docs/sales-analytics-design.md).
+Dashboard integration and full-story acceptance remain open.
