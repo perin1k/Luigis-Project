@@ -65,3 +65,24 @@ test('receipt light/dark visual capture and narrow reflow',async({page:objPage})
   for(const strTheme of ['Light','Dark']){await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText(strTheme,{exact:true}).click();await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter((objAnimation)=>objAnimation.playState==='running').length)).toBe(0);await objPage.screenshot({path:test.info().outputPath(`receipt-${strTheme}.png`),fullPage:true});await expect.soft(objPage).toHaveScreenshot(`receipt-tracking-${strTheme}.png`,{fullPage:true,mask:[objPage.locator('#receipt-reference'),objPage.locator('#receipt-identity')]});}
   await objPage.setViewportSize({width:320,height:900});expect(await objPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+test('throttled recovery retains the original payment identity and confirms only one payment',async({page:objPage,request:objRequest})=>{
+  await checkout(objPage);const arrRequestIds=[];let intAttempts=0;
+  await objPage.route('**/api/demo-payments',async(objRoute)=>{
+    arrRequestIds.push(objRoute.request().postDataJSON().strRequestId);intAttempts++;
+    if(intAttempts===1){await objRoute.fetch();await objRoute.abort();return;}
+    if(intAttempts===2){await objRoute.fulfill({status:429,headers:{'Retry-After':'1'},contentType:'application/json',body:JSON.stringify({strCode:'request_limit',strMessage:'Too many requests. Wait a minute, then retry with your current selections.'})});return;}
+    await objRoute.continue();
+  });
+  await objPage.getByRole('button',{name:'Confirm demo payment',exact:true}).click();
+  await expect(objPage.locator('#form-error')).toContainText('response was interrupted');
+  await objPage.getByRole('button',{name:'Check demo payment result',exact:true}).click();
+  await expect(objPage.locator('#form-error')).toContainText('Too many requests');
+  await expect(objPage.getByRole('button',{name:'Back',exact:true})).toBeDisabled();
+  await expect(objPage.getByRole('button',{name:'Edit order review',exact:true})).toBeDisabled();
+  await expect(objPage.getByRole('button',{name:'Check demo payment result',exact:true})).toBeEnabled();
+  expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
+  await objPage.getByRole('button',{name:'Check demo payment result',exact:true}).click();
+  await expect(objPage.locator('#demo-receipt')).toBeVisible();expect(arrRequestIds).toHaveLength(3);expect(new Set(arrRequestIds).size).toBe(1);
+  const objCounts=await(await objRequest.get('/__test/count')).json();expect(objCounts.intPayments).toBe(1);expect(objCounts.intConfirmed).toBe(1);
+});

@@ -47,9 +47,9 @@ domain service behavior separately.
 
 `npm run test:unit`: **240 pass**, zero failures/skips. Run the command to
 reproduce the complete server regression suite. This middleware
-adds no template/style/browser script. New throttled error-state browser coverage
-and existing integrated browser/manual gates remain acceptance work; server tests
-do not waive them. Keep SEC-01 open.
+adds no template/style/browser script. The [payment-recovery browser refinement](verification/sec-01-payment-retry.md)
+now covers throttled recovery in Chromium/WebKit; Firefox startup and existing
+integrated visual/manual gates remain acceptance work. Server tests do not waive them. Keep SEC-01 open.
 
 ## Operational limits
 
