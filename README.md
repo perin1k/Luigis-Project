@@ -698,4 +698,5 @@ These are internal previews only; no email or SMS is sent.
 
 Admin-only sales reporting API (BE-06 increment):
 [metric definitions, integration points and verification](docs/sales-analytics-design.md).
-Dashboard integration and full-story acceptance remain open.
+The private owner dashboard uses native date filters and purchased item snapshots;
+full-story acceptance remains open.

@@ -1,3 +1,4 @@
+import {chicagoDate} from '../ordering/scheduling-service.js';
 import express from 'express';
 import {randomBytes} from 'node:crypto';
 import {AUTH_COOKIES,COOKIE_OPTIONS,createCsrfProtection,readAuthCookies} from '../auth/auth-transport.js';
@@ -5,7 +6,7 @@ import {StaffOrderError} from './orders-service.js';
 export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,objDemoRefundService,objNotificationService,objAnalyticsService,strOrigin,fnRender}){
   const objOrigin=new URL(strOrigin);if(objOrigin.protocol!=='https:'||objOrigin.origin!==strOrigin)throw new Error('Exact staff HTTPS origin required.');
   const objRouter=express.Router();const objCsrf=createCsrfProtection();
-  objRouter.use(['/staff/orders','/api/staff/orders','/api/staff/analytics'],(objRequest,objResponse,fnNext)=>{
+  objRouter.use(['/staff/orders','/api/staff/orders','/api/staff/analytics','/staff/analytics'],(objRequest,objResponse,fnNext)=>{
     objResponse.set({'Cache-Control':'no-store','Pragma':'no-cache','X-Robots-Tag':'noindex, nofollow','Referrer-Policy':'no-referrer','Vary':'Cookie, Origin'});
     if(!objRequest.socket.encrypted||objRequest.headers.host!==objOrigin.host||(objRequest.headers.origin!==undefined&&objRequest.headers.origin!==strOrigin)
       ||(objRequest.headers['sec-fetch-site']&&!['same-origin','none'].includes(objRequest.headers['sec-fetch-site'])))return objResponse.status(403).type('text').send('A secure staff connection is required.');
@@ -64,6 +65,12 @@ export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressS
     });
     objRouter.use('/api/staff/orders/:reference/notifications/retry',(objError,objRequest,objResponse,fnNext)=>{if(!objError)return fnNext();return objResponse.status(objError.status===413?413:400).json({strMessage:'Check the preview request.'});});
   }
+  if(objAnalyticsService)objRouter.get('/staff/analytics',(objRequest,objResponse,fnNext)=>{
+    const strToday=chicagoDate(new Date().toISOString());const objFilter=Object.keys(objRequest.query).length?objRequest.query:{from:strToday,to:strToday};
+    try{const objReport=objAnalyticsService.read(objResponse.locals.strSessionToken,objFilter);if(!objReport){objResponse.status(403);return fnRender(objRequest,objResponse,fnNext,'pages/error',{strTitle:'Owner access required | Luigi’s Pizza',strDescription:'Private owner access.',intStatus:403,strHeading:'Owner access required.',strMessage:'Sign in with your individual administrator account to view sales.'});}
+      fnRender(objRequest,objResponse,fnNext,'pages/staff-analytics',{strTitle:'Owner sales | Luigi’s Pizza',strDescription:'Private owner sales reporting.',objReport,objFilter,strError:''});
+    }catch(objError){const intStatus=objError instanceof StaffOrderError?objError.intStatus:503;objResponse.status(intStatus);fnRender(objRequest,objResponse,fnNext,'pages/staff-analytics',{strTitle:'Owner sales | Luigi’s Pizza',strDescription:'Private owner sales reporting.',objReport:null,objFilter,strError:objError instanceof StaffOrderError?objError.message:'Sales could not be loaded. Try again.'});}
+  });
   if(objAnalyticsService)objRouter.get('/api/staff/analytics',(objRequest,objResponse)=>{
     try{const objResult=objAnalyticsService.read(objResponse.locals.strSessionToken,objRequest.query);return objResult?objResponse.json(objResult):objResponse.status(403).json({strMessage:'Administrative access is required.'});}
     catch(objError){return objResponse.status(objError instanceof StaffOrderError?objError.intStatus:503).json({strMessage:objError instanceof StaffOrderError?objError.message:'Analytics could not be loaded.'});}

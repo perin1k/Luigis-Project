@@ -41,4 +41,11 @@
 .staff-notifications summary:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }
 .staff-notifications h3 { font-size: 1.1rem; }
 .notification-body { white-space: pre-line; overflow-wrap: anywhere; }
+.analytics-values { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; }
+.analytics-values dd { text-align: right; margin: 0; }
+.analytics-table { table-layout: fixed; overflow-wrap: anywhere; }
+.analytics-table--items th:first-child { width: 38%; }
+.analytics-table thead th { font-size: .75rem; text-transform: none; letter-spacing: 0; }
+.analytics-table tbody th { font: 650 1rem var(--font-body); }
+.staff-page .analytics-table > :not(caption) > * > * { padding: .5rem .25rem; }
 @media (max-width: 47.99rem) { .tracking-cancellation-area { min-height: 16rem; } }

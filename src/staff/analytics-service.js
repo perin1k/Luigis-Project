@@ -18,6 +18,16 @@ export function createAnalyticsService(objDatabase,objSessions){
     const arrCohort=arrPayments.filter((objRow)=>fnInPeriod(objRow.paid_at)&&objRow.fulfillment_status!=='Cancelled');
     const setCohort=new Set(arrCohort.map((objRow)=>objRow.id));let centsCohortItems=0;
     for(const objRow of arrAllocations)if(setCohort.has(objRow.payment_id)&&objRow.component==='item')centsCohortItems=safeCents(centsCohortItems+objRow.signed_cents);
+    const mapItems=new Map();
+    for(const objPayment of arrPayments){
+      const bPurchased=fnInPeriod(objPayment.paid_at);const bRefunded=Boolean(objDatabase.prepare("SELECT confirmed_at FROM demo_refund_attempts WHERE payment_id=? AND state='succeeded'").all(objPayment.id).find((objRefund)=>fnInPeriod(objRefund.confirmed_at)));if(!bPurchased&&!bRefunded)continue;
+      for(const objLine of objDatabase.prepare('SELECT * FROM order_lines WHERE order_id=? ORDER BY line_number').all(objPayment.order_id)){
+        let strLabel=objLine.display_name_snapshot;
+        if(objLine.item_type==='pizza'){const objPizza=objDatabase.prepare('SELECT size_name_snapshot,crust_name_snapshot FROM pizza_line_details WHERE order_line_id=?').get(objLine.id);const arrToppings=objDatabase.prepare('SELECT name_snapshot FROM pizza_line_toppings WHERE order_line_id=? ORDER BY name_snapshot').all(objLine.id).map((objTopping)=>objTopping.name_snapshot);strLabel=`${objPizza.size_name_snapshot} pizza · ${objPizza.crust_name_snapshot} · ${arrToppings.join(', ')||'Marinara & cheese'}`;}
+        else {const objDrink=objDatabase.prepare('SELECT size_name_snapshot,beverage_name_snapshot FROM drink_line_details WHERE order_line_id=?').get(objLine.id);strLabel=`${objDrink.size_name_snapshot} ${objDrink.beverage_name_snapshot}`;}
+        const strKey=JSON.stringify([objLine.item_type,strLabel]);const objItem=mapItems.get(strKey)??{strType:objLine.item_type,strLabel,intPurchased:0,intRefunded:0,intNet:0};if(bPurchased)objItem.intPurchased=safeCents(objItem.intPurchased+objLine.quantity);if(bRefunded)objItem.intRefunded=safeCents(objItem.intRefunded+objLine.quantity);objItem.intNet=objItem.intPurchased-objItem.intRefunded;mapItems.set(strKey,objItem);
+      }
+    }
     const arrPickup=arrPayments.filter((objRow)=>fnInPeriod(objRow.promised_at));const mapHours=new Map();let intReadyCoverage=0,intOnTime=0,numElapsedMinutes=0,intElapsedCoverage=0;
     for(const objRow of arrPickup){
       const intHour=Number(objHourFormat.format(new Date(objRow.promised_at)));const objHour=mapHours.get(intHour)??{intHour,intOrders:0,intCancelled:0,intNotCollected:0};objHour.intOrders++;if(objRow.fulfillment_status==='Cancelled')objHour.intCancelled++;if(objRow.fulfillment_status==='Not collected')objHour.intNotCollected++;mapHours.set(intHour,objHour);
@@ -25,7 +35,7 @@ export function createAnalyticsService(objDatabase,objSessions){
       if(objRow.ready_at){intReadyCoverage++;if(objRow.ready_at<=objRow.promised_at)intOnTime++;}
       if(objRow.ready_at&&objRow.received_at&&objRow.ready_at>=objRow.received_at){intElapsedCoverage++;numElapsedMinutes+=(Date.parse(objRow.ready_at)-Date.parse(objRow.received_at))/60000;}
     }
-    return {strAdapter:'luigis-demo-v1',strTimeZone:'America/Chicago',strFrom:objInput.from,strTo:objInput.to,objPeriod,
+    return {arrBestSellers:[...mapItems.values()].sort((objLeft,objRight)=>objRight.intNet-objLeft.intNet||objLeft.strLabel.localeCompare(objRight.strLabel)),strAdapter:'luigis-demo-v1',strTimeZone:'America/Chicago',strFrom:objInput.from,strTo:objInput.to,objPeriod,
       objPaymentCohort:{intEligibleOrders:arrCohort.length,centsNetItems:centsCohortItems,centsAverageItems:arrCohort.length?halfUpAverage(centsCohortItems,arrCohort.length):null},
       objPickup:{intOrders:arrPickup.length,intReadyEligibleOrders:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled').length,intMissingReadyTimes:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled'&&!objRow.ready_at).length,intMissingPickupTimes:arrPayments.filter((objRow)=>fnInPeriod(objRow.paid_at)&&!objRow.promised_at).length,intReadyCoverage,intOnTime,intElapsedCoverage,numAverageElapsedMinutes:intElapsedCoverage?numElapsedMinutes/intElapsedCoverage:null,arrHours:[...mapHours.values()].sort((objLeft,objRight)=>objLeft.intHour-objRight.intHour)},
       intCancelledAwaitingRefund:arrPayments.filter((objRow)=>objRow.fulfillment_status==='Cancelled'&&fnInPeriod(objRow.paid_at)&&!objDatabase.prepare("SELECT id FROM demo_refund_attempts WHERE payment_id=? AND state='succeeded'").get(objRow.id)).length};

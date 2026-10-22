@@ -1,7 +1,8 @@
-# BE-06 reporting API increment
+# BE-06 sales reporting and owner dashboard
 
-Story: https://trello.com/c/4K7rYt9e. This increment adds genuine server aggregates,
-not a completed dashboard or full card acceptance. It uses the existing demo
+Story: https://trello.com/c/4K7rYt9e. The initial API increment added genuine server aggregates. The dashboard
+follow-up below connects them to a private owner page; full acceptance is still
+pending. It uses the existing demo
 payment/refund allocations, purchased quotes, bookings and timestamps. No new
 dependency, migration, provider evidence, external service or financial action.
 
@@ -46,10 +47,9 @@ gain staff access. No contact, order identifier, card or secret link is returned
 This API deliberately reports the current `luigis-demo-v1` ledger. Future real
 provider records need separately reviewed integration. It scans the small demo
 history inside one synchronous transaction; large-scale reporting/index changes
-are not claimed. Best-selling quantity/reversal details, dashboard integration,
-browser/visual/manual acceptance and any remaining full-card requirements stay
-open. No existing customer/staff HTML, CSS or browser module changes in this
-increment; no new page or SEO exception is introduced.
+are not claimed. The initial API increment changed no browser component. The follow-up below
+adds the dashboard and quantity breakdown; full browser/manual acceptance remains
+open.
 
 ## Verification
 
@@ -63,8 +63,39 @@ wrong-origin denial, no-store and absence of private customer/card/link fields.
 Existing scheduling tests cover the shared timezone helper's daylight-saving
 behavior. Run `npm run test:unit` to reproduce the full server regression suite.
 
-There is no new browser component or HTML page to visually audit in this bounded
-API increment. Browser, Lighthouse and manual acceptance for the future dashboard
-are still required before accepting the full BE-06 story. This does not waive
-those gates or claim a completed UI. Syntax, content and focused diff review apply
-here; keep the Trello card open.
+The initial API-only increment required no new page audit. Dashboard verification
+and remaining gates are recorded in the follow-up evidence below. Keep the card
+open until the mandatory acceptance checks are met.
+
+## Owner dashboard follow-up — October 22
+
+`src/views/pages/staff-analytics.ejs` provides `/staff/analytics`, using the same
+server-authorized report and native GET date filters. No new browser script,
+charting library or client-side financial authority is introduced. The route in
+`src/staff/orders-router.js` inherits direct HTTPS, origin/host, session, no-store
+and noindex guards. Unauthorized/expired sessions receive a private-data-free
+403 error page. Invalid date ranges return an accessible error and preserved
+filter fields, without displaying a stale report. Default dates use the current
+Central day; submitted dates are revalidated by the service.
+
+The admin order queue now exposes an Owner sales navigation link, using the
+persisted session role in `src/staff/orders-service.js`; employees do not receive
+this navigation or reporting permission. `src/public/css/staff.css` adds scoped
+responsive definition lists and tables, with normal-sized table row labels and
+compact headings on mobile. Tables have captions and native scoped headers;
+missing values remain explicit rather than appearing as measured zeros.
+
+`arrBestSellers` uses order-line recipe, topping, crust, beverage and size snapshots,
+not the current menu. Matching purchased snapshots are grouped across price changes
+and ranked by net quantity, then label. Sales count on payment dates; the approved
+full refund reverses every purchased line quantity on its confirmation date.
+Refund-only periods can therefore have negative net quantities. Purchased and
+refunded quantities remain separate columns, and paid no-shows are retained.
+Cancelled orders awaiting a refund remain visible as an unresolved case rather
+than being represented as confirmed quantity reversals. No partial-refund rule
+or guessed recipe is added.
+
+The user explicitly approved the SEO-only exception for this new private page on
+October 22: retain noindex; all other gates still apply. See
+[dashboard verification](verification/be-06-dashboard.md). This does not waive
+Firefox or manual accessibility acceptance and makes no deployment claim.

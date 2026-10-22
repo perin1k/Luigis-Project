@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head><%- include('../partials/head', {bStaffPage:true}) %><meta name="robots" content="noindex, nofollow"></head>
+<body><%- include('../partials/header') %>
+<% function money(centsValue){return centsValue===null?'Not available':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(centsValue/100);} %>
+<main id="main-content" tabindex="-1" class="container staff-page">
+  <nav aria-label="Staff navigation"><a class="staff-secondary" href="/staff/account">Staff account</a> · <a class="staff-secondary" href="/staff/orders">Order queue</a></nav>
+  <div class="staff-intro"><p class="eyebrow">A seat at the owner’s table</p><h1>Sales, clearly served.</h1><p>Follow sales, refunds and the rhythm of your kitchen. All dates and pickup hours are Central.</p></div>
+  <section class="staff-card mb-4" aria-labelledby="report-heading"><h2 id="report-heading">Choose your reporting dates</h2>
+    <p id="report-instructions">Both dates are included. Choose up to 366 days. Changing dates reloads the report.</p>
+    <form method="get" action="/staff/analytics" class="staff-queue-filters">
+      <div><label for="report-from" class="form-label">From date</label><input id="report-from" type="date" name="from" min="1000-01-01" max="9999-12-31" required aria-describedby="report-instructions" class="form-control" value="<%= typeof objFilter.from==='string'?objFilter.from:'' %>"></div>
+      <div><label for="report-to" class="form-label">Through date</label><input id="report-to" type="date" name="to" min="1000-01-01" max="9999-12-31" required aria-describedby="report-instructions" class="form-control" value="<%= typeof objFilter.to==='string'?objFilter.to:'' %>"></div>
+      <button type="submit" tabindex="0" class="btn btn-primary">Update report</button>
+    </form><% if(strError){ %><p class="staff-notice" role="alert"><%= strError %></p><% } %>
+  </section>
+  <% if(objReport){ const objPeriod=objReport.objPeriod;const objCohort=objReport.objPaymentCohort;const objPickup=objReport.objPickup; %>
+  <p>Reporting <strong><%= objReport.strFrom %></strong> through <strong><%= objReport.strTo %></strong>. Demonstration records; no real money moves.</p>
+  <% if(objReport.intCancelledAwaitingRefund){ %><p class="staff-notice"><%= objReport.intCancelledAwaitingRefund %> cancelled paid orders in this payment cohort still need refund resolution. A cancellation is not a completed refund.</p><% } %>
+  <div class="staff-grid mb-4">
+    <section class="staff-card" aria-labelledby="sales-heading"><h2 id="sales-heading">Period sales &amp; refunds</h2><p>Payments count on payment dates; reversals count on refund dates, including older purchases.</p>
+      <dl class="analytics-values"><dt>Net item sales</dt><dd><%= money(objPeriod.centsItems) %></dd><dt>Net tax</dt><dd><%= money(objPeriod.centsTax) %></dd><dt>Net tips</dt><dd><%= money(objPeriod.centsTips) %></dd><dt>Confirmed refunds</dt><dd><%= money(objPeriod.centsRefunds) %></dd><dt>Net recorded total</dt><dd><strong><%= money(objPeriod.centsNetRecorded) %></strong></dd><dt>Processor costs</dt><dd><%= money(objPeriod.centsProcessorCosts) %></dd><dt>Retained cancellation recovery</dt><dd><%= money(objPeriod.centsRetainedCancellationRecovery) %></dd></dl>
+      <p>Full demonstration refunds include tax and tip, without a fee deduction.</p>
+    </section>
+    <section class="staff-card" aria-labelledby="average-heading"><h2 id="average-heading">Average item order</h2><p>Based on payment dates. Cancelled orders are excluded; paid no-shows stay included. Later cancellations or refunds can revise this cohort.</p>
+      <dl class="analytics-values"><dt>Eligible paid orders</dt><dd><%= objCohort.intEligibleOrders %></dd><dt>Cohort net items</dt><dd><%= money(objCohort.centsNetItems) %></dd><dt>Average item value</dt><dd><strong><%= money(objCohort.centsAverageItems) %></strong></dd></dl>
+      <% if(!objCohort.intEligibleOrders){ %><p>No eligible paid orders in this date range.</p><% } %>
+      <h3>Kitchen timing</h3><p><%= objPickup.intOnTime %> of <%= objPickup.intReadyCoverage %> orders with recorded ready times were ready by their promised pickup time.</p>
+      <p><%= objPickup.intMissingReadyTimes %> non-cancelled pickup orders have no ready time; <%= objPickup.intMissingPickupTimes %> paid-cohort orders have no pickup time.</p>
+      <p>Average Received-to-Ready: <strong><%= objPickup.numAverageElapsedMinutes===null?'Not available':objPickup.numAverageElapsedMinutes.toFixed(1)+' minutes' %></strong>, from <%= objPickup.intElapsedCoverage %> valid timestamp pairs. Includes overnight waiting.</p>
+    </section>
+  </div>
+  <section class="staff-card mb-4" aria-labelledby="items-heading"><h2 id="items-heading">Best-selling items</h2><p>Purchased recipe snapshots, ranked by net quantity. Refunds reverse the full purchased quantity on their confirmation date; a refund-only period can show a negative net quantity.</p>
+    <% if(!objReport.arrBestSellers.length){ %><p>No purchased or refunded quantities in this date range.</p><% }else{ %>
+    <table class="table analytics-table analytics-table--items"><caption>Item quantities for the selected payment and refund dates</caption><thead><tr><th scope="col">Item</th><th scope="col">Sold</th><th scope="col">Refund</th><th scope="col">Net</th></tr></thead><tbody><% for(const objItem of objReport.arrBestSellers){ %><tr><th scope="row"><%= objItem.strLabel %></th><td><%= objItem.intPurchased %></td><td><%= objItem.intRefunded %></td><td><%= objItem.intNet %></td></tr><% } %></tbody></table><% } %>
+  </section>
+  <section class="staff-card" aria-labelledby="pickup-heading"><h2 id="pickup-heading">Pickup rhythm</h2><p><%= objPickup.intOrders %> paid orders have promised pickup dates in this range. Totals include the cancelled and not-collected outcomes shown separately.</p>
+    <% if(!objPickup.arrHours.length){ %><p>No promised pickup times in this date range.</p><% }else{ %><table class="table analytics-table"><caption>Promised pickup hour in America/Chicago</caption><thead><tr><th scope="col">Hour</th><th scope="col">Orders</th><th scope="col">Cancelled</th><th scope="col">Not collected</th></tr></thead><tbody><% for(const objHour of objPickup.arrHours){ %><tr><th scope="row"><%= String(objHour.intHour).padStart(2,'0') %>:00</th><td><%= objHour.intOrders %></td><td><%= objHour.intCancelled %></td><td><%= objHour.intNotCollected %></td></tr><% } %></tbody></table><% } %>
+  </section>
+  <% } %>
+</main><%- include('../partials/footer') %></body></html>

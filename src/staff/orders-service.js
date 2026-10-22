@@ -38,7 +38,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
       const arrRows=objDatabase.prepare(`${SELECT_SQL} WHERE ${PAID_SQL} AND o.fulfillment_status IN ('Received','Preparing','Baking','Ready')
         AND (?='' OR d.service_date=?) AND (?='active' OR o.fulfillment_status=?)
         ORDER BY coalesce(b.promised_at,'9999'),o.id LIMIT ? OFFSET ?`).all(objFilter.strDate,objFilter.strDate,objFilter.strStatus,objFilter.strStatus,PAGE_SIZE+1,objFilter.intPage*PAGE_SIZE);
-      return {...objFilter,intPageSize:PAGE_SIZE,bHasNext:arrRows.length>PAGE_SIZE,strToday:chicagoDate(dtNow.toISOString()),dtCheckedAt:dtNow.toISOString(),
+      return {...objFilter,bCanAdminister:objIdentity.strRole==='admin',intPageSize:PAGE_SIZE,bHasNext:arrRows.length>PAGE_SIZE,strToday:chicagoDate(dtNow.toISOString()),dtCheckedAt:dtNow.toISOString(),
         arrOrders:arrRows.slice(0,PAGE_SIZE).map((objRow)=>summary(objRow,dtNow))};
     });
   }
