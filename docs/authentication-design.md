@@ -799,6 +799,13 @@ does not provision a certificate, change OS trust, create a real key/account, or
 send invitations by email/SMS. Node does not automatically load a `.env` file.
 Keep keys and certificates out of Git and never paste them into Trello.
 
+Cross-platform setup follows [the shared compatibility guide](cross-platform.md).
+Staff HTTPS fixtures require OpenSSL on PATH on Windows, macOS and supported Linux;
+check the local installation before testing. OS certificate trust and private-file
+permissions are separate operator responsibilities. Platform differences never
+authorize weaker TLS, cookies, MFA or account recovery. No certificate installation,
+trust-store mutation or permission change is performed by these instructions.
+
 ### Reproducible integration checks
 
 - `npm run test:unit` includes `tests/unit/auth-runtime.test.js` for actual mounted

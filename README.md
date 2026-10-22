@@ -80,6 +80,11 @@ wizard state remain the responsibility of the existing browser modules.
 
 ## Run locally
 
+Windows, macOS and supported Linux distributions are compatibility targets.
+See [cross-platform setup and verification](docs/cross-platform.md) for prerequisites,
+shell examples, key/certificate differences and the current evidence limits.
+Targeting an OS does not mean its full acceptance matrix has already passed.
+
 Install Node.js 22.19 or newer with npm, then run:
 
 ```sh
@@ -90,6 +95,9 @@ npm start
 Visit http://127.0.0.1:3000. For automatic server restarts during development,
 use `npm run dev`. `PORT` and `HOST` environment variables override the local
 defaults. No database, secret, or payment credentials are needed for this page.
+These commands alone start the unconfigured presentation server, not the complete
+database-backed demonstration. Use the reviewed authentication/payment guides for
+integrated features; do not bypass their configuration to make a platform run.
 Public GCP/DuckDNS hosting is required; exact resources, HTTPS, costs and deployment
 are still implementation work. Staff/admin functions stay authenticated even
 though customer pages are public. No site-wide preview password gate is required.
@@ -99,6 +107,8 @@ though customer pages are public. No site-wide preview password gate is required
 `AGENTS.md` defines shared contributor practices, including preserving other
 members' incremental work and synchronizing authorized Trello/GitHub updates.
 `docs/integrations.md` describes actual/demo services and future Stripe replacement.
+`docs/cross-platform.md` describes portable setup, platform-specific security
+prerequisites and the evidence required for Windows/macOS/Linux support.
 A card or design approval is not proof of implemented behavior.
 
 ### Session validation (BE-08, first increment)
@@ -487,7 +497,7 @@ playwright.config.js
 | `tests/e2e/theme.spec.js` | Checks theme preference persistence, system changes, storage failure recovery, dark-mode ordering accessibility, and dark visual references. |
 | `tests/unit/order-pricing.test.js` | Verifies size/topping pricing, combined subtotals, and invalid inputs for browser previews. |
 | `tests/unit/http-hosting.test.js` | Starts an ephemeral local HTTP server to verify raw compressed/uncompressed content, encoding negotiation, caching, HEAD/range handling, and private-file protection. Uses Node's test runner. |
-| `tests/e2e/*-snapshots/` | Reviewed Windows browser/viewport reference images for visual comparisons. |
+| `tests/e2e/*-snapshots/` | Reviewed OS/browser/viewport reference images for visual comparisons; references in other suites may target different operating systems. |
 | `README.md` | Setup, file explanations, and verification instructions. |
 
 Request flow: browser requests `/` or `/order` → Express renders the relevant EJS
@@ -596,7 +606,8 @@ control; generated reports, traces, and failure captures are ignored by Git.
 | `tests/e2e/*.spec.js-snapshots/` | Reference images used by visual tests to detect unintended layout changes. They are test inputs, not reports or deliverable screenshots. |
 | `playwright.config.js` | Runs the browser tests in Chromium, Firefox, and WebKit at desktop and mobile viewport sizes and manages the local test server. |
 
-Run unit tests with `npm run test:unit`. Set up browsers and run browser tests:
+Run unit tests with `npm run test:unit`. After `npm ci`, install the locked browser
+binaries and run browser tests. In Windows PowerShell:
 
 ```powershell
 $env:PLAYWRIGHT_BROWSERS_PATH = Join-Path (Get-Location) 'node_modules/.cache/ms-playwright'
@@ -604,6 +615,19 @@ npx playwright install chromium firefox webkit
 npm test
 npm run test:unit
 ```
+
+In macOS/Linux Bash or Zsh:
+
+```sh
+export PLAYWRIGHT_BROWSERS_PATH="$PWD/node_modules/.cache/ms-playwright"
+npx playwright install chromium firefox webkit
+npm test
+npm run test:unit
+```
+
+HTTPS fixtures also need OpenSSL on PATH. Linux browser system dependencies may
+need separate, reviewed OS package installation. See the
+[platform prerequisites](docs/cross-platform.md#prerequisites) before testing.
 
 The configuration looks for browsers inside
 `node_modules/.cache/ms-playwright`. Set `PLAYWRIGHT_BROWSERS_PATH` to that
@@ -622,7 +646,10 @@ npm run test:visual
 Review generated baseline images before accepting them. Screenshot creation
 alone is not visual approval. Review changes before updating baselines; never
 replace them merely to silence a failed comparison. Baselines depend on the
-operating system and browser version; the existing references are for Windows.
+operating system and browser version. The repository contains Windows (`win32`)
+and macOS (`darwin`) references with different coverage and freshness. Linux
+references and cross-platform release acceptance remain outstanding; missing
+baselines are not passes. Follow the [visual verification policy](docs/cross-platform.md#visual-references).
 Browser-specific baselines belong beside the test
 in the matching `*.spec.js-snapshots/` directory; reports and failure artifacts are ignored.
 
@@ -630,7 +657,8 @@ Automated axe checks supplement manual keyboard, zoom, and screen-reader reviews
 they do not establish full WCAG 2.2 AA conformance. WebKit tests do not substitute
 for all real Safari/device checks.
 
-For Lighthouse, start the server with `NODE_ENV=production`, then run:
+For Lighthouse, start the server in production mode using the shell-specific
+examples in [the cross-platform guide](docs/cross-platform.md#shell-configuration), then run:
 
 ```sh
 npx lighthouse http://127.0.0.1:3000 --output=json --output=html --output-path=./reports/lighthouse --chrome-flags="--headless" --view=false

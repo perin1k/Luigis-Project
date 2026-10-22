@@ -6,6 +6,14 @@ No external authorization, charge, settlement or native Apple Wallet sheet occur
 This implements the generated-identity approach approved after TECH-06 review;
 it does not silently replace public card entry with a tiny fixed number allowlist.
 
+Cross-platform setup and evidence limits are documented in the
+[shared compatibility guide](cross-platform.md). POSIX owner/mode checks and
+Windows ACL verification are different mechanisms: the current loader does not
+automatically verify Windows ACLs. Operators must verify private key access on
+their actual OS before hosted acceptance. Preserve the approved key-custody and
+symlink protections; do not remove a check to make another platform pass. This
+documentation does not provision keys, change permissions or certify an OS.
+
 ## Design and file guide
 
 - `src/data/migrations/011-demo-payments.sql` adds `demo_payment_attempts` and

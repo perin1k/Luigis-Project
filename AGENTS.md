@@ -35,6 +35,36 @@ preferences within the approved task while preserving shared engineering standar
 
 ## 2. Mandatory human-in-the-loop workflow
 
+### Cross-platform compatibility
+
+- Target Windows, macOS and Linux distributions supported by the locked tooling
+  for development and application execution. Preserve equivalent customer,
+  employee and admin behavior, accessibility and security across these targets.
+  A target is not verified support until evidence exists for that environment.
+- Follow [the cross-platform guide](docs/cross-platform.md). Use the declared Node
+  requirement and lockfile; record actual Node/npm, OS and browser versions.
+  Do not change dependencies or introduce platform-specific tooling without the
+  applicable implementation plan and approval.
+- Use Node path/URL/temp-directory APIs, case-correct imports and argument-based
+  process execution. Avoid hardcoded machine paths, shell-specific npm scripts
+  and assumptions about path separators, filename case, executable bits or chmod.
+  Document necessary platform-specific commands with equivalent instructions.
+- Preserve integrity-sensitive bytes and the repository's .gitattributes rules.
+  Never rewrite pinned blocklists or applied migrations, alter checksums, or
+  perform broad line-ending normalization to make another platform pass.
+- Keep visual references specific to OS/browser/viewport. Review native rendering
+  differences rather than replacing another OS's snapshots or weakening checks.
+  Browser-engine coverage does not establish OS coverage or real Safari testing.
+- Preserve private-key, TLS, session and database protections on every platform.
+  Windows ACLs and POSIX ownership/modes need their respective verification;
+  disabling a security check is not a compatibility fix.
+- For affected executable work, verify relevant setup, runtime, unit/integration
+  and browser flows across the target systems before cross-platform release
+  acceptance. Record passes, failures and unavailable environments separately.
+  Documentation-only increments need content/link/diff review, not invented
+  runtime results. CI, OS package installation and infrastructure changes require
+  their own reviewed implementation scope; this policy does not provision them.
+
 ### Before implementation
 
 1. Identify the requested user story and inspect relevant files, repository
