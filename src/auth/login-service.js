@@ -53,6 +53,10 @@ export function createLoginService(objDatabase, { objMfaService, fnNow = () => n
     return Object.freeze({ strSessionToken: strToken });
   }
   return Object.freeze({
+    revokeChallenge(strChallenge) {
+      if (!validToken(strChallenge)) return false;
+      return objDatabase.prepare('DELETE FROM login_challenges WHERE token_digest = ?').run(digest(strChallenge)).changes > 0;
+    },
     async beginSignIn(strUsername, strPassword, strSource) {
       if (typeof strUsername !== 'string' || strUsername.length > 64 || !/^[a-zA-Z0-9._-]{3,64}$/.test(strUsername)
         || strUsername.includes('\n')

@@ -5,6 +5,11 @@ migration 008 persists throttles, short-lived MFA challenges and identity epochs
 See `docs/authentication-design.md` for contracts, limits and pending HTTP/security
 integration. It does not yet provide a browser sign-in flow or create accounts.
 
+`src/auth/auth-router.js` and `src/auth/auth-transport.js` provide isolated JSON
+authentication routes and cookie/CSRF helpers. They are deliberately not mounted
+in `src/app.js`. Direct TLS and an explicitly configured HTTPS origin are required;
+proxy deployment, sign-in screens, setup and recovery remain separate increments.
+
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.
