@@ -769,3 +769,5 @@ Broader privacy and hosted-operation acceptance remain separate.
 Review preparation (TECH-03):
 [approved team-led review, flexible timing and evidence checklist](docs/review-access-plan.md).
 Hosting is not activated and uninterrupted availability is not promised.
+
+DATA-02: [current storage verification and remaining platform evidence](docs/verification/data-02-storage.md).
