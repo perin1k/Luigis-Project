@@ -12,6 +12,24 @@ async function review(objPage) {
 }
 test.beforeEach(async({request:objRequest})=>{await objRequest.get('/__test/reset');});
 
+test('payment recap preserves dine-in email and selected Central ready time', async ({ page: objPage }) => {
+  await review(objPage);
+  await objPage.getByRole('button', { name: 'Edit service', exact: true }).click();
+  await objPage.getByRole('radio', { name: /Dine-in/ }).check();
+  for (let intStep = 0; intStep < 3; intStep++) await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
+  await objPage.getByLabel('Phone number').fill('');
+  await objPage.getByLabel('Email address').fill('guest@example.invalid');
+  await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
+  await expect(objPage.locator('#pickup-status')).toContainText('Choose a ready time');
+  await objPage.getByLabel('Pickup or dine-in ready time').selectOption('0');
+  await objPage.getByRole('button', { name: 'Continue to payment', exact: true }).click();
+  await expect(objPage.locator('#payment-context')).toContainText('Dine-in');
+  await expect(objPage.locator('#payment-context')).toContainText('guest@example.invalid');
+  await expect(objPage.locator('#payment-context')).not.toContainText('2025550100');
+  await expect(objPage.locator('#payment-pickup')).toContainText('10:20 AM');
+  await expect(objPage.locator('#payment-breakdown')).toContainText('$7.68');
+});
+
 test('scheduled status separates cancellation decisions from refund outcomes and fails safely', async ({ page: objPage }) => {
   await objPage.goto('/__test/scheduled-status');
   const fnStatus = (strName) => objPage.getByRole('article', { name: strName, exact: true });
@@ -58,6 +76,8 @@ test('ready time is required, reserved with the order, and safely reused on retr
   expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
   await objPage.screenshot({path:test.info().outputPath('pickup-review.png'),fullPage:true});
   await objPage.getByRole('button',{name:'Continue to payment',exact:true}).click();await expect(objPage.locator('#payment-pickup')).toContainText('10:20 AM');
+  await expect(objPage.locator('#payment-context')).toContainText('Synthetic Guest');
+  await expect(objPage.locator('#payment-breakdown')).toContainText('$7.68');
   await objPage.getByRole('button',{name:'Continue to secure payment',exact:true}).click();await expect(objPage.locator('#order-save-status')).toContainText('pickup hold are saved');
   await expect(objPage.locator('#payment-pickup')).toContainText('Temporary unpaid hold');
   await objPage.getByRole('button',{name:'Continue to secure payment',exact:true}).click();expect((await(await objRequest.get('/__test/count')).json()).intCount).toBe(1);

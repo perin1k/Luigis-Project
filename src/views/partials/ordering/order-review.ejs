@@ -2,6 +2,9 @@
   <h2 id="review-title" tabindex="-1">Looking delicious.</h2>
   <p class="step-description">Give everything one last look before payment.</p>
   <div id="order-review" aria-label="Order review"></div>
+  <% if (objCatalog && !bScheduling) { %>
+  <p class="notice">Cancellation requests require admin approval before preparation begins. Approved full demonstration refunds include items, tax and tip, with no fee deduction. Approval and refund completion are separate steps.</p>
+  <% } %>
   <% if (bScheduling) { %>
   <div class="field">
     <label for="pickup-time" class="form-label">Pickup or dine-in ready time</label>

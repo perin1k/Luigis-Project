@@ -15,6 +15,72 @@ async function review(objPage) {
   await expect(objPage.locator('#server-totals')).toContainText('$18.66');
 }
 test.beforeEach(async ({ request: objRequest }) => { await objRequest.get('/__test/reset'); });
+
+test('payment summary uses current contact, items and authoritative totals after edits', async ({ page: objPage }) => {
+  await review(objPage);
+  await objPage.getByRole('button', { name: 'Continue to payment', exact: true }).click();
+  await expect(objPage.locator('#payment-context')).toContainText('Carry-out');
+  await expect(objPage.locator('#payment-context')).toContainText('Synthetic Guest');
+  await expect(objPage.locator('#payment-context')).toContainText('9315550100');
+  await expect(objPage.locator('#payment-items')).toContainText('Large pizza');
+  await expect(objPage.locator('#payment-items')).toContainText('$15.00');
+  await expect(objPage.locator('#payment-breakdown')).toContainText('$1.66');
+  await expect(objPage.locator('#payment-breakdown')).toContainText('$18.66');
+  await objPage.getByRole('button', { name: 'Edit order review', exact: true }).click();
+  await objPage.getByRole('button', { name: 'Edit contact details', exact: true }).click();
+  await objPage.getByLabel('Your name').fill('Revised <guest>');
+  await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
+  await expect(objPage.locator('#server-totals')).toBeVisible();
+  await objPage.getByRole('button', { name: 'Edit pizzas', exact: true }).click();
+  await objPage.getByRole('button', { name: 'Edit pizza 1', exact: true }).click();
+  await objPage.getByRole('radio', { name: /Small/ }).check();
+  await objPage.getByRole('button', { name: 'Save pizza', exact: true }).click();
+  for (let intStep = 0; intStep < 3; intStep++) await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
+  await expect(objPage.locator('#server-totals')).toContainText('$9.88');
+  await objPage.getByLabel('Optional tip percentage').fill('10');
+  await objPage.getByRole('button', { name: 'Continue to payment', exact: true }).click();
+  await expect(objPage.locator('#server-totals')).toContainText('$10.87');
+  await objPage.getByRole('button', { name: 'Continue to payment', exact: true }).click();
+  await expect(objPage.locator('#payment-context')).toContainText('Revised <guest>');
+  await expect(objPage.locator('#payment-context').locator('guest')).toHaveCount(0);
+  await expect(objPage.locator('#payment-items')).toContainText('Small pizza');
+  await expect(objPage.locator('#payment-items')).not.toContainText('Large pizza');
+  await expect(objPage.locator('#payment-breakdown')).toContainText('$0.88');
+  await expect(objPage.locator('#payment-breakdown')).toContainText('$0.99');
+  await expect(objPage.locator('#payment-breakdown')).toContainText('$10.87');
+});
+
+test('visual payment summary in both themes is accessible and reflows at 320px', async ({ page: objPage }) => {
+  await review(objPage);
+  await objPage.getByRole('button', { name: 'Continue to payment', exact: true }).click();
+  for (const strTheme of ['Light', 'Dark']) {
+    await objPage.getByRole('group', { name: 'Appearance', exact: true }).getByText(strTheme, { exact: true }).click();
+    await expect.poll(() => objPage.evaluate(() => document.getAnimations().filter((objAnimation) => objAnimation.playState === 'running').length)).toBe(0);
+    expect((await new AxeBuilder({ page: objPage }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()).violations).toEqual([]);
+    await expect(objPage.locator('[data-step="5"]')).toHaveScreenshot(`payment-summary-${strTheme}.png`);
+  }
+  await objPage.setViewportSize({ width: 320, height: 844 });
+  expect(await objPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await objPage.getByRole('button', { name: 'Edit order review', exact: true }).focus();
+  await objPage.keyboard.press('Enter');
+  await expect(objPage.getByRole('heading', { name: 'Looking delicious.', exact: true })).toBeFocused();
+});
+
+test('payment summary withdraws stale prices after failed or changed authoritative checks', async ({ page: objPage, request: objRequest }) => {
+  await review(objPage);
+  await objPage.getByRole('button', { name: 'Continue to payment', exact: true }).click();
+  await objPage.route('**/api/pricing/preview', (objRoute) => objRoute.abort());
+  await objPage.getByRole('button', { name: 'Continue to secure payment', exact: true }).click();
+  await expect(objPage.locator('#payment-breakdown')).toBeHidden();
+  await expect(objPage.locator('#payment-items')).toBeEmpty();
+  await expect(objPage.locator('#payment-subtotal')).toHaveText('Review required');
+  await objPage.unroute('**/api/pricing/preview');
+  await objRequest.get('/__test/price');
+  await objPage.getByRole('button', { name: 'Continue to secure payment', exact: true }).click();
+  await expect(objPage.locator('#form-error')).toContainText('menu changed');
+  await expect(objPage.locator('#payment-breakdown')).toBeHidden();
+  await expect(objPage.locator('#payment-subtotal')).toHaveText('Review required');
+});
 test('database-priced order, tax, after-tax tip, explicit review and payment preservation', async ({ page: objPage }) => {
   const arrErrors = []; objPage.on('pageerror', (objError) => arrErrors.push(objError.message));
   await review(objPage);

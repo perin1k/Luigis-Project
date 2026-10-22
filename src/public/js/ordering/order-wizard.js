@@ -195,6 +195,37 @@ function renderReview() {
 const bOrderSubmission = document.querySelector('#order-app').dataset.orderSubmission === 'true';
 let objPendingSubmission = null;
 
+function renderPaymentSummary() {
+  const elContext = document.querySelector('#payment-context');
+  elContext.replaceChildren();
+  for (const [strLabel, strValue] of [['Service', getServiceLabel()], ['Name', objOrder.strName], ['Phone', objOrder.strPhone], ['Email', objOrder.strEmail]]) {
+    if (!strValue) continue;
+    const elLine = createElement('div', '');
+    elLine.append(createElement('dt', strLabel), createElement('dd', strValue));
+    elContext.append(elLine);
+  }
+  const elItems = document.querySelector('#payment-items'); elItems.replaceChildren();
+  const arrDescriptions = [...objOrder.arrPizzas.map(getPizzaDescription), ...objOrder.arrDrinks.filter((objDrink) => objDrink.intQuantity > 0)
+    .map((objDrink) => `${objDrink.intQuantity} × ${objDrink.strSize} ${objDrink.strName}`)];
+  const arrAmounts = objCatalog ? objPricing?.arrLines.map((objLine) => objLine.centsTotal) : [
+    ...objOrder.arrPizzas.map(calculatePizzaPrice), ...objOrder.arrDrinks.filter((objDrink) => objDrink.intQuantity > 0)
+      .map((objDrink) => SIZES[objDrink.strSize].centsDrink * objDrink.intQuantity),
+  ];
+  for (const [intIndex, strDescription] of arrDescriptions.entries()) {
+    const elItem = createElement('li', '');
+    elItem.append(createElement('span', strDescription), createElement('strong', arrAmounts ? formatCurrency(arrAmounts[intIndex]) : 'Price unavailable'));
+    elItems.append(elItem);
+  }
+  const elBreakdown = document.querySelector('#payment-breakdown'); elBreakdown.replaceChildren();
+  elBreakdown.hidden = !objPricing;
+  if (!objPricing) return;
+  document.querySelector('#payment-subtotal').textContent = formatCurrency(objPricing.centsSubtotal);
+  for (const [strLabel, centsAmount] of [[`Tax (${objPricing.intTaxBasisPoints / 100}%)`, objPricing.centsTax], ['Optional tip', objPricing.centsTip], ['Total', objPricing.centsTotal]]) {
+    const elLine = createElement('div', '');
+    elLine.append(createElement('dt', strLabel), createElement('dd', formatCurrency(centsAmount))); elBreakdown.append(elLine);
+  }
+}
+
 function updateContactFields() {
   const bCarryOut = objOrder.strService === 'carry-out';
   document.querySelector('#phone-field').hidden = !bCarryOut && !bOrderSubmission;
@@ -226,6 +257,13 @@ function showStep(intNextStep) {
   if (bScheduling && intStep < 5) clearPickupReceipt();
   if (intStep === 4) { renderReview(); if (objCatalog) void checkPrice(); if (bScheduling) void loadPickupTimes(); }
   if (bScheduling && intStep === 5 && objPickupSelection) document.querySelector('#payment-pickup').textContent = `Selected ready time: ${formatPickup(objPickupSelection.dtPromisedAt)} (Central). Not reserved yet; not a confirmed booking.`;
+  if (intStep === 5) renderPaymentSummary();
+  else {
+    document.querySelector('#payment-context').replaceChildren();
+    document.querySelector('#payment-items').replaceChildren();
+    document.querySelector('#payment-breakdown').replaceChildren();
+    document.querySelector('#payment-breakdown').hidden = true;
+  }
   updateNextButton();
   arrSections[intStep].querySelector('h2').focus();
 }
@@ -301,6 +339,7 @@ elAdd.addEventListener('click', () => {
 
 elCancel.addEventListener('click', () => { clearError(); resetPizzaEditor(); elAdd.focus(); });
 elBack.addEventListener('click', () => { if (!bOpeningPayment && !bCheckingPrice) showStep(intStep - 1); });
+document.querySelector('#edit-payment-review').addEventListener('click', () => { if (!bOpeningPayment && !bCheckingPrice && !bPaymentUnknown) showStep(4); });
 
 elForm.addEventListener('input', (objEvent) => {
   clearError();
@@ -358,6 +397,7 @@ elForm.addEventListener('submit', async (objEvent) => {
 
 async function startPayment() {
   bOpeningPayment = true; elNext.disabled = true; elBack.disabled = true; elForm.setAttribute('aria-busy','true');
+  document.querySelector('#edit-payment-review').disabled = true;
   document.querySelector('#payment-status').textContent = bDemoPayments ? 'Processing demonstration payment…' : 'Opening secure checkout…';
   try {
     if (bDemoPayments) {
@@ -378,6 +418,7 @@ async function startPayment() {
     showError(objError.message);
   } finally {
     bOpeningPayment = false; elNext.disabled = false; elBack.disabled = bPaymentUnknown;
+    document.querySelector('#edit-payment-review').disabled = bPaymentUnknown;
     for (const elInput of elForm.querySelectorAll('[name="payment"]')) elInput.disabled = bPaymentUnknown;
     elForm.removeAttribute('aria-busy'); document.querySelector('#payment-status').textContent = ''; updateNextButton();
   }
@@ -415,6 +456,13 @@ function displayPrice() {
   }
   elTotals.hidden = false;
   document.querySelector('#payment-total').textContent = `Total ${formatCurrency(objPricing.centsTotal)} · Tax ${formatCurrency(objPricing.centsTax)} · Tip ${formatCurrency(objPricing.centsTip)}`;
+  if (intStep === 5) renderPaymentSummary();
+}
+function clearPaymentPrices() {
+  document.querySelector('#payment-breakdown').hidden = true;
+  document.querySelector('#payment-items').replaceChildren();
+  document.querySelector('#payment-subtotal').textContent = 'Review required';
+  document.querySelector('#payment-total').textContent = 'Confirm the current total before continuing.';
 }
 function refreshCatalog(objCurrent) {
   objCatalog = objCurrent; configureMenu(objCatalog);
@@ -443,6 +491,7 @@ async function checkPrice() {
   const objInput = pricingInput();
   if (!document.querySelector('#tip-percent').validity.valid || !Number.isSafeInteger(objInput.intTipPercent) || objInput.intTipPercent < 0) { showError('Enter a whole-number tip percentage of zero or more.', document.querySelector('#tip-percent')); return null; }
   const strInput = JSON.stringify(objInput); const intStartedStep = intStep;
+  if (intStep === 5) clearPaymentPrices();
   bCheckingPrice = true; elNext.disabled = true; elBack.disabled = true; elForm.setAttribute('aria-busy', 'true');
   document.querySelector('#pricing-status').textContent = 'Checking current prices and availability…';
   const objAbort = new AbortController(); const intTimer = setTimeout(() => objAbort.abort(), 10000);
@@ -453,6 +502,7 @@ async function checkPrice() {
     if (JSON.stringify(pricingInput()) !== strInput || intStep !== intStartedStep) return null;
     if (objResponse.status === 409 && objResult.objCatalog) {
       refreshCatalog(objResult.objCatalog); objPricing = null;
+      if (intStep === 5) clearPaymentPrices();
       document.querySelector('#server-totals').hidden = true;
       showError('The menu changed. Your selections are saved. Continue to check and review the updated total.'); return null;
     }
@@ -465,6 +515,7 @@ async function checkPrice() {
       objPricing = null; document.querySelector('#server-totals').hidden = true;
       document.querySelector('#pricing-status').textContent = 'Current prices could not be confirmed.';
       document.querySelector('#payment-total').textContent = 'Confirm the current total before continuing.';
+      if (intStep === 5) clearPaymentPrices();
       showError(objError instanceof TypeError || objError.name === 'AbortError' || objError instanceof SyntaxError
       ? 'Unable to check current prices. Your selections are saved. Please try again.' : objError.message);
     }

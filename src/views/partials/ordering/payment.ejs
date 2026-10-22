@@ -2,11 +2,18 @@
   <h2 id="payment-title" tabindex="-1">The last little step.</h2>
   <p class="step-description">Choose how you’d like to pay.</p>
   <p id="payment-disclosure" class="notice">Demonstration checkout—use test payment details. No charge will be made.</p>
+  <section class="payment-order-review" aria-labelledby="payment-order-title">
+    <h3 id="payment-order-title">Before you pay</h3>
+    <dl id="payment-context" class="payment-details"></dl>
+    <ul id="payment-items" class="summary-items" aria-label="Items to pay for"></ul>
+    <button id="edit-payment-review" type="button" class="text-button">Edit order review</button>
+  </section>
   <fieldset aria-describedby="payment-disclosure"><legend>Payment method</legend><div class="payment-options">
     <label class="choice-card"><input type="radio" name="payment" value="card" aria-labelledby="card-label" aria-describedby="card-hint" checked><span><strong id="card-label">Credit or debit card</strong><small id="card-hint"><%= bDemoPayments ? 'A generated test identity is used. No card number or security code is requested.' : 'Use synthetic card details only.' %></small></span><span class="payment-symbol" aria-hidden="true">▤</span></label>
     <label class="choice-card"><input type="radio" name="payment" value="apple-pay" aria-labelledby="apple-pay-label" aria-describedby="apple-pay-hint"><span><strong id="apple-pay-label">Apple Pay</strong><small id="apple-pay-hint">Demonstration method. No Apple Wallet charge.</small></span></label>
   </div></fieldset>
   <div class="payment-recap"><span>Order subtotal</span><strong id="payment-subtotal">$0.00</strong></div>
+  <dl id="payment-breakdown" class="payment-details payment-breakdown" aria-label="Payment breakdown" hidden></dl>
   <p id="payment-total" class="field-hint">Review your order before continuing.</p>
   <p class="payment-status" id="payment-status" role="status" aria-live="polite"></p>
 <% if (bScheduling) { %><section class="schedule-policy" aria-labelledby="payment-pickup-title"><h3 id="payment-pickup-title">Your ready time</h3><p id="payment-pickup"></p><p class="field-hint">An unpaid hold is temporary. Payment and booking confirmation are separate from saving your order details.</p></section><% } %>
