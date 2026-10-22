@@ -28,6 +28,12 @@ acceptance, while payment and scheduling integration remain separate.
   beverages, availability controls and an optional whole-number percentage tip.
   A selected unavailable topping remains removable. A selected unavailable drink
   can be reduced to zero. The tip starts at zero and is not mandatory.
+- During a price check, the browser wizard temporarily disables navigation. If
+  disabling the focused navigation button drops focus onto the document body,
+  `checkPrice()` restores that button after the check, provided the step is still
+  current. It does not move focus away from another control the visitor selected.
+  The pricing browser suite includes keyboard-only carry-out and dine-in journeys
+  covering step focus, changed-tip confirmation, payment navigation and Back.
 - The staff-style asset approach is reused for the database-backed ordering page:
   `order-bundle.css` combines the existing CSS sources, and module preloads avoid
   unnecessary dependency discovery delays. Source styles, CSP and functionality

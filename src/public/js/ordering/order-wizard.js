@@ -443,6 +443,7 @@ async function checkPrice() {
   const objInput = pricingInput();
   if (!document.querySelector('#tip-percent').validity.valid || !Number.isSafeInteger(objInput.intTipPercent) || objInput.intTipPercent < 0) { showError('Enter a whole-number tip percentage of zero or more.', document.querySelector('#tip-percent')); return null; }
   const strInput = JSON.stringify(objInput); const intStartedStep = intStep;
+  const elFocusedControl = [elNext, elBack].includes(document.activeElement) ? document.activeElement : null;
   bCheckingPrice = true; elNext.disabled = true; elBack.disabled = true; elForm.setAttribute('aria-busy', 'true');
   document.querySelector('#pricing-status').textContent = 'Checking current prices and availability…';
   const objAbort = new AbortController(); const intTimer = setTimeout(() => objAbort.abort(), 10000);
@@ -471,6 +472,7 @@ async function checkPrice() {
     return null;
   } finally {
     clearTimeout(intTimer); bCheckingPrice = false; elNext.disabled = false; elBack.disabled = false; elForm.removeAttribute('aria-busy');
+    if (elFocusedControl && intStep === intStartedStep && document.activeElement === document.body) elFocusedControl.focus();
   }
 }
 resetPizzaEditor();

@@ -15,6 +15,60 @@ async function review(objPage) {
   await expect(objPage.locator('#server-totals')).toContainText('$18.66');
 }
 test.beforeEach(async ({ request: objRequest }) => { await objRequest.get('/__test/reset'); });
+
+async function tabTo(objPage, objTarget) {
+  for (let intTab = 0; intTab < 80; intTab += 1) {
+    if (await objTarget.evaluate((elElement) => elElement === document.activeElement)) return;
+    await objPage.keyboard.press('Tab');
+  }
+  await expect(objTarget).toBeFocused();
+}
+
+for (const strService of ['Carry-out', 'Dine-in']) {
+  test(`keyboard pricing review preserves ${strService} selections and requires tip confirmation`, async ({ page: objPage }) => {
+    await objPage.goto('/order');
+    if (strService === 'Dine-in') {
+      await tabTo(objPage, objPage.getByRole('radio', { name: 'Carry-out', exact: true }));
+      await objPage.keyboard.press('ArrowRight');
+      await expect(objPage.getByRole('radio', { name: 'Dine-in', exact: true })).toBeChecked();
+    }
+    const objContinue = objPage.getByRole('button', { name: 'Continue', exact: true });
+    await tabTo(objPage, objContinue); await objPage.keyboard.press('Enter');
+    await expect(objPage.locator('#pizza-title')).toBeFocused();
+    await tabTo(objPage, objPage.getByRole('button', { name: 'Add pizza', exact: true }));
+    await objPage.keyboard.press('Enter');
+    await tabTo(objPage, objContinue); await objPage.keyboard.press('Enter');
+    await expect(objPage.locator('#drinks-title')).toBeFocused();
+    await tabTo(objPage, objContinue); await objPage.keyboard.press('Enter');
+    await expect(objPage.locator('#details-title')).toBeFocused();
+    await tabTo(objPage, objPage.getByLabel('Your name'));
+    await objPage.keyboard.type('Synthetic Keyboard Guest');
+    if (strService === 'Carry-out') {
+      await tabTo(objPage, objPage.getByLabel('Phone number'));
+      await objPage.keyboard.type('9315550100');
+    }
+    await tabTo(objPage, objContinue); await objPage.keyboard.press('Enter');
+    await expect(objPage.locator('#review-title')).toBeFocused();
+    await expect(objPage.locator('#server-totals')).toContainText('$7.68');
+    await tabTo(objPage, objPage.getByLabel('Optional tip percentage'));
+    await objPage.keyboard.press('ControlOrMeta+A'); await objPage.keyboard.type('10');
+    const objPayment = objPage.getByRole('button', { name: 'Continue to payment', exact: true });
+    await tabTo(objPage, objPayment); await objPage.keyboard.press('Enter');
+    await expect(objPage.locator('#server-totals')).toContainText('$8.45');
+    await expect(objPage.getByRole('alert')).toContainText('confirm');
+    await expect(objPage.locator('#order-review')).toContainText(strService);
+    await expect(objPayment).toBeEnabled();
+    await expect(objPayment).toBeFocused();
+    await objPage.keyboard.press('Enter');
+    await expect(objPage.locator('#payment-title')).toBeFocused();
+    await tabTo(objPage, objPage.getByRole('button', { name: 'Back', exact: true }));
+    await objPage.keyboard.press('Enter');
+    await expect(objPage.locator('#review-title')).toBeFocused();
+    await expect(objPage.getByLabel('Optional tip percentage')).toHaveValue('10');
+    await expect(objPage.locator('#server-totals')).toContainText('$8.45');
+  });
+}
+
 test('database-priced order, tax, after-tax tip, explicit review and payment preservation', async ({ page: objPage }) => {
   const arrErrors = []; objPage.on('pageerror', (objError) => arrErrors.push(objError.message));
   await review(objPage);
