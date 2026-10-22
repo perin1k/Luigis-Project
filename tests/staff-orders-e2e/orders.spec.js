@@ -30,7 +30,29 @@ for(const strMode of ['queue','detail'])test(`${strMode} visual capture, accessi
     await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter((objAnimation)=>objAnimation.playState==='running').length)).toBe(0);
     expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
     await objPage.screenshot({path:test.info().outputPath(`${strMode}-${strTheme}.png`),fullPage:true});
-    await expect(objPage).toHaveScreenshot(`${strMode}-${strTheme}.png`,{fullPage:true,mask:[objPage.locator('.staff-order-reference')]});
+    await expect.soft(objPage).toHaveScreenshot(`${strMode==='detail'?'detail-progress':strMode}-${strTheme}.png`,{fullPage:true,mask:[objPage.locator('.staff-order-reference')]});
   }
   await objPage.setViewportSize({width:320,height:900});expect(await objPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('status actions persist each step, require refresh and honor cancellation holds',async({page:objPage})=>{
+  await signIn(objPage);await objPage.getByRole('link',{name:/Synthetic Guest 1 ·/}).click();await expect(objPage.getByRole('button',{name:'Mark Preparing',exact:true})).toBeDisabled();
+  await objPage.getByRole('link',{name:'Back to order queue',exact:true}).click();await objPage.getByRole('link',{name:/Synthetic Guest 2 ·/}).click();
+  for(const strStatus of ['Preparing','Baking','Ready','Completed']){
+    const elButton=objPage.getByRole('button',{name:`Mark ${strStatus}`,exact:true});await elButton.click();await expect(objPage.locator('#orders-status')).toContainText(`Saved: ${strStatus}`);await expect(elButton).toBeDisabled();
+    await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();await expect(objPage.locator('#detail-summary')).toContainText(strStatus);
+  }
+  await expect(objPage.locator('#advance-order')).toBeHidden();await objPage.getByRole('link',{name:'Back to order queue',exact:true}).click();await expect(objPage.locator('#orders-list > li')).toHaveCount(2);
+});
+test('another staff update returns a conflict and refresh recovers the current step',async({page:objPage})=>{
+  await signIn(objPage);await objPage.getByRole('link',{name:/Synthetic Guest 2 ·/}).click();
+  const strReference=new URL(objPage.url()).pathname.split('/').pop();const objOrder=await(await objPage.request.get(`/api/staff/orders/${strReference}`)).json();
+  const objCsrf=await(await objPage.request.get('/api/staff/orders/csrf')).json();
+  const objResponse=await objPage.request.post(`/api/staff/orders/${strReference}/progress`,{headers:{Origin:'https://localhost:3444','X-CSRF-Token':objCsrf.strCsrfToken},data:{intRevision:objOrder.intRevision,strStatus:'Preparing'}});expect(objResponse.status()).toBe(200);
+  await objPage.getByRole('button',{name:'Mark Preparing',exact:true}).click();await expect(objPage.locator('#orders-error')).toContainText('changed');
+  await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();await expect(objPage.getByRole('button',{name:'Mark Baking',exact:true})).toBeEnabled();
+});
+test('expired session while saving clears private details and does not advance the order',async({page:objPage,request:objRequest})=>{
+  await signIn(objPage);await objPage.getByRole('link',{name:/Synthetic Guest 2 ·/}).click();await objRequest.get('/__test/expire');
+  await objPage.getByRole('button',{name:'Mark Preparing',exact:true}).click();await expect(objPage.locator('#orders-content')).toBeEmpty();await expect(objPage.getByRole('link',{name:'Sign in again',exact:true})).toBeVisible();await expect(objPage.locator('#advance-order')).toBeHidden();
 });

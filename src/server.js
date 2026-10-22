@@ -9,6 +9,7 @@ import { openDatabase } from './data/database.js';
 import { applyMigrations } from './data/migrations.js';
 import { createDemoPaymentService } from './payments/demo-payment-service.js';
 import { loadPaymentVault } from './payments/payment-config.js';
+import { createOrderProgressService } from './staff/order-progress-service.js';
 import { createStaffOrdersService } from './staff/orders-service.js';
 import { createAuthRuntime } from './auth/auth-runtime.js';
 
@@ -26,6 +27,7 @@ function application(objAuthRuntime) {
   const objSchedulingService = createSchedulingService(objDatabase);
   const objPaymentService = createDemoPaymentService(objDatabase, { objVault: loadPaymentVault(process.env.DEMO_PAYMENT_KEYS_PATH), objCatalogService, objSchedulingService });
   return createApp({ objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
+    objOrderProgressService: objAuthRuntime ? createOrderProgressService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objStaffOrdersService: objAuthRuntime ? createStaffOrdersService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService) });
 }

@@ -8,8 +8,8 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {createOrdersFixture} from '../fixtures/staff-orders-app.js';
-function get(intPort,strPath,objHeaders={}){return new Promise((fnResolve,fnReject)=>{
-  const objRequest=request({hostname:'127.0.0.1',port:intPort,path:strPath,rejectUnauthorized:false,headers:{Host:'localhost:3444',...objHeaders}},(objResponse)=>{let strBody='';objResponse.setEncoding('utf8');objResponse.on('data',(strChunk)=>{strBody+=strChunk;});objResponse.on('end',()=>fnResolve({intStatus:objResponse.statusCode,objHeaders:objResponse.headers,strBody}));});objRequest.on('error',fnReject);objRequest.end();
+function get(intPort,strPath,objHeaders={},objBody){return new Promise((fnResolve,fnReject)=>{
+  const objRequest=request({hostname:'127.0.0.1',port:intPort,path:strPath,method:objBody?'POST':'GET',rejectUnauthorized:false,headers:{Host:'localhost:3444',...objHeaders}},(objResponse)=>{let strBody='';objResponse.setEncoding('utf8');objResponse.on('data',(strChunk)=>{strBody+=strChunk;});objResponse.on('end',()=>fnResolve({intStatus:objResponse.statusCode,objHeaders:objResponse.headers,strBody}));});objRequest.on('error',fnReject);objRequest.end(objBody?JSON.stringify(objBody):undefined);
 });}
 test('HTTPS queue endpoints require actual staff cookies, pin origin, escape names and exclude sensitive fields',async()=>{
   const objFixture=createOrdersFixture('https://localhost:3444');const strDirectory=mkdtempSync(join(tmpdir(),'luigis-orders-http-'));let objServer;
@@ -24,6 +24,16 @@ test('HTTPS queue endpoints require actual staff cookies, pin origin, escape nam
     objFixture.objDatabase.prepare('UPDATE order_contacts SET customer_name=? WHERE order_id=?').run('<img src=x onerror=alert(1)>',objFixture.arrOrders[0].strOrderId);
     const objHtml=await get(intPort,'/staff/orders',objHeaders);assert.equal(objHtml.intStatus,200);assert.match(objHtml.strBody,/&lt;img/);assert.doesNotMatch(objHtml.strBody,/<img src=x/);
     const objDetail=await get(intPort,`/api/staff/orders/${objFixture.arrOrders[0].strReference}`,objHeaders);assert.equal(objDetail.intStatus,200);assert.match(objDetail.strBody,/2025550100/);assert.doesNotMatch(objDetail.strBody,/unused@example|cents|ciphertext/);
+    const strReference=objFixture.arrOrders[1].strReference;const strProgress=`/api/staff/orders/${strReference}/progress`;
+    const objCurrent=JSON.parse((await get(intPort,`/api/staff/orders/${strReference}`,objHeaders)).strBody);
+    const objBody={intRevision:objCurrent.intRevision,strStatus:'Preparing'};
+    assert.equal((await get(intPort,strProgress,{...objHeaders,Origin:'https://localhost:3444','Content-Type':'application/json'},objBody)).intStatus,403);
+    const objCsrf=await get(intPort,'/api/staff/orders/csrf',objHeaders);
+    const strCsrfCookie=objCsrf.objHeaders['set-cookie'][0].split(';')[0];
+    const objWriteHeaders={Cookie:objHeaders.Cookie+'; '+strCsrfCookie,Origin:'https://localhost:3444','Content-Type':'application/json','X-CSRF-Token':JSON.parse(objCsrf.strBody).strCsrfToken};
+    assert.equal((await get(intPort,strProgress,{...objWriteHeaders,Origin:'https://other.invalid'},objBody)).intStatus,403);
+    assert.equal((await get(intPort,strProgress,objWriteHeaders,objBody)).intStatus,200);
+    assert.equal((await get(intPort,strProgress,objWriteHeaders,objBody)).intStatus,409);
     assert.equal((await get(intPort,'/api/staff/orders?role=admin',objHeaders)).intStatus,400);
     assert.equal((await get(intPort,'/api/staff/orders',{Cookie:`__Host-luigis-session=${strToken}; __Host-luigis-session=${strToken}`})).intStatus,400);
   }finally{if(objServer)await new Promise((fnResolve)=>objServer.close(fnResolve));objFixture.close();rmSync(strDirectory,{recursive:true,force:true});}

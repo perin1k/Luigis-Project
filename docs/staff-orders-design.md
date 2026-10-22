@@ -1,6 +1,6 @@
 # BE-04 — authorized employee order queue
 
-This read-only increment connects the existing individual staff sessions and
+The original BE-04 read-only increment connects the existing individual staff sessions and
 orders.read permission to genuine paid-order records. It adds no staff accounts,
 status mutation, payment administration, dependency or migration.
 
@@ -84,3 +84,6 @@ ignore-certificate settings never apply to production. For the audit, start
 `NODE_ENV=production node tests/fixtures/staff-orders-server.js`, then
 `node tests/audit-staff-orders.js`; stop the fixture before Playwright starts it.
 Do not use audit helpers against real accounts or publish their cookies.
+
+BE-05 now adds separately authorized status controls; see
+[the progress guide](order-progress-design.md) for write behavior and guards.

@@ -683,3 +683,5 @@ No real card entry, charge or native Apple Wallet operation occurs.
 Authorized staff queue (BE-04): [queue/API/privacy and file guide](docs/staff-orders-design.md).
 Available through the configured direct-HTTPS staff runtime and individual staff
 login; the public HTTP ordering preview does not expose employee order records.
+
+Staff fulfillment progress and its integration boundaries: [BE-05 progress guide](docs/order-progress-design.md).

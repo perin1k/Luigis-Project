@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService } = {}) {
+export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService } = {}) {
 const objApp = express();
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
@@ -113,7 +113,7 @@ objApp.get('/preview/confirmation', (objRequest, objResponse, fnNext) => {
     },
   });
 });
-if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage }));
+if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, objOrderProgressService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage }));
 if (objAuthRuntime) {
   objApp.use('/auth', objAuthRuntime.objRouter);
   objApp.get(['/staff/sign-in', '/staff/enroll', '/staff/recovery', '/staff/account'], (objRequest, objResponse, fnNext) => {

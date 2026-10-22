@@ -9,7 +9,7 @@
   <%- include('../partials/header') %>
   <% function readyTime(dtValue) { return dtValue ? new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short' }).format(new Date(dtValue)) : 'Ready time unavailable'; } %>
   <% function pageUrl(intPage) { const objQuery = new URLSearchParams({date:objQueue.strDate,status:objQueue.strStatus,page:String(intPage)}); return '/staff/orders?' + objQuery; } %>
-  <main id="main-content" class="container staff-page" tabindex="-1" data-order-reference="<%= objOrder?.strReference ?? '' %>">
+  <main id="main-content" class="container staff-page" tabindex="-1" data-order-status="<%= objOrder?.strStatus ?? '' %>" data-order-held="<%= Boolean(objOrder?.arrWarnings.length) %>" data-order-revision="<%= objOrder?.intRevision ?? '' %>" data-order-reference="<%= objOrder?.strReference ?? '' %>">
     <nav aria-label="Staff navigation"><a class="staff-secondary" href="/staff/account">Staff account</a><% if (objOrder) { %> · <a class="staff-secondary" href="/staff/orders">Back to order queue</a><% } %></nav>
     <div class="staff-intro"><p class="eyebrow">Behind the counter</p><h1><%= objOrder ? 'Order details.' : 'Ready for the rush.' %></h1><p>Confirmed-payment orders, organized by ready time. All times are Central.</p></div>
     <p id="orders-status" role="status" aria-live="polite"><%= objQueue ? `${objQueue.arrOrders.length} orders on this page.` : 'Order loaded.' %></p>
@@ -42,6 +42,13 @@
         <h3>Customer contact</h3><p id="detail-contact"><%= objOrder.objContact ? [objOrder.objContact.strName,objOrder.objContact.strPhone || objOrder.objContact.strEmail].filter(Boolean).join(' · ') : 'Contact details have been removed.' %></p>
       <% } %>
       </div>
+      <% if (objOrder && bOrderProgress) { %>
+      <div id="order-progress" class="mt-3">
+        <p>Status changes are saved for the whole team. Refresh before retrying an uncertain update.</p>
+        <button id="advance-order" type="button" class="btn btn-primary" hidden>Update status</button>
+        <noscript><p>Enable JavaScript to update order status. You can still read and navigate orders.</p></noscript>
+      </div>
+      <% } %>
       <% if (objQueue) { %><nav class="staff-pagination" aria-label="Order queue pages" id="orders-pages"><% if (objQueue.intPage > 0) { %><a class="btn btn-outline-primary" href="<%= pageUrl(objQueue.intPage-1) %>">Previous page</a><% } %><% if (objQueue.bHasNext) { %><a class="btn btn-outline-primary" href="<%= pageUrl(objQueue.intPage+1) %>">Next page</a><% } %></nav><% } %>
     </section>
   </main>

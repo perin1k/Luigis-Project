@@ -26,7 +26,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
       strServiceDate:objRow.service_date??null,bReadyTimePassed:Boolean(objRow.promised_at&&objRow.promised_at<dtNow.toISOString()),
       intPizzaQuantity:objRow.pizza_quantity,intDrinkQuantity:objRow.drink_quantity,arrWarnings};
   }
-  const SELECT_SQL=`SELECT o.id,o.public_reference,o.service_type,o.fulfillment_status,c.order_id AS contact_order_id,c.customer_name,c.phone,c.email,c.redacted_at,
+  const SELECT_SQL=`SELECT o.id,o.revision,o.public_reference,o.service_type,o.fulfillment_status,c.order_id AS contact_order_id,c.customer_name,c.phone,c.email,c.redacted_at,
     b.promised_at,d.service_date,(SELECT h.state FROM capacity_holds h WHERE h.booking_id=b.id ORDER BY h.created_at DESC LIMIT 1) AS hold_state,
     (SELECT coalesce(sum(l.quantity),0) FROM order_lines l WHERE l.order_id=o.id AND l.item_type='pizza') AS pizza_quantity,
     (SELECT coalesce(sum(l.quantity),0) FROM order_lines l WHERE l.order_id=o.id AND l.item_type='drink') AS drink_quantity
@@ -55,7 +55,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
           strDescription=`${objPizza.size_name_snapshot} pizza · ${objPizza.crust_name_snapshot} · ${arrToppings.join(', ')||'Marinara & cheese'}`;
         }return {intQuantity:objLine.quantity,strDescription};
       });
-      return {...summary(objRow,dtNow),dtCheckedAt:dtNow.toISOString(),arrItems,
+      return {...summary(objRow,dtNow),intRevision:objRow.revision,dtCheckedAt:dtNow.toISOString(),arrItems,
         objContact:objRow.redacted_at||!objRow.contact_order_id?null:{strName:objRow.customer_name??'',strPhone:objRow.phone??'',strEmail:objRow.phone?'':objRow.email??''}};
     });
   }
