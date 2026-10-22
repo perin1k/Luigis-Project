@@ -757,3 +757,7 @@ Decision completion does not establish acceptance of the coordinated BE-08/FE-08
 Payment security and accounting decisions (TECH-06):
 [approved safeguards, key lifecycle, retention and refund choices](docs/payment-security-decisions.md).
 Decision completion does not replace payment, refund, security or release acceptance.
+
+Scheduling, tracking and notification decisions (TECH-05):
+[policy, concurrency, private-access and worker contract map](docs/scheduling-tracking-decisions.md).
+Feature and release acceptance remain on their implementation and QA cards.
