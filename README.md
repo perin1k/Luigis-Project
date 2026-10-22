@@ -767,5 +767,5 @@ Retention and disposable-data decisions (TECH-02):
 Broader privacy and hosted-operation acceptance remain separate.
 
 Review preparation (TECH-03):
-[proposed professor access, rehearsal and evidence checklist](docs/review-access-plan.md).
-Access details and review timing remain pending; hosting is not activated.
+[approved team-led review, flexible timing and evidence checklist](docs/review-access-plan.md).
+Hosting is not activated and uninterrupted availability is not promised.

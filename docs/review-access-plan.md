@@ -1,11 +1,12 @@
 # TECH-03 — Review access and acceptance plan
 
 Card: [TECH-03](https://trello.com/c/Hggeidgg). Prepared October 22, 2026.
-Status: proposed review arrangement; professor access and review window await the
-human's answer. This document does not create accounts, grant permissions, publish
+Status: approved team-led staff/admin demonstration. Review timing is flexible;
+there is no fixed appointment or guaranteed availability commitment. This document
+does not create accounts, grant permissions, publish
 the application or revise release acceptance.
 
-## Recommended access arrangement
+## Approved access arrangement
 
 Use public customer ordering with invented contact details and generated synthetic
 payment identities. Demonstrate employee and admin/owner screens through a team
@@ -20,7 +21,15 @@ revocation owner. Provision privately through the reviewed account lifecycle onl
 after approval; never publish passwords in this document, GitHub or Trello. Do not
 promote an account to Owner merely to make a review convenient.
 
-The professor's required date/time is pending. Public hosting remains on hold:
+The human selected team-led staff/admin demonstration and requested flexible
+review access ("all times"), without specifying an appointment. Public customer
+access is intended throughout the remaining approved hosting period once release
+gates pass and activation is separately authorized; privileged demonstrations
+require coordination with a team member. No professor staff/admin account is
+requested. This is not guaranteed uninterrupted access: the approved Spot host
+can stop, and maintenance or incidents can interrupt service.
+
+Public hosting remains on hold:
 the instruction is preparation only, not provisioning. The approved hosted shutdown
 target remains November 1, 2026, 11 PM America/Chicago; this does not establish a
 deployment start date or promise availability. Follow [hosting decisions](hosting-design.md)
@@ -68,6 +77,7 @@ or delivered messages; native Wallet and real merchant settlement are unexercise
 Hosting plans are not a deployed endpoint. QA-01/02/03, OPS-06 and DOC-01 retain
 their delivery scope and acceptance evidence.
 
-TECH-03 remains open until the concrete access arrangement and review window are
-settled. Account creation, hosted activation, actual rehearsal and release sign-off
-must be recorded honestly on their implementation/acceptance cards.
+TECH-03's review-access and evidence decisions are settled under this flexible
+arrangement. No deployment start date is invented. Hosted activation, actual
+rehearsal and release sign-off must be recorded honestly on their existing
+implementation/acceptance cards; decision completion is not their acceptance.
