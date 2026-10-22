@@ -1,3 +1,4 @@
+import {createWorkerMonitor} from './operations/worker-monitor.js';
 import {createMenuService} from './staff/menu-service.js';
 import {createAnalyticsService} from './staff/analytics-service.js';
 import {createRetentionService} from './data/retention-service.js';
@@ -33,16 +34,19 @@ let intNotificationTimer;
 let intRetentionTimer;
 function application(objAuthRuntime) {
   const objRetentionService=createRetentionService(objDatabase);
-  const fnCleanup=()=>{try{objRetentionService.cleanup();}catch{console.error('Retention cleanup failed; expiry checks remain enforced on reads.');}};
+  const objRetentionMonitor=createWorkerMonitor('retention',()=>objRetentionService.cleanup());
+  const fnCleanup=()=>objRetentionMonitor.run();
   fnCleanup();intRetentionTimer=setInterval(fnCleanup,60000);intRetentionTimer.unref();
   const objCatalogService = createCatalogService(objDatabase);
   const objSchedulingService = createSchedulingService(objDatabase);
   const objTrackingService=createTrackingService(objDatabase,objAuthRuntime?.objSessionService);
-  const objPaymentService = createDemoPaymentService(objDatabase, { objTrackingService, objVault: loadPaymentVault(process.env.DEMO_PAYMENT_KEYS_PATH), objCatalogService, objSchedulingService });
+  const objVault=loadPaymentVault(process.env.DEMO_PAYMENT_KEYS_PATH);
+  const objPaymentService = createDemoPaymentService(objDatabase, { objTrackingService, objVault, objCatalogService, objSchedulingService });
   const objNotificationService=createNotificationService(objDatabase,objAuthRuntime?.objSessionService);
-  const fnProcessPreviews=()=>{try{objNotificationService.processPending();}catch{console.error('Internal notification processing failed; pending work is retained.');}};
+  const objPreviewMonitor=createWorkerMonitor('previews',()=>objNotificationService.processPending());
+  const fnProcessPreviews=()=>objPreviewMonitor.run();
   fnProcessPreviews();intNotificationTimer=setInterval(fnProcessPreviews,1000);intNotificationTimer.unref();
-  return createApp({ objMenuService:objAuthRuntime?createMenuService(objDatabase,objAuthRuntime.objSessionService):undefined, objAnalyticsService:objAuthRuntime?createAnalyticsService(objDatabase,objAuthRuntime.objSessionService):undefined, objNotificationService:objAuthRuntime?objNotificationService:undefined, objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
+  return createApp({ fnReadiness:()=>Boolean(objAuthRuntime&&objVault&&objRetentionMonitor.isHealthy()&&objPreviewMonitor.isHealthy()&&objCatalogService.readCatalog().strFingerprint), objMenuService:objAuthRuntime?createMenuService(objDatabase,objAuthRuntime.objSessionService):undefined, objAnalyticsService:objAuthRuntime?createAnalyticsService(objDatabase,objAuthRuntime.objSessionService):undefined, objNotificationService:objAuthRuntime?objNotificationService:undefined, objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
     objOrderProgressService: objAuthRuntime ? createOrderProgressService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objStaffOrdersService: objAuthRuntime ? createStaffOrdersService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService) });

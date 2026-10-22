@@ -12,6 +12,7 @@ windows. No additional package or schema is needed.
 | Checkout | 60 | `/api/orders`, `/api/demo-payments` and child paths |
 | Tracking | 120 | `/api/tracking`, including cancellation |
 | Preview | 120 | `/api/pricing`, `/api/pickup-times` and child paths |
+| Health | 120 | `/health/live`, `/health/ready` |
 
 These are conservative demonstration safeguards, not measured production capacity.
 Path matching is case-insensitive, matching Express routing. All methods and malformed requests to these paths consume the relevant budget.

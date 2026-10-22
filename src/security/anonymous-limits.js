@@ -7,7 +7,8 @@ export function createAnonymousLimits({fnNow=Date.now,intMaxBuckets=MAX_BUCKETS}
   const objKey=randomBytes(32);const mapBuckets=new Map();
   return function limitAnonymous(objRequest,objResponse,fnNext){
     const strPath=objRequest.path;
-    const strGroup=/^\/api\/(orders|demo-payments)(\/|$)/i.test(strPath)?'checkout'
+    const strGroup=/^\/health\/(live|ready)\/?$/i.test(strPath)?'health'
+      :/^\/api\/(orders|demo-payments)(\/|$)/i.test(strPath)?'checkout'
       :/^\/api\/tracking(\/|$)/i.test(strPath)?'tracking'
       :/^\/api\/(pricing|pickup-times)(\/|$)/i.test(strPath)?'preview':null;
     if(!strGroup)return fnNext();

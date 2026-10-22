@@ -155,9 +155,10 @@ for operator access; do not grant broad cloud API roles to the Node process.
 
 Record redacted service events, DNS/certificate failures and restart outcomes
 under the approved seven-day local log rotation policy. Do not enable request-body,
-cookie, contact, guest-token or payment-plaintext logging. There is no dedicated
-health endpoint yet: use process status and controlled page/API smoke checks,
-without claiming these prove database/payment/worker readiness by themselves.
+cookie, contact, guest-token or payment-plaintext logging. Local probes are now available at `/health/live` and `/health/ready`; see
+[their precise readiness contract and incident procedures](operations-monitoring.md).
+Also use controlled page/API smoke checks. A probe alone does not prove full
+transactional recovery, worker freshness or hosted alert delivery.
 
 ## 5. Acceptance, interruption and release rollback
 

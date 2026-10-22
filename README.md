@@ -741,3 +741,7 @@ Disposable-demo contact, tracking, preview and ciphertext cleanup (SEC-02 increm
 Deployment preparation (OPS-01–07): [GCP/DuckDNS runbook](docs/deployment-runbook.md).
 This follows the approved Spot/direct-HTTPS design; it does not authorize or claim
 resource provisioning, publication, spending or completed hosted verification.
+
+Local health probes and safe operational events (OPS-04):
+[contracts, incident procedures and remaining hosted gates](docs/operations-monitoring.md).
+These do not configure alert delivery, log rotation or a hosted monitor.

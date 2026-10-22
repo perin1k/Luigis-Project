@@ -1,3 +1,6 @@
+import {createOperationalRecorder} from './operations/telemetry.js';
+import {randomUUID} from 'node:crypto';
+import {createHealthRouter} from './operations/health-router.js';
 import {createMenuRouter} from './staff/menu-router.js';
 import {createAnonymousLimits} from './security/anonymous-limits.js';
 import express from 'express';
@@ -13,8 +16,9 @@ import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService } = {}) {
+export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnWriteOperational } = {}) {
 const objApp = express();
+const objOperational=createOperationalRecorder({fnWrite:fnWriteOperational});
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
 
@@ -89,6 +93,8 @@ objApp.get('/', (objRequest, objResponse, fnNext) => {
   });
 });
 objApp.use(createAnonymousLimits());
+objApp.use(objOperational.requests);
+objApp.use(createHealthRouter(fnReadiness));
 if (objCatalogService) objApp.use('/api/pricing', createPricingRouter(objCatalogService));
 if (objPaymentService) objApp.use('/api/demo-payments', createDemoPaymentRouter(objPaymentService));
 if (objSchedulingService) objApp.use('/api/pickup-times', createSchedulingRouter(objSchedulingService));
@@ -157,7 +163,9 @@ objApp.use((objRequest, objResponse, fnNext) => {
   });
 });
 objApp.use((objError, objRequest, objResponse, fnNext) => {
-  if (objResponse.headersSent) return fnNext(objError);
+  const strEventId=objResponse.locals.strOperationalId??randomUUID();objOperational.record('application_failed',strEventId,500);
+  if (objResponse.headersSent) return objResponse.destroy();
+  objResponse.set('X-Request-Id',strEventId);
   objResponse.status(500).set({ 'X-Robots-Tag': 'noindex', 'Cache-Control': 'no-store' });
   renderPage(objRequest, objResponse, () => {
     // Keep a safe fallback if the template itself cannot render.
