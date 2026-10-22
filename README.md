@@ -753,3 +753,7 @@ A fresh seeded database is not restoration of order history or lost keys.
 Authentication decision record (TECH-04):
 [approved identity, hierarchy, MFA and recovery choices](docs/authentication-decisions.md).
 Decision completion does not establish acceptance of the coordinated BE-08/FE-08 rollout.
+
+Payment security and accounting decisions (TECH-06):
+[approved safeguards, key lifecycle, retention and refund choices](docs/payment-security-decisions.md).
+Decision completion does not replace payment, refund, security or release acceptance.

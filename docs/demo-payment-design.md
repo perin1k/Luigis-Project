@@ -1,5 +1,8 @@
 # BE-03 — local demonstration payments
 
+The [TECH-06 decision record](payment-security-decisions.md) consolidates approved
+safeguards, key lifecycle, accounting and remaining acceptance boundaries.
+
 Approved scope: generated synthetic identities, encrypted full-number storage,
 server-owned demonstration outcomes and committed order/hold confirmation.
 No external authorization, charge, settlement or native Apple Wallet sheet occurs.
