@@ -765,3 +765,7 @@ Feature and release acceptance remain on their implementation and QA cards.
 Retention and disposable-data decisions (TECH-02):
 [cleanup, sanitized history, key and copy lifecycle map](docs/retention-decisions.md).
 Broader privacy and hosted-operation acceptance remain separate.
+
+Review preparation (TECH-03):
+[proposed professor access, rehearsal and evidence checklist](docs/review-access-plan.md).
+Access details and review timing remain pending; hosting is not activated.
