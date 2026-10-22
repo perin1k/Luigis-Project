@@ -1,5 +1,8 @@
 # BE-03 generated-identity payment increment — 2026-10-21
 
+Historical increment. See the [current customer integration checkpoint](customer-checkout-checkpoint.md)
+for subsequently implemented lifecycle services and refreshed receipt evidence.
+
 Implemented: encrypted server-generated test identities, persisted local demo
 outcomes, atomic payment/hold/order confirmation, safe browser recovery and a
 receipt from committed snapshots. This is not a live payment integration or final

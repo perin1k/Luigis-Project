@@ -777,3 +777,5 @@ FE-02: [persisted availability and stale-draft server integration evidence](docs
 BE-10: [inventory review, cancellation and full-refund lifecycle evidence](docs/verification/be-10-lifecycle.md).
 
 FE-10: [connected private inventory, cancellation and refund status evidence](docs/verification/fe-10-connected-status.md).
+
+Customer checkout: [current BE-02/BE-03 integration and reconciled FE-03 receipt evidence](docs/verification/customer-checkout-checkpoint.md).

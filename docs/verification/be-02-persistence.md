@@ -1,5 +1,8 @@
 # BE-02 unpaid persistence verification — 2026-10-21
 
+Historical increment. See the [current customer integration checkpoint](customer-checkout-checkpoint.md)
+for subsequently implemented scheduling/payment/tracking and remaining acceptance.
+
 Approved increment: save validated unpaid order snapshots, prevent duplicate
 retries, integrate the wizard and keep unconfirmed status explicit. This is not
 full BE-02 acceptance: scheduling/payment integration and quality gates remain.
