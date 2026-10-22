@@ -20,9 +20,9 @@ use demonstration adapters, not application persistence or authorization.
 
 | Area | Current implementation | Remaining delivery |
 | --- | --- | --- |
-| Customer UI | Homepage, browser wizard, themes, availability/errors, isolated confirmation preview | Remaining screens and real application integration |
+| Customer UI | Homepage, database-backed menu/pricing review, themes, availability/errors, isolated confirmation preview | Persisted order/payment/tracking integration and remaining screens |
 | Database | SQLite migrations, transactions, constraints and non-destructive menu seed | Reviewed services and additive schema changes |
-| Staff access | Password/credential, session-validation and permission primitives | Login/session issuance, MFA, bootstrap/recovery and account management |
+| Staff access | Mounted HTTPS staff/MFA/enrollment/recovery/account-management screens and real permissions | Firefox/runtime and manual accessibility acceptance; operator-owned real setup |
 | Payments | Recoverable unwired browser adapter; test-event storage foundation | Server demo processing, encrypted synthetic-number storage and committed order association |
 | Notifications | Pending/previewed/failed outbox storage | Restricted internal previews generated from actual events; no email/SMS sending |
 | Hosting | GCP/DuckDNS direction selected; no deployment claimed | Public HTTPS deployment, protected staff functions and reviewed costs |

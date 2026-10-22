@@ -655,3 +655,13 @@ forms; `src/public/js/staff.js` handles browser requests/focus/private displays;
 establishes permissions. See [authentication design](docs/authentication-design.md#mounted-staff-experience-be-08--fe-08)
 for settings, private operator setup, limitations and the isolated three-browser
 suite (`npx playwright test -c playwright.staff.config.js`).
+
+Database-backed menu/pricing (BE-01): `src/ordering/catalog-service.js` validates
+current catalog/ingredient availability and computes integer-cent totals;
+`src/ordering/pricing-router.js` provides no-store catalog/preview endpoints.
+`src/app.js` supplies menu data to ordering EJS; the browser model/wizard show
+previews and require current server totals plus explicit review before payment.
+`DATABASE_PATH` alone enables this public read-only runtime without mounting staff
+authentication. Order persistence and payment remain separate integrations.
+See [pricing design](docs/pricing-design.md) for the request contract, tax policy,
+configuration and verification commands.

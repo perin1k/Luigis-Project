@@ -1,11 +1,12 @@
 import express from 'express';
+import { createPricingRouter } from './ordering/pricing-router.js';
 import { AUTH_COOKIES, readAuthCookies } from './auth/auth-transport.js';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime } = {}) {
+export function createApp({ objAuthRuntime, objCatalogService } = {}) {
 const objApp = express();
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
@@ -25,6 +26,9 @@ for (const strPath of ['/css/tokens.css', '/css/global.css', '/css/ordering.css'
 // Staff pages share one CSS response without changing the source styles or customer assets.
 mapTextAssets.set('/css/staff-bundle.css', prepareText(Buffer.concat(
   ['/css/tokens.css', '/css/global.css', '/css/staff.css'].flatMap((strPath) =>
+    [mapTextAssets.get(strPath).objBody, Buffer.from('\n')])), 'css'));
+mapTextAssets.set('/css/order-bundle.css', prepareText(Buffer.concat(
+  ['/css/tokens.css', '/css/global.css', '/css/ordering.css'].flatMap((strPath) =>
     [mapTextAssets.get(strPath).objBody, Buffer.from('\n')])), 'css'));
 // Expose only the intended Bootstrap stylesheet, never node_modules itself.
 mapTextAssets.set('/vendor/bootstrap.min.css', prepareText(
@@ -61,7 +65,7 @@ objApp.use((objRequest, objResponse, fnNext) => {
   if (!objText || !['GET', 'HEAD'].includes(objRequest.method)) return fnNext();
   objResponse.vary('Accept-Encoding');
   // Let Express retain byte-range semantics for the original public files.
-  if (objRequest.headers.range && !['/vendor/bootstrap.min.css', '/css/staff-bundle.css'].includes(objRequest.path)) return fnNext();
+  if (objRequest.headers.range && !['/vendor/bootstrap.min.css', '/css/staff-bundle.css', '/css/order-bundle.css'].includes(objRequest.path)) return fnNext();
   objResponse.set('Cache-Control', 'public, max-age=3600');
   sendText(objRequest, objResponse, objText);
 });
@@ -72,14 +76,22 @@ objApp.get('/', (objRequest, objResponse, fnNext) => {
     strDescription: "Explore Luigi's Pizza: 12, 14, and 18-inch pizzas, your choice of toppings, and fountain drinks. Dine-in and carry-out, daily 10 AM to 11 PM.",
   });
 });
-// View serving only: no order submission, persistence, or payment endpoints.
+if (objCatalogService) objApp.use('/api/pricing', createPricingRouter(objCatalogService));
+// Current pricing only: no order submission or payment success is implied.
 objApp.get('/order', async (objRequest, objResponse, fnNext) => {
-  const objAvailability = normalizeAvailability(await objApp.locals.fnGetAvailability(objRequest));
+  const objCatalog = objCatalogService?.readCatalog() ?? null;
+  const objAvailability = objCatalog ? { bKnown: true,
+    arrUnavailableToppings: objCatalog.arrToppings.filter((objItem) => !objItem.bAvailable).map((objItem) => objItem.strCode),
+    arrUnavailableBases: objCatalog.arrUnavailableBases,
+  } : normalizeAvailability(await objApp.locals.fnGetAvailability(objRequest));
+  const objSizes = objCatalog ? Object.fromEntries(objCatalog.arrSizes.map((objSize) => [objSize.strCode, { ...objSize,
+    strLabel: `${objSize.strLabel} · ${objSize.intDiameter} inch`, centsDrink: objCatalog.arrDrinkSizes.find((objDrink) => objDrink.strCode === objSize.strCode)?.centsPrice ?? 0 }])) : SIZES;
   objResponse.set('Cache-Control', 'no-store');
   renderPage(objRequest, objResponse, fnNext, 'pages/order', {
     strTitle: "Order Online | Luigi's Pizza",
     strDescription: "Build your Luigi's pizza, choose drinks, and review your dine-in or carry-out order.",
-    objSizes: SIZES, objToppings: TOPPINGS, arrDrinks: DRINKS, objAvailability,
+    objSizes, objToppings: objCatalog ? Object.fromEntries(objCatalog.arrToppings.map((objItem) => [objItem.strCode, objItem.strLabel])) : TOPPINGS,
+    arrDrinks: objCatalog ? objCatalog.arrBeverages.map((objItem) => objItem.strLabel) : DRINKS, objAvailability, objCatalog,
   });
 });
 // Isolated visual reference only. Checkout never redirects to this route.

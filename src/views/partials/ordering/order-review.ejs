@@ -2,4 +2,9 @@
   <h2 id="review-title" tabindex="-1">Looking delicious.</h2>
   <p class="step-description">Give everything one last look before payment.</p>
   <div id="order-review" aria-label="Order review"></div>
+  <% if (objCatalog) { %>
+  <div class="field"><label for="tip-percent" class="form-label">Optional tip percentage</label><input id="tip-percent" class="form-control" type="number" value="0" min="0" step="1" inputmode="numeric" aria-describedby="tip-help"><p id="tip-help" class="field-hint">Optional, calculated on items plus tax. Tips go entirely to service staff.</p></div>
+  <p id="pricing-status" role="status" aria-live="polite"></p>
+  <div id="server-totals" aria-label="Server-calculated totals" hidden></div>
+  <% } %>
 </section>

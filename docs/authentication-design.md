@@ -775,7 +775,8 @@ Browser/password-manager memory cannot be reliably erased by application code.
 ### Runtime configuration
 
 `src/server.js` keeps HTTP presentation-only when no authentication settings are
-present. Supplying any of the following requires all of them; incomplete or invalid
+present. Supplying any authentication-specific setting below (other than the general
+`DATABASE_PATH`) requires all of them; incomplete or invalid
 configuration fails startup instead of downgrading transport:
 
 | Environment setting | Purpose |
@@ -786,7 +787,10 @@ configuration fails startup instead of downgrading transport:
 | `DATABASE_PATH` | Existing private SQLite file; reviewed migrations are checksum-verified/applied at startup. |
 | `MFA_ENCRYPTION_KEY_HEX` | Separately provisioned private 32-byte lowercase-hex MFA key. |
 
-Set `HOST` to the intended interface; its default remains loopback. The Node
+`DATABASE_PATH` alone enables the public, read-only catalog/pricing runtime on HTTP;
+staff authentication stays unmounted. Any authentication-specific setting still
+requires complete direct HTTPS configuration. Public hosting requires the separately
+reviewed HTTPS deployment. Set `HOST` to the intended interface; its default remains loopback. The Node
 process accepts direct TLS only, with minimum TLS 1.2. No forwarded headers confer
 HTTPS or source identity. Reverse proxies, public exposure, GCP resources, domain
 configuration and deployment need their own reviewed configuration. The runtime

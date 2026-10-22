@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <%- include('../partials/head') %>
-  <link rel="stylesheet" href="/css/ordering.css">
+  <%- include('../partials/head', { bPricingPage: Boolean(objCatalog) }) %>
+  <% if (!objCatalog) { %><link rel="stylesheet" href="/css/ordering.css"><% } %>
   <script type="module" src="/js/ordering/order-wizard.js"></script>
 </head>
 <body>
@@ -10,7 +10,7 @@
   <main id="main-content" class="container order-page" tabindex="-1">
     <div class="order-intro"><p class="eyebrow">A little more you. A little more Luigi’s.</p><h1>Your next favorite pizza.</h1><p>Choose dine-in or carry-out, build your pizza, then review your order.</p></div>
     <p id="order-fallback" class="notice">Please enable JavaScript to customize your order. You can still <a href="/#menu">explore our menu</a>.</p>
-    <div id="order-app" hidden>
+    <div id="order-app" data-catalog="<%= JSON.stringify(objCatalog) %>" hidden>
       <nav class="order-progress" aria-label="Order progress"><ol>
         <% for (const [intIndex, strStep] of ['Service', 'Pizza', 'Drinks', 'Details', 'Review', 'Payment'].entries()) { %>
           <li><span data-progress="<%= intIndex %>" <%- intIndex === 0 ? 'aria-current="step"' : '' %>><b aria-hidden="true"><%= intIndex + 1 %></b><%= strStep %></span></li>
@@ -33,7 +33,7 @@
         <aside class="order-summary" aria-label="Order summary">
           <p class="eyebrow">Made your way</p><h2>Your order</h2><p id="summary-service">Carry-out</p>
           <ul id="summary-items" class="summary-items"></ul>
-          <div class="subtotal"><span>Subtotal</span><strong id="summary-total">$0.00</strong></div>
+          <div class="subtotal"><span><%= objCatalog ? 'Item subtotal' : 'Subtotal' %></span><strong id="summary-total">$0.00</strong></div>
           <p class="summary-note">Marinara, cheese, and a little Italian warmth in every pizza.</p>
           <p id="cart-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
         </aside>

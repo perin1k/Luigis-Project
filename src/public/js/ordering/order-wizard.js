@@ -1,6 +1,10 @@
-import { SIZES, TOPPINGS, calculatePizzaPrice, calculateSubtotal, formatCurrency, validatePizzaAvailability } from './order-model.js';
+import { configureMenu, SIZES, TOPPINGS, calculatePizzaPrice, calculateSubtotal, formatCurrency, validatePizzaAvailability } from './order-model.js';
 import { openSecureCheckout } from '../checkout/payment.js';
 
+let objCatalog = JSON.parse(document.querySelector('#order-app').dataset.catalog);
+if (objCatalog) configureMenu(objCatalog);
+let objPricing = null;
+let bCheckingPrice = false;
 const elForm = document.querySelector('#order-form');
 const elNext = document.querySelector('#next-button');
 const elBack = document.querySelector('#back-button');
@@ -109,9 +113,10 @@ function renderSummary(strAnnouncement = '') {
 
 function resetPizzaEditor() {
   intEditingIndex = null;
-  elForm.elements.size.value = 'medium';
+  elForm.elements.size.value = [...elForm.querySelectorAll('[name=size]')].find((elInput) => !elInput.disabled && elInput.value === 'medium')?.value
+    ?? [...elForm.querySelectorAll('[name=size]')].find((elInput) => !elInput.disabled)?.value ?? 'medium';
   elForm.elements.crust.value = objAvailability.arrUnavailableBases.includes('regular') ? 'new-york' : 'regular';
-  for (const elInput of elForm.querySelectorAll('[name="topping"]')) elInput.checked = false;
+  for (const elInput of elForm.querySelectorAll('[name="topping"]')) { elInput.checked = false; elInput.disabled = objAvailability.arrUnavailableToppings.includes(elInput.value); }
   document.querySelector('#pizza-quantity').value = '1';
   elAdd.textContent = 'Add pizza';
   elCancel.hidden = true;
@@ -123,7 +128,10 @@ function editPizza(intIndex) {
   const objPizza = objOrder.arrPizzas[intIndex];
   elForm.elements.size.value = objPizza.strSize;
   elForm.elements.crust.value = objPizza.strCrust;
-  for (const elInput of elForm.querySelectorAll('[name="topping"]')) elInput.checked = objPizza.arrToppings.includes(elInput.value);
+  for (const elInput of elForm.querySelectorAll('[name="topping"]')) {
+    elInput.checked = objPizza.arrToppings.includes(elInput.value);
+    elInput.disabled = objAvailability.arrUnavailableToppings.includes(elInput.value) && !elInput.checked;
+  }
   document.querySelector('#pizza-quantity').value = String(objPizza.intQuantity);
   elAdd.textContent = 'Save pizza';
   elCancel.hidden = false;
@@ -170,7 +178,8 @@ function renderReview() {
   elContact.append(createEditButton('Edit contact details', () => showStep(3)));
   const elTotal = createElement('div', '', 'subtotal');
   elTotal.append(createElement('span', 'Subtotal'), createElement('strong', formatCurrency(calculateSubtotal(objOrder))));
-  elReview.append(elService, elFood, elContact, elTotal);
+  elReview.append(elService, elFood, elContact);
+  if (!objCatalog) elReview.append(elTotal);
 }
 
 function updateContactFields() {
@@ -200,7 +209,7 @@ function showStep(intNextStep) {
   document.querySelector('#step-count').textContent = `Step ${intStep + 1} of 6`;
   elBack.hidden = intStep === 0;
   updateContactFields();
-  if (intStep === 4) renderReview();
+  if (intStep === 4) { renderReview(); if (objCatalog) void checkPrice(); }
   updateNextButton();
   arrSections[intStep].querySelector('h2').focus();
 }
@@ -269,7 +278,7 @@ elAdd.addEventListener('click', () => {
 });
 
 elCancel.addEventListener('click', () => { clearError(); resetPizzaEditor(); elAdd.focus(); });
-elBack.addEventListener('click', () => { if (!bOpeningPayment) showStep(intStep - 1); });
+elBack.addEventListener('click', () => { if (!bOpeningPayment && !bCheckingPrice) showStep(intStep - 1); });
 
 elForm.addEventListener('input', (objEvent) => {
   clearError();
@@ -280,13 +289,18 @@ elForm.addEventListener('input', (objEvent) => {
     updateContactFields();
     renderSummary();
   }
+  if (elTarget.name === 'topping' && !elTarget.checked && objAvailability.arrUnavailableToppings.includes(elTarget.value)) elTarget.disabled = true;
+  if (elTarget.id === 'tip-percent') {
+    objPricing = null; document.querySelector('#server-totals').hidden = true;
+    document.querySelector('#pricing-status').textContent = 'Continue to calculate and review your updated total.';
+  }
   if (elTarget.matches('[data-drink]')) {
     const arrDrinks = [...arrSections[2].querySelectorAll('input')].map((elInput) => ({
       strName: elInput.dataset.drink, strSize: elInput.dataset.size, intQuantity: Number(elInput.value),
     }));
+    objOrder.arrDrinks = arrDrinks;
     try {
-      calculateSubtotal({ ...objOrder, arrDrinks });
-      objOrder.arrDrinks = arrDrinks;
+      calculateSubtotal(objOrder);
       renderSummary();
     } catch { /* Keep the last valid preview; validate the field on Continue. */ }
   }
@@ -295,15 +309,25 @@ elForm.addEventListener('input', (objEvent) => {
 
 elForm.addEventListener('change', (objEvent) => {
   if (objEvent.target.matches('[data-drink]')) {
-    document.querySelector('#cart-status').textContent = `Order subtotal ${formatCurrency(calculateSubtotal(objOrder))}.`;
+    try { document.querySelector('#cart-status').textContent = `Order subtotal ${formatCurrency(calculateSubtotal(objOrder))}.`; }
+    catch { document.querySelector('#cart-status').textContent = 'Review your drink quantities before continuing.'; }
   }
 });
 
 elForm.addEventListener('submit', async (objEvent) => {
   objEvent.preventDefault();
-  if (bOpeningPayment) return;
+  if (bOpeningPayment || bCheckingPrice) return;
   clearError();
   if (!validateCurrentStep()) return;
+  if (objCatalog && intStep >= 4) {
+    const strDisplayed = objPricing ? JSON.stringify(objPricing) : null;
+    const objChecked = await checkPrice();
+    if (!objChecked) return;
+    if (strDisplayed !== JSON.stringify(objChecked)) {
+      if (intStep === 5) { showStep(4); }
+      showError('Review the current total below, then continue again to confirm it.'); return;
+    }
+  }
   if (intStep < 5) { showStep(intStep + 1); return; }
   bOpeningPayment = true;
   elNext.disabled = true;
@@ -320,6 +344,81 @@ elForm.addEventListener('submit', async (objEvent) => {
   }
 });
 
+function pricingInput() {
+  return { strCatalogFingerprint: objCatalog.strFingerprint,
+    arrPizzas: objOrder.arrPizzas.map((objPizza) => ({ ...objPizza, arrToppings: [...objPizza.arrToppings] })),
+    arrDrinks: objOrder.arrDrinks.filter((objDrink) => objDrink.intQuantity > 0).map((objDrink) => ({
+      strBeverage: objCatalog.arrBeverages.find((objItem) => objItem.strLabel === objDrink.strName)?.strCode ?? '',
+      strSize: objDrink.strSize, intQuantity: objDrink.intQuantity })),
+    intTipPercent: Number(document.querySelector('#tip-percent').value) };
+}
+function displayPrice() {
+  if (!objPricing) return;
+  const elTotals = document.querySelector('#server-totals'); elTotals.replaceChildren();
+  for (const [strLabel, centsAmount] of [['Items', objPricing.centsSubtotal], [`Tax (${objPricing.intTaxBasisPoints / 100}%)`, objPricing.centsTax], ['Optional tip', objPricing.centsTip], ['Total', objPricing.centsTotal]]) {
+    const elLine = createElement('div', '', 'subtotal');
+    elLine.append(createElement('span', strLabel), createElement('strong', formatCurrency(centsAmount))); elTotals.append(elLine);
+  }
+  elTotals.hidden = false;
+  document.querySelector('#payment-total').textContent = `Total ${formatCurrency(objPricing.centsTotal)} · Tax ${formatCurrency(objPricing.centsTax)} · Tip ${formatCurrency(objPricing.centsTip)}`;
+}
+function refreshCatalog(objCurrent) {
+  objCatalog = objCurrent; configureMenu(objCatalog);
+  objAvailability.bKnown = true;
+  objAvailability.arrUnavailableToppings = objCatalog.arrToppings.filter((objItem) => !objItem.bAvailable).map((objItem) => objItem.strCode);
+  objAvailability.arrUnavailableBases = objCatalog.arrUnavailableBases;
+  for (const elInput of elForm.querySelectorAll('[name=size]')) {
+    const objSize = objCatalog.arrSizes.find((objItem) => objItem.strCode === elInput.value);
+    elInput.disabled = !objSize?.bAvailable;
+    if (objSize) elInput.closest('label').querySelector('small').textContent = `${formatCurrency(objSize.centsBase)} base`;
+  }
+  for (const elInput of elForm.querySelectorAll('[name=topping], [name=crust]')) {
+    elInput.disabled = !(elInput.name === 'topping' ? objCatalog.arrToppings : objCatalog.arrCrusts).find((objItem) => objItem.strCode === elInput.value)?.bAvailable
+      && !(elInput.name === 'topping' && elInput.checked);
+  }
+  for (const elInput of elForm.querySelectorAll('[data-drink]')) {
+    const objSize = objCatalog.arrDrinkSizes.find((objItem) => objItem.strCode === elInput.dataset.size);
+    const bAvailable = objSize?.bAvailable && objCatalog.arrBeverages.find((objItem) => objItem.strLabel === elInput.dataset.drink)?.bAvailable;
+    elInput.disabled = !bAvailable && Number(elInput.value) === 0; elInput.max = bAvailable ? '10' : '0';
+    elInput.closest('.field').querySelector('.field-hint').textContent = `${formatCurrency(objSize?.centsPrice ?? 0)} each${bAvailable ? '' : ' · Currently unavailable; remove this drink'}`;
+  }
+  renderSummary(); renderPizzaList(); if (intStep === 4) renderReview();
+}
+async function checkPrice() {
+  if (bCheckingPrice) return null;
+  const objInput = pricingInput();
+  if (!document.querySelector('#tip-percent').validity.valid || !Number.isSafeInteger(objInput.intTipPercent) || objInput.intTipPercent < 0) { showError('Enter a whole-number tip percentage of zero or more.', document.querySelector('#tip-percent')); return null; }
+  const strInput = JSON.stringify(objInput); const intStartedStep = intStep;
+  bCheckingPrice = true; elNext.disabled = true; elBack.disabled = true; elForm.setAttribute('aria-busy', 'true');
+  document.querySelector('#pricing-status').textContent = 'Checking current prices and availability…';
+  const objAbort = new AbortController(); const intTimer = setTimeout(() => objAbort.abort(), 10000);
+  try {
+    const objResponse = await fetch('/api/pricing/preview', { method: 'POST', credentials: 'same-origin', cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' }, body: strInput, signal: objAbort.signal });
+    const objResult = await objResponse.json();
+    if (JSON.stringify(pricingInput()) !== strInput || intStep !== intStartedStep) return null;
+    if (objResponse.status === 409 && objResult.objCatalog) {
+      refreshCatalog(objResult.objCatalog); objPricing = null;
+      document.querySelector('#server-totals').hidden = true;
+      showError('The menu changed. Your selections are saved. Continue to check and review the updated total.'); return null;
+    }
+    if (!objResponse.ok) { objPricing = null; document.querySelector('#server-totals').hidden = true; throw new Error(objResult.strMessage ?? 'Unable to check pricing. Please try again.'); }
+    objPricing = objResult; displayPrice();
+    document.querySelector('#pricing-status').textContent = 'Current prices and availability checked. Review your total before continuing.';
+    return objResult;
+  } catch (objError) {
+    if (intStep === intStartedStep) {
+      objPricing = null; document.querySelector('#server-totals').hidden = true;
+      document.querySelector('#pricing-status').textContent = 'Current prices could not be confirmed.';
+      document.querySelector('#payment-total').textContent = 'Confirm the current total before continuing.';
+      showError(objError instanceof TypeError || objError.name === 'AbortError' || objError instanceof SyntaxError
+      ? 'Unable to check current prices. Your selections are saved. Please try again.' : objError.message);
+    }
+    return null;
+  } finally {
+    clearTimeout(intTimer); bCheckingPrice = false; elNext.disabled = false; elBack.disabled = false; elForm.removeAttribute('aria-busy');
+  }
+}
 resetPizzaEditor();
 renderSummary();
 document.querySelector('#order-app').hidden = false;

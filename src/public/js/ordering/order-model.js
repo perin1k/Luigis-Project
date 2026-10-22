@@ -28,6 +28,7 @@ export function normalizeAvailability(objAvailability) {
 
 export function validatePizzaAvailability(objPizza, objSuppliedAvailability) {
   const objAvailability = normalizeAvailability(objSuppliedAvailability);
+  if (SIZES[objPizza.strSize]?.bAvailable === false) throw new Error('This pizza size is currently unavailable. Please choose another size.');
   if (!objAvailability.bKnown) throw new Error('We can’t confirm ingredient availability right now. Your selections are still here. Please try again later.');
   if (objAvailability.arrUnavailableBases.some((strId) => ['marinara', 'cheese', objPizza.strCrust].includes(strId))) {
     throw new Error('A required ingredient for this pizza is unavailable. Please choose another available pizza.');
@@ -59,6 +60,8 @@ export function calculatePizzaPrice(objPizza) {
 }
 
 export function calculateSubtotal(objOrder) {
+  if (objOrder.arrPizzas.reduce((intSum, objPizza) => intSum + objPizza.intQuantity, 0) > 6) throw new Error('Choose no more than six pizzas per order.');
+  if (objOrder.arrDrinks.reduce((intSum, objDrink) => intSum + objDrink.intQuantity, 0) > 10) throw new Error('Choose no more than ten drinks per order.');
   const centsPizzas = objOrder.arrPizzas.reduce((centsSum, objPizza) => centsSum + calculatePizzaPrice(objPizza), 0);
   const centsDrinks = objOrder.arrDrinks.reduce((centsSum, objDrink) => {
     validateQuantity(objDrink.intQuantity, true);
@@ -69,4 +72,15 @@ export function calculateSubtotal(objOrder) {
   }, 0);
   if (!Number.isSafeInteger(centsPizzas + centsDrinks)) throw new Error('Quantity is too large.');
   return centsPizzas + centsDrinks;
+}
+
+/** Page-delivered catalog updates previews; server revalidation remains mandatory. */
+export function configureMenu(objCatalog) {
+  for (const strKey of Object.keys(SIZES)) delete SIZES[strKey];
+  for (const objSize of objCatalog.arrSizes) SIZES[objSize.strCode] = { ...objSize,
+    strLabel: `${objSize.strLabel} · ${objSize.intDiameter} inch`,
+    centsDrink: objCatalog.arrDrinkSizes.find((objDrink) => objDrink.strCode === objSize.strCode)?.centsPrice ?? 0 };
+  for (const strKey of Object.keys(TOPPINGS)) delete TOPPINGS[strKey];
+  for (const objTopping of objCatalog.arrToppings) TOPPINGS[objTopping.strCode] = objTopping.strLabel;
+  DRINKS.splice(0, DRINKS.length, ...objCatalog.arrBeverages.map((objDrink) => objDrink.strLabel));
 }
