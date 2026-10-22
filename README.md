@@ -2,33 +2,33 @@
 
 The internal staff sign-in orchestration lives in `src/auth/login-service.js`;
 migration 008 persists throttles, short-lived MFA challenges and identity epochs.
-See `docs/authentication-design.md` for contracts, limits and pending HTTP/security
-integration. It does not yet provide a browser sign-in flow or create accounts.
+See `docs/authentication-design.md` for contracts and limits. The configured HTTPS
+runtime connects it to the staff screens described below; it creates no default accounts.
 
 `src/auth/auth-router.js` and `src/auth/auth-transport.js` provide isolated JSON
-authentication routes and cookie/CSRF helpers. They are deliberately not mounted
-in `src/app.js`. Direct TLS and an explicitly configured HTTPS origin are required;
-proxy deployment, sign-in screens, setup and recovery remain separate increments.
+authentication routes and cookie/CSRF helpers. `src/app.js` mounts them only with
+the configured authentication runtime. Direct TLS and an explicitly configured HTTPS
+origin are required; proxy/public deployment remains separately reviewed.
 
 `src/auth/staff-account-service.js` implements internal, admin-authorized employee
 deactivation. It uses the session service's synchronous `executeAuthorized` boundary
 to commit permissions, session/challenge revocation and audit history atomically.
 The isolated auth router exposes POST `/employees/deactivate` through this service;
-the router is not mounted and the employee-management screen remains separate work.
+the mounted staff account screen provides administrator-only employee management.
 
 Initial admin setup is available with `npm run admin:setup` after database migration
 and private provisioning of `MFA_ENCRYPTION_KEY_HEX`. The interactive command asks
 for hidden password input and verifies authenticator enrollment before atomically
 creating the first admin. It has no default password or public route. See
 `docs/authentication-design.md` before running it, including secret handling,
-one-time setup, offline password-policy files and incomplete recovery/UI work.
+one-time setup, offline password-policy files and recovery procedures.
 The implementation tests created only disposable synthetic accounts.
 
 Employee enrollment is implemented in `src/auth/staff-enrollment-service.js` and
 migration 009. The isolated auth router can issue/revoke admin-authorized 24-hour
 invitations and accept them with an employee-chosen password. Only token digests
 are stored. Tokens require private manual handoff; no notifications are sent.
-These routes remain unmounted pending enrollment/account-management UI integration.
+The HTTPS staff screens connect invitation creation/revocation and recipient enrollment.
 
 Account maintenance also provides admin-only paginated employee/invitation lists
 and self-service password changes through the isolated router. Staff must verify
@@ -645,3 +645,13 @@ for demo processing, encrypted synthetic storage, persisted order confirmation
 and backend behavior must accompany those implementations. Actual provider/Apple
 Pay tests belong to future integration. Browser previews and automated checks
 do not establish full WCAG conformance or readiness to process real payments.
+
+Staff authentication integration: `src/auth/auth-runtime.js` composes server-side
+services, `src/app.js` mounts private staff views only when supplied that runtime,
+and `src/server.js` enables it only with complete direct-HTTPS configuration.
+`src/views/pages/staff.ejs` and `src/views/partials/staff/field.ejs` render staff
+forms; `src/public/js/staff.js` handles browser requests/focus/private displays;
+`src/public/css/staff.css` supplies responsive brand styling. Browser code never
+establishes permissions. See [authentication design](docs/authentication-design.md#mounted-staff-experience-be-08--fe-08)
+for settings, private operator setup, limitations and the isolated three-browser
+suite (`npx playwright test -c playwright.staff.config.js`).

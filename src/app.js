@@ -1,9 +1,11 @@
 import express from 'express';
+import { AUTH_COOKIES, readAuthCookies } from './auth/auth-transport.js';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
+export function createApp({ objAuthRuntime } = {}) {
 const objApp = express();
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
@@ -16,10 +18,14 @@ function prepareText(objBody, strType) {
 const mapTextAssets = new Map();
 for (const strPath of ['/css/tokens.css', '/css/global.css', '/css/ordering.css',
   '/js/theme.js', '/js/ordering/order-wizard.js', '/js/ordering/order-model.js',
-  '/js/checkout/payment.js']) {
+  '/js/checkout/payment.js', '/css/staff.css', '/js/staff.js']) {
   const objBody = readFileSync(fileURLToPath(new URL(`./public${strPath}`, import.meta.url)));
   mapTextAssets.set(strPath, prepareText(objBody, strPath.endsWith('.css') ? 'css' : 'js'));
 }
+// Staff pages share one CSS response without changing the source styles or customer assets.
+mapTextAssets.set('/css/staff-bundle.css', prepareText(Buffer.concat(
+  ['/css/tokens.css', '/css/global.css', '/css/staff.css'].flatMap((strPath) =>
+    [mapTextAssets.get(strPath).objBody, Buffer.from('\n')])), 'css'));
 // Expose only the intended Bootstrap stylesheet, never node_modules itself.
 mapTextAssets.set('/vendor/bootstrap.min.css', prepareText(
   readFileSync(fileURLToPath(new URL('../node_modules/bootstrap/dist/css/bootstrap.min.css', import.meta.url))), 'css'));
@@ -55,7 +61,7 @@ objApp.use((objRequest, objResponse, fnNext) => {
   if (!objText || !['GET', 'HEAD'].includes(objRequest.method)) return fnNext();
   objResponse.vary('Accept-Encoding');
   // Let Express retain byte-range semantics for the original public files.
-  if (objRequest.headers.range && objRequest.path !== '/vendor/bootstrap.min.css') return fnNext();
+  if (objRequest.headers.range && !['/vendor/bootstrap.min.css', '/css/staff-bundle.css'].includes(objRequest.path)) return fnNext();
   objResponse.set('Cache-Control', 'public, max-age=3600');
   sendText(objRequest, objResponse, objText);
 });
@@ -89,6 +95,29 @@ objApp.get('/preview/confirmation', (objRequest, objResponse, fnNext) => {
     },
   });
 });
+if (objAuthRuntime) {
+  objApp.use('/auth', objAuthRuntime.objRouter);
+  objApp.get(['/staff/sign-in', '/staff/enroll', '/staff/recovery', '/staff/account'], (objRequest, objResponse, fnNext) => {
+    objResponse.set({ 'Cache-Control': 'no-store', 'Pragma': 'no-cache', 'X-Robots-Tag': 'noindex',
+      'Referrer-Policy': 'no-referrer', 'Vary': 'Cookie' });
+    if (!objRequest.socket.encrypted || objRequest.headers.host !== new URL(objAuthRuntime.strOrigin).host) {
+      return objResponse.status(403).type('text').send('A secure connection is required.');
+    }
+    let objCookies;
+    try { objCookies = readAuthCookies(objRequest.headers.cookie); }
+    catch { return objResponse.status(400).type('text').send('Unable to read this session.'); }
+    const objIdentity = objAuthRuntime.objSessionService.validateSession(objCookies[AUTH_COOKIES.strSession]);
+    const strMode = objRequest.path.split('/').at(-1);
+    if (strMode === 'account' && !objIdentity) return objResponse.redirect(303, '/staff/sign-in');
+    const objInitialLists = strMode === 'account' && objIdentity.strRole === 'admin'
+      ? objAuthRuntime.readAccountLists(objCookies[AUTH_COOKIES.strSession]) : {};
+    if (!objInitialLists) return objResponse.redirect(303, '/staff/sign-in');
+    renderPage(objRequest, objResponse, fnNext, 'pages/staff', {
+      strTitle: 'Staff access | Luigi’s Pizza', strDescription: 'Secure staff account access for Luigi’s Pizza.',
+      strMode, bAdmin: objIdentity?.strRole === 'admin', objInitialLists,
+    });
+  });
+}
 objApp.use((objRequest, objResponse, fnNext) => {
   objResponse.status(404).set({ 'X-Robots-Tag': 'noindex', 'Cache-Control': 'no-store' });
   renderPage(objRequest, objResponse, fnNext, 'pages/error', {
@@ -110,4 +139,7 @@ objApp.use((objError, objRequest, objResponse, fnNext) => {
   });
 });
 
-export default objApp;
+return objApp;
+}
+
+export default createApp();

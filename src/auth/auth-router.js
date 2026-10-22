@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { AUTH_COOKIES, COOKIE_OPTIONS, createCsrfProtection, readAuthCookies } from './auth-transport.js';
 import { validPage } from './staff-account-service.js';
 
-/** Isolated JSON router. Not mounted by app.js; requires direct TLS and a pinned origin. */
+/** JSON authentication boundary; runtime mounting requires direct TLS and a pinned origin. */
 export function createAuthRouter({ objLoginService, objSessionService, objStaffAccountService, objStaffEnrollmentService, objRecoveryService, strOrigin }) {
   const objOrigin = new URL(strOrigin);
   if (objOrigin.protocol !== 'https:' || objOrigin.origin !== strOrigin || objOrigin.username || objOrigin.password) {

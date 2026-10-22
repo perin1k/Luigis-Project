@@ -1,0 +1,23 @@
+.staff-page { padding-block: clamp(2rem, 6vw, 5rem); max-width: 68rem; }
+.staff-intro { margin-bottom: 2rem; max-width: 44rem; }
+.staff-intro h1 { font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 4rem); }
+.staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
+.staff-card { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: .75rem; padding: clamp(1.25rem, 3vw, 2rem); min-width: 0; }
+.staff-card h2 { font-family: var(--font-display); font-size: 1.65rem; margin-bottom: 1rem; }
+.staff-aside { background: var(--color-panel); }
+.staff-card label { font-weight: 650; }
+.staff-card input, .staff-card textarea { color: var(--color-ink); background: var(--color-surface); border-color: var(--color-control-border); min-height: 2.75rem; }
+.staff-card .form-text { color: var(--color-muted); }
+.staff-card textarea { font-family: ui-monospace, monospace; overflow-wrap: anywhere; }
+.staff-card button, .staff-secondary { min-height: 2.75rem; }
+.staff-secondary { display: inline-flex; align-items: center; margin-top: 1rem; }
+.staff-notice { border: 1px solid var(--color-control-border); border-left: .3rem solid var(--color-accent); padding: 1rem; background: var(--color-panel); border-radius: .35rem; }
+.staff-records { list-style: none; padding: 0; }
+.staff-records li { border-block-start: 1px solid var(--color-line); padding-block: 1rem; overflow-wrap: anywhere; }
+.staff-records button { margin-top: .5rem; display: block; }
+.staff-pagination { display: flex; flex-wrap: wrap; gap: .5rem; }
+.staff-card [hidden], .staff-page [hidden] { display: none !important; }
+@media (max-width: 47.99rem) { .staff-grid { grid-template-columns: 1fr; } }
+.staff-card .btn-outline-primary { --bs-btn-disabled-color: var(--color-muted); --bs-btn-disabled-border-color: var(--color-line); --bs-btn-disabled-opacity: 1; }
+
+.staff-card h2:focus-visible, .staff-notice:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }

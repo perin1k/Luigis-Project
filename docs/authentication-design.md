@@ -338,7 +338,7 @@ missing/expired/revoked sessions, employee callers, and protected/unknown target
 Malformed bodies return 400; internal failures return sanitized 503. The endpoint
 inherits direct TLS, pinned origin, signed CSRF, protected cookies, JSON limits and
 no-store headers. Repeated authorized requests return 200 with `already_disabled`.
-This contract remains isolated because the router is not mounted in `src/app.js`.
+The configured HTTPS runtime now mounts this contract; see the mounted staff experience below.
 
 No migration, dependency, screen, reactivation, account creation,
 password change or admin lifecycle operation is included. This internal module does not
@@ -465,7 +465,7 @@ SMS, notification preview, URL link or automated delivery is implemented. Treat 
 as a bearer credential: anyone holding it can enroll the named employee before
 expiry. Do not post it to Trello, logs, analytics, screenshots, browser storage or
 shared notes. Lost tokens cannot be retrieved; revoke using the returned invitation
-ID and issue another. Management listing/UI and delivery remain future integration.
+ID and issue another. Management listing/UI is integrated below; token delivery stays a private manual handoff.
 
 Acceptance needs the token and a password satisfying the existing enrollment policy;
 it does not need an admin session and never accepts a requested username, actor or
@@ -497,8 +497,8 @@ no-store protections. Admin issue returns the sensitive token in its authenticat
 unknown/expired/revoked/used tokens, conflicts and policy failures receive generic
 403; unexpected body fields return 400, and system errors sanitized 503. No actual
 team invitation or employee account was created during implementation. Router
-mounting and finished enrollment/account-management screens remain separate work,
-with the required browser, visual, manual accessibility and Lighthouse gates.
+mounting and enrollment/account-management screens are described in the integration
+section below, along with browser, visual, manual accessibility and Lighthouse gates.
 
 `tests/unit/staff-enrollment-service.test.js` covers authorization, digest-only storage,
 24-hour expiry, revocation/replay, issuer invalidation, password races, two-connection
@@ -574,7 +574,8 @@ caps are separate: deployment must size memory for their combined worst case (up
 six simultaneous scrypt operations), or review a shared cap before public use.
 Source must be the trusted socket address, not request data/forwarded headers.
 
-The router remains unmounted, so no customer page or visible account screen changed.
+The account-maintenance foundation changed no customer page; the staff integration
+is documented below.
 Recovery, reactivation, admin-created password resets and role changes are outside
 this increment. No actual user password was changed. Future screens must preserve
 recoverable inputs safely, permit paste/password managers, explain required sign-in
@@ -626,7 +627,7 @@ Files and integration:
   the original employee/admin role and refuses disabled accounts.
 - The isolated auth router exposes only the three public contracts above, with
   the existing TLS/origin/CSRF/body-size/no-store protections. It never exposes the
-  local operator method. The router remains unmounted in the running application.
+  local operator method. The configured HTTPS runtime mounts only the public recovery contracts.
 
 Codes are ten independently random 16-byte values encoded as 32 lowercase hex
 characters (128 bits each). Store them privately in a password manager or offline
@@ -716,8 +717,8 @@ No actual in-person verification was claimed or performed by these synthetic tes
 Migration recovery follows the approved disposable-data policy: recreate from
 reviewed migrations/seed if necessary; never alter applied checksums or reuse older
 code against a database containing migration 010. Application-managed backups and
-key-loss recovery remain outside this increment. Finished screens, manual accessibility,
-three-browser functional/visual checks and Lighthouse acceptance remain outstanding.
+key-loss recovery remain outside this increment. Mounted screens and their acceptance
+evidence are tracked in the integration section below.
 
 Engineering references reviewed October 21, 2026:
 [OWASP MFA recovery](https://cheatsheetseries.owasp.org/cheatsheets/Multifactor_Authentication_Cheat_Sheet.html)
@@ -746,3 +747,81 @@ Research checked October 21, 2026:
 
 These are engineering references, not a claim that all recommendations are
 implemented or that a scan can certify conformance.
+
+## Mounted staff experience (BE-08 / FE-08)
+
+`createApp({ objAuthRuntime })` in `src/app.js` mounts `/auth` and four private,
+no-store/noindex EJS views: `/staff/sign-in`, `/staff/enroll`, `/staff/recovery`,
+and `/staff/account`. The default export remains the view-only app for existing
+customer fixtures. Account views validate the persisted session before rendering;
+employee views never include administrator controls. Every mutation still repeats
+server authorization, so hidden controls are not a permission boundary.
+
+`src/auth/auth-runtime.js` composes the existing login, MFA, session, employee,
+invitation and recovery services around one migrated database. Its teardown wipes
+in-memory keys and recovery stages. No default account is created. First-admin
+setup and Brody's in-person recovery remain private terminal procedures.
+
+`src/views/pages/staff.ejs` and `partials/staff/field.ejs` provide semantic forms;
+`src/public/css/staff.css` uses existing theme tokens; `src/public/js/staff.js`
+handles JSON/CSRF requests, MFA transitions, private once-only displays,
+pagination, explicit refresh, mutation confirmation and focus/status messages.
+Forms require JavaScript and have disabled submit controls until listeners are
+attached. Their fallback uses POST, so credentials cannot become query strings.
+No staff secrets or identity are written to browser storage. Password/code inputs
+are cleared after attempts; private text panels clear on hide/page departure.
+Browser/password-manager memory cannot be reliably erased by application code.
+
+### Runtime configuration
+
+`src/server.js` keeps HTTP presentation-only when no authentication settings are
+present. Supplying any of the following requires all of them; incomplete or invalid
+configuration fails startup instead of downgrading transport:
+
+| Environment setting | Purpose |
+| --- | --- |
+| `AUTH_ORIGIN` | Exact HTTPS origin, with the configured `PORT` (default 3000). |
+| `TLS_KEY_PATH` | Private server TLS key file outside the repository/public tree. |
+| `TLS_CERT_PATH` | Trusted server certificate/chain for that origin. |
+| `DATABASE_PATH` | Existing private SQLite file; reviewed migrations are checksum-verified/applied at startup. |
+| `MFA_ENCRYPTION_KEY_HEX` | Separately provisioned private 32-byte lowercase-hex MFA key. |
+
+Set `HOST` to the intended interface; its default remains loopback. The Node
+process accepts direct TLS only, with minimum TLS 1.2. No forwarded headers confer
+HTTPS or source identity. Reverse proxies, public exposure, GCP resources, domain
+configuration and deployment need their own reviewed configuration. The runtime
+does not provision a certificate, change OS trust, create a real key/account, or
+send invitations by email/SMS. Node does not automatically load a `.env` file.
+Keep keys and certificates out of Git and never paste them into Trello.
+
+### Reproducible integration checks
+
+- `npm run test:unit` includes `tests/unit/auth-runtime.test.js` for actual mounted
+  HTTPS responses, no-store/noindex/referrer controls, missing-session redirects,
+  host rejection and invalid runtime composition.
+- `npx playwright test -c playwright.staff.config.js` exercises real services and
+  Secure/HttpOnly/SameSite cookies on a disposable loopback HTTPS fixture in all
+  three browsers at mobile/desktop sizes. `tests/fixtures/staff-app.js` owns only
+  synthetic in-memory identities and deterministic clock controls. Fixture-only
+  `/__test/*` routes never exist in `src/server.js` or the production app.
+- The fixture's self-signed certificate exception belongs exclusively to isolated
+  automated tests. It is not a production certificate-validation setting or an
+  instruction to bypass a browser security warning. Trace/video capture is off
+  for secret-bearing authentication flows. Visual snapshots use blank forms and
+  non-secret account lists, in light/dark themes.
+- New visual baselines need inspection; existing Windows customer baselines must
+  not be regenerated to match a different machine. Full WCAG/manual and
+  Lighthouse acceptance evidence remains separate from automated axe results.
+
+Staff-only asset delivery uses `partials/head.ejs` with `bStaffPage` and the virtual
+`/css/staff-bundle.css` response in `src/app.js`. It combines the unchanged token,
+global and staff source styles with the existing gzip negotiation/cache policy;
+customer asset URLs and the pinned Bootstrap stylesheet are preserved. The account
+view receives only already-authorized employee/invitation summaries as escaped
+JSON data, so the browser can draw initial records without two extra round trips.
+Explicit refresh, pagination and mutations still call protected endpoints.
+
+Perin explicitly approved an SEO-gate exception on October 21, 2026 for these four
+private staff pages, retaining their noindex protection. This does not waive
+performance, accessibility, browser or manual review requirements. See
+`docs/verification/be-08-staff-ui.md` for measured outcomes and unresolved gates.
