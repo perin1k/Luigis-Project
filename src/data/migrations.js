@@ -67,9 +67,11 @@ const DEMO_PAYMENTS_MIGRATION = Object.freeze({
   strSql: readFileSync(new URL('./migrations/011-demo-payments.sql', import.meta.url), 'utf8'),
 });
 
+const DEMO_REFUNDS_MIGRATION = Object.freeze({intVersion:12,strName:'demo-refunds',strSql:readFileSync(new URL('./migrations/012-demo-refunds.sql',import.meta.url),'utf8')});
+
 export function applyMigrations(objDatabase, arrMigrations = [
   CATALOG_MIGRATION, ORDERS_MIGRATION, PAYMENTS_MIGRATION, SCHEDULING_MIGRATION, ACCESS_MIGRATION,
-  CREDENTIALS_MIGRATION, MFA_MIGRATION, LOGIN_MIGRATION, INVITATIONS_MIGRATION, RECOVERY_MIGRATION, DEMO_PAYMENTS_MIGRATION,
+  CREDENTIALS_MIGRATION, MFA_MIGRATION, LOGIN_MIGRATION, INVITATIONS_MIGRATION, RECOVERY_MIGRATION, DEMO_PAYMENTS_MIGRATION, DEMO_REFUNDS_MIGRATION,
 ]) {
   let intPrevious = 0;
   for (const objMigration of arrMigrations) {

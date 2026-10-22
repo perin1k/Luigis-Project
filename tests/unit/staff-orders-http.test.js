@@ -36,6 +36,12 @@ test('HTTPS queue endpoints require actual staff cookies, pin origin, escape nam
     assert.equal((await get(intPort,strProgress,objWriteHeaders,objBody)).intStatus,409);
     assert.equal((await get(intPort,`/api/staff/orders/${strReference}/exception`,objWriteHeaders,{intRevision:objCurrent.intRevision+1,strAction:'cancel'})).intStatus,403);
     assert.equal((await get(intPort,`/api/staff/orders/${strReference}/tracking-replacement`,objWriteHeaders,{bReviewed:true})).intStatus,403);
+    assert.equal((await get(intPort,`/api/staff/orders/${strReference}/refund`,objWriteHeaders,{intRevision:objCurrent.intRevision+1,strRequestId:'00000000-0000-4000-8000-000000000009'})).intStatus,403);
+    const strCancelToken=objFixture.arrTrackingPaths[2].split('#')[1];const objGuestHeaders={Origin:'https://localhost:3444','Content-Type':'application/json'};
+    assert.equal((await get(intPort,'/api/tracking/cancellation',{...objGuestHeaders,Origin:'https://other.invalid'},{strToken:strCancelToken})).intStatus,403);
+    assert.equal((await get(intPort,'/api/tracking/cancellation',objGuestHeaders,{strToken:'public-order-reference'})).intStatus,404);
+    assert.equal((await get(intPort,'/api/tracking/cancellation',objGuestHeaders,{strToken:strCancelToken})).intStatus,200);
+    assert.equal(JSON.parse((await get(intPort,'/api/tracking/cancellation',objGuestHeaders,{strToken:strCancelToken})).strBody).bReplayed,true);
     const strTrackingToken=objFixture.arrTrackingPaths[1].split('#')[1];
     const objTrackingShell=await get(intPort,'/track');assert.equal(objTrackingShell.intStatus,200);assert.equal(objTrackingShell.objHeaders['cache-control'],'no-store');assert.doesNotMatch(objTrackingShell.strBody,new RegExp(strTrackingToken));
     const objPublic=await get(intPort,'/api/tracking',{Origin:'https://localhost:3444','Content-Type':'application/json'},{strToken:strTrackingToken});

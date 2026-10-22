@@ -1,3 +1,4 @@
+import {recordDemoAllocations} from './demo-refund-service.js';
 import { randomUUID } from 'node:crypto';
 import { runTransaction } from '../data/database.js';
 import { PricingError } from '../ordering/catalog-service.js';
@@ -51,6 +52,7 @@ export function createDemoPaymentService(objDatabase,{objVault,objCatalogService
       // Explicit short-lived ciphertext lifecycle; immutable masked financial history is separate.
       objDatabase.prepare('DELETE FROM demo_payment_secrets WHERE expires_at<=?').run(dtNow);
       if(bApproved){
+        recordDemoAllocations(objDatabase,strId,dtNow);
         objDatabase.prepare("UPDATE orders SET fulfillment_status='Received',received_at=?,revision=revision+1 WHERE id=? AND fulfillment_status IS NULL").run(dtNow,objInput.strOrderId);
         const intSequence=objDatabase.prepare('SELECT coalesce(max(sequence),0)+1 AS n FROM order_events WHERE order_id=?').get(objInput.strOrderId).n;
         objDatabase.prepare("INSERT INTO order_events (id,order_id,sequence,event_type,to_status,occurred_at,reason_code) VALUES (?,?,?,'demo_payment_confirmed','Received',?,'demo_payment')").run(randomUUID(),objInput.strOrderId,intSequence,dtNow);

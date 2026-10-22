@@ -7,6 +7,11 @@
   <section class="staff-card" aria-labelledby="tracking-heading"><h2 id="tracking-heading">Order progress</h2>
     <p id="tracking-status" role="status" aria-live="polite">Open the private link from your order confirmation to view progress.</p>
     <p id="tracking-error" role="alert" hidden></p><div id="tracking-content" class="tracking-content"></div>
+    <div class="tracking-cancellation-area"><section id="cancellation-panel" class="mt-3" aria-labelledby="cancellation-heading" hidden>
+      <h3 id="cancellation-heading">Need to cancel?</h3><p>Your request holds preparation for team review. It does not automatically cancel or refund the order.</p>
+      <div class="form-check"><input id="cancellation-reviewed" tabindex="0" type="checkbox" class="form-check-input"><label for="cancellation-reviewed" class="form-check-label">I want to request cancellation.</label></div>
+      <button id="request-cancellation" type="button" tabindex="0" class="btn btn-outline-primary mt-2">Request cancellation review</button>
+    </section></div>
     <div class="tracking-refresh-area"><button id="tracking-refresh" tabindex="0" type="button" class="btn btn-primary" hidden>Refresh progress</button></div>
     <noscript><p>Enable JavaScript to securely load order progress from your private link.</p></noscript>
   </section>

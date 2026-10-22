@@ -12,15 +12,15 @@ export function createStaffOrdersService(objDatabase,objSessionService){
       ||typeof strStatus!=='string'||!['active',...ACTIVE_STATES].includes(strStatus)||typeof strPage!=='string'||!/^\d{1,5}$/.test(strPage))throw new StaffOrderError('Check the date, status and page.');
     return {strDate,strStatus,intPage:Number(strPage)};
   }
-  function warnings(strOrderId,strHoldState){
+  function warnings(strOrderId,strHoldState,strStatus){
     const arrWarnings=[];
     if(objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(strOrderId))arrWarnings.push('Cancellation review pending. Do not begin preparation.');
     for(const objReview of objDatabase.prepare("SELECT DISTINCT trigger_type FROM fulfillment_reviews WHERE order_id=? AND state='open' ORDER BY trigger_type").all(strOrderId))arrWarnings.push({hours_change:'Hours-change review pending.',inventory_change:'Inventory review pending. Do not begin preparation.',late_payment:'Late-payment review pending. Do not begin preparation.'}[objReview.trigger_type]);
-    if(strHoldState!=='confirmed')arrWarnings.push('Booking capacity is not confirmed. Staff review is needed.');
+    if(ACTIVE_STATES.includes(strStatus)&&strHoldState!=='confirmed')arrWarnings.push('Booking capacity is not confirmed. Staff review is needed.');
     return arrWarnings;
   }
   function summary(objRow,dtNow){
-    const arrWarnings=warnings(objRow.id,objRow.hold_state);
+    const arrWarnings=warnings(objRow.id,objRow.hold_state,objRow.fulfillment_status);
     return {strReference:objRow.public_reference,strService:objRow.service_type,strStatus:objRow.fulfillment_status,
       strCustomerName:objRow.redacted_at?'Contact removed':objRow.customer_name??'Contact unavailable',dtReadyAt:objRow.promised_at??null,
       strServiceDate:objRow.service_date??null,bReadyTimePassed:Boolean(objRow.promised_at&&objRow.promised_at<dtNow.toISOString()),
@@ -55,7 +55,17 @@ export function createStaffOrdersService(objDatabase,objSessionService){
           strDescription=`${objPizza.size_name_snapshot} pizza · ${objPizza.crust_name_snapshot} · ${arrToppings.join(', ')||'Marinara & cheese'}`;
         }return {intQuantity:objLine.quantity,strDescription};
       });
-      return {...summary(objRow,dtNow),intRevision:objRow.revision,bCanAdminister:objIdentity.strRole==='admin',dtCheckedAt:dtNow.toISOString(),arrItems,
+      let objRefund;
+      if(objIdentity.strRole==='admin'){
+        const objPayment=objDatabase.prepare("SELECT * FROM demo_payment_attempts WHERE order_id=? AND quote_id=(SELECT accepted_quote_id FROM orders WHERE id=?) AND state='succeeded'").get(objRow.id,objRow.id);
+        const objLast=objDatabase.prepare("SELECT state FROM demo_refund_attempts WHERE order_id=? ORDER BY requested_at DESC,rowid DESC LIMIT 1").get(objRow.id);
+        const bConfirmed=Boolean(objDatabase.prepare("SELECT id FROM demo_refund_attempts WHERE order_id=? AND state='succeeded'").get(objRow.id));
+        const bApproved=Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='approved'").get(objRow.id));
+        objRefund={strState:objRow.fulfillment_status!=='Cancelled'?'not-applicable':bConfirmed?'succeeded':objLast?.state??'review-required',centsTotal:objPayment?.amount_cents??0,
+          centsNetRecorded:objPayment?objDatabase.prepare('SELECT coalesce(sum(signed_cents),0) AS n FROM demo_financial_allocations WHERE payment_id=?').get(objPayment.id).n:0,
+          bCanApprove:Boolean(objPayment&&objRow.fulfillment_status==='Cancelled'&&bApproved&&!bConfirmed&&objLast?.state!=='pending')};
+      }
+      return {...summary(objRow,dtNow),intRevision:objRow.revision,bCanAdminister:objIdentity.strRole==='admin',...(objRefund?{objRefund}:{}),dtCheckedAt:dtNow.toISOString(),arrItems,
         objContact:objRow.redacted_at||!objRow.contact_order_id?null:{strName:objRow.customer_name??'',strPhone:objRow.phone??'',strEmail:objRow.phone?'':objRow.email??''}};
     });
   }

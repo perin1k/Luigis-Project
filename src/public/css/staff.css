@@ -29,5 +29,11 @@
 .staff-pagination { margin-top: 1rem; }
 
 /* Reserve asynchronous progress space so loading does not move the footer. */
-.tracking-content { min-height: 18rem; }
+.tracking-content { min-height: 14rem; }
 .tracking-refresh-area { min-height: 2.75rem; }
+
+#cancellation-panel .form-check, #refund-panel .form-check { min-height: 2.75rem; padding-block: .5rem; }
+#cancellation-reviewed, #refund-reviewed { min-height: 1.25rem; height: 1.25rem; }
+
+.tracking-cancellation-area { min-height: 14rem; }
+@media (max-width: 47.99rem) { .tracking-cancellation-area { min-height: 16rem; } }

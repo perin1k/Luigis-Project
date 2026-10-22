@@ -2,7 +2,7 @@ import express from 'express';
 import {randomBytes} from 'node:crypto';
 import {AUTH_COOKIES,COOKIE_OPTIONS,createCsrfProtection,readAuthCookies} from '../auth/auth-transport.js';
 import {StaffOrderError} from './orders-service.js';
-export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,strOrigin,fnRender}){
+export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,objDemoRefundService,strOrigin,fnRender}){
   const objOrigin=new URL(strOrigin);if(objOrigin.protocol!=='https:'||objOrigin.origin!==strOrigin)throw new Error('Exact staff HTTPS origin required.');
   const objRouter=express.Router();const objCsrf=createCsrfProtection();
   objRouter.use(['/staff/orders','/api/staff/orders'],(objRequest,objResponse,fnNext)=>{
@@ -38,17 +38,17 @@ export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressS
         return objResult?objResponse.json(objResult):objResponse.status(401).json({strMessage:'Your staff session expired. Sign in again.'});
       }catch(objError){return objResponse.status(objError instanceof StaffOrderError?objError.intStatus:503).json({strMessage:objError instanceof StaffOrderError?objError.message:'Order could not be updated. Refresh before trying again.'});}
     });
-    for(const strAction of ['exception','tracking-replacement'])objRouter.post(`/api/staff/orders/:reference/${strAction}`,(objRequest,objResponse,fnNext)=>{
+    for(const strAction of ['exception','tracking-replacement','refund'])objRouter.post(`/api/staff/orders/:reference/${strAction}`,(objRequest,objResponse,fnNext)=>{
       if(objRequest.headers.origin!==strOrigin||!objCsrf.verify(objResponse.locals.objAuthCookies,objRequest.headers['x-csrf-token']))return objResponse.status(403).json({strMessage:'Refresh before deciding.'});
       if(!objRequest.is('application/json'))return objResponse.status(415).json({strMessage:'JSON is required.'});fnNext();
     },express.json({limit:'1kb',strict:true,inflate:false}),(objRequest,objResponse)=>{
       try{
         if(strAction==='tracking-replacement'&&(!objRequest.body||Object.keys(objRequest.body).length!==1||objRequest.body.bReviewed!==true))throw new StaffOrderError('Review the order first.',400);
-        const objResult=strAction==='exception'?objOrderExceptionService?.decide(objResponse.locals.strSessionToken,objRequest.params.reference,objRequest.body):objTrackingService?.replaceGrant(objResponse.locals.strSessionToken,objRequest.params.reference);
+        const objResult=strAction==='refund'?objDemoRefundService?.refund(objResponse.locals.strSessionToken,objRequest.params.reference,objRequest.body):strAction==='exception'?objOrderExceptionService?.decide(objResponse.locals.strSessionToken,objRequest.params.reference,objRequest.body):objTrackingService?.replaceGrant(objResponse.locals.strSessionToken,objRequest.params.reference);
         return objResult?objResponse.json(objResult):objResponse.status(403).json({strMessage:'Administrative access is required.'});
       }catch(objError){return objResponse.status(objError instanceof StaffOrderError?objError.intStatus:503).json({strMessage:objError instanceof StaffOrderError?objError.message:'The decision could not be confirmed. Refresh before retrying.'});}
     });
-    objRouter.use(['/api/staff/orders/:reference/progress','/api/staff/orders/:reference/exception','/api/staff/orders/:reference/tracking-replacement'],(objError,objRequest,objResponse,fnNext)=>{if(!objError)return fnNext();return objResponse.status(objError.status===413?413:400).json({strMessage:'Check the order update request.'});});
+    objRouter.use(['/api/staff/orders/:reference/progress','/api/staff/orders/:reference/exception','/api/staff/orders/:reference/tracking-replacement','/api/staff/orders/:reference/refund'],(objError,objRequest,objResponse,fnNext)=>{if(!objError)return fnNext();return objResponse.status(objError.status===413?413:400).json({strMessage:'Check the order update request.'});});
   }
   objRouter.get('/api/staff/orders',(objRequest,objResponse,fnNext)=>serve(objRequest,objResponse,fnNext,true,false));
   objRouter.get('/api/staff/orders/:reference',(objRequest,objResponse,fnNext)=>serve(objRequest,objResponse,fnNext,true,true));

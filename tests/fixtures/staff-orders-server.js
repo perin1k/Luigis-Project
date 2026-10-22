@@ -11,6 +11,8 @@ const objServer=createServer({key:readFileSync(join(strDirectory,'key.pem')),cer
   if(objRequest.url==='/__test/reset'){objFixture.close();objFixture=createOrdersFixture('https://localhost:3444');return objResponse.end('reset');}
   if(objRequest.url==='/__test/expire'){objFixture.expire();return objResponse.end('expired');}
   if(objRequest.url==='/__test/tracking')return objResponse.setHeader('Content-Type','application/json').end(JSON.stringify(objFixture.arrTrackingPaths));
+  if(objRequest.url==='/__test/refund-decline'){objFixture.declineRefund();return objResponse.end('decline');}
+  if(objRequest.url==='/__test/refund-approve'){objFixture.approveRefund();return objResponse.end('approve');}
   if(objRequest.url==='/__test/code')return objResponse.end(objFixture.code());
   return objFixture.objApp(objRequest,objResponse);
 });objServer.listen(3444,'127.0.0.1');

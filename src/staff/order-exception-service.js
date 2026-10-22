@@ -1,3 +1,4 @@
+import {queueInternalNotification} from '../payments/demo-refund-service.js';
 import {randomUUID} from 'node:crypto';
 import {StaffOrderError} from './orders-service.js';
 export function createOrderExceptionService(objDatabase,objSessions){
@@ -30,6 +31,7 @@ export function createOrderExceptionService(objDatabase,objSessions){
       if(strColumn)objDatabase.prepare("UPDATE capacity_holds SET state='released',released_at=? WHERE booking_id IN (SELECT id FROM fulfillment_bookings WHERE order_id=?) AND state IN ('active','confirmed')").run(dtOccurred,objOrder.id);
       const strId=randomUUID();objDatabase.prepare("INSERT INTO order_events (id,order_id,sequence,event_type,from_status,to_status,occurred_at,actor_id,reason_code) VALUES (?,?,(SELECT coalesce(max(sequence),0)+1 FROM order_events WHERE order_id=?),'admin_order_decision',?,?,?,?,?)")
         .run(strId,objOrder.id,objOrder.id,objOrder.fulfillment_status,strNext,dtOccurred,objIdentity.strUserId,objInput.strAction);
+      if(strNext==='Cancelled')queueInternalNotification(objDatabase,objOrder.id,strId,'cancellation',dtOccurred);
       objDatabase.prepare("INSERT INTO audit_events (id,actor_id,action,entity_type,entity_id,occurred_at,correlation_id,reason_code,safe_change_summary) VALUES (?,?,'fulfillment_change','order',?,?,?,'operator_request','Order status changed')").run(randomUUID(),objIdentity.strUserId,objOrder.id,dtOccurred,strId);
       return {strStatus:strNext,intRevision:objOrder.revision+1,bRefundReviewRequired:strNext==='Cancelled'};
     });

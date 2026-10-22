@@ -687,3 +687,7 @@ login; the public HTTP ordering preview does not expose employee order records.
 Staff fulfillment progress and its integration boundaries: [BE-05 progress guide](docs/order-progress-design.md).
 
 Private guest tracking and administrator decisions: [BE-05 integration guide](docs/tracking-and-exceptions.md).
+
+Customer cancellation and full demonstration refunds (BE-09):
+[refund, allocation, retry and file guide](docs/demo-refund-design.md).
+Administrators review cancellations and refunds separately; no real money moves.

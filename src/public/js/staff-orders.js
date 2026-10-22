@@ -1,6 +1,6 @@
 const elMain=document.querySelector('[data-order-reference]');
 const strReference=elMain.dataset.orderReference;
-const elAdvance=document.querySelector('#advance-order');
+const elAdvance=document.querySelector('#advance-order');const elRefundButton=document.querySelector('#refund-submit');let strRefundRequestId;
 const NEXT_STATUS={Received:'Preparing',Preparing:'Baking',Baking:'Ready',Ready:'Completed'};
 let intRevision=Number(elMain.dataset.orderRevision);
 function progressControls(strStatus,bHeld){if(!elAdvance)return;const strNext=NEXT_STATUS[strStatus];elAdvance.hidden=!strNext;elAdvance.disabled=bHeld;elAdvance.textContent=strNext?`Mark ${strNext}`:'Order finished';elAdvance.dataset.nextStatus=strNext??'';}
@@ -22,6 +22,7 @@ function renderQueue(objQueue){
 }
 function renderDetail(objOrder){
   if(elAdminSubmit){elAdminSubmit.hidden=!objOrder.bCanAdminister;elAdminSubmit.disabled=false;document.querySelector('#admin-order-reviewed').checked=false;document.querySelector('#admin-order-result').replaceChildren();}
+  if(elRefundButton&&objOrder.objRefund){const objRefund=objOrder.objRefund;document.querySelector('#refund-panel').hidden=objRefund.strState==='not-applicable';document.querySelector('#refund-summary').textContent=`State: ${objRefund.strState} · Full amount: ${money(objRefund.centsTotal)} · Recorded net: ${money(objRefund.centsNetRecorded)}`;elRefundButton.disabled=!objRefund.bCanApprove;elRefundButton.textContent='Approve demo refund';document.querySelector('#refund-reviewed').checked=false;document.querySelector('#refund-status').textContent='';strRefundRequestId=undefined;}
   intRevision=objOrder.intRevision;progressControls(objOrder.strStatus,objOrder.arrWarnings.length>0);
   renderReference(document.querySelector('#detail-reference'),objOrder);document.querySelector('#detail-summary').textContent=summary(objOrder);
   const elWarnings=document.querySelector('#detail-warnings');elWarnings.replaceChildren();for(const strWarning of objOrder.arrWarnings)elWarnings.append(element('li',strWarning));
@@ -30,7 +31,7 @@ function renderDetail(objOrder){
 }
 elRefresh.hidden=false;
 elRefresh.addEventListener('click',async()=>{
-  elRefresh.disabled=true;if(elAdminSubmit)elAdminSubmit.disabled=true;if(elAdvance)elAdvance.disabled=true;elMain.setAttribute('aria-busy','true');elError.hidden=true;elStatus.textContent='Refreshing orders…';
+  elRefresh.disabled=true;if(elAdminSubmit)elAdminSubmit.disabled=true;if(elRefundButton)elRefundButton.disabled=true;if(elAdvance)elAdvance.disabled=true;elMain.setAttribute('aria-busy','true');elError.hidden=true;elStatus.textContent='Refreshing orders…';
   const objAbort=new AbortController();const intTimer=setTimeout(()=>objAbort.abort(),10000);
   try{
     const objResponse=await fetch(strReference?`/api/staff/orders/${encodeURIComponent(strReference)}`:`/api/staff/orders${location.search}`,{credentials:'same-origin',cache:'no-store',signal:objAbort.signal});
@@ -46,7 +47,6 @@ if(elAdvance)elAdvance.addEventListener('click',async()=>{
   const objAbort=new AbortController();const intTimer=setTimeout(()=>objAbort.abort(),10000);
   try{
     const objCsrfResponse=await fetch('/api/staff/orders/csrf',{cache:'no-store',credentials:'same-origin',signal:objAbort.signal});
-    if(objCsrfResponse.status===401){clearPrivate();document.querySelector('#orders-signin').hidden=false;elAdvance.hidden=true;}
     if(objCsrfResponse.status===401){clearPrivate();document.querySelector('#orders-signin').hidden=false;}if(!objCsrfResponse.ok)throw new Error('Your session is unavailable. Refresh or sign in again.');
     const objCsrf=await objCsrfResponse.json();
     const objResponse=await fetch(`/api/staff/orders/${encodeURIComponent(strReference)}/progress`,{method:'POST',credentials:'same-origin',cache:'no-store',signal:objAbort.signal,
@@ -74,4 +74,22 @@ if(elAdminSubmit){elAdminSubmit.hidden=false;elAdminSubmit.addEventListener('cli
   finally{clearTimeout(intTimer);elRefresh.disabled=false;}
 });}
 
-function clearPrivate(){document.querySelector('#orders-content').replaceChildren();document.querySelector('#admin-order-result')?.replaceChildren();if(elAdminSubmit)elAdminSubmit.hidden=true;if(elAdvance)elAdvance.hidden=true;}
+function clearPrivate(){document.querySelector('#orders-content').replaceChildren();document.querySelector('#admin-order-result')?.replaceChildren();document.querySelector('#refund-panel')?.replaceChildren();if(elAdminSubmit)elAdminSubmit.hidden=true;if(elAdvance)elAdvance.hidden=true;}
+
+function money(centsValue){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(centsValue/100);}
+if(elRefundButton)elRefundButton.addEventListener('click',async()=>{
+  if(!document.querySelector('#refund-reviewed').checked){elError.hidden=false;elError.textContent='Review and approve the full refund first.';return;}
+  strRefundRequestId??=crypto.randomUUID();elRefundButton.disabled=true;elRefresh.disabled=true;elError.hidden=true;
+  const objAbort=new AbortController();const intTimer=setTimeout(()=>objAbort.abort(),10000);let bUncertain=true;
+  try{
+    const objCsrfResponse=await fetch('/api/staff/orders/csrf',{credentials:'same-origin',cache:'no-store',signal:objAbort.signal});
+    if(!objCsrfResponse.ok){if(objCsrfResponse.status===401){clearPrivate();document.querySelector('#orders-signin').hidden=false;}throw new Error('Session unavailable. Sign in again.');}
+    const objCsrf=await objCsrfResponse.json();
+    const objResponse=await fetch(`/api/staff/orders/${encodeURIComponent(strReference)}/refund`,{method:'POST',credentials:'same-origin',cache:'no-store',signal:objAbort.signal,headers:{'Content-Type':'application/json','X-CSRF-Token':objCsrf.strCsrfToken},body:JSON.stringify({intRevision,strRequestId:strRefundRequestId})});
+    const objResult=await objResponse.json();bUncertain=false;
+    if(objResponse.status===401||objResponse.status===403){clearPrivate();document.querySelector('#orders-signin').hidden=false;}
+    if(!objResponse.ok)throw new Error(objResult.strMessage??'Refund unavailable. Refresh before retrying.');
+    document.querySelector('#refund-status').textContent=objResult.strMessage;strRefundRequestId=undefined;
+  }catch(objError){elError.hidden=false;elError.textContent=objError.name==='AbortError'||objError instanceof TypeError?'Refund result could not be confirmed. Check the same request before starting another.':objError.message;}
+  finally{clearTimeout(intTimer);elRefresh.disabled=false;if(bUncertain&&document.querySelector('#refund-submit')){elRefundButton.disabled=false;elRefundButton.textContent='Check refund result';}}
+});

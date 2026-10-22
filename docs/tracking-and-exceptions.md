@@ -70,7 +70,9 @@ future provider processing remains separately scoped.
 Tracking validity is enforced at every read: normally seven days after a final
 outcome, extended while cancellation/refund cases remain unresolved and until at
 least seven days after resolution. An approved cancellation without a successful
-refund record remains unresolved; BE-09 owns actual demonstration refund handling.
+refund record remains unresolved. BE-09 now supplies actual persisted demonstration
+refund handling; see [the refund guide](demo-refund-design.md). Confirmed demo
+refunds resolve the case, while failed/pending attempts do not.
 Final-state deadlines are derived from persisted outcome/decision/refund times,
 not the visitor clock. Existing explicit grant expiry is a hard cap. Replacement
 revokes the current grant, preserves any explicit cap and does not reset the

@@ -3,13 +3,14 @@ import {runTransaction} from '../data/database.js';
 import {StaffOrderError} from '../staff/orders-service.js';
 const FINAL_STATES=['Completed','Cancelled','Not collected'];
 export function createTrackingService(objDatabase,objSessions,{fnNow=()=>new Date()}={}){
-  function hasPendingCase(strOrderId){return Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests c WHERE c.order_id=? AND (c.state='pending' OR (c.state='approved' AND NOT EXISTS(SELECT 1 FROM refunds r WHERE r.cancellation_request_id=c.id AND r.state='succeeded')))").get(strOrderId)
+  function hasPendingCase(strOrderId){return Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests c WHERE c.order_id=? AND (c.state='pending' OR (c.state='approved' AND NOT EXISTS(SELECT 1 FROM refunds r WHERE r.cancellation_request_id=c.id AND r.state='succeeded') AND NOT EXISTS(SELECT 1 FROM demo_refund_attempts d WHERE d.cancellation_request_id=c.id AND d.state='succeeded')))").get(strOrderId)
     ||objDatabase.prepare("SELECT r.id FROM refunds r JOIN payment_attempts p ON p.id=r.payment_attempt_id WHERE p.order_id=? AND r.state!='succeeded'").get(strOrderId));}
   function deadline(objOrder){
     if(!FINAL_STATES.includes(objOrder.fulfillment_status))return null;
     if(hasPendingCase(objOrder.id))return null;
     const arrTimes=[objOrder.completed_at,objOrder.cancelled_at,objOrder.not_collected_at,
       ...objDatabase.prepare('SELECT decided_at FROM cancellation_requests WHERE order_id=?').all(objOrder.id).map((objRow)=>objRow.decided_at),
+      ...objDatabase.prepare('SELECT confirmed_at FROM demo_refund_attempts WHERE order_id=?').all(objOrder.id).map((objRow)=>objRow.confirmed_at),
       ...objDatabase.prepare('SELECT r.confirmed_at FROM refunds r JOIN payment_attempts p ON p.id=r.payment_attempt_id WHERE p.order_id=?').all(objOrder.id).map((objRow)=>objRow.confirmed_at)].filter(Boolean);
     return new Date(Math.max(...arrTimes.map(Date.parse))+7*86400000).toISOString();
   }
@@ -26,18 +27,37 @@ export function createTrackingService(objDatabase,objSessions,{fnNow=()=>new Dat
       .run(randomUUID(),objOrder.id,createHash('sha256').update(strToken).digest('hex'),dtNow,dtExpiry);
     return `/track#${strToken}`;
   }
-  function readTracking(strToken){
+  function resolveOrder(strToken,dtNow){
     if(typeof strToken!=='string'||!/^[a-f0-9]{64}$/.test(strToken))return null;
-    return runTransaction(objDatabase,()=>{
       const objGrant=objDatabase.prepare('SELECT * FROM tracking_grants WHERE token_digest=? AND revoked_at IS NULL').get(createHash('sha256').update(strToken).digest('hex'));
-      if(!objGrant)return null;const dtNow=fnNow().toISOString();
+      if(!objGrant)return null;
       const objOrder=objDatabase.prepare('SELECT * FROM orders WHERE id=?').get(objGrant.order_id);
       const dtDeadline=deadline(objOrder);
       if(dtNow<objGrant.created_at||(objGrant.expires_at&&dtNow>=objGrant.expires_at)||(dtDeadline&&dtNow>=dtDeadline))return null;
+      return objOrder;
+  }
+  function readTracking(strToken){
+    if(typeof strToken!=='string'||!/^[a-f0-9]{64}$/.test(strToken))return null;
+    return runTransaction(objDatabase,()=>{
+      const dtNow=fnNow().toISOString();const objOrder=resolveOrder(strToken,dtNow);if(!objOrder)return null;
       const objBooking=objDatabase.prepare('SELECT promised_at FROM fulfillment_bookings WHERE order_id=?').get(objOrder.id);
       return {strReference:objOrder.public_reference,strStatus:objOrder.fulfillment_status,strService:objOrder.service_type,dtReadyAt:objBooking?.promised_at??null,
+        bCanRequestCancellation:objOrder.fulfillment_status==='Received'&&!objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objOrder.id),
+        strRefundState:objOrder.fulfillment_status==='Cancelled'?(objDatabase.prepare("SELECT state FROM demo_refund_attempts WHERE order_id=? ORDER BY CASE state WHEN 'succeeded' THEN 0 ELSE 1 END,requested_at DESC,rowid DESC LIMIT 1").get(objOrder.id)?.state??'review-required'):'not-applicable',
         bReviewPending:hasPendingCase(objOrder.id)||Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objOrder.id)||objDatabase.prepare("SELECT id FROM fulfillment_reviews WHERE order_id=? AND state='open'").get(objOrder.id)),
         arrProgress:objDatabase.prepare('SELECT to_status AS strStatus,occurred_at AS dtOccurredAt FROM order_events WHERE order_id=? AND to_status IS NOT NULL AND (from_status IS NULL OR from_status IS NOT to_status) ORDER BY sequence').all(objOrder.id)};
+    });
+  }
+  function requestCancellation(strToken){
+    return runTransaction(objDatabase,()=>{
+      const dtNow=fnNow().toISOString();const objOrder=resolveOrder(strToken,dtNow);if(!objOrder)return null;
+      if(objOrder.fulfillment_status!=='Received')throw new StaffOrderError('Preparation has started or the order is final. Contact the team for help.',409);
+      if(objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objOrder.id))return {strState:'pending',bReplayed:true};
+      const objLatest=objDatabase.prepare('SELECT occurred_at FROM order_events WHERE order_id=? ORDER BY sequence DESC LIMIT 1').get(objOrder.id);if(objLatest&&objLatest.occurred_at>dtNow)throw new StaffOrderError('Order timing needs review.',409);
+      objDatabase.prepare("INSERT INTO cancellation_requests (id,order_id,source,reason_code,requested_at) VALUES (?,?,'customer','customer_request',?)").run(randomUUID(),objOrder.id,dtNow);
+      objDatabase.prepare('UPDATE orders SET revision=revision+1 WHERE id=?').run(objOrder.id);
+      objDatabase.prepare("INSERT INTO order_events (id,order_id,sequence,event_type,occurred_at,reason_code) VALUES (?,?,(SELECT coalesce(max(sequence),0)+1 FROM order_events WHERE order_id=?),'customer_cancellation_requested',?,'customer_request')").run(randomUUID(),objOrder.id,objOrder.id,dtNow);
+      return {strState:'pending',bReplayed:false};
     });
   }
   function replaceGrant(strSession,strReference){
@@ -53,5 +73,5 @@ export function createTrackingService(objDatabase,objSessions,{fnNow=()=>new Dat
       return {strTrackingPath};
     });
   }
-  return {issueForPayment,readTracking,replaceGrant};
+  return {issueForPayment,readTracking,replaceGrant,requestCancellation};
 }

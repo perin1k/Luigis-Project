@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService } = {}) {
+export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService } = {}) {
 const objApp = express();
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
@@ -120,7 +120,7 @@ objApp.get('/preview/confirmation', (objRequest, objResponse, fnNext) => {
   });
 });
 if (objTrackingService) objApp.use(createTrackingRouter(objTrackingService,renderPage));
-if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage }));
+if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage }));
 if (objAuthRuntime) {
   objApp.use('/auth', objAuthRuntime.objRouter);
   objApp.get(['/staff/sign-in', '/staff/enroll', '/staff/recovery', '/staff/account'], (objRequest, objResponse, fnNext) => {

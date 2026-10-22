@@ -75,7 +75,10 @@ hosted operations; current details and limitations are in the payment design:
 
 Migration 003 currently constrains provider references to Stripe test mode and
 requires event/confirmation evidence. It does not implement Stripe or a demo
-processor. Migration 011 now adds the separately approved local demo records;
+processor. Migration 012 adds separate local demo refunds and component
+allocations with an immutable-history backfill; see [BE-09](demo-refund-design.md).
+Cancellation and refund events queue internal notifications only; preview
+rendering remains separate BE-11 work. Migration 011 adds the local demo payment records;
 no Stripe events or signatures are forged. Applied SQL/checksums stay unchanged. Existing password hashing is not reversible card
 encryption, and no current module establishes secure card collection.
 

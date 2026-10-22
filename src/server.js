@@ -1,6 +1,7 @@
 import { createServer as createHttpsServer } from 'node:https';
 import { createServer as createHttpServer } from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
+import {createDemoRefundService} from './payments/demo-refund-service.js';
 import {createTrackingService} from './tracking/tracking-service.js';
 import { createApp } from './app.js';
 import { createSchedulingService } from './ordering/scheduling-service.js';
@@ -29,7 +30,7 @@ function application(objAuthRuntime) {
   const objSchedulingService = createSchedulingService(objDatabase);
   const objTrackingService=createTrackingService(objDatabase,objAuthRuntime?.objSessionService);
   const objPaymentService = createDemoPaymentService(objDatabase, { objTrackingService, objVault: loadPaymentVault(process.env.DEMO_PAYMENT_KEYS_PATH), objCatalogService, objSchedulingService });
-  return createApp({ objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
+  return createApp({ objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
     objOrderProgressService: objAuthRuntime ? createOrderProgressService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objStaffOrdersService: objAuthRuntime ? createStaffOrdersService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService) });
