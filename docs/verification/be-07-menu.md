@@ -47,8 +47,9 @@ no contrast threshold or axe rule was disabled. Final passes above use that fix.
 
 Manual representative screen-reader, zoom/contrast and full keyboard acceptance
 remain open. Windows/Linux environment checks are not available in this checkout.
-Existing queue/detail visual references include changed navigation and still need
-integrated visual reconciliation; other platforms' snapshots were preserved.
+The [acceptance handoff](be-07-handoff.md) records the subsequent concurrent-tab
+checks and macOS navigation-reference reconciliation; other platforms' snapshots
+remain preserved and require their own verification.
 No private-page SEO score was manufactured by allowing indexing. Keep BE-07 open
 until mandatory gates pass or receive an explicit applicable acceptance revision.
 No hosting, live payment, outbound notification or security certification claim.

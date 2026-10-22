@@ -18,3 +18,15 @@ test('menu employee can change ingredients but never receives price or hours con
   await objPage.getByRole('button',{name:'Mark Pepperoni unavailable',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('Saved.');await objPage.reload();await expect(objPage.getByRole('button',{name:'Mark Pepperoni available',exact:true})).toBeVisible();
   expect((await objPage.request.get('/api/staff/menu/hours?date=2026-10-21')).status()).toBe(403);await objRequest.get('/__test/expire');await objPage.getByRole('button',{name:'Mark Pepperoni available',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('session expired');
 });
+test('menu concurrent tabs reject stale prices and hours while preserving entered values',async({page:objPage,request:objRequest,context:objContext})=>{
+  await signIn(objPage,objRequest,true);await objPage.goto('/staff/menu');const objOther=await objContext.newPage();
+  try{
+    await objOther.goto('/staff/menu');await objPage.locator('#base-small').fill('6.50');await objPage.getByRole('button',{name:'Publish reviewed prices',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('Saved.');
+    await objOther.locator('#base-small').fill('9.99');await objOther.getByRole('button',{name:'Publish reviewed prices',exact:true}).click();await expect(objOther.getByRole('alert')).toContainText('Another team member changed');await expect(objOther.locator('#base-small')).toHaveValue('9.99');
+    await objOther.getByRole('link',{name:'Refresh current records',exact:true}).click();await expect(objOther.locator('#base-small')).toHaveValue('6.50');
+    for(const objTab of [objPage,objOther]){await objTab.getByLabel('Service date',{exact:true}).fill('2026-10-21');await objTab.getByRole('button',{name:'Load current hours',exact:true}).click();await expect(objTab.locator('#menu-status')).toContainText('Current hours loaded');}
+    await objPage.getByLabel('Closed all day',{exact:true}).check();await objPage.getByRole('button',{name:'Save reviewed hours',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('Saved.');
+    await objOther.getByLabel('Closing hour (24-hour Central)',{exact:true}).fill('21');await objOther.getByRole('button',{name:'Save reviewed hours',exact:true}).click();await expect(objOther.getByRole('alert')).toContainText('Another team member changed');await expect(objOther.getByLabel('Closing hour (24-hour Central)',{exact:true})).toHaveValue('21');
+    await objOther.getByRole('button',{name:'Load current hours',exact:true}).click();await expect(objOther.getByLabel('Closed all day',{exact:true})).toBeChecked();
+  }finally{await objOther.close();}
+});
