@@ -14,6 +14,39 @@ async function fixture(fnWork) {
   try { await fnWork({ objDatabase, strOrigin }); }
   finally { await new Promise((fnResolve) => objServer.close(fnResolve)); objDatabase.close(); }
 }
+test('persisted ingredient changes reach rendered availability and reject stale drafts without blocking unaffected recipes', async () => fixture(async ({ strOrigin, objDatabase }) => {
+  const objCatalog = await (await fetch(`${strOrigin}/api/pricing/catalog`)).json();
+  const objDraft = { strCatalogFingerprint: objCatalog.strFingerprint,
+    arrPizzas: [{ strSize: 'small', strCrust: 'regular', arrToppings: ['pepperoni'], intQuantity: 1 }],
+    arrDrinks: [], intTipPercent: 0 };
+  const fnPreview = (objBody) => fetch(`${strOrigin}/api/pricing/preview`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(objBody),
+  });
+  objDatabase.exec("UPDATE ingredients SET is_available=0 WHERE code='pepperoni'");
+  const objPage = await fetch(`${strOrigin}/order`);
+  assert.equal(objPage.status, 200);
+  assert.equal(objPage.headers.get('cache-control'), 'no-store');
+  assert.match(await objPage.text(), /data-toppings="pepperoni"/);
+  const objStale = await fnPreview(objDraft);
+  assert.equal(objStale.status, 409);
+  const objChanged = await objStale.json();
+  assert.equal(objChanged.strCode, 'menu_changed');
+  const objReviewed = { ...objDraft, strCatalogFingerprint: objChanged.objCatalog.strFingerprint };
+  const objBlocked = await fnPreview(objReviewed);
+  assert.equal(objBlocked.status, 422);
+  assert.equal((await objBlocked.json()).strCode, 'unavailable_item');
+  const objUnaffected = { ...objReviewed, arrPizzas: [{ ...objReviewed.arrPizzas[0], arrToppings: ['onion'] }] };
+  assert.equal((await fnPreview(objUnaffected)).status, 200);
+  objDatabase.exec("UPDATE ingredients SET is_available=0 WHERE code='cheese'");
+  const strBlockedPage = await (await fetch(`${strOrigin}/order`)).text();
+  assert.match(strBlockedPage, /required base ingredient is unavailable/);
+  const objCurrent = await (await fetch(`${strOrigin}/api/pricing/catalog`)).json();
+  const objBaseBlocked = await fnPreview({ ...objUnaffected, strCatalogFingerprint: objCurrent.strFingerprint });
+  assert.equal(objBaseBlocked.status, 422);
+  objDatabase.exec("UPDATE ingredients SET is_available=1 WHERE code IN ('pepperoni','cheese')");
+  const objRestored = await (await fetch(`${strOrigin}/api/pricing/catalog`)).json();
+  assert.equal((await fnPreview({ ...objDraft, strCatalogFingerprint: objRestored.strFingerprint })).status, 200);
+}));
 test('mounted public pricing uses persisted catalog without enabling staff access or accepting prices', async () => fixture(async ({ strOrigin, objDatabase }) => {
   const objCatalogResponse = await fetch(`${strOrigin}/api/pricing/catalog`);
   assert.equal(objCatalogResponse.status,200); assert.equal(objCatalogResponse.headers.get('cache-control'),'no-store');
