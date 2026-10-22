@@ -11,6 +11,46 @@ async function review(objPage) {
   await expect(objPage.locator('#server-totals')).toBeVisible();await expect(objPage.locator('#pickup-status')).toContainText('Choose a ready time');
 }
 test.beforeEach(async({request:objRequest})=>{await objRequest.get('/__test/reset');});
+
+test('scheduled status separates cancellation decisions from refund outcomes and fails safely', async ({ page: objPage }) => {
+  await objPage.goto('/__test/scheduled-status');
+  const fnStatus = (strName) => objPage.getByRole('article', { name: strName, exact: true });
+  await expect(fnStatus('Awaiting review')).toContainText('Awaiting admin review');
+  await expect(fnStatus('Awaiting review')).toContainText('We’re sorry');
+  await expect(fnStatus('Approved')).toContainText('Cancellation approved');
+  await expect(fnStatus('Approved')).toContainText('No refund request recorded');
+  await expect(fnStatus('Denied')).toContainText('Cancellation denied');
+  await expect(fnStatus('Refund pending')).toContainText('Refund pending');
+  await expect(fnStatus('Refund failed')).toContainText('Refund unsuccessful');
+  await expect(fnStatus('Refund completed')).toContainText('Demonstration refund completed');
+  await expect(fnStatus('Refund completed')).toContainText('No money was transferred');
+  for (const strName of ['Unknown', 'Missing', 'Unsupported keys', 'Conflicting', 'Unverified mode']) {
+    await expect(fnStatus(strName)).toContainText('Refund status unavailable');
+    await expect(fnStatus(strName)).not.toContainText('refund completed');
+  }
+  await expect(fnStatus('Escaped detail')).toContainText('<img src=x');
+  expect(await fnStatus('Escaped detail').locator('img').count()).toBe(0);
+  expect(await objPage.evaluate(() => window.bInjected)).toBeUndefined();
+  await expect(objPage.getByRole('button', { name: /approve|refund|cancel/i })).toHaveCount(0);
+  await objPage.goto('/order');
+  await expect(objPage.getByRole('heading', { name: 'Scheduled order update' })).toHaveCount(0);
+});
+
+test('visual scheduled status examples support both themes and narrow reflow', async ({ page: objPage }) => {
+  await objPage.goto('/__test/scheduled-status');
+  await objPage.keyboard.press('Tab');
+  await expect(objPage.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
+  await objPage.keyboard.press('Enter');
+  await expect(objPage.locator('#main-content')).toBeFocused();
+  for (const strTheme of ['Light', 'Dark']) {
+    await objPage.getByRole('group', { name: 'Appearance', exact: true }).getByText(strTheme, { exact: true }).click();
+    await expect.poll(() => objPage.evaluate(() => document.getAnimations().filter((objAnimation) => objAnimation.playState === 'running').length)).toBe(0);
+    expect((await new AxeBuilder({ page: objPage }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()).violations).toEqual([]);
+    await expect(objPage.locator('#status-examples')).toHaveScreenshot(`scheduled-status-${strTheme}.png`);
+  }
+  await objPage.setViewportSize({ width: 320, height: 844 });
+  expect(await objPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
 test('ready time is required, reserved with the order, and safely reused on retry',async({page:objPage,request:objRequest})=>{
   const arrErrors=[];objPage.on('pageerror',(objError)=>arrErrors.push(objError.message));await review(objPage);
   await objPage.getByRole('button',{name:'Continue to payment',exact:true}).click();await expect(objPage.locator('#form-error')).toContainText('Choose an available pickup time');

@@ -1,0 +1,44 @@
+<%# Read-only presentation contract: objScheduledStatus comes from an authorized,
+    validated server view model, never request/query parameters. Fields:
+    bInventoryIssue, optional escaped strIssueDescription, strCancellationState
+    (pending/approved/denied), strRefundState (none/pending/failed/succeeded),
+    strProcessingMode (demo required for succeeded). This partial grants no access,
+    performs no writes and does not verify payment evidence. Missing/unsupported
+    data stays unknown; approval alone never establishes refund success.
+%>
+<%
+  const objStatus = typeof objScheduledStatus === 'object' && objScheduledStatus !== null ? objScheduledStatus : {};
+  const objCancellationLabels = {
+    pending: ['Awaiting admin review', 'Your cancellation request is awaiting a decision. It has not been approved.'],
+    approved: ['Cancellation approved', 'Cancellation approval does not mean a refund has completed.'],
+    denied: ['Cancellation denied', 'Your cancellation request was not approved. This does not establish the order’s preparation or pickup status.'],
+  };
+  const objRefundLabels = {
+    none: ['No refund request recorded', 'No refund outcome is available for this order.'],
+    pending: ['Refund pending', 'The refund request is recorded. Completion has not been confirmed.'],
+    failed: ['Refund unsuccessful', 'The refund attempt did not complete. Admin follow-up is needed.'],
+    succeeded: ['Demonstration refund completed', 'The application recorded a completed demonstration refund. No money was transferred.'],
+  };
+  const arrCancellation = typeof objStatus.strCancellationState === 'string' && Object.hasOwn(objCancellationLabels, objStatus.strCancellationState)
+    ? objCancellationLabels[objStatus.strCancellationState] : ['Cancellation status unavailable', 'We cannot confirm a cancellation decision. Please contact the restaurant for help.'];
+  const bKnownRefund = typeof objStatus.strRefundState === 'string' && Object.hasOwn(objRefundLabels, objStatus.strRefundState)
+    && (objStatus.strRefundState === 'none' || objStatus.strCancellationState === 'approved')
+    && (objStatus.strRefundState !== 'succeeded' || objStatus.strProcessingMode === 'demo');
+  const arrRefund = bKnownRefund ? objRefundLabels[objStatus.strRefundState]
+    : ['Refund status unavailable', 'We cannot confirm the refund outcome. Please contact the restaurant for help.'];
+%>
+<section class="schedule-policy scheduled-order-status" aria-label="Scheduled order update">
+  <h2>Scheduled order update</h2>
+  <% if (objStatus.bInventoryIssue === true) { %>
+    <div class="scheduled-status-issue">
+      <h3>Ingredients unavailable</h3>
+      <p>We’re sorry. An ingredient needed for your scheduled order is unavailable.</p>
+      <% if (typeof objStatus.strIssueDescription === 'string' && objStatus.strIssueDescription.trim()) { %><p><%= objStatus.strIssueDescription %></p><% } %>
+      <p>This affects the whole order. Cancellation and refund decisions are shown separately below.</p>
+    </div>
+  <% } %>
+  <dl class="scheduled-status-details">
+    <div><dt>Cancellation</dt><dd><strong><%= arrCancellation[0] %></strong><p><%= arrCancellation[1] %></p></dd></div>
+    <div><dt>Refund</dt><dd><strong><%= arrRefund[0] %></strong><p><%= arrRefund[1] %></p></dd></div>
+  </dl>
+</section>

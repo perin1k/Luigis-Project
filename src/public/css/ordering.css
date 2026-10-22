@@ -74,6 +74,13 @@ legend { font-weight: 700; margin-bottom: .8rem; padding: 0; }
 .schedule-policy { background: var(--color-panel); border: 1px solid var(--color-line); border-radius: .35rem; padding: 1rem; margin-block: 1.25rem; overflow-wrap: anywhere; }
 .schedule-policy h3 { font-size: 1.15rem; }
 .schedule-policy p:last-child { margin-bottom: 0; }
+.scheduled-order-status h2 { font-size: 1.65rem; }
+.scheduled-status-issue { border-inline-start: 3px solid var(--color-accent); padding-inline-start: 1rem; margin-block: 1rem; }
+.scheduled-status-details { margin-bottom: 0; }
+.scheduled-status-details > div { border-top: 1px solid var(--color-line); padding-top: .75rem; margin-top: .75rem; }
+.scheduled-status-details dt { color: var(--color-muted); font-size: .85rem; margin-bottom: .25rem; }
+.scheduled-status-details dd { margin: 0; }
+.scheduled-status-details dd p { margin-top: .3rem; }
 .review-block .text-button + .text-button { margin-left: 1rem; }
 .payment-options { display: grid; gap: .8rem; }
 .payment-symbol { font-size: 2rem; margin-left: auto; }
