@@ -19,25 +19,33 @@ This record changes no application behavior and provisions no cloud resources.
   External-service behavior remains governed by [the integration boundary](integrations.md):
   no real payment processing or external notification delivery is implied.
 
-## Recommended implementation baseline
+## Approved implementation baseline
 
-These are design recommendations, not provisioned settings or verified outcomes.
+The following defaults were explicitly approved on October 22, 2026. They are
+design choices, not provisioned settings or verified outcomes.
 
-| Area | Proposed baseline | Reason / remaining review |
+| Area | Approved baseline | Reason / remaining review |
 | --- | --- | --- |
-| Region and OS | Supported Linux image in `us-central1` | Select exact image, zone and available Spot machine type during OPS-01/02; verify locked tooling on Linux. |
+| Region and OS | Ubuntu 24.04 LTS, x86-64, in `us-central1` | Select an available zone and pin the exact image during OPS-01/02; verify locked tooling on Linux. |
+| Machine | `e2-small` Spot initially | Confirm offering/capacity and validate application load before hosted acceptance; resizing requires review. |
 | Application | One Node process managed by `systemd`, running as a dedicated unprivileged identity | Preserve the current SQLite and in-process notification/retention workers; avoid duplicate workers. Review service shutdown/restart behavior. |
 | Preemption | Termination action `STOP`, not `DELETE` | Keep the instance available for an operator restart when capacity permits. |
-| Database | Private persistent disk storage, with explicit retain/auto-delete settings | Preserve database files and journals across stops/restarts; exclude application release replacement from data deletion. No Local SSD or ephemeral container storage for SQLite. |
+| Disks and database | 20 GB boot disk plus a separate 10 GB persistent data disk; retain disks | Confirm disk types and explicit auto-delete settings during provisioning. Preserve private SQLite files/journals across restarts and releases. No Local SSD or ephemeral container storage for SQLite. |
 | Keys | Separately protected private key material outside source and database | Define host custody, access and lifecycle under OPS-03; retaining a database without its encryption keys is insufficient for recovery. |
-| Public endpoint | DuckDNS record and trusted HTTPS certificate with renewal procedure | Select hostname, IP lifecycle, DNS update mechanism and certificate tooling before deployment. Tokens must not appear in logs or shared commands. |
-| TLS topology | Preserve current direct Node HTTPS boundary initially | Any proxy or port-forwarding design needs explicit review of origin/port checks, client-address throttling, cookies and certificate reload. |
+| Public endpoint | Requested hostname `luigispizzeria.duckdns.org`; trusted HTTPS with automated renewal | Hostname availability/registration is unverified. Select IP lifecycle, DNS update mechanism and certificate tooling before deployment. Tokens must not appear in logs or shared commands. |
+| TLS topology | Direct Node HTTPS on port 443 | Preserve origin/port checks and client-address throttling. Review least-privilege binding, certificate access and reload; do not run Node as root simply to bind port 443. Any proxy/forwarding change needs separate review. |
+| Administration | SSH through GCP IAP; no public SSH access | Review IAM, OS Login and restricted IAP firewall rules. Application HTTPS remains publicly accessible. |
 | Data lifecycle | Isolated hosted synthetic data; no required application-managed backups | Persistent storage is not a backup. Optional cloud snapshots require separate retention/key review. |
 
-Machine sizing is unresolved. The earlier `e2-micro` suggestion was a candidate,
-not an approved or verified Spot configuration. Select from actual supported
-offerings and assess memory/CPU under representative runtime load. Run browser
-and Lighthouse tooling separately from the serving VM where practical.
+The approved `e2-small` starting size supersedes the earlier `e2-micro` candidate.
+Assess memory/CPU under representative runtime load; approval is not evidence of
+capacity or performance. Run browser and Lighthouse tooling separately from the
+serving VM where practical.
+
+The target hosting end date is **November 1, 2026**, interpreted in
+America/Chicago. An exact shutdown time has not been selected. No scheduler,
+automatic shutdown or deletion is created by this record. Agree any preservation
+and explicitly authorized resource/data/key cleanup before teardown.
 
 ## Interruption and recovery contract
 
@@ -62,16 +70,18 @@ option require explicit agreement; no automatic paid fallback is authorized.
 
 ## Remaining decisions and delivery gates
 
-- Confirm exact project identifier, region/zone, Linux image, machine type, disk
-  allocation, retained resources and network/firewall configuration.
+- Confirm the project identifier, available zone, pinned Ubuntu image, approved
+  machine availability, disk types, retain settings and network/IAP firewall
+  configuration. Region, OS family, starting size and disk capacities are settled.
 - Verify actual credit applicability/expiry and current estimated VM, disk, IP,
   network and logging costs. Select budget alerts and an escalation threshold;
   alerts are not a hard spending cap. Retained disks can still incur charges
   while the VM is stopped.
-- Select the DuckDNS hostname, address-update and certificate-renewal mechanism,
-  public origin/port and safe secret provisioning. Do not publish account tokens.
-- Define preview duration, restart responsibility, shutdown/teardown timing and
-  explicitly authorized data/key deletion. No teardown date has been selected.
+- Verify availability and registration of the requested DuckDNS hostname; select
+  address-update/certificate-renewal tooling and safe secret provisioning. Public
+  HTTPS port 443 is settled. Do not publish account tokens.
+- Define restart responsibility and the exact November 1 shutdown time, plus
+  separately authorized data/key deletion and retained-resource cleanup.
 - Define separate local/test/hosted databases, keys and staff provisioning. Never
   upload developers' databases or reuse their private credentials.
 - Rehearse setup, shutdown, restart, release rollback and disposable-data recreation
