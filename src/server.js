@@ -1,4 +1,5 @@
 import {createAnalyticsService} from './staff/analytics-service.js';
+import {createRetentionService} from './data/retention-service.js';
 import {createNotificationService} from './notifications/notification-service.js';
 import { createServer as createHttpsServer } from 'node:https';
 import { createServer as createHttpServer } from 'node:http';
@@ -28,7 +29,11 @@ let objRuntime;
 let objServer;
 let bClosed = false;
 let intNotificationTimer;
+let intRetentionTimer;
 function application(objAuthRuntime) {
+  const objRetentionService=createRetentionService(objDatabase);
+  const fnCleanup=()=>{try{objRetentionService.cleanup();}catch{console.error('Retention cleanup failed; expiry checks remain enforced on reads.');}};
+  fnCleanup();intRetentionTimer=setInterval(fnCleanup,60000);intRetentionTimer.unref();
   const objCatalogService = createCatalogService(objDatabase);
   const objSchedulingService = createSchedulingService(objDatabase);
   const objTrackingService=createTrackingService(objDatabase,objAuthRuntime?.objSessionService);
@@ -43,7 +48,7 @@ function application(objAuthRuntime) {
 }
 function closeResources() {
   if (bClosed) return;
-  bClosed = true; clearInterval(intNotificationTimer); objRuntime?.destroy(); objDatabase?.close();
+  bClosed = true; clearInterval(intRetentionTimer); clearInterval(intNotificationTimer); objRuntime?.destroy(); objDatabase?.close();
 }
 try {
   if (bAuthEnabled) {

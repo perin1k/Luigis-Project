@@ -1,10 +1,16 @@
 import { chicagoDate } from '../ordering/scheduling-service.js';
+import {orderRetentionDeadline} from '../data/order-retention.js';
 const ACTIVE_STATES=['Received','Preparing','Baking','Ready'];
 const PAGE_SIZE=20;
 const PAID_SQL=`(EXISTS (SELECT 1 FROM demo_payment_attempts p WHERE p.order_id=o.id AND p.quote_id=o.accepted_quote_id AND p.state='succeeded')
   OR EXISTS (SELECT 1 FROM payment_attempts p WHERE p.order_id=o.id AND p.quote_id=o.accepted_quote_id AND p.state='succeeded'))`;
 export class StaffOrderError extends Error { constructor(strMessage,intStatus=400){super(strMessage);this.intStatus=intStatus;} }
 export function createStaffOrdersService(objDatabase,objSessionService){
+  function contactAvailable(objRow,dtNow){
+    if(objRow.redacted_at||!objRow.contact_order_id)return false;
+    const dtDeadline=ACTIVE_STATES.includes(objRow.fulfillment_status)?null:orderRetentionDeadline(objDatabase,objDatabase.prepare('SELECT * FROM orders WHERE id=?').get(objRow.id));
+    return !dtDeadline||dtNow.toISOString()<dtDeadline;
+  }
   function parseFilters(objInput={}){
     if(!objInput||typeof objInput!=='object'||Object.keys(objInput).some((strKey)=>!['date','status','page'].includes(strKey)))throw new StaffOrderError('Check the queue filters.');
     const strDate=objInput.date??'';const strStatus=objInput.status??'active';const strPage=objInput.page??'0';
@@ -22,7 +28,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
   function summary(objRow,dtNow){
     const arrWarnings=warnings(objRow.id,objRow.hold_state,objRow.fulfillment_status);
     return {strReference:objRow.public_reference,strService:objRow.service_type,strStatus:objRow.fulfillment_status,
-      strCustomerName:objRow.redacted_at?'Contact removed':objRow.customer_name??'Contact unavailable',dtReadyAt:objRow.promised_at??null,
+      strCustomerName:objRow.redacted_at?'Contact removed':!contactAvailable(objRow,dtNow)?'Contact unavailable':objRow.customer_name??'Contact unavailable',dtReadyAt:objRow.promised_at??null,
       strServiceDate:objRow.service_date??null,bReadyTimePassed:Boolean(objRow.promised_at&&objRow.promised_at<dtNow.toISOString()),
       intPizzaQuantity:objRow.pizza_quantity,intDrinkQuantity:objRow.drink_quantity,arrWarnings};
   }
@@ -66,7 +72,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
           bCanApprove:Boolean(objPayment&&objRow.fulfillment_status==='Cancelled'&&bApproved&&!bConfirmed&&objLast?.state!=='pending')};
       }
       return {...summary(objRow,dtNow),intRevision:objRow.revision,bCanAdminister:objIdentity.strRole==='admin',...(objRefund?{objRefund}:{}),dtCheckedAt:dtNow.toISOString(),arrItems,
-        objContact:objRow.redacted_at||!objRow.contact_order_id?null:{strName:objRow.customer_name??'',strPhone:objRow.phone??'',strEmail:objRow.phone?'':objRow.email??''}};
+        objContact:!contactAvailable(objRow,dtNow)?null:{strName:objRow.customer_name??'',strPhone:objRow.phone??'',strEmail:objRow.phone?'':objRow.email??''}};
     });
   }
   return {listOrders,readOrder};

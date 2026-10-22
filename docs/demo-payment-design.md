@@ -95,8 +95,9 @@ ciphertext expires seven days after the attempt; it is independent of contact,
 tracking and financial-history retention. Successful new payment processing
 purges elapsed secret rows; internal `purgeExpiredSecrets()` can also be invoked
 by the later retention worker. No public cleanup route exists. Immutable masked
-financial history remains until project teardown. No scheduled cleanup worker or
-hosted backup copy is created here; any future hosted copy needs the same explicit
+financial history remains until project teardown. SEC-02 now schedules expiry
+cleanup through [the retention worker](retention-enforcement.md). No hosted backup
+copy is created here; any future hosted copy needs the same explicit
 key/retention plan. Losing the external key makes its ciphertext unrecoverable.
 
 ## Schema/recovery and remaining work

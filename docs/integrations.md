@@ -24,7 +24,7 @@ use demonstration adapters, not application persistence or authorization.
 | Database | SQLite migrations, transactions, constraints and non-destructive menu seed | Reviewed services and additive schema changes |
 | Staff access | Mounted HTTPS staff/MFA/enrollment/recovery/account-management screens and real permissions | Firefox/runtime and manual accessibility acceptance; operator-owned real setup |
 | Payments | Local demo payments/full refunds, encrypted synthetic-number storage, committed order/hold confirmation and component accounting | Final acceptance; future remote-provider reconciliation remains separate |
-| Notifications | Restricted event-driven internal previews, admin retry and preview expiry; no email/SMS sending | Firefox/manual accessibility acceptance; broader contact cleanup remains SEC-02 |
+| Notifications | Restricted event-driven internal previews, admin retry and preview/contact/grant expiry; no email/SMS sending | Firefox/manual accessibility and broader privacy acceptance remain open |
 | Hosting | GCP/DuckDNS direction selected; no deployment claimed | Public HTTPS deployment, protected staff functions and reviewed costs |
 | Stripe/Apple Pay | Future provider/native Wallet integration | Separately authorized replacement and verification before live money |
 
@@ -102,7 +102,9 @@ The dated schema/authentication documents record these approved policies:
   automatic order-number/contact lookup.
 - Contacts, grants and previews expire seven days after a final outcome,
   extended until at least seven days after pending cases resolve. Keep sanitized
-  history until teardown. Actual deletion jobs remain implementation work.
+  history until teardown. The [retention worker](retention-enforcement.md) now
+  enforces disposable-demo contact/grant/preview and ciphertext expiry; broader
+  privacy/operational acceptance remains open.
 - No application-managed backups are required for this disposable demo; data
   may be lost/recreated. Optional hosted backups need explicit lifecycle/security
   decisions. Do not erase data or promise business recovery because of this policy.

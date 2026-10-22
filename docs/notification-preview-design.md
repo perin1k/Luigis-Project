@@ -79,8 +79,9 @@ outcome/resolution policy. Pending cancellation/refund cases extend availability
 successful refund confirmation starts the resolution interval. Read authorization
 enforces expiry immediately. The worker deletes outbox rows and preview text at
 expiry or once contacts are absent/redacted; sanitized audit history remains.
-This does not implement the broader contact/grant deletion job (SEC-02), real card
-retention, or any backup promise. No live database is migrated by verification.
+SEC-02 now supplies [contact/grant cleanup](retention-enforcement.md), without
+introducing real card retention or a backup promise. No live database is migrated
+by verification.
 
 The existing explicit private staff detail SEO-only exception still applies;
 there is no new page/indexing exception. See [verification](verification/be-11-notifications.md).

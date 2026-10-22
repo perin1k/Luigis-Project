@@ -700,3 +700,6 @@ Admin-only sales reporting API (BE-06 increment):
 [metric definitions, integration points and verification](docs/sales-analytics-design.md).
 The private owner dashboard uses native date filters and purchased item snapshots;
 full-story acceptance remains open.
+
+Disposable-demo contact, tracking, preview and ciphertext cleanup (SEC-02 increment):
+[retention rules, worker integration and verification](docs/retention-enforcement.md).
