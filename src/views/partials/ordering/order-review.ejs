@@ -3,7 +3,21 @@
   <p class="step-description">Give everything one last look before payment.</p>
   <div id="order-review" aria-label="Order review"></div>
   <% if (bScheduling) { %>
-  <div class="field"><label for="pickup-time" class="form-label">Pickup or dine-in ready time</label><select id="pickup-time" class="form-select" aria-describedby="pickup-help" required><option value="">Choose a time</option></select><p id="pickup-help" class="field-hint">All times are Central (America/Chicago). A time is held for 30 minutes when you continue to checkout; payment is required to confirm your order.</p><button id="refresh-pickup" type="button" class="btn btn-outline-primary">Refresh pickup times</button><p id="pickup-status" role="status" aria-live="polite"></p></div>
+  <div class="field">
+    <label for="pickup-time" class="form-label">Pickup or dine-in ready time</label>
+    <p id="pickup-day" class="schedule-day"></p>
+    <select id="pickup-time" class="form-select" aria-describedby="pickup-day pickup-help pickup-status" required><option value="">Choose a time</option></select>
+    <p id="pickup-help" class="field-hint">All times are Central (America/Chicago). Choose the earliest available time or a scheduled slot. Allow at least 20 minutes; kitchen capacity may require longer. Online orders close at 10:30 PM for normal hours. After the cutoff, choose from the next available service day. Special hours may change the options shown.</p>
+    <button id="refresh-pickup" type="button" class="btn btn-outline-primary">Refresh pickup times</button>
+    <p id="pickup-status" role="status" aria-live="polite"></p>
+    <p class="field-hint">Selecting a time does not reserve it. Saving your checkout creates a temporary 30-minute hold; payment is required to confirm the booking.</p>
+  </div>
+  <section class="schedule-policy" aria-labelledby="schedule-policy-title">
+    <h3 id="schedule-policy-title">If your plans or ingredients change</h3>
+    <p>Cancellation requests require admin approval before preparation begins. Once preparation starts, customer cancellation is unavailable.</p>
+    <p>If ingredients become unavailable for a paid scheduled order, we’re sorry: the whole order is subject to cancellation and admin-approved refund review. An approved full refund includes items, tax and tip, with no fee deduction.</p>
+    <p>A cancellation request is not a completed refund. Approval and refund processing are separate steps.</p>
+  </section>
   <% } %>
   <% if (objCatalog) { %>
   <div class="field"><label for="tip-percent" class="form-label">Optional tip percentage</label><input id="tip-percent" class="form-control" type="number" value="0" min="0" step="1" inputmode="numeric" aria-describedby="tip-help"><p id="tip-help" class="field-hint">Optional, calculated on items plus tax. Tips go entirely to service staff.</p></div>

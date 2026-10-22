@@ -9,6 +9,6 @@
   <div class="payment-recap"><span>Order subtotal</span><strong id="payment-subtotal">$0.00</strong></div>
   <p id="payment-total" class="field-hint">Review your order before continuing.</p>
   <p class="payment-status" id="payment-status" role="status" aria-live="polite"></p>
-<% if (bScheduling) { %><p id="payment-pickup"></p><% } %>
+<% if (bScheduling) { %><section class="schedule-policy" aria-labelledby="payment-pickup-title"><h3 id="payment-pickup-title">Your ready time</h3><p id="payment-pickup"></p><p class="field-hint">An unpaid hold is temporary. Payment and booking confirmation are separate from saving your order details.</p></section><% } %>
 <% if (bOrderSubmission) { %><p id="order-save-status" role="status" aria-live="polite"></p><% } %>
 </section>

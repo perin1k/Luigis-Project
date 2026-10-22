@@ -220,8 +220,9 @@ function showStep(intNextStep) {
   document.querySelector('#step-count').textContent = `Step ${intStep + 1} of 6`;
   elBack.hidden = intStep === 0;
   updateContactFields();
+  if (bScheduling && intStep < 5) clearPickupReceipt();
   if (intStep === 4) { renderReview(); if (objCatalog) void checkPrice(); if (bScheduling) void loadPickupTimes(); }
-  if (bScheduling && intStep === 5 && objPickupSelection) document.querySelector('#payment-pickup').textContent = `Selected ready time: ${formatPickup(objPickupSelection.dtPromisedAt)}. Reserved only when checkout starts.`;
+  if (bScheduling && intStep === 5 && objPickupSelection) document.querySelector('#payment-pickup').textContent = `Selected ready time: ${formatPickup(objPickupSelection.dtPromisedAt)} (Central). Not reserved yet; not a confirmed booking.`;
   updateNextButton();
   arrSections[intStep].querySelector('h2').focus();
 }
@@ -466,6 +467,7 @@ async function saveUnpaidOrder() {
     if (objResponse.status === 409 && objResult.strCode === 'pickup_changed') { objPickupSelection = null; showStep(4); throw new Error(objResult.strMessage); }
     if (!objResponse.ok) throw new Error(objResult.strMessage ?? 'Unable to save your order. Please try again.');
     if (bScheduling && objResult.objPickup?.strHoldState !== 'active') { objPendingSubmission = null; objPickupSelection = null; showStep(4); throw new Error('Your previous pickup hold expired. Choose a time and review it before starting a new checkout.'); }
+    if (bScheduling) document.querySelector('#payment-pickup').textContent = `Temporary unpaid hold: ${formatPickup(objResult.objPickup.dtPromisedAt)} (Central). Expires ${formatPickup(objResult.objPickup.dtExpiresAt)}. This is not a confirmed booking.`;
     document.querySelector('#order-save-status').textContent = `${objResult.strMessage}${objResult.objPickup ? ` Ready time: ${formatPickup(objResult.objPickup.dtPromisedAt)}. Hold expires: ${formatPickup(objResult.objPickup.dtExpiresAt)}.` : ''} Reference: ${objResult.strReference}`;
   } catch (objError) {
     if (objError instanceof TypeError || objError.name === 'AbortError' || objError instanceof SyntaxError) throw new Error('Unable to confirm whether your order details were saved. Your selections are here; retry to safely check the same request.');
@@ -476,12 +478,19 @@ async function saveUnpaidOrder() {
 function formatPickup(dtInstant) {
   return new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(new Date(dtInstant));
 }
+function clearPickupReceipt() {
+  document.querySelector('#payment-pickup').textContent = '';
+  if (bOrderSubmission) document.querySelector('#order-save-status').textContent = '';
+}
 async function loadPickupTimes() {
   const intRequest = ++intPickupRequest; objPickupAbort?.abort();
   const intPizzas = objOrder.arrPizzas.reduce((intSum, objPizza) => intSum + objPizza.intQuantity, 0);
   const elSelect = document.querySelector('#pickup-time'); const elStatus = document.querySelector('#pickup-status');
   const strPrevious = objPickupSelection ? JSON.stringify(objPickupSelection) : '';
   objPickupSelection = null; bCheckingPickup = true; elSelect.disabled = true;
+  clearPickupReceipt();
+  document.querySelector('#pickup-day').textContent = '';
+  elSelect.replaceChildren(new Option('Checking ready times…', ''));
   document.querySelector('#refresh-pickup').disabled = true; elStatus.textContent = 'Checking available ready times…';
   const objAbort = new AbortController(); objPickupAbort = objAbort; const intTimer = setTimeout(() => objAbort.abort(), 10000);
   try {
@@ -489,13 +498,21 @@ async function loadPickupTimes() {
     const objResult = await objResponse.json(); if (!objResponse.ok) throw new Error('Pickup times could not be loaded. Refresh to try again.');
     if (intRequest !== intPickupRequest) return;
     arrPickupOptions = objResult.arrOptions;
+    if (!arrPickupOptions.length) {
+      elSelect.replaceChildren(new Option('No ready times available', ''));
+      elStatus.textContent = 'No ready times are available right now. Your order selections are preserved. Refresh to check again.';
+      return;
+    }
+    const objDayFormatter = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', weekday: 'long', month: 'long', day: 'numeric' });
+    const strCheckedDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(objResult.dtCheckedAt));
+    document.querySelector('#pickup-day').textContent = `${objDayFormatter.format(new Date(arrPickupOptions[0].dtPromisedAt))} · Central time${arrPickupOptions[0].strServiceDate !== strCheckedDay ? ' · next available service day' : ''}`;
     elSelect.replaceChildren(new Option('Choose a time', ''));
     for (const [intIndex, objOption] of arrPickupOptions.entries()) elSelect.add(new Option(`${objOption.strSelectionType === 'ASAP' ? 'Earliest available' : 'Scheduled'} · ${formatPickup(objOption.dtPromisedAt)}`, String(intIndex)));
     const intPrevious = arrPickupOptions.findIndex((objOption) => JSON.stringify(objOption) === strPrevious);
     if (intPrevious >= 0) { elSelect.value = String(intPrevious); objPickupSelection = arrPickupOptions[intPrevious]; }
     elStatus.textContent = intPrevious >= 0 ? 'Your selected time is still available. Capacity is reserved at checkout.' : 'Choose a ready time. Availability is rechecked when saving your order.';
   } catch { if (intRequest !== intPickupRequest) return; arrPickupOptions = []; elSelect.replaceChildren(new Option('Refresh to load times', '')); elStatus.textContent = 'Pickup times could not be loaded. Your order selections are preserved. Refresh to try again.'; }
-  finally { clearTimeout(intTimer); if (intRequest === intPickupRequest) { bCheckingPickup = false; elSelect.disabled = false; document.querySelector('#refresh-pickup').disabled = false; } }
+  finally { clearTimeout(intTimer); if (intRequest === intPickupRequest) { bCheckingPickup = false; elSelect.disabled = arrPickupOptions.length === 0; document.querySelector('#refresh-pickup').disabled = false; } }
 }
 if (bScheduling) {
   document.querySelector('#refresh-pickup').addEventListener('click', () => { void loadPickupTimes(); });

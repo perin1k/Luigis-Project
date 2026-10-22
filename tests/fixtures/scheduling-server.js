@@ -18,6 +18,7 @@ reset();
 const objServer=createServer((objRequest,objResponse)=>{
   if(objRequest.url==='/__test/reset'){reset();return objResponse.end('reset');}
   if(objRequest.url==='/__test/expire'){dtNow='2026-10-21T15:31:00.000Z';return objResponse.end('advanced');}
+  if(objRequest.url==='/__test/after-cutoff'){dtNow='2026-10-22T03:31:00.000Z';return objResponse.end('advanced');}
   if(objRequest.url==='/__test/count')return objResponse.end(JSON.stringify(objDatabase.prepare("SELECT count(*) AS intCount FROM capacity_holds WHERE state='active'").get()));
   return objApp(objRequest,objResponse);
 });
