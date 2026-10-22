@@ -65,6 +65,27 @@ preferences within the approved task while preserving shared engineering standar
   runtime results. CI, OS package installation and infrastructure changes require
   their own reviewed implementation scope; this policy does not provision them.
 
+### Full-card completion
+
+When asked to complete a Trello card, treat the entire card's acceptance criteria
+as the task. Review current implementation and dependencies, gather necessary
+decisions together, and present a plan covering the full remaining scope before
+implementation.
+
+After approval, continue through implementation, applicable verification,
+authorized commit/push, and Trello updates without requiring repeated prompts for
+routine steps. Complete and move the card to Done only when its acceptance
+criteria are satisfied.
+
+Partial increments are progress, not card completion. Stop for genuine blockers,
+unresolved decisions, or material scope changes; explain precisely what remains
+and why. Do not weaken acceptance criteria, move unfinished work elsewhere merely
+to close a card, or claim unavailable verification passed.
+
+Distinguish decision cards from implementation cards: a decision card closes when
+its required decisions are settled and recorded; dependent implementation remains
+on its existing cards.
+
 ### Before implementation
 
 1. Identify the requested user story and inspect relevant files, repository
