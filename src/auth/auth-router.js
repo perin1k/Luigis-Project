@@ -4,7 +4,7 @@ import { AUTH_COOKIES, COOKIE_OPTIONS, createCsrfProtection, readAuthCookies } f
 import { validPage } from './staff-account-service.js';
 
 /** Isolated JSON router. Not mounted by app.js; requires direct TLS and a pinned origin. */
-export function createAuthRouter({ objLoginService, objSessionService, objStaffAccountService, objStaffEnrollmentService, strOrigin }) {
+export function createAuthRouter({ objLoginService, objSessionService, objStaffAccountService, objStaffEnrollmentService, objRecoveryService, strOrigin }) {
   const objOrigin = new URL(strOrigin);
   if (objOrigin.protocol !== 'https:' || objOrigin.origin !== strOrigin || objOrigin.username || objOrigin.password) {
     throw new TypeError('An exact HTTPS origin is required.');
@@ -20,6 +20,9 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   }
   for (const strMethod of ['issueInvitation', 'revokeInvitation', 'acceptInvitation', 'listInvitations']) {
     if (typeof objStaffEnrollmentService?.[strMethod] !== 'function') throw new TypeError('Staff enrollment service required.');
+  }
+  for (const strMethod of ['regenerateCodes', 'beginRecovery', 'confirmRecovery']) {
+    if (typeof objRecoveryService?.[strMethod] !== 'function') throw new TypeError('Recovery service required.');
   }
   const objRouter = express.Router();
   const objCsrf = createCsrfProtection();
@@ -120,6 +123,30 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     const objResult = objStaffEnrollmentService.listInvitations(
       objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objPage.intOffset, objPage.intLimit);
     if (!objResult) return reject(objResponse, 403);
+    return objResponse.json(objResult);
+  });
+  objRouter.post('/recovery/codes', async (objRequest, objResponse) => {
+    if (!validBody(objRequest.body, ['strPassword', 'strCode'])) return reject(objResponse, 400);
+    const objResult = await objRecoveryService.regenerateCodes(objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession],
+      objRequest.body.strPassword, objRequest.body.strCode, objRequest.socket.remoteAddress);
+    if (!objResult) return reject(objResponse, 403);
+    return objResponse.json(objResult);
+  });
+  objRouter.post('/recovery/start', async (objRequest, objResponse) => {
+    if (!validBody(objRequest.body, ['strUsername', 'strPassword', 'strRecoveryCode'])) return reject(objResponse, 400);
+    const objResult = await objRecoveryService.beginRecovery(objRequest.body.strUsername, objRequest.body.strPassword,
+      objRequest.body.strRecoveryCode, objRequest.socket.remoteAddress);
+    if (!objResult) return reject(objResponse, 403);
+    clearCookie(objResponse, AUTH_COOKIES.strSession); clearCookie(objResponse, AUTH_COOKIES.strChallenge);
+    objResponse.cookie(AUTH_COOKIES.strRecovery, objResult.strRecoveryToken, { ...COOKIE_OPTIONS, maxAge: 600000 });
+    freshCsrf(objResponse);
+    return objResponse.json({ strState: 'reenrollment_required', strProvisioningUri: objResult.strProvisioningUri });
+  });
+  objRouter.post('/recovery/confirm', (objRequest, objResponse) => {
+    if (!validBody(objRequest.body, ['strCode'])) return reject(objResponse, 400);
+    const objResult = objRecoveryService.confirmRecovery(objResponse.locals.objAuthCookies[AUTH_COOKIES.strRecovery], objRequest.body.strCode);
+    if (!objResult) return reject(objResponse, 403);
+    for (const strName of Object.values(AUTH_COOKIES)) clearCookie(objResponse, strName);
     return objResponse.json(objResult);
   });
   objRouter.post('/account/password', async (objRequest, objResponse) => {

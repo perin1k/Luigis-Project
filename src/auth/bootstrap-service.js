@@ -4,6 +4,7 @@ import { applyMigrations } from '../data/migrations.js';
 import { hashPassword } from './password-service.js';
 import { validateNewPassword } from './password-policy.js';
 import { createMfaService } from './mfa-service.js';
+import { issueRecoveryCodes } from './recovery-records.js';
 
 const TIMEOUT_MS = 600000;
 
@@ -79,7 +80,7 @@ export function createBootstrapService(objDatabase, { strEncryptionKeyHex, strKe
       const objCredential = objStage.prepare('SELECT * FROM staff_credentials').get();
       const objFactor = objStage.prepare('SELECT * FROM mfa_secrets').get();
       const objReference = objStage.prepare('SELECT * FROM mfa_references').get();
-      runTransaction(objDatabase, () => {
+      const arrRecoveryCodes = runTransaction(objDatabase, () => {
         const dtCommitted = clock();
         if (dtCommitted < dtNow || dtCommitted.getTime() - objPending.numStarted >= TIMEOUT_MS) throw new Error('Initial admin setup expired.');
         ensureFirst();
@@ -100,8 +101,9 @@ export function createBootstrapService(objDatabase, { strEncryptionKeyHex, strKe
           objFactor.confirmed_at, objFactor.last_verified_at, objFactor.last_counter, objFactor.id);
         audit('staff_change', 'staff_user', objUser.id, 'Staff account changed', dtCommitted);
         audit('mfa_change', 'mfa_reference', objFactor.id, 'MFA reference changed', dtCommitted);
+        return issueRecoveryCodes(objDatabase, objUser.id, dtCommitted);
       });
-      bFinished = true; closeStage(); return true;
+      bFinished = true; closeStage(); return { arrRecoveryCodes };
     },
     cancel() { bFinished = true; closeStage(); },
   });

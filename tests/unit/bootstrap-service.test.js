@@ -47,7 +47,9 @@ test('first-admin setup persists nothing until MFA confirmation and then support
     const objEnrollment = await obj.objSetup.beginSetup('Alice.Admin', PASSWORD);
     assert.equal(obj.objDb.prepare('SELECT count(*) AS total FROM staff_users').get().total, 0);
     assert.equal(obj.objSetup.confirmSetup('invalid'), false);
-    assert.ok(obj.objSetup.confirmSetup(code(objEnrollment, obj)));
+    const objConfirmed = obj.objSetup.confirmSetup(code(objEnrollment, obj));
+    assert.equal(objConfirmed.arrRecoveryCodes.length, 10);
+    assert.equal(obj.objDb.prepare("SELECT count(*) AS total FROM recovery_codes WHERE state='active'").get().total, 10);
     const objUser = obj.objDb.prepare('SELECT * FROM staff_users').get();
     assert.equal(objUser.role, 'admin'); assert.ok(objUser.identity_subject.startsWith('local-bootstrap:'));
     assert.equal(obj.objDb.prepare('SELECT username FROM staff_credentials').get().username, 'alice.admin');

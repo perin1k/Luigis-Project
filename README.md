@@ -36,6 +36,13 @@ their current password; admins additionally verify a fresh MFA code. Successful
 changes revoke sessions and require sign-in again. These services expose no hash
 or saved invitation token; see the authentication guide for contracts and limits.
 
+Account recovery now provides ten single-use admin recovery codes, password-plus-code
+authenticator replacement, and `npm run account:recover` for the approved in-person
+procedure overseen by Brody. Recovery revokes access and keeps a persistent lock
+until enrollment completes; interrupted recovery never restores the lost factor.
+Read `docs/authentication-design.md` before using either private terminal command.
+All implementation verification used disposable synthetic accounts and keys.
+
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.

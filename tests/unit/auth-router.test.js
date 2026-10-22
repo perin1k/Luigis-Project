@@ -18,6 +18,7 @@ import { createAuthRouter } from '../../src/auth/auth-router.js';
 import { AUTH_COOKIES } from '../../src/auth/auth-transport.js';
 import { createStaffAccountService } from '../../src/auth/staff-account-service.js';
 import { createStaffEnrollmentService } from '../../src/auth/staff-enrollment-service.js';
+import { createRecoveryService } from '../../src/auth/recovery-service.js';
 
 // Disposable self-signed TLS materials, generated locally; never real credentials.
 const strDirectory = mkdtempSync(join(tmpdir(), 'luigis-auth-tls-'));
@@ -47,13 +48,14 @@ async function fixture({ bTls = true, bFailure = false } = {}) {
   numNow += 30000;
   const objLogin = createLoginService(objDb, { objMfaService: objMfa, fnNow });
   const objSessions = createSessionService(objDb, { fnNow });
+  const objRecovery = createRecoveryService(objDb, { strEncryptionKeyHex: 'cd'.repeat(32), fnNow });
   const objApp = express();
   // Deliberately enable Express trust proxy: router must still reject plaintext/spoofed source.
   objApp.set('trust proxy', true);
   objApp.use('/auth', createAuthRouter({ objLoginService: bFailure ? { ...objLogin,
     beginSignIn() { throw new Error('synthetic-private-database-detail'); } } : objLogin,
   objSessionService: objSessions, objStaffAccountService: createStaffAccountService(objDb, { fnNow, objMfaService: objMfa }),
-  objStaffEnrollmentService: createStaffEnrollmentService(objDb, { fnNow }), strOrigin: ORIGIN }));
+  objStaffEnrollmentService: createStaffEnrollmentService(objDb, { fnNow }), objRecoveryService: objRecovery, strOrigin: ORIGIN }));
   const objServer = bTls ? createServer(objTls, objApp) : objApp;
   const objListener = await new Promise((fnResolve) => { const objListening = objServer.listen(0, '127.0.0.1', () => fnResolve(objListening)); });
   const mapCookies = new Map();
@@ -86,7 +88,7 @@ async function fixture({ bTls = true, bFailure = false } = {}) {
   }
   return { objDb, mapCookies, send, post, code: () => objTotp.generate({ timestamp: numNow }),
     advance: (intMilliseconds) => { numNow += intMilliseconds; },
-    close: async () => { await new Promise((fnResolve) => objListener.close(fnResolve)); objMfa.destroy(); objDb.close(); } };
+    close: async () => { await new Promise((fnResolve) => objListener.close(fnResolve)); objRecovery.destroy(); objMfa.destroy(); objDb.close(); } };
 }
 
 test('HTTPS sign-in keeps tokens in protected host cookies; session identity and logout use real services', async () => {
@@ -382,4 +384,43 @@ test('HTTPS admin password change rejects reused MFA and accepts a fresh code wi
     assert.equal((await obj.post('/account/password', { ...objBody, strCode: obj.code() })).intStatus, 200);
     assert.equal(obj.mapCookies.size, 0);
   } finally { await obj.close(); }
+});
+
+test('HTTPS recovery replaces admin MFA without issuing a session and returns replacement recovery codes once', async () => {
+  const obj = await fixture();
+  try {
+    await signInAdmin(obj); obj.advance(30000);
+    const objCodes = await obj.post('/recovery/codes', { strPassword: PASSWORD, strCode: obj.code() });
+    assert.equal(objCodes.intStatus,200); assert.equal(objCodes.objBody.arrRecoveryCodes.length,10);
+    assert.equal(objCodes.objHeaders['cache-control'],'no-store');
+    const strOldSessionCookie = `${AUTH_COOKIES.strSession}=${obj.mapCookies.get(AUTH_COOKIES.strSession)}`;
+    const objStart = await obj.post('/recovery/start', { strUsername:'admin',strPassword:PASSWORD,strRecoveryCode:objCodes.objBody.arrRecoveryCodes[0] });
+    assert.equal(objStart.intStatus,200); assert.equal(objStart.objBody.strState,'reenrollment_required');
+    assert.equal(Object.hasOwn(objStart.objBody,'strRecoveryToken'),false);
+    const strRecoveryCookie=objStart.objHeaders['set-cookie'].find((strValue)=>strValue.startsWith(`${AUTH_COOKIES.strRecovery}=`));
+    for(const strFlag of ['Secure','HttpOnly','SameSite=Strict','Path=/']) assert.ok(strRecoveryCookie.includes(strFlag));
+    assert.equal((await obj.send('/session',{objHeaders:{cookie:strOldSessionCookie}})).intStatus,401);
+    const objTotp=OTPAuth.URI.parse(objStart.objBody.strProvisioningUri);
+    const strCode=objTotp.generate({timestamp:Date.parse('2026-10-21T12:01:00.000Z')});
+    assert.equal((await obj.send('/recovery/confirm',{strMethod:'POST',objBody:{strCode},objHeaders:{origin:ORIGIN}})).intStatus,403);
+    const objResult=await obj.post('/recovery/confirm',{strCode});
+    assert.equal(objResult.intStatus,200);assert.equal(objResult.objBody.arrRecoveryCodes.length,10);
+    assert.equal(obj.mapCookies.size,0);assert.equal((await obj.send('/session')).intStatus,401);
+    assert.equal((await obj.post('/recovery/confirm',{strCode})).intStatus,403);
+    obj.advance(30000);
+    assert.equal((await obj.post('/login',{strUsername:'admin',strPassword:PASSWORD})).intStatus,200);
+    assert.equal((await obj.post('/mfa',{strCode:objTotp.generate({timestamp:Date.parse('2026-10-21T12:01:30.000Z')})})).intStatus,200);
+  } finally {await obj.close();}
+});
+
+test('HTTPS recovery rejects ordinary staff, missing authority, extra proof claims and public local recovery', async()=>{
+  const obj=await fixture();
+  try{
+    assert.equal((await obj.post('/recovery/codes',{strPassword:PASSWORD,strCode:''})).intStatus,403);
+    await obj.post('/login',{strUsername:'employee',strPassword:PASSWORD});
+    assert.equal((await obj.post('/recovery/codes',{strPassword:PASSWORD,strCode:''})).intStatus,403);
+    assert.equal((await obj.post('/recovery/start',{strUsername:'employee',strPassword:PASSWORD,strRecoveryCode:'a'.repeat(32)})).intStatus,403);
+    assert.equal((await obj.post('/recovery/start',{strUsername:'admin',strPassword:PASSWORD,strRecoveryCode:'a'.repeat(32),bVerifiedByBrody:true})).intStatus,400);
+    assert.equal((await obj.post('/recovery/local',{})).intStatus,404);
+  }finally{await obj.close();}
 });

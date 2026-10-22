@@ -51,13 +51,16 @@ async function main() {
     process.stdout.write('Import the following secret provisioning URI directly into your authenticator.\nDo not share it, use an external QR service, or save it in project files.\n');
     process.stdout.write(`${objEnrollment.strProvisioningUri}\n`);
     objEnrollment = null;
-    let bConfirmed = false;
-    for (let intAttempt = 0; intAttempt < 5 && !bConfirmed; intAttempt++) {
+    let objConfirmed = null;
+    for (let intAttempt = 0; intAttempt < 5 && !objConfirmed; intAttempt++) {
       const strCode = await ask('Current six-digit authenticator code (hidden): ', true);
-      bConfirmed = objSetup.confirmSetup(strCode);
-      if (!bConfirmed) process.stdout.write('Code not accepted. Check your authenticator and setup time limit.\n');
+      objConfirmed = objSetup.confirmSetup(strCode) || null;
+      if (!objConfirmed) process.stdout.write('Code not accepted. Check your authenticator and setup time limit.\n');
     }
-    if (!bConfirmed) throw new Error('Enrollment was not completed. No account was created.');
+    if (!objConfirmed) throw new Error('Enrollment was not completed. No account was created.');
+    process.stdout.write('Save these single-use recovery codes privately now; they cannot be retrieved later:\n');
+    for (const strCode of objConfirmed.arrRecoveryCodes) process.stdout.write(`${strCode}\n`);
+    objConfirmed = null;
     process.stdout.write('Initial admin created with verified MFA. Sign-in UI integration is still required.\nClear sensitive terminal scrollback after importing the authenticator secret.\n');
   } finally {
     clearTimeout(objTimer); objSetup?.cancel(); objTerminal?.close(); objOutput.end(); objDatabase.close();

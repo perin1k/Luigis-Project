@@ -2,6 +2,7 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 export const AUTH_COOKIES = Object.freeze({
   strSession: '__Host-luigis-session', strChallenge: '__Host-luigis-mfa', strCsrf: '__Host-luigis-csrf',
+  strRecovery: '__Host-luigis-recovery',
 });
 export const COOKIE_OPTIONS = Object.freeze({ secure: true, httpOnly: true, sameSite: 'strict', path: '/' });
 export function isToken(strValue) {
@@ -29,6 +30,7 @@ export function createCsrfProtection() {
     return createHmac('sha256', objKey).update(JSON.stringify([
       objCookies[AUTH_COOKIES.strCsrf], objCookies[AUTH_COOKIES.strSession] ?? '',
       objCookies[AUTH_COOKIES.strChallenge] ?? '',
+      objCookies[AUTH_COOKIES.strRecovery] ?? '',
     ])).digest('hex');
   }
   return Object.freeze({

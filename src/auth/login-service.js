@@ -25,6 +25,7 @@ export function createLoginService(objDatabase, { objMfaService, fnNow = () => n
   function unchanged(objBefore, objAfter, dtNow) {
     return objAfter && objAfter.state === 'active' && objAfter.user_id === objBefore.user_id
       && objAfter.revision === objBefore.revision && objAfter.user_revision === objBefore.user_revision
+      && !objDatabase.prepare('SELECT user_id FROM recovery_locks WHERE user_id=?').get(objAfter.user_id)
       && objAfter.epoch === objBefore.epoch && objAfter.role === objBefore.role && objAfter.password_hash === objBefore.password_hash
       && dtNow.toISOString() >= objAfter.password_changed_at;
   }
@@ -104,6 +105,7 @@ export function createLoginService(objDatabase, { objMfaService, fnNow = () => n
         const objFactor = objDatabase.prepare("SELECT id FROM mfa_references WHERE id = ? AND state = 'active'").get(objChallenge.factor_id);
         const objLive = objDatabase.prepare('SELECT consumed FROM login_challenges WHERE token_digest = ?').get(digest(strChallenge));
         if (!objLive || objLive.consumed || !objCurrent || objCurrent.state !== 'active' || objCurrent.role !== 'admin'
+          || objDatabase.prepare('SELECT user_id FROM recovery_locks WHERE user_id=?').get(objCurrent.user_id)
           || objCurrent.revision !== objChallenge.credential_revision || objCurrent.user_revision !== objChallenge.user_revision
           || !objFactor || dtIssued < dtNow || dtIssued.getTime() >= objChallenge.expires_ms) return null;
         objDatabase.prepare('UPDATE login_challenges SET consumed = 1 WHERE token_digest = ?').run(digest(strChallenge));

@@ -59,7 +59,7 @@ sign-in endpoint or proof of MFA.
 
 Password, MFA, sign-in, the isolated transport router, deactivation and local
 first-admin setup are implemented below. Application mounting, public transport
-configuration, employee enrollment UI, recovery and UI acceptance remain unfinished.
+configuration, employee enrollment/recovery UI and UI acceptance remain unfinished.
 
 1. Apply the implemented enrollment policy below to future employee creation and
    password changes as those services are added. The finite offline common-password
@@ -83,11 +83,9 @@ configuration, employee enrollment UI, recovery and UI acceptance remain unfinis
 4. Run the implemented local first-admin command only when the operator is ready,
    with their own identity and a separately provisioned MFA encryption key. The
    implementation/tests did not create an actual project admin or production key.
-5. Recovery: single-use random recovery codes, shown once and stored as hashes;
-   audited recovery overseen by Brody, session revocation and factor re-enrollment.
-   Recovery must not become a bypass that accepts an order number, name, security
-   questions or ordinary employee privileges. Exact identity checks and issuance
-   procedure require their own review before enabling recovery.
+5. Recovery policy and backend/terminal implementation are approved and recorded
+   below. Integrate their protected routes into finished screens without adding
+   public local-operator recovery, security questions or ordinary employee overrides.
 6. Integrate the real sign-in/MFA/account lifecycle with EJS/Express. Run complete
    three-browser functional/visual checks, applicable manual accessibility checks
    and the required Lighthouse gates before accepting the web flow. Storage and
@@ -97,7 +95,7 @@ No new dependency was added in the password-foundation increment; the subsequent
 MFA-foundation increment adds OTPAuth 9.5.2. The local setup command can now
 provision the first admin with verified MFA. No actual project account was created
 during implementation. Employee invitation/enrollment services and isolated routes
-are now implemented below. There is no mounted login/enrollment UI, recovery flow
+are now implemented below. There is no mounted login/enrollment/recovery UI
 or external communication yet. Neither TECH-04 nor BE-08 is complete.
 
 ## Implemented MFA foundation
@@ -214,7 +212,7 @@ and credential changes during hashing. Synthetic fixtures are isolated in memory
 ## Implemented isolated HTTP boundary
 
 `src/auth/auth-router.js` exports `createAuthRouter({ objLoginService,
-objSessionService, objStaffAccountService, objStaffEnrollmentService, strOrigin })`.
+objSessionService, objStaffAccountService, objStaffEnrollmentService, objRecoveryService, strOrigin })`.
 `src/auth/auth-transport.js` holds strict cookie
 parsing and CSRF helpers. No dependency or migration is added. The router is not
 mounted in `src/app.js`, so customer pages and the running application's exposed
@@ -237,6 +235,9 @@ Proposed mount prefix is `/auth`, with these relative contracts:
 | GET `/employees` | Admin session; optional `intOffset`/`intLimit` query | Paginated employee summaries |
 | GET `/employees/invitations` | Admin session; optional `intOffset`/`intLimit` query | Paginated invitation summaries, never tokens |
 | POST `/account/password` | `{ strCurrentPassword, strNewPassword, strCode }` plus session and CSRF | `{ strState: 'password_changed' }`; cookies cleared |
+| POST `/recovery/codes` | Admin session, `{ strPassword, strCode }`, CSRF | Ten new recovery codes, shown once |
+| POST `/recovery/start` | `{ strUsername, strPassword, strRecoveryCode }`, CSRF | Replacement provisioning URI; protected recovery cookie |
+| POST `/recovery/confirm` | `{ strCode }`, recovery cookie, CSRF | `recovered` plus new recovery codes; no session |
 
 POST requests require exact configured `Origin`, a valid `X-CSRF-Token` header,
 and JSON (at most 4 KiB, compressed bodies rejected). Extra fields, wrong field
@@ -418,9 +419,12 @@ already have been consumed in staging; a retry requires a fresh code and remains
 within the original time/attempt limit. A username conflict, interruption or process
 crash does not leave a partial application account. After successful commit, a later
 terminal failure does not undo the account: rerunning safely refuses duplicate setup.
-Recovery from a completed-but-lost enrollment must use the future reviewed recovery
-procedure, not manual deletion or another bootstrap admin. No schema migration or
-new npm dependency is added by setup.
+Recovery from a completed-but-lost enrollment must use the reviewed recovery
+procedure, not manual deletion or another bootstrap admin. Setup now returns
+`{ arrRecoveryCodes }` on confirmation (rather than the earlier boolean success),
+and the CLI displays those ten codes once. Code digests are committed atomically
+with the first admin. Existing admins can generate codes after password/fresh MFA
+verification. Migration 010 adds their storage; no new npm dependency is added.
 
 Verification: `tests/unit/bootstrap-service.test.js` covers password boundaries and
 blocklist rejection, no writes before MFA, real post-setup sign-in, cancellation,
@@ -584,7 +588,144 @@ persistent account/source/concurrency throttles. HTTPS integration checks in
 CSRF and target injection rejection, cleared cookies, copied-session revocation,
 new-password sign-in and fresh/replayed admin MFA behavior.
 
-## Earlier foundation evidence
+## Implemented recovery policy and flow
+
+Approved October 21, 2026: ten random single-use admin recovery codes, shown once
+and stored only as digests; password plus code to replace lost admin MFA; revocation
+of sessions and mandatory confirmation of a replacement authenticator before access
+resumes. When password and codes are lost, Brody verifies the teammate **in person**
+and oversees the private local recovery command. No public identity-question or
+ordinary employee override is permitted. The in-person check means recognizing the
+actual project teammate and matching the intended individual account, rather than
+treating possession of a name, email, phone or order number as proof. Do not collect
+identity-document scans for this synthetic class demonstration.
+
+The local command's typed acknowledgement records compliance with that procedure;
+software cannot establish that Brody actually performed it. Operating-system access
+to the database/key is the technical authority boundary. Restrict that access to
+approved team operators and never expose `beginLocalRecovery` through HTTP. Anyone
+with unrestricted database/key access can alter this local demo independently of
+its web controls; the command does not claim stronger identity proof or compliance.
+
+Files and integration:
+
+- `src/auth/recovery-records.js`: internal transaction helpers to issue/revoke code
+  digests and write sanitized audit entries. Call only after real authorization.
+- `src/auth/recovery-service.js`: password/MFA-authenticated `regenerateCodes`,
+  password/code `beginRecovery`, challenge `confirmRecovery`, operator-only
+  `beginLocalRecovery`, and `destroy`. Requires the existing MFA key/key ID and
+  trusted server clock. The same configured key must remain available after recovery.
+- `010-account-recovery.sql`: immutable-history `recovery_codes` and
+  `recovery_requests`, plus persistent `recovery_locks` bound to the correct request
+  and user. No account, key, code or recovery request is seeded by migration.
+- Bootstrap confirmation now issues the first ten codes in its account transaction.
+  Existing admins regenerate them with their password and a fresh authenticator
+  code. Ordinary employees cannot generate/use the admin MFA recovery-code flow.
+- Login and session services deny recovery-locked accounts; a database trigger
+  also rejects insertion of live sessions while locked. Local recovery preserves
+  the original employee/admin role and refuses disabled accounts.
+- The isolated auth router exposes only the three public contracts above, with
+  the existing TLS/origin/CSRF/body-size/no-store protections. It never exposes the
+  local operator method. The router remains unmounted in the running application.
+
+Codes are ten independently random 16-byte values encoded as 32 lowercase hex
+characters (128 bits each). Store them privately in a password manager or offline
+safe place, separate from the authenticator, and never in Trello, logs, screenshots,
+URLs, browser storage or shared project files. No notification is sent. The database
+stores SHA-256 digests with active/used/revoked states and canonical closing times;
+there is no retrieval of raw values. Regeneration revokes the prior active set.
+Codes have no automatic expiry, but one use consumes a code and successful factor
+replacement invalidates all remaining old codes and issues ten replacements once.
+They are a second factor replacement, not a standalone password reset credential.
+
+Public recovery checks the current password plus an unused code for an active admin.
+Unknown accounts perform dummy scrypt verification for comparable work. After proof,
+a transaction consumes the code, records the request, revokes every session and
+active MFA reference (which clears old encrypted secrets), advances the identity
+revision/epoch, invalidates login challenges/invitations, and creates a persistent
+access lock. The old factor is never restored on cancellation or timeout. Initial
+audit failure rolls this transaction back, including code consumption and revocation.
+
+Replacement factor enrollment is staged in an isolated in-memory database through
+the existing MFA service. Only encrypted material is copied to the application
+database after a valid new authenticator code. The challenge is a random 32-byte
+token, with only its digest stored; HTTP keeps the raw token in a Secure/HttpOnly/
+SameSite=Strict `__Host-luigis-recovery` cookie. Its ten-minute lifetime and five
+confirmation attempts are enforced server-side. CSRF signatures now also bind this
+cookie; refetch `/csrf` after recovery starts. The provisioning URI contains the new
+secret and is returned once to the protected response/private terminal, never to an
+external QR service. No sign-in session is issued during or at completion of recovery.
+
+Completion rechecks request ownership, the current active account/role, epoch,
+credential revision, time and lock under a write lock. It atomically persists the
+new factor, optionally replaces the password for the local procedure, closes the
+request, removes the lock, writes sanitized audit history and issues fresh admin
+codes. Normal password/MFA sign-in must follow. Failed completion rolls all of those
+changes back and leaves old access revoked; a staged authenticator counter may
+already be consumed, so use a fresh code for retry within the remaining limits.
+Replay and competing connections cannot consume one recovery code twice. A newer
+valid recovery supersedes the old request/challenge rather than granting both.
+
+Interrupted process, cleared cookies, expiry, exhausted confirmation attempts or
+`destroy` discards the private in-memory enrollment but **retains the access lock**.
+Restart with the current password and another unused recovery code, or use Brody's
+approved local procedure if those are unavailable. Do not delete the lock manually,
+reenable the lost factor, create another admin, or silently bypass MFA. Old request
+metadata is retained; an in-memory context is required to confirm its challenge, so
+a server restart does not permit replay of a partially completed enrollment. The
+service holds at most 20 staging contexts and removes expired ones on subsequent
+start/confirmation work; destruction clears key buffers and closes staging stores.
+JavaScript/library/internal copies and returned secret strings cannot be guaranteed
+erased. A future multi-process deployment needs a reviewed routing/staging design.
+
+Password proof/regeneration/local reset admits at most two expensive operations
+per Node process, five attempts per account and 30 per trusted source per fixed
+15-minute window, plus the existing 5,000-row transient saturation cap. Reserved
+budgets remain consumed on failure. This cap is additional to login/enrollment/
+password-change caps, so combined worst-case sizing is up to eight simultaneous
+scrypt operations. Local attempts share the account limit and may need to wait after
+throttling; there is no operator bypass of proof-budget limits. Unknown/invalid/
+used codes and unavailable account states produce generic denial. Crypto/database
+errors propagate for sanitized 503 responses, never fall back to weaker proof.
+
+For loss of password/codes, run `npm run account:recover` only in a private,
+unrecorded interactive terminal against the intended migrated `DATABASE_PATH` with
+the separately provisioned `MFA_ENCRYPTION_KEY_HEX`. After Brody's in-person check,
+type the explicit `RECOVER` acknowledgement, enter/confirm a new password privately,
+and, for admins, import and confirm the replacement authenticator. Employees retain
+employee role and need no newly introduced MFA. The command rejects arguments/pipes,
+supports interruption/time limits and hides password/code input. It records method
+`brody_in_person` and system audit attribution, with no uploaded identity evidence or
+free-form private notes. Save newly displayed admin codes and clear sensitive terminal
+scrollback afterward. The command cannot solve loss of the database or encryption
+key; those remain separate operational decisions. No actual account was recovered
+and no real code/key generated during implementation.
+
+Verification: `tests/unit/recovery-service.test.js` covers code regeneration, digest
+storage, replay, complete recovered sign-in, expiry/attempt limits/restart lock,
+start/completion audit rollback, two-connection consumption, local acknowledgement/
+password/role handling, throttling and migration upgrade/rollback. HTTPS integration
+tests cover protected recovery cookies and CSRF, old-session revocation, replacement
+factor sign-in, new codes returned once, denied employee use and absence of a public
+local-recovery endpoint. Bootstrap tests confirm ten codes committed with setup.
+Private terminal verification used only temporary databases/keys and simulated the
+acknowledgement: successful admin recovery, interrupted admin enrollment and employee
+password recovery all passed, with hidden inputs and lock/password invariants checked.
+No actual in-person verification was claimed or performed by these synthetic tests.
+
+Migration recovery follows the approved disposable-data policy: recreate from
+reviewed migrations/seed if necessary; never alter applied checksums or reuse older
+code against a database containing migration 010. Application-managed backups and
+key-loss recovery remain outside this increment. Finished screens, manual accessibility,
+three-browser functional/visual checks and Lighthouse acceptance remain outstanding.
+
+Engineering references reviewed October 21, 2026:
+[OWASP MFA recovery](https://cheatsheetseries.owasp.org/cheatsheets/Multifactor_Authentication_Cheat_Sheet.html)
+and [OWASP password recovery](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html).
+These inform proof, single-use tokens and protected factor changes; they do not
+certify this demonstration's implementation or the human verification procedure.
+
+## Earlier foundation verification
 
 `tests/unit/password-service.test.js` uses only synthetic values. It covers
 random salts, actual correct/incorrect verification, Unicode/byte limits,

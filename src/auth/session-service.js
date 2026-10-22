@@ -59,6 +59,7 @@ export function createSessionService(objDatabase, { fnNow = () => new Date() } =
         return null;
       }
       if (objSession.user_state !== 'active' || !['employee', 'admin'].includes(objSession.role)) return null;
+      if (objDatabase.prepare('SELECT user_id FROM recovery_locks WHERE user_id=?').get(objSession.user_id)) return null;
       if (objSession.role === 'admin') {
         const numMfa = parseTimestamp(objSession.mfa_verified_at);
         if (!Number.isFinite(numMfa) || numMfa < numAuthenticated || numMfa > numActivity) return null;
