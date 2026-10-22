@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
-<head><%- include('../partials/head', {bStaffPage:true}) %><meta name="robots" content="noindex, nofollow"><script type="module" src="/js/tracking.js"></script></head>
+<head><%- include('../partials/head', {bStaffPage:true,bTrackingPage:true}) %><meta name="robots" content="noindex, nofollow"><script type="module" src="/js/tracking.js"></script></head>
 <body><%- include('../partials/header') %>
 <main id="main-content" tabindex="-1" class="container staff-page">
   <div class="staff-intro"><p class="eyebrow">From our kitchen</p><h1>Your order, step by step.</h1><p>Keep this private link for your order. Anyone with the link can view its progress.</p></div>
   <section class="staff-card" aria-labelledby="tracking-heading"><h2 id="tracking-heading">Order progress</h2>
     <p id="tracking-status" role="status" aria-live="polite">Open the private link from your order confirmation to view progress.</p>
     <p id="tracking-error" role="alert" hidden></p><div id="tracking-content" class="tracking-content"></div>
-    <div class="tracking-refresh-area"><button id="tracking-refresh" type="button" class="btn btn-primary" hidden>Refresh progress</button></div>
+    <div class="tracking-refresh-area"><button id="tracking-refresh" tabindex="0" type="button" class="btn btn-primary" hidden>Refresh progress</button></div>
     <noscript><p>Enable JavaScript to securely load order progress from your private link.</p></noscript>
   </section>
 </main><%- include('../partials/footer') %></body></html>

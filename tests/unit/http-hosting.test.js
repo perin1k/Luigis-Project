@@ -1,7 +1,7 @@
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { get } from 'node:http';
-import { gunzipSync } from 'node:zlib';
+import { gunzipSync, brotliDecompressSync } from 'node:zlib';
 import objApp from '../../src/app.js';
 
 let objServer;
@@ -99,4 +99,16 @@ test('unconfigured availability stays unknown and error pages retain safe HTTP s
     assert.equal(objFailed.objHeaders['x-robots-tag'], 'noindex');
     assert.equal(objFailed.objHeaders['cache-control'], 'no-store');
   } finally { objApp.locals.fnGetAvailability = fnPrevious; }
+});
+
+test('Brotli public assets preserve exact bytes, negotiation, caching and HEAD without changing private HTML encoding',async()=>{
+  for(const strPath of ['/vendor/bootstrap.min.css','/css/staff-bundle.css','/css/tracking-bundle.css','/js/tracking.js']){
+    const objIdentity=await requestText(strPath,'identity');const objBrotli=await requestText(strPath,'br, gzip');
+    assert.equal(objBrotli.objHeaders['content-encoding'],'br');assert.deepEqual(brotliDecompressSync(objBrotli.objBody),objIdentity.objBody);assert.match(objBrotli.objHeaders.vary,/Accept-Encoding/i);
+    assert.equal((await requestText(strPath,'br;q=0, gzip;q=1')).objHeaders['content-encoding'],'gzip');
+    const objHead=await requestText(strPath,'br',{strMethod:'HEAD'});assert.equal(objHead.objBody.length,0);assert.equal(objHead.objHeaders['content-length'],objBrotli.objHeaders['content-length']);
+    assert.equal((await requestText(strPath,'br',{objHeaders:{'If-None-Match':objBrotli.objHeaders.etag}})).intStatus,304);
+  }
+  const objGzip=await requestText('/order','br, gzip');assert.equal(objGzip.objHeaders['content-encoding'],'gzip');
+  assert.equal((await requestText('/vendor/bootstrap.min.css','br;q=0, gzip;q=0, identity;q=0')).intStatus,406);
 });

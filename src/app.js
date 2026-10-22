@@ -8,7 +8,7 @@ import { createPricingRouter } from './ordering/pricing-router.js';
 import { AUTH_COOKIES, readAuthCookies } from './auth/auth-transport.js';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
-import { gzipSync } from 'node:zlib';
+import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
 export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService } = {}) {
@@ -17,7 +17,7 @@ const objApp = express();
 objApp.locals.fnGetAvailability = async () => null;
 
 function prepareText(objBody, strType) {
-  return { objBody, objGzip: gzipSync(objBody), strType };
+  return { objBody, objGzip: gzipSync(objBody), objBrotli: strType === 'html' ? undefined : brotliCompressSync(objBody), strType };
 }
 
 // Cache only these public text assets. Other public files retain Express static handling.
@@ -39,13 +39,18 @@ mapTextAssets.set('/css/order-bundle.css', prepareText(Buffer.concat(
 mapTextAssets.set('/vendor/bootstrap.min.css', prepareText(
   readFileSync(fileURLToPath(new URL('../node_modules/bootstrap/dist/css/bootstrap.min.css', import.meta.url))), 'css'));
 
+// Tracking needs the same Bootstrap and staff rules, delivered in one request.
+mapTextAssets.set('/css/tracking-bundle.css', prepareText(Buffer.concat([
+  mapTextAssets.get('/vendor/bootstrap.min.css').objBody, Buffer.from('\n'),
+  mapTextAssets.get('/css/staff-bundle.css').objBody]), 'css'));
+
 function sendText(objRequest, objResponse, objText) {
   objResponse.vary('Accept-Encoding');
-  const strEncoding = objRequest.acceptsEncodings('gzip', 'identity');
+  const strEncoding = objRequest.acceptsEncodings(...(objText.objBrotli ? ['br', 'gzip', 'identity'] : ['gzip', 'identity']));
   if (!strEncoding) return objResponse.status(406).type('text').send('No acceptable text encoding.');
   objResponse.type(objText.strType);
-  if (strEncoding === 'gzip') objResponse.set('Content-Encoding', 'gzip');
-  return objResponse.send(strEncoding === 'gzip' ? objText.objGzip : objText.objBody);
+  if (strEncoding !== 'identity') objResponse.set('Content-Encoding', strEncoding);
+  return objResponse.send(strEncoding === 'br' ? objText.objBrotli : strEncoding === 'gzip' ? objText.objGzip : objText.objBody);
 }
 
 function renderPage(objRequest, objResponse, fnNext, strView, objData) {
@@ -70,7 +75,7 @@ objApp.use((objRequest, objResponse, fnNext) => {
   if (!objText || !['GET', 'HEAD'].includes(objRequest.method)) return fnNext();
   objResponse.vary('Accept-Encoding');
   // Let Express retain byte-range semantics for the original public files.
-  if (objRequest.headers.range && !['/vendor/bootstrap.min.css', '/css/staff-bundle.css', '/css/order-bundle.css'].includes(objRequest.path)) return fnNext();
+  if (objRequest.headers.range && !['/vendor/bootstrap.min.css', '/css/staff-bundle.css', '/css/order-bundle.css', '/css/tracking-bundle.css'].includes(objRequest.path)) return fnNext();
   objResponse.set('Cache-Control', 'public, max-age=3600');
   sendText(objRequest, objResponse, objText);
 });

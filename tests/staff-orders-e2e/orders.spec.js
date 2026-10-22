@@ -87,3 +87,19 @@ test('an older tracking response cannot overwrite a newly opened private link',a
   await objPage.goto('/track#'+'f'.repeat(64));await expect(objPage.locator('#tracking-error')).toContainText('unavailable or expired');
   const pLate=objPage.waitForResponse('**/api/tracking');fnRelease();await pLate;await expect(objPage.locator('#tracking-content')).toBeEmpty();
 });
+test('tracking keeps keyboard skip and refresh usable without losing its private link',async({page:objPage,request:objRequest})=>{
+  const arrPaths=await(await objRequest.get('/__test/tracking')).json();await objPage.goto(arrPaths[1]);await expect(objPage.locator('#tracking-status')).toHaveText('Progress refreshed.');
+  await objPage.keyboard.press('Tab');await expect(objPage.getByRole('link',{name:'Skip to main content',exact:true})).toBeFocused();await objPage.keyboard.press('Enter');await expect(objPage.locator('#main-content')).toBeFocused();
+  await objPage.keyboard.press('Tab');await expect(objPage.getByRole('button',{name:'Refresh progress',exact:true})).toBeFocused();const pResponse=objPage.waitForResponse('**/api/tracking');await objPage.keyboard.press('Enter');await pResponse;await expect(objPage.locator('#tracking-status')).toHaveText('Progress refreshed.');expect(await objPage.evaluate(()=>location.hash.length)).toBe(65);
+});
+test('a superseded parsed tracking body cannot repaint the newly opened link',async({page:objPage,request:objRequest})=>{
+  const arrPaths=await(await objRequest.get('/__test/tracking')).json();
+  await objPage.addInitScript(()=>{
+    const fnJson=Response.prototype.json;let bHeld=false;
+    window.objTrackingBodyControl={bWaiting:false,fnRelease:null};
+    Response.prototype.json=async function(){const objValue=await fnJson.call(this);if(this.url.endsWith('/api/tracking')&&this.ok&&!bHeld){bHeld=true;window.objTrackingBodyControl.bWaiting=true;await new Promise((fnResolve)=>{window.objTrackingBodyControl.fnRelease=fnResolve;});}return objValue;};
+  });
+  await objPage.goto(arrPaths[1]);await expect.poll(()=>objPage.evaluate(()=>window.objTrackingBodyControl.bWaiting)).toBe(true);
+  await objPage.goto('/track#'+'f'.repeat(64));await expect(objPage.locator('#tracking-error')).toContainText('unavailable or expired');
+  await objPage.evaluate(()=>window.objTrackingBodyControl.fnRelease());await objPage.evaluate(()=>new Promise((fnResolve)=>requestAnimationFrame(fnResolve)));await expect(objPage.locator('#tracking-content')).toBeEmpty();
+});

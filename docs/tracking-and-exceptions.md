@@ -85,3 +85,9 @@ SEO-only exception; other quality gates still apply. The public HTTP customer
 preview may offer guest tracking locally but never staff/admin access. Production
 requires the existing operator-owned HTTPS/account configuration. No deployment,
 merchant setup or real credentials are created by this increment.
+
+The BE-05 follow-up adds lossless cached public-asset Brotli encoding, a combined
+tracking stylesheet, explicit natural-order refresh focus and a second
+request-generation check after JSON parsing; see
+[follow-up verification](verification/be-05-follow-up.md). Its automated keyboard
+checks complement the outstanding manual accessibility acceptance.

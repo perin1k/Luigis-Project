@@ -5,6 +5,9 @@
 <title><%= strTitle %></title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script src="/js/theme.js"></script>
+<% if (typeof bTrackingPage !== 'undefined' && bTrackingPage) { %>
+<link rel="stylesheet" href="/css/tracking-bundle.css">
+<% } else { %>
 <link rel="stylesheet" href="/vendor/bootstrap.min.css">
 <% if (typeof bStaffPage !== 'undefined' && bStaffPage) { %>
 <link rel="stylesheet" href="/css/staff-bundle.css">
@@ -15,4 +18,6 @@
 <% } else { %>
 <link rel="stylesheet" href="/css/tokens.css">
 <link rel="stylesheet" href="/css/global.css">
+<% } %>
+
 <% } %>
