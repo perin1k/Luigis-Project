@@ -1,3 +1,4 @@
+import {queueInternalNotification} from '../notifications/outbox.js';
 import {recordDemoAllocations} from './demo-refund-service.js';
 import { randomUUID } from 'node:crypto';
 import { runTransaction } from '../data/database.js';
@@ -55,7 +56,9 @@ export function createDemoPaymentService(objDatabase,{objVault,objCatalogService
         recordDemoAllocations(objDatabase,strId,dtNow);
         objDatabase.prepare("UPDATE orders SET fulfillment_status='Received',received_at=?,revision=revision+1 WHERE id=? AND fulfillment_status IS NULL").run(dtNow,objInput.strOrderId);
         const intSequence=objDatabase.prepare('SELECT coalesce(max(sequence),0)+1 AS n FROM order_events WHERE order_id=?').get(objInput.strOrderId).n;
-        objDatabase.prepare("INSERT INTO order_events (id,order_id,sequence,event_type,to_status,occurred_at,reason_code) VALUES (?,?,?,'demo_payment_confirmed','Received',?,'demo_payment')").run(randomUUID(),objInput.strOrderId,intSequence,dtNow);
+        const strEventId=randomUUID();
+        objDatabase.prepare("INSERT INTO order_events (id,order_id,sequence,event_type,to_status,occurred_at,reason_code) VALUES (?,?,?,'demo_payment_confirmed','Received',?,'demo_payment')").run(strEventId,objInput.strOrderId,intSequence,dtNow);
+        queueInternalNotification(objDatabase,objInput.strOrderId,strEventId,'confirmation',dtNow);
       }
       const objReceipt=receipt(objDatabase.prepare('SELECT * FROM demo_payment_attempts WHERE id=?').get(strId),false);
       if(bApproved&&objTrackingService)objReceipt.strTrackingPath=objTrackingService.issueForPayment(objInput.strOrderId,dtNow);

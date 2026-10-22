@@ -1,3 +1,4 @@
+import {queueInternalNotification} from '../notifications/outbox.js';
 import {randomUUID} from 'node:crypto';
 import {StaffOrderError} from './orders-service.js';
 const NEXT_STATUS={Received:'Preparing',Preparing:'Baking',Baking:'Ready',Ready:'Completed'};
@@ -31,9 +32,11 @@ export function createOrderProgressService(objDatabase,objSessionService){
       if(objLatest&&objLatest.occurred_at>dtOccurred)throw new StaffOrderError('Order timing needs review.',409);
       objDatabase.prepare(`UPDATE orders SET fulfillment_status=?,${TIMESTAMP_COLUMN[objInput.strStatus]}=?,revision=revision+1 WHERE id=? AND revision=?`)
         .run(objInput.strStatus,dtOccurred,objOrder.id,objInput.intRevision);
+      const strEventId=randomUUID();
       objDatabase.prepare(`INSERT INTO order_events (id,order_id,sequence,event_type,from_status,to_status,occurred_at,actor_id)
         VALUES (?,?,(SELECT coalesce(max(sequence),0)+1 FROM order_events WHERE order_id=?),'fulfillment_progress',?,?,?,?)`)
-        .run(randomUUID(),objOrder.id,objOrder.id,objOrder.fulfillment_status,objInput.strStatus,dtOccurred,objIdentity.strUserId);
+        .run(strEventId,objOrder.id,objOrder.id,objOrder.fulfillment_status,objInput.strStatus,dtOccurred,objIdentity.strUserId);
+      if(objInput.strStatus==='Ready')queueInternalNotification(objDatabase,objOrder.id,strEventId,'ready',dtOccurred);
       return {strStatus:objInput.strStatus,intRevision:objInput.intRevision+1,dtOccurredAt:dtOccurred};
     });
   }

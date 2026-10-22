@@ -1,4 +1,4 @@
-import {queueInternalNotification} from '../payments/demo-refund-service.js';
+import {queueInternalNotification} from '../notifications/outbox.js';
 import {randomUUID} from 'node:crypto';
 import {StaffOrderError} from './orders-service.js';
 export function createOrderExceptionService(objDatabase,objSessions){

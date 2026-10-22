@@ -43,6 +43,7 @@ test('success commits ciphertext, exact amount, confirmed hold, Received timesta
 }));
 test('decline releases capacity and stays unpaid; replay does not change the outcome',()=>fixture(({objDatabase,service,objInput})=>{
   const objPayment=service({fnProcess:()=>false});const objFailed=objPayment.pay(objInput);assert.equal(objFailed.strState,'failed');assert.equal(objFailed.objPickup.strHoldState,'released');
+  assert.equal(objDatabase.prepare('SELECT count(*) AS n FROM notification_outbox').get().n,0);
   assert.equal(objDatabase.prepare('SELECT fulfillment_status FROM orders').get().fulfillment_status,null);
   assert.equal(service().pay(objInput).strState,'failed');
   assert.throws(()=>service().pay({...objInput,strRequestId:randomUUID()}),/hold expired/);

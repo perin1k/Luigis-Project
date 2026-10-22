@@ -81,7 +81,9 @@ Failed/pending refunds remain unresolved; access continues until seven days afte
 actual final resolution, subject to an existing explicit grant cap. This is read
 authorization, not background deletion of contacts/previews. Cancellation and
 refund notifications are genuine event-linked **pending outbox records** only;
-rendering internal previews and retention jobs remain separately scoped (BE-11).
+BE-11 now renders restricted internal previews and enforces their expiry; see
+[the notification guide](notification-preview-design.md). Broader contact cleanup
+remains separately scoped.
 No external message is sent or marked delivered.
 
 See [verification](verification/be-09-refunds.md) for coverage and remaining gates.

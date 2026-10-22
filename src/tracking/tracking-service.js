@@ -1,19 +1,9 @@
+import {hasPendingCase,orderRetentionDeadline} from '../data/order-retention.js';
 import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {runTransaction} from '../data/database.js';
 import {StaffOrderError} from '../staff/orders-service.js';
-const FINAL_STATES=['Completed','Cancelled','Not collected'];
+
 export function createTrackingService(objDatabase,objSessions,{fnNow=()=>new Date()}={}){
-  function hasPendingCase(strOrderId){return Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests c WHERE c.order_id=? AND (c.state='pending' OR (c.state='approved' AND NOT EXISTS(SELECT 1 FROM refunds r WHERE r.cancellation_request_id=c.id AND r.state='succeeded') AND NOT EXISTS(SELECT 1 FROM demo_refund_attempts d WHERE d.cancellation_request_id=c.id AND d.state='succeeded')))").get(strOrderId)
-    ||objDatabase.prepare("SELECT r.id FROM refunds r JOIN payment_attempts p ON p.id=r.payment_attempt_id WHERE p.order_id=? AND r.state!='succeeded'").get(strOrderId));}
-  function deadline(objOrder){
-    if(!FINAL_STATES.includes(objOrder.fulfillment_status))return null;
-    if(hasPendingCase(objOrder.id))return null;
-    const arrTimes=[objOrder.completed_at,objOrder.cancelled_at,objOrder.not_collected_at,
-      ...objDatabase.prepare('SELECT decided_at FROM cancellation_requests WHERE order_id=?').all(objOrder.id).map((objRow)=>objRow.decided_at),
-      ...objDatabase.prepare('SELECT confirmed_at FROM demo_refund_attempts WHERE order_id=?').all(objOrder.id).map((objRow)=>objRow.confirmed_at),
-      ...objDatabase.prepare('SELECT r.confirmed_at FROM refunds r JOIN payment_attempts p ON p.id=r.payment_attempt_id WHERE p.order_id=?').all(objOrder.id).map((objRow)=>objRow.confirmed_at)].filter(Boolean);
-    return new Date(Math.max(...arrTimes.map(Date.parse))+7*86400000).toISOString();
-  }
   // Internal only: callers already own the payment transaction. Never exposed by order ID.
   function issueForPayment(strOrderId,dtNow){
     const objOrder=objDatabase.prepare('SELECT * FROM orders WHERE id=? AND fulfillment_status IS NOT NULL').get(strOrderId);
@@ -32,7 +22,7 @@ export function createTrackingService(objDatabase,objSessions,{fnNow=()=>new Dat
       const objGrant=objDatabase.prepare('SELECT * FROM tracking_grants WHERE token_digest=? AND revoked_at IS NULL').get(createHash('sha256').update(strToken).digest('hex'));
       if(!objGrant)return null;
       const objOrder=objDatabase.prepare('SELECT * FROM orders WHERE id=?').get(objGrant.order_id);
-      const dtDeadline=deadline(objOrder);
+      const dtDeadline=orderRetentionDeadline(objDatabase,objOrder);
       if(dtNow<objGrant.created_at||(objGrant.expires_at&&dtNow>=objGrant.expires_at)||(dtDeadline&&dtNow>=dtDeadline))return null;
       return objOrder;
   }
@@ -44,7 +34,7 @@ export function createTrackingService(objDatabase,objSessions,{fnNow=()=>new Dat
       return {strReference:objOrder.public_reference,strStatus:objOrder.fulfillment_status,strService:objOrder.service_type,dtReadyAt:objBooking?.promised_at??null,
         bCanRequestCancellation:objOrder.fulfillment_status==='Received'&&!objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objOrder.id),
         strRefundState:objOrder.fulfillment_status==='Cancelled'?(objDatabase.prepare("SELECT state FROM demo_refund_attempts WHERE order_id=? ORDER BY CASE state WHEN 'succeeded' THEN 0 ELSE 1 END,requested_at DESC,rowid DESC LIMIT 1").get(objOrder.id)?.state??'review-required'):'not-applicable',
-        bReviewPending:hasPendingCase(objOrder.id)||Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objOrder.id)||objDatabase.prepare("SELECT id FROM fulfillment_reviews WHERE order_id=? AND state='open'").get(objOrder.id)),
+        bReviewPending:hasPendingCase(objDatabase,objOrder.id)||Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objOrder.id)||objDatabase.prepare("SELECT id FROM fulfillment_reviews WHERE order_id=? AND state='open'").get(objOrder.id)),
         arrProgress:objDatabase.prepare('SELECT to_status AS strStatus,occurred_at AS dtOccurredAt FROM order_events WHERE order_id=? AND to_status IS NOT NULL AND (from_status IS NULL OR from_status IS NOT to_status) ORDER BY sequence').all(objOrder.id)};
     });
   }
@@ -65,7 +55,7 @@ export function createTrackingService(objDatabase,objSessions,{fnNow=()=>new Dat
       const objOrder=objDatabase.prepare('SELECT * FROM orders WHERE public_reference=? AND fulfillment_status IS NOT NULL').get(strReference);
       if(!objOrder||!objDatabase.prepare("SELECT id FROM demo_payment_attempts WHERE order_id=? AND quote_id=? AND state='succeeded'").get(objOrder.id,objOrder.accepted_quote_id))throw new StaffOrderError('Order not found.',404);
       const objOld=objDatabase.prepare('SELECT * FROM tracking_grants WHERE order_id=? AND revoked_at IS NULL').get(objOrder.id);
-      const dtExpiry=objOld?.expires_at??null;const dtDeadline=deadline(objOrder);
+      const dtExpiry=objOld?.expires_at??null;const dtDeadline=orderRetentionDeadline(objDatabase,objOrder);
       if((dtExpiry&&dtExpiry<=dtNow.toISOString())||(dtDeadline&&dtDeadline<=dtNow.toISOString()))throw new StaffOrderError('Tracking access has expired.',409);
       if(objOld)objDatabase.prepare('UPDATE tracking_grants SET revoked_at=? WHERE id=?').run(dtNow.toISOString(),objOld.id);
       const strTrackingPath=insertGrant(objOrder,dtNow.toISOString(),dtExpiry);

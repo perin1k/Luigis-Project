@@ -1,3 +1,4 @@
+import {createNotificationService} from './notifications/notification-service.js';
 import { createServer as createHttpsServer } from 'node:https';
 import { createServer as createHttpServer } from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
@@ -25,19 +26,23 @@ let objDatabase;
 let objRuntime;
 let objServer;
 let bClosed = false;
+let intNotificationTimer;
 function application(objAuthRuntime) {
   const objCatalogService = createCatalogService(objDatabase);
   const objSchedulingService = createSchedulingService(objDatabase);
   const objTrackingService=createTrackingService(objDatabase,objAuthRuntime?.objSessionService);
   const objPaymentService = createDemoPaymentService(objDatabase, { objTrackingService, objVault: loadPaymentVault(process.env.DEMO_PAYMENT_KEYS_PATH), objCatalogService, objSchedulingService });
-  return createApp({ objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
+  const objNotificationService=createNotificationService(objDatabase,objAuthRuntime?.objSessionService);
+  const fnProcessPreviews=()=>{try{objNotificationService.processPending();}catch{console.error('Internal notification processing failed; pending work is retained.');}};
+  fnProcessPreviews();intNotificationTimer=setInterval(fnProcessPreviews,1000);intNotificationTimer.unref();
+  return createApp({ objNotificationService:objAuthRuntime?objNotificationService:undefined, objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
     objOrderProgressService: objAuthRuntime ? createOrderProgressService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objStaffOrdersService: objAuthRuntime ? createStaffOrdersService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService) });
 }
 function closeResources() {
   if (bClosed) return;
-  bClosed = true; objRuntime?.destroy(); objDatabase?.close();
+  bClosed = true; clearInterval(intNotificationTimer); objRuntime?.destroy(); objDatabase?.close();
 }
 try {
   if (bAuthEnabled) {

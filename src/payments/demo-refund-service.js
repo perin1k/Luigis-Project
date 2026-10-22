@@ -1,3 +1,4 @@
+import {queueInternalNotification} from '../notifications/outbox.js';
 import {randomUUID} from 'node:crypto';
 import {StaffOrderError} from '../staff/orders-service.js';
 const UUID_PATTERN=/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
@@ -7,11 +8,6 @@ export function recordDemoAllocations(objDatabase,strPaymentId,dtEffectiveAt,str
 }
 function event(objDatabase,strOrderId,strType,dtNow,strActor){
   const strId=randomUUID();objDatabase.prepare('INSERT INTO order_events (id,order_id,sequence,event_type,occurred_at,actor_id) VALUES (?,?,(SELECT coalesce(max(sequence),0)+1 FROM order_events WHERE order_id=?),?,?,?)').run(strId,strOrderId,strOrderId,strType,dtNow,strActor);return strId;
-}
-export function queueInternalNotification(objDatabase,strOrderId,strEventId,strTemplate,dtNow){
-  const objContact=objDatabase.prepare('SELECT phone,email,redacted_at FROM order_contacts WHERE order_id=?').get(strOrderId);
-  if(!objContact||objContact.redacted_at)return;
-  for(const [strChannel,bUsable] of [['email',Boolean(objContact.email)],['sms',Boolean(objContact.phone)]])if(bUsable)objDatabase.prepare("INSERT INTO notification_outbox (id,order_id,source_event_id,channel,template_key,created_at) VALUES (?,?,?,?,?,?)").run(randomUUID(),strOrderId,strEventId,strChannel,strTemplate,dtNow);
 }
 export function createDemoRefundService(objDatabase,objSessions,{fnProcess=()=>true}={}){
   function refund(strSession,strReference,objInput){

@@ -2,7 +2,7 @@ import express from 'express';
 import {randomBytes} from 'node:crypto';
 import {AUTH_COOKIES,COOKIE_OPTIONS,createCsrfProtection,readAuthCookies} from '../auth/auth-transport.js';
 import {StaffOrderError} from './orders-service.js';
-export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,objDemoRefundService,strOrigin,fnRender}){
+export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,objDemoRefundService,objNotificationService,strOrigin,fnRender}){
   const objOrigin=new URL(strOrigin);if(objOrigin.protocol!=='https:'||objOrigin.origin!==strOrigin)throw new Error('Exact staff HTTPS origin required.');
   const objRouter=express.Router();const objCsrf=createCsrfProtection();
   objRouter.use(['/staff/orders','/api/staff/orders'],(objRequest,objResponse,fnNext)=>{
@@ -49,6 +49,20 @@ export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressS
       }catch(objError){return objResponse.status(objError instanceof StaffOrderError?objError.intStatus:503).json({strMessage:objError instanceof StaffOrderError?objError.message:'The decision could not be confirmed. Refresh before retrying.'});}
     });
     objRouter.use(['/api/staff/orders/:reference/progress','/api/staff/orders/:reference/exception','/api/staff/orders/:reference/tracking-replacement','/api/staff/orders/:reference/refund'],(objError,objRequest,objResponse,fnNext)=>{if(!objError)return fnNext();return objResponse.status(objError.status===413?413:400).json({strMessage:'Check the order update request.'});});
+  }
+  if(objNotificationService){
+    objRouter.get('/api/staff/orders/:reference/notifications',(objRequest,objResponse)=>{
+      try{const objResult=objNotificationService.read(objResponse.locals.strSessionToken,objRequest.params.reference);return objResult?objResponse.json(objResult):objResponse.status(401).json({strMessage:'Your staff session expired. Sign in again.'});}
+      catch(objError){return objResponse.status(objError instanceof StaffOrderError?objError.intStatus:503).json({strMessage:objError instanceof StaffOrderError?objError.message:'Previews could not be loaded.'});}
+    });
+    objRouter.post('/api/staff/orders/:reference/notifications/retry',(objRequest,objResponse,fnNext)=>{
+      if(objRequest.headers.origin!==strOrigin||!objCsrf.verify(objResponse.locals.objAuthCookies,objRequest.headers['x-csrf-token']))return objResponse.status(403).json({strMessage:'Refresh before retrying.'});
+      if(!objRequest.is('application/json'))return objResponse.status(415).json({strMessage:'JSON is required.'});fnNext();
+    },express.json({limit:'1kb',strict:true,inflate:false}),(objRequest,objResponse)=>{
+      try{const objResult=objNotificationService.retry(objResponse.locals.strSessionToken,objRequest.params.reference,objRequest.body);return objResult?objResponse.json(objResult):objResponse.status(403).json({strMessage:'Administrative access is required.'});}
+      catch(objError){return objResponse.status(objError instanceof StaffOrderError?objError.intStatus:503).json({strMessage:objError instanceof StaffOrderError?objError.message:'Retry could not be confirmed. Refresh before retrying.'});}
+    });
+    objRouter.use('/api/staff/orders/:reference/notifications/retry',(objError,objRequest,objResponse,fnNext)=>{if(!objError)return fnNext();return objResponse.status(objError.status===413?413:400).json({strMessage:'Check the preview request.'});});
   }
   objRouter.get('/api/staff/orders',(objRequest,objResponse,fnNext)=>serve(objRequest,objResponse,fnNext,true,false));
   objRouter.get('/api/staff/orders/:reference',(objRequest,objResponse,fnNext)=>serve(objRequest,objResponse,fnNext,true,true));

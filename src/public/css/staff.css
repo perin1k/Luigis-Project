@@ -36,4 +36,9 @@
 #cancellation-reviewed, #refund-reviewed { min-height: 1.25rem; height: 1.25rem; }
 
 .tracking-cancellation-area { min-height: 14rem; }
+.staff-notifications { border-top: 1px solid var(--color-line); padding-top: 1rem; }
+.staff-notifications summary { cursor: pointer; font-weight: 650; min-height: 2.75rem; padding-block: .5rem; }
+.staff-notifications summary:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }
+.staff-notifications h3 { font-size: 1.1rem; }
+.notification-body { white-space: pre-line; overflow-wrap: anywhere; }
 @media (max-width: 47.99rem) { .tracking-cancellation-area { min-height: 16rem; } }

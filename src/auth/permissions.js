@@ -1,7 +1,7 @@
 const STAFF_ACTIONS = new Set(['orders.read', 'orders.prepare', 'availability.update', 'account.password.change']);
 const ADMIN_ACTIONS = new Set([
   ...STAFF_ACTIONS, 'employees.manage', 'menu.edit', 'hours.manage',
-  'cancellation.decide', 'refund.approve', 'analytics.read',
+  'cancellation.decide', 'refund.approve', 'analytics.read', 'notifications.retry',
 ]);
 
 /** Internal policy only: the role must come from a validated persisted session. */

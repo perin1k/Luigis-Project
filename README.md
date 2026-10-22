@@ -691,3 +691,7 @@ Private guest tracking and administrator decisions: [BE-05 integration guide](do
 Customer cancellation and full demonstration refunds (BE-09):
 [refund, allocation, retry and file guide](docs/demo-refund-design.md).
 Administrators review cancellations and refunds separately; no real money moves.
+
+Internal confirmation, Ready, cancellation and refund previews (BE-11):
+[notification processor, private UI, retention and file guide](docs/notification-preview-design.md).
+These are internal previews only; no email or SMS is sent.

@@ -74,7 +74,8 @@ if(elAdminSubmit){elAdminSubmit.hidden=false;elAdminSubmit.addEventListener('cli
   finally{clearTimeout(intTimer);elRefresh.disabled=false;}
 });}
 
-function clearPrivate(){document.querySelector('#orders-content').replaceChildren();document.querySelector('#admin-order-result')?.replaceChildren();document.querySelector('#refund-panel')?.replaceChildren();if(elAdminSubmit)elAdminSubmit.hidden=true;if(elAdvance)elAdvance.hidden=true;}
+window.addEventListener('staff-session-unavailable',()=>{document.querySelector('#orders-content').replaceChildren();document.querySelector('#admin-order-result')?.replaceChildren();document.querySelector('#refund-panel')?.replaceChildren();if(elAdminSubmit)elAdminSubmit.hidden=true;if(elAdvance)elAdvance.hidden=true;});
+function clearPrivate(){window.dispatchEvent(new Event('staff-session-unavailable'));document.querySelector('#orders-content').replaceChildren();document.querySelector('#admin-order-result')?.replaceChildren();document.querySelector('#refund-panel')?.replaceChildren();if(elAdminSubmit)elAdminSubmit.hidden=true;if(elAdvance)elAdvance.hidden=true;}
 
 function money(centsValue){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(centsValue/100);}
 if(elRefundButton)elRefundButton.addEventListener('click',async()=>{
