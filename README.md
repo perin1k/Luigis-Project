@@ -802,4 +802,6 @@ FE-10: [connected private inventory, cancellation and refund status evidence](do
 
 Customer checkout: [current BE-02/BE-03 integration and reconciled FE-03 receipt evidence](docs/verification/customer-checkout-checkpoint.md).
 
+QA-02: [consolidated payment/privacy evidence and remaining operator gates](docs/verification/qa-02-payment-privacy.md).
+
 TEST-02: [scheduling, persisted checkout and demonstration payment checkpoint](docs/verification/test-02-checkout-acceptance.md).
