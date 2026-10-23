@@ -1,5 +1,24 @@
 # SEC-01 dependency, credential-pattern and route review
 
+October 23 maintenance follow-up (OPS-07): a fresh install subsequently reported
+GHSA-27r3-jxmh-p828 in locked body-parser 2.3.0. The focused lockfile patch selects
+2.4.0 within Express's existing range; no direct dependency, application route or
+parser option changed. All project JSON parsers retain `inflate: false`, the
+[publisher's documented workaround](https://github.com/advisories/GHSA-27r3-jxmh-p828).
+After locked installation, full and production-only npm 11.11.0 advisory queries
+both reported zero known advisories. Earlier zero-advisory results below are
+historical observations, not continuous monitoring. Native/browser and hosted
+acceptance remain separate gates; this patch does not close SEC or OPS cards.
+Focused post-patch verification on macOS arm64 / Node 24.14.1:
+`node scripts/verify-security.js` passed 79 cases and
+`node --test tests/unit/pricing-http.test.js` passed three, with zero failures or
+skips. These include malformed/oversized/compressed request rejection, protected
+HTTPS writes, permissions, payment retries and private-file exposure. Existing
+tests were reused; no assertions were weakened. Local logs:
+`/private/tmp/luigis-parser-security.log`, `/private/tmp/luigis-parser-pricing.log`.
+The dependency change still needs impact review at the native/browser final QA
+checkpoint; no new cross-platform, visual, Lighthouse or hosted pass is claimed.
+
 October 23 consolidation: [SEC acceptance](verification/sec-acceptance.md) records
 the current configured-HTTPS matrix, fresh advisories/history scan and retained
 TEST-01–03 evidence. The October 22 open-item statements below describe the earlier

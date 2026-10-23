@@ -84,3 +84,14 @@ inflation, matching that workaround; this is exposure analysis, not a fresh atta
 test or a clean audit. Earlier zero-advisory records remain historical. Keep this
 finding in SEC-01/release review and review a focused lockfile update separately;
 no dependency was changed during this documentation/reproducibility increment.
+
+### Subsequent focused maintenance patch
+
+The next approved increment updates only the locked body-parser package from
+2.3.0 to the publisher's patched 2.4.0 within the existing Express dependency
+range. Existing resolved child packages already satisfy its updated ranges;
+no direct dependency or application parser setting changes. `npm ci
+--ignore-scripts` completed; fresh full/runtime-only audits each returned zero
+known advisories. See [security review](security-review-evidence.md) for the
+advisory and verification boundaries. The original finding above describes the
+clean-checkout baseline, not the patched lockfile.
