@@ -36,6 +36,16 @@ gain staff access. No contact, order identifier, card or secret link is returned
   earlier cohort. No eligible orders gives a null average; cent averages use
   half-up integer division. Tax and tips do not enter item AOV. Unsafe monetary
   aggregate precision returns 422 rather than a rounded financial result.
+- `objPickup.arrDates` groups promised pickups by America/Chicago calendar date
+  (`strDate`, chronological order). `arrWeekdays` groups those same pickups by ISO
+  weekday (`intWeekday` 1=Monday through 7=Sunday, `strWeekday` English label),
+  ordered Monday–Sunday. Each returns `intOrders`, `intCancelled`, `intNotCollected`,
+  matching the existing hourly semantics: total includes all outcomes while the
+  two exceptional outcomes are counted separately. Empty periods return empty
+  arrays, not invented observations. Derive weekdays from the Central date before
+  calendar arithmetic, preserving UTC-midnight and daylight-saving boundaries.
+  These additive backend fields implement DECISION-04; FE-06 must display date/
+  weekday trends and provide its approved quick/custom date controls.
 - `objPickup` groups promised pickup times into local hours (0–23), independently
   of payment date. Order counts include separate cancellation and Not collected
   counts. Non-cancelled ready-time coverage and missing-time counts are explicit;

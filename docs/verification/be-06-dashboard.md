@@ -1,5 +1,66 @@
 # BE-06 dashboard verification — October 22, 2026
 
+## BE-06 focused implementation checkpoint — October 23, 2026
+
+Baseline `42d6a87d9b994581d1183275116e8ec6fd9b5a3c`. Preserves the team's
+existing analytics ledger, dashboard and Owner-only role integration. Reviewed
+DECISION-04 and found missing required date/day-of-week pickup trends: the service
+previously returned only hourly buckets. New failing tests reproduced absent
+`arrDates`/`arrWeekdays` before implementation; both now pass.
+
+### Changes and integration
+
+- `src/staff/analytics-service.js` adds `objPickup.arrDates` and
+  `objPickup.arrWeekdays` alongside existing hourly results. A shared counter
+  preserves total/cancelled/Not collected semantics. Dates use America/Chicago;
+  weekdays derive from that local calendar date and use ISO Monday=1/Sunday=7.
+  Buckets sort chronologically/Monday–Sunday and empty ranges return empty arrays.
+  Existing sales/refund/quantity/AOV/timing outputs and Owner-only guard remain.
+- `tests/unit/analytics-service.test.js` adds UTC-midnight/weekday cancellation
+  and Sunday-after-DST-fallback cases; existing no-show and empty-period cases now
+  check the new buckets. All data uses genuine service-created synthetic orders.
+- `tests/fixtures/staff-orders-data.js` accepts an optional service date to seed
+  the DST case. Its previous fixed default is preserved for existing fixtures;
+  no production input or schema changes.
+- `tests/unit/staff-orders-http.test.js` adds explicit valid MFA Admin denial
+  for both analytics HTML and JSON. A positive order-queue request proves the
+  session is valid; denial returns no-store 403 without financial/customer data.
+  Existing Owner success and Employee denial remain intact.
+- [Analytics metric/file guide](../sales-analytics-design.md) documents the additive
+  fields. FE-06 owns rendering the required date/weekday tables and quick/custom
+  filters; this backend increment does not claim those new controls already exist.
+
+No new dependency, migration, account or external service was introduced. No
+purchased data, timestamps, payment/refund policy or permission was rewritten.
+
+### Focused verification
+
+Windows x64 / Node 24.22.1 / Playwright 1.64.1; locked Chromium 156.0.8078.4 and
+Firefox 157.0 desktop. After the service change, analytics and HTTPS checks passed
+for payment/refund-date accounting, cohort averages/empty periods, tax/tip/cost
+separation, purchased recipe/beverage quantities, Central dates/hours/weekdays,
+no-show/timing coverage, invalid ranges and Owner/Admin/Employee access/privacy.
+Selected browser checks passed again for actual Owner navigation, keyboard date
+submission, invalid-filter input preservation/no stale report, and unauthorized/
+expired-session denial. Reruns were limited to behavior affected by the new service
+fields. Syntax, local links and diff checks passed.
+
+```sh
+node --test tests/unit/analytics-service.test.js tests/unit/staff-orders-http.test.js
+node node_modules/@playwright/test/cli.js test -c playwright.staff-orders.config.js analytics.spec.js --project=chromium-desktop --project=firefox-desktop --grep 'owner navigation|employees and expired sessions'
+```
+
+BE-06 is **Ready for Testing, not Done**. [TEST-03](https://trello.com/c/WOZ38Ufw)
+retains integrated reporting/refund/fulfillment acceptance, native browser/mobile
+visual/axe coverage, grouped manual keyboard/zoom/contrast/screen-reader review
+and applicable audits. FE-06 presentation must consume the added buckets before
+that connected acceptance. Earlier visual/audit records remain historical, not
+fresh results for the new metrics. Preserve the private-dashboard noindex SEO
+exception and all other final QA/INT/OPS gates. Older local Firefox startup notes
+below do not contradict this focused Windows pass or certify unrun environments.
+
+## Original dashboard evidence
+
 Story: https://trello.com/c/4K7rYt9e. [Metric and file guide](../sales-analytics-design.md).
 
 - Server regression: **226 tests pass**, zero failures/skips. Existing period/

@@ -1,6 +1,14 @@
 import {chicagoDate} from '../ordering/scheduling-service.js';
 import {StaffOrderError} from './orders-service.js';
 const objHourFormat=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',hour:'2-digit',hourCycle:'h23'});
+const WEEKDAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+function countPickup(mapBuckets,strKey,objLabels,strStatus){
+  const objBucket=mapBuckets.get(strKey)??{...objLabels,intOrders:0,intCancelled:0,intNotCollected:0};
+  objBucket.intOrders++;
+  if(strStatus==='Cancelled')objBucket.intCancelled++;
+  if(strStatus==='Not collected')objBucket.intNotCollected++;
+  mapBuckets.set(strKey,objBucket);
+}
 function validDate(strValue){return typeof strValue==='string'&&/^[1-9]\d{3}-\d{2}-\d{2}$/.test(strValue)&&Number.isFinite(Date.parse(strValue))&&new Date(strValue).toISOString().slice(0,10)===strValue;}
 function safeCents(numValue){if(!Number.isSafeInteger(numValue))throw new StaffOrderError('Report total exceeds supported precision.',422);return numValue;}
 function halfUpAverage(centsTotal,intCount){const numTotal=BigInt(centsTotal),numCount=BigInt(intCount);return Number((numTotal*2n+numCount)/(numCount*2n));}
@@ -28,16 +36,22 @@ export function createAnalyticsService(objDatabase,objSessions){
         const strKey=JSON.stringify([objLine.item_type,strLabel]);const objItem=mapItems.get(strKey)??{strType:objLine.item_type,strLabel,intPurchased:0,intRefunded:0,intNet:0};if(bPurchased)objItem.intPurchased=safeCents(objItem.intPurchased+objLine.quantity);if(bRefunded)objItem.intRefunded=safeCents(objItem.intRefunded+objLine.quantity);objItem.intNet=objItem.intPurchased-objItem.intRefunded;mapItems.set(strKey,objItem);
       }
     }
-    const arrPickup=arrPayments.filter((objRow)=>fnInPeriod(objRow.promised_at));const mapHours=new Map();let intReadyCoverage=0,intOnTime=0,numElapsedMinutes=0,intElapsedCoverage=0;
+    const arrPickup=arrPayments.filter((objRow)=>fnInPeriod(objRow.promised_at));const mapHours=new Map();const mapDates=new Map();const mapWeekdays=new Map();let intReadyCoverage=0,intOnTime=0,numElapsedMinutes=0,intElapsedCoverage=0;
     for(const objRow of arrPickup){
-      const intHour=Number(objHourFormat.format(new Date(objRow.promised_at)));const objHour=mapHours.get(intHour)??{intHour,intOrders:0,intCancelled:0,intNotCollected:0};objHour.intOrders++;if(objRow.fulfillment_status==='Cancelled')objHour.intCancelled++;if(objRow.fulfillment_status==='Not collected')objHour.intNotCollected++;mapHours.set(intHour,objHour);
+      const intHour=Number(objHourFormat.format(new Date(objRow.promised_at)));
+      const strDate=chicagoDate(objRow.promised_at);
+      // Resolve the weekday of the Central calendar date, not the UTC pickup date.
+      const intWeekday=(new Date(`${strDate}T12:00:00Z`).getUTCDay()+6)%7+1;
+      countPickup(mapHours,String(intHour),{intHour},objRow.fulfillment_status);
+      countPickup(mapDates,strDate,{strDate},objRow.fulfillment_status);
+      countPickup(mapWeekdays,String(intWeekday),{intWeekday,strWeekday:WEEKDAY_NAMES[intWeekday-1]},objRow.fulfillment_status);
       if(objRow.fulfillment_status==='Cancelled')continue;
       if(objRow.ready_at){intReadyCoverage++;if(objRow.ready_at<=objRow.promised_at)intOnTime++;}
       if(objRow.ready_at&&objRow.received_at&&objRow.ready_at>=objRow.received_at){intElapsedCoverage++;numElapsedMinutes+=(Date.parse(objRow.ready_at)-Date.parse(objRow.received_at))/60000;}
     }
     return {arrBestSellers:[...mapItems.values()].sort((objLeft,objRight)=>objRight.intNet-objLeft.intNet||objLeft.strLabel.localeCompare(objRight.strLabel)),strAdapter:'luigis-demo-v1',strTimeZone:'America/Chicago',strFrom:objInput.from,strTo:objInput.to,objPeriod,
       objPaymentCohort:{intEligibleOrders:arrCohort.length,centsNetItems:centsCohortItems,centsAverageItems:arrCohort.length?halfUpAverage(centsCohortItems,arrCohort.length):null},
-      objPickup:{intOrders:arrPickup.length,intReadyEligibleOrders:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled').length,intMissingReadyTimes:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled'&&!objRow.ready_at).length,intMissingPickupTimes:arrPayments.filter((objRow)=>fnInPeriod(objRow.paid_at)&&!objRow.promised_at).length,intReadyCoverage,intOnTime,intElapsedCoverage,numAverageElapsedMinutes:intElapsedCoverage?numElapsedMinutes/intElapsedCoverage:null,arrHours:[...mapHours.values()].sort((objLeft,objRight)=>objLeft.intHour-objRight.intHour)},
+      objPickup:{intOrders:arrPickup.length,intReadyEligibleOrders:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled').length,intMissingReadyTimes:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled'&&!objRow.ready_at).length,intMissingPickupTimes:arrPayments.filter((objRow)=>fnInPeriod(objRow.paid_at)&&!objRow.promised_at).length,intReadyCoverage,intOnTime,intElapsedCoverage,numAverageElapsedMinutes:intElapsedCoverage?numElapsedMinutes/intElapsedCoverage:null,arrHours:[...mapHours.values()].sort((objLeft,objRight)=>objLeft.intHour-objRight.intHour),arrDates:[...mapDates.values()].sort((objLeft,objRight)=>objLeft.strDate.localeCompare(objRight.strDate)),arrWeekdays:[...mapWeekdays.values()].sort((objLeft,objRight)=>objLeft.intWeekday-objRight.intWeekday)},
       intCancelledAwaitingRefund:arrPayments.filter((objRow)=>objRow.fulfillment_status==='Cancelled'&&fnInPeriod(objRow.paid_at)&&!objDatabase.prepare("SELECT id FROM demo_refund_attempts WHERE payment_id=? AND state='succeeded'").get(objRow.id)).length};
   });}
   return {read};

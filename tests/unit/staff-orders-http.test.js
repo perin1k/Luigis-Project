@@ -22,6 +22,18 @@ test('HTTPS queue endpoints require actual staff cookies, pin origin, escape nam
     const strToken='5'.repeat(64);objFixture.objDatabase.prepare('INSERT INTO staff_sessions (id,user_id,session_token_digest,authenticated_at,last_activity_at,expires_at) VALUES (?,?,?,?,?,?)').run('http-fixture','employee',createHash('sha256').update(strToken).digest('hex'),'2026-10-21T18:00:30.000Z','2026-10-21T18:00:30.000Z','2026-10-22T02:00:30.000Z');
     const objHeaders={Cookie:`__Host-luigis-session=${strToken}`};const objQueue=await get(intPort,'/api/staff/orders',objHeaders);assert.equal(objQueue.intStatus,200);assert.equal(objQueue.objHeaders['cache-control'],'no-store');assert.match(objQueue.objHeaders['x-robots-tag'],/noindex/);assert.doesNotMatch(objQueue.strBody,/202555|unused@example|password|ciphertext|nonce_hex|cents|strRole/);
     const strReport='/api/staff/analytics?from=2026-10-21&to=2026-10-21';assert.equal((await get(intPort,strReport)).intStatus,403);assert.equal((await get(intPort,strReport,objHeaders)).intStatus,403);assert.equal((await get(intPort,strReport,{...objHeaders,Origin:'https://other.invalid'})).intStatus,403);
+    // A valid MFA-authenticated Admin still lacks the Owner-only reporting permission.
+    const strManagerToken='b'.repeat(64);
+    objFixture.objDatabase.prepare('INSERT INTO staff_sessions (id,user_id,session_token_digest,authenticated_at,last_activity_at,mfa_verified_at,expires_at) VALUES (?,?,?,?,?,?,?)')
+      .run('analytics-http-manager','admin',createHash('sha256').update(strManagerToken).digest('hex'),'2026-10-21T18:00:30.000Z','2026-10-21T18:00:30.000Z','2026-10-21T18:00:30.000Z','2026-10-22T02:00:30.000Z');
+    const objManagerHeaders={Cookie:`__Host-luigis-session=${strManagerToken}`};
+    assert.equal((await get(intPort,'/api/staff/orders',objManagerHeaders)).intStatus,200);
+    for(const strPath of [strReport,'/staff/analytics?from=2026-10-21&to=2026-10-21']){
+      const objDenied=await get(intPort,strPath,objManagerHeaders);
+      assert.equal(objDenied.intStatus,403);
+      assert.equal(objDenied.objHeaders['cache-control'],'no-store');
+      assert.doesNotMatch(objDenied.strBody,/centsNetRecorded|objPaymentCohort|Synthetic Guest|2025550100/);
+    }
     const strAdminToken='a'.repeat(64);objFixture.objDatabase.prepare('INSERT INTO staff_sessions (id,user_id,session_token_digest,authenticated_at,last_activity_at,mfa_verified_at,expires_at) VALUES (?,?,?,?,?,?,?)').run('analytics-http-admin','owner',createHash('sha256').update(strAdminToken).digest('hex'),'2026-10-21T18:00:30.000Z','2026-10-21T18:00:30.000Z','2026-10-21T18:00:30.000Z','2026-10-22T02:00:30.000Z');const objReport=await get(intPort,strReport,{Cookie:`__Host-luigis-session=${strAdminToken}`});assert.equal(objReport.intStatus,200);assert.equal(objReport.objHeaders['cache-control'],'no-store');assert.equal(JSON.parse(objReport.strBody).objPaymentCohort.intEligibleOrders,3);assert.doesNotMatch(objReport.strBody,/202555|unused@example|Synthetic Guest|ciphertext|\/track#/);
     const objAnalyticsPage=await get(intPort,'/staff/analytics?from=2026-10-21&to=2026-10-21',{Cookie:`__Host-luigis-session=${strAdminToken}`});assert.equal(objAnalyticsPage.intStatus,200);assert.equal(objAnalyticsPage.objHeaders['cache-control'],'no-store');assert.match(objAnalyticsPage.strBody,/noindex/);assert.doesNotMatch(objAnalyticsPage.strBody,/Synthetic Guest|2025550100|ciphertext/);assert.equal((await get(intPort,'/staff/analytics',objHeaders)).intStatus,403);
     assert.equal((await get(intPort,'/staff/analytics?from=2026-10-22&to=2026-10-21',{Cookie:`__Host-luigis-session=${strAdminToken}`})).intStatus,400);
