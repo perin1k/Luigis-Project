@@ -4,8 +4,9 @@ Windows, macOS and supported Linux distributions are development/runtime targets
 for the same JavaScript, Node.js, Express, EJS and Bootstrap application. This is
 a compatibility requirement, not a claim that every OS/version or every workflow
 has already passed. Customer browser compatibility and server/developer OS
-compatibility are separate verification dimensions. No dependency, application
-behavior, CI workflow, hosting configuration or key permissions change here.
+compatibility are separate verification dimensions. The scoped storage CI workflow
+below is approved separately; it changes no application behavior, hosting
+configuration, dependency or key permissions.
 
 ## Prerequisites
 
@@ -177,11 +178,17 @@ current workflow outcomes must be distinguished from that preserved evidence.
 This storage-only workflow does not certify browser visuals, manual accessibility,
 private-key custody, the minimum supported Node version or full hosted acceptance.
 
+Storage checkpoint verified October 22, 2026: the Ubuntu, Windows and macOS jobs
+all completed successfully for commit `a66f4fc1431e08afd7bc4403a9c3a61259e7bb17`
+in [the DATA-02 workflow run](https://github.com/perin1k/Luigis-Project/actions/runs/39877036892).
+This closes the previously missing storage OS evidence through migration 014.
+The application/browser/hosting obligations below remain separate acceptance work.
+
 | Target | Available evidence | Still required |
 | --- | --- | --- |
-| Windows | Recorded local Node/unit/HTTPS and Chromium/Firefox/WebKit checks for reviewed increments, including receipt visuals | Full integrated acceptance, manual accessibility and actual operator/hosting configuration |
-| macOS | Teammate verification records and native references under `docs/verification/` and test snapshot directories | Current receipt reference refresh, recorded runtime/browser limitations and remaining manual/integrated acceptance |
-| Linux | Compatibility target; no Linux verification performed in this increment | Native or reviewed CI setup/runtime/unit/browser checks, browser system prerequisites and reviewed visual coverage |
+| Windows | DATA-02 hosted storage suite passed; recorded local Node/unit/HTTPS and Chromium/Firefox/WebKit checks for reviewed increments, including receipt visuals | Full integrated acceptance, manual accessibility and actual operator/hosting configuration |
+| macOS | DATA-02 hosted storage suite passed on arm64; teammate verification records and native references under `docs/verification/` and test snapshot directories | Current receipt reference refresh, recorded runtime/browser limitations and remaining manual/integrated acceptance |
+| Linux | DATA-02 storage/migration suite passed on Ubuntu 24.04 through the linked hosted CI run | Integrated runtime/browser checks, browser system prerequisites, manual accessibility and reviewed visual coverage |
 
 This matrix describes evidence, not assignments or a waiver. For release, record
 tested versions and results for applicable setup, migrations/seed in disposable
