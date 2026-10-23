@@ -73,6 +73,37 @@ remain valid for their documented commits/scopes; they do not prove this rerun.
 
 ## Release criteria retained
 
+### Privacy Lighthouse and approved indexing exception
+
+On October 23 the existing teammate-authored `tests/audit-privacy.js` ran
+unchanged against the disposable production-mode HTTPS staff-orders fixture,
+using a genuine synthetic Admin password/MFA session. Baseline `a10d131`,
+macOS arm64 / Node 24.14.1, locked Chromium and Lighthouse 13.5.0. Default mobile
+simulated throttling, 412×823 emulation, 4× CPU slowdown; complete configuration
+and advisories are in [the sanitized report](qa-01-privacy-lighthouse.json).
+
+Scores: Performance **100**, Accessibility **100**, Best Practices **100**,
+SEO **60**. The human explicitly approved an **SEO-only exception** for
+`/staff/privacy/:reference`, retaining noindex. No other category, page or
+security control is waived. The indexing block remains in place; no application
+or audit configuration was changed to obtain passing required scores.
+The additional agentic-browsing category reported 100 but is not a project gate.
+
+Reproduce by starting `NODE_ENV=production node tests/fixtures/staff-orders-server.js`
+in an isolated verification checkout, then running `node tests/audit-privacy.js`;
+stop only that fixture afterward. The fixture creates/removes its own temporary
+database/certificate and synthetic accounts. The audit keeps session cookies in
+memory; its report normalizes the reference and contains no contact data or
+credentials. Local log: `/private/tmp/luigis-qa01-privacy-original-audit.log`.
+
+An initial redundant script edit was reverted completely before this recorded
+run after identifying the existing audit. No audit-script change is delivered.
+The retained report comes from the original script. This is local self-signed
+fixture evidence, not trusted-host verification, manual accessibility review,
+native visual-reference acceptance or a claim of WCAG conformance. Earlier
+remaining-audit statements are historical; the local privacy audit is now recorded,
+while actual public HTTPS and final release gates remain open.
+
 ### Privacy behavior follow-up
 
 At documentation HEAD `4da3655` (unchanged application baseline), the existing
