@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import { get } from 'node:http';
 import { gunzipSync, brotliDecompressSync } from 'node:zlib';
 import objApp, {createApp} from '../../src/app.js';
+import {openDatabase} from '../../src/data/database.js';
+import {applyMigrations} from '../../src/data/migrations.js';
+import {seedMenu} from '../../src/data/seed-menu.js';
+import {createCatalogService} from '../../src/ordering/catalog-service.js';
 
 let objServer;
 let intPort;
@@ -16,6 +20,30 @@ before(async () => {
 });
 after(async () => {
   if (objServer) await new Promise((fnResolve) => objServer.close(fnResolve));
+});
+
+test('configured ordering uses one blocking stylesheet with unchanged Bootstrap and order rules', async () => {
+  const objDatabase = openDatabase(':memory:');
+  applyMigrations(objDatabase); seedMenu(objDatabase);
+  const objConfigured = createApp({ objCatalogService: createCatalogService(objDatabase) }).listen(0, '127.0.0.1');
+  try {
+    await new Promise((fnResolve, fnReject) => { objConfigured.once('listening', fnResolve); objConfigured.once('error', fnReject); });
+    const strHtml = await (await fetch(`http://127.0.0.1:${objConfigured.address().port}/order`)).text();
+    assert.equal((strHtml.match(/rel="stylesheet"/g) ?? []).length, 1);
+    assert.match(strHtml, /href="\/css\/order-bundle.css"/);
+    assert.ok(strHtml.indexOf('/css/order-bundle.css') < strHtml.indexOf('/js/theme.js'));
+    assert.equal((strHtml.match(/src="\/js\/theme.js"/g) ?? []).length, 1);
+    const arrParts = [];
+    for (const strPath of ['/vendor/bootstrap.min.css', '/css/tokens.css', '/css/global.css', '/css/ordering.css']) {
+      arrParts.push((await requestText(strPath, 'identity')).objBody, Buffer.from('\n'));
+    }
+    assert.deepEqual((await requestText('/css/order-bundle.css', 'identity')).objBody, Buffer.concat(arrParts));
+    const objBrotli = await requestText('/css/order-bundle.css', 'br');
+    assert.equal(objBrotli.objHeaders['content-encoding'], 'br');
+    assert.deepEqual(brotliDecompressSync(objBrotli.objBody), Buffer.concat(arrParts));
+  } finally {
+    await new Promise((fnResolve) => objConfigured.close(fnResolve)); objDatabase.close();
+  }
 });
 
 function requestText(strPath, strEncoding, objOptions = {}) {

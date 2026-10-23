@@ -45,6 +45,11 @@ mapTextAssets.set('/css/order-bundle.css', prepareText(Buffer.concat(
 mapTextAssets.set('/vendor/bootstrap.min.css', prepareText(
   readFileSync(fileURLToPath(new URL('../node_modules/bootstrap/dist/css/bootstrap.min.css', import.meta.url))), 'css'));
 
+// Ordering keeps the exact Bootstrap-first cascade in one blocking response.
+mapTextAssets.set('/css/order-bundle.css', prepareText(Buffer.concat([
+  mapTextAssets.get('/vendor/bootstrap.min.css').objBody, Buffer.from('\n'),
+  mapTextAssets.get('/css/order-bundle.css').objBody]), 'css'));
+
 // Tracking needs the same Bootstrap and staff rules, delivered in one request.
 mapTextAssets.set('/css/tracking-bundle.css', prepareText(Buffer.concat([
   mapTextAssets.get('/vendor/bootstrap.min.css').objBody, Buffer.from('\n'),
