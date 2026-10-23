@@ -1,0 +1,78 @@
+name: Staff authentication verification
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'playwright.staff*.js'
+      - 'package*.json'
+      - '.gitattributes'
+      - '.github/workflows/staff-verification.yml'
+  pull_request:
+    branches: [dev]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'playwright.staff*.js'
+      - 'package*.json'
+      - '.gitattributes'
+      - '.github/workflows/staff-verification.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staff-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  staff:
+    name: Staff (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022, macos-14]
+    steps:
+      - name: Check out the tested commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Use the shared verification runtime
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.14.1'
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Locate OpenSSL on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Get-Command openssl -ErrorAction SilentlyContinue)) {
+            $strGitRoot = Split-Path (Split-Path (Get-Command git).Source)
+            $objOpenSsl = Get-ChildItem -LiteralPath $strGitRoot -Filter openssl.exe -Recurse -File | Select-Object -First 1
+            if (-not $objOpenSsl) { throw 'OpenSSL is required for disposable HTTPS fixtures.' }
+            Add-Content -LiteralPath $env:GITHUB_PATH -Value $objOpenSsl.DirectoryName
+          }
+      - name: Record tools
+        run: |
+          node --version
+          npm --version
+          git --version
+          openssl version
+          npx playwright --version
+      - name: Verify staff services and HTTPS integration
+        run: npm run test:staff:unit
+      - name: Install locked browsers and Linux system prerequisites
+        if: runner.os == 'Linux'
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install locked native browsers
+        if: runner.os != 'Linux'
+        run: npx playwright install chromium firefox webkit
+      - name: Verify staff browser behavior and cookie enforcement
+        run: npm run test:staff:functional

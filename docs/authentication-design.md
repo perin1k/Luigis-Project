@@ -6,6 +6,10 @@ implementation milestones below; verify the coordinated BE-08/FE-08 work before 
 
 ## Current policy — October 22, 2026
 
+Current acceptance commands, the cross-site cookie investigation and the human
+review checklist are maintained in [staff acceptance](staff-acceptance.md).
+Historical Firefox startup and two-role limitations below are not current scope.
+
 The approved [three-tier account policy](staff-role-policy.md) supersedes earlier
 two-role and no-reactivation boundaries below. Owner controls Employee/Admin
 assignment and admin accounts; Admin manages employees only. Owner/Admin require

@@ -17,6 +17,8 @@
     "test": "playwright test",
     "test:unit": "node --test tests/unit/*.test.js",
     "test:storage": "node scripts/verify-storage.js",
+    "test:staff:unit": "node scripts/verify-staff.js",
+    "test:staff:functional": "playwright test -c playwright.staff-ci.config.js",
     "test:visual": "playwright test --grep visual",
     "test:report": "playwright show-report"
   },

@@ -109,9 +109,11 @@ OPS covers private real setup, certificate/key custody and hosted access. Never
 mark those tasks complete solely because the policy or migration exists.
 
 The Windows WebKit cookie observation remains an acceptance blocker: the strict
-server header is verified, but the browser cookie API reports `None`. An isolated
-synthetic-cookie HTTPS diagnostic reproduces the observation without application
-authentication or account services. Keep the strict assertion and investigate the
-supported browser/platform path; this does not authorize weaker cookie policy.
+server header is verified, but the browser cookie API reports `None`, and an
+actual cross-site navigation sends the session cookie when it should be withheld.
+This is not established as an inspection-only issue. Keep both strict assertions
+and compare the supported browser/platform paths; this does not authorize weaker
+cookie policy. See [staff acceptance](staff-acceptance.md) for reproduction,
+hosted verification boundaries and the human review checklist.
 Keep private pages unindexed. The existing staff-page SEO exception does not
 silently waive unrelated menu/analytics SEO or manual accessibility gates.
