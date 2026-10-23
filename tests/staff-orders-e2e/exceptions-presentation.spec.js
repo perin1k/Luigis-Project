@@ -34,6 +34,25 @@ test('refund submission requires explicit approval and states the full no-fee po
   await expect(objPage.locator('#refund-status')).toBeEmpty();
 });
 
+test('approval rows contain their checkbox and keep the following explanation clear', async ({ page: objPage, request: objRequest }) => {
+  await openCancelledOrder(objPage, objRequest);
+  for (const intWidth of [1440,320]) {
+    await objPage.setViewportSize({width:intWidth,height:1000});
+    for (const strId of ['admin-order-reviewed','refund-reviewed']) {
+      const objBounds=await objPage.locator('#'+strId).evaluate(elInput=>{
+        const objInput=elInput.getBoundingClientRect();
+        const objRow=elInput.parentElement.getBoundingClientRect();
+        const objNext=elInput.parentElement.nextElementSibling.getBoundingClientRect();
+        const objLabel=elInput.labels[0].getBoundingClientRect();
+        return {numBottom:objInput.bottom,numRowBottom:objRow.bottom,numNextTop:objNext.top,numLabelHeight:objLabel.height};
+      });
+      expect(objBounds.numBottom).toBeLessThanOrEqual(objBounds.numRowBottom);
+      expect(objBounds.numBottom).toBeLessThanOrEqual(objBounds.numNextTop);
+      expect(objBounds.numLabelHeight).toBeGreaterThanOrEqual(44);
+    }
+  }
+});
+
 test('persisted pending refunds disable approval and never appear completed to the guest', async ({ page: objPage, request: objRequest }) => {
   const arrPaths = await (await objRequest.get('/__test/tracking')).json();
   await openCancelledOrder(objPage, objRequest);

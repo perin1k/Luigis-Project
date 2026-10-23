@@ -8,7 +8,7 @@ on:
         required: true
         default: compare
         type: choice
-        options: [collect, compare]
+        options: [collect, compare, collect-approval, compare-approval]
 
 permissions:
   contents: read
@@ -83,8 +83,14 @@ jobs:
         # Reuse passing collection journeys on unchanged application/fixture bytes.
         # Compare every visual case and run the new cross-feature integration.
         run: npx playwright test -c playwright.test03.config.js --grep 'visual|private tracking explains persisted inventory|lost refund response|scheduled inventory review connects|collapsed notification controls' --update-snapshots=none ${{ matrix.projects }}
+      - name: Collect corrected approval-row visuals and regression
+        if: inputs.phase == 'collect-approval'
+        run: npx playwright test -c playwright.test03.config.js --grep 'admin detail visual|refund .*visual|notification .*visual|approval rows contain|refund submission requires|persisted pending refunds' --update-snapshots=all ${{ matrix.projects }}
+      - name: Compare corrected approval-row visuals and regression
+        if: inputs.phase == 'compare-approval'
+        run: npx playwright test -c playwright.test03.config.js --grep 'admin detail visual|refund .*visual|notification .*visual|approval rows contain|refund submission requires|persisted pending refunds' --update-snapshots=none ${{ matrix.projects }}
       - name: Upload synthetic candidates for bounded internal review
-        if: always() && inputs.phase == 'collect'
+        if: always() && (inputs.phase == 'collect' || inputs.phase == 'collect-approval')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: test03-candidates-${{ matrix.os }}

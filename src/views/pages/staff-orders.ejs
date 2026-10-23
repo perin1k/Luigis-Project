@@ -50,7 +50,7 @@
           <option value="deny-cancellation">Deny pending cancellation</option><option value="cancel">Cancel: restaurant cannot fulfill</option>
           <option value="resolve-review">Resolve hours or inventory review</option><option value="not-collected">Mark not collected at closing</option><option value="tracking-replacement">Replace private tracking link</option>
         </select>
-        <div class="form-check mt-2"><input id="admin-order-reviewed" type="checkbox" class="form-check-input"><label for="admin-order-reviewed" class="form-check-label">I reviewed this order and the selected decision.</label></div>
+        <div class="form-check staff-order-approval mt-2"><input id="admin-order-reviewed" type="checkbox" class="form-check-input"><label for="admin-order-reviewed" class="form-check-label">I reviewed this order and the selected decision.</label></div>
         <p>Cancellation does not confirm a refund. Financial review remains separate.</p><button id="admin-order-submit" class="btn btn-outline-primary" type="button" hidden>Save reviewed decision</button><p id="admin-order-result" role="status"></p>
       </section>
       <% } %>
@@ -59,7 +59,7 @@
         <h3 id="refund-heading">Demonstration refund</h3>
         <p id="refund-summary">State: <%= objRefund?.strState ?? 'unavailable' %> · Full amount: <%= new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((objRefund?.centsTotal ?? 0)/100) %> · Recorded net: <%= new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((objRefund?.centsNetRecorded ?? 0)/100) %></p>
         <p>No real money is transferred. Refunds include items, tax and tip, without a fee deduction.</p>
-        <div class="form-check"><input id="refund-reviewed" type="checkbox" class="form-check-input"><label class="form-check-label" for="refund-reviewed">I approve the full demonstration refund.</label></div>
+        <div class="form-check staff-order-approval"><input id="refund-reviewed" type="checkbox" class="form-check-input"><label class="form-check-label" for="refund-reviewed">I approve the full demonstration refund.</label></div>
         <button id="refund-submit" type="button" tabindex="0" class="btn btn-primary mt-2" <%= objRefund?.bCanApprove ? '' : 'disabled' %>>Approve demo refund</button>
         <p id="refund-status" role="status" aria-live="polite"></p>
       </section>
