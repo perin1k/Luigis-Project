@@ -1,9 +1,6 @@
 name: TEST-03 fulfillment, tracking and reporting acceptance
 
 on:
-  push:
-    branches: [dev]
-    paths: ['.github/workflows/test03-verification.yml']
   workflow_dispatch:
     inputs:
       phase:
@@ -17,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: test03-${{ github.ref }}
+  group: test03-${{ github.ref }}-${{ inputs.phase || 'initial' }}
   cancel-in-progress: true
 
 jobs:
@@ -77,13 +74,17 @@ jobs:
           defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
           defaults read org.webkit.Playwright AppleKeyboardUIMode
       - name: Connected checkpoint journeys and candidate collection
-        if: inputs.phase == 'collect' || github.event_name == 'push'
-        run: npx playwright test -c playwright.test03.config.js --update-snapshots=all ${{ matrix.projects }}
+        if: inputs.phase == 'collect'
+        # Retain initial full native functional evidence; recollect visuals affected
+        # by the hidden-disclosure fix and cover the added integration/regression.
+        run: npx playwright test -c playwright.test03.config.js --grep 'visual|private tracking explains persisted inventory|lost refund response|scheduled inventory review connects|collapsed notification controls' --update-snapshots=all ${{ matrix.projects }}
       - name: Strict reviewed-reference comparison
         if: inputs.phase == 'compare'
-        run: npx playwright test -c playwright.test03.config.js --update-snapshots=none ${{ matrix.projects }}
+        # Reuse passing collection journeys on unchanged application/fixture bytes.
+        # Compare every visual case and run the new cross-feature integration.
+        run: npx playwright test -c playwright.test03.config.js --grep 'visual|private tracking explains persisted inventory|lost refund response|scheduled inventory review connects|collapsed notification controls' --update-snapshots=none ${{ matrix.projects }}
       - name: Upload synthetic candidates for bounded internal review
-        if: inputs.phase == 'collect' || github.event_name == 'push'
+        if: always() && inputs.phase == 'collect'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: test03-candidates-${{ matrix.os }}

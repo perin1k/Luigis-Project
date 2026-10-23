@@ -3,6 +3,21 @@ import AxeBuilder from '@axe-core/playwright';
 async function signIn(objPage,objRequest,bAdmin=false){await objPage.goto('/staff/sign-in');await objPage.getByLabel('Username',{exact:true}).fill(bAdmin?'admin':'employee');await objPage.getByLabel('Password',{exact:true}).fill('Synthetic staff browser passphrase only');await objPage.getByRole('button',{name:'Sign in',exact:true}).click();if(bAdmin){await objPage.getByLabel('Authenticator code',{exact:true}).fill(await(await objRequest.get('/__test/code')).text());await objPage.getByRole('button',{name:'Verify and sign in',exact:true}).click();}await expect(objPage).toHaveURL(/\/staff\/account$/);await objPage.getByRole('link',{name:'Order queue',exact:true}).click();await objPage.getByRole('link',{name:/Synthetic Guest 2 ·/}).click();}
 test.beforeEach(async({request:objRequest})=>{await objRequest.get('/__test/reset');});
 async function openPreviews(objPage){await objPage.getByText('Internal notification previews',{exact:true}).click();await expect(objPage.locator('#notification-status')).toHaveText('Previews refreshed.');}
+
+test('collapsed notification controls finish theme changes and remain usable when opened',async({page:objPage,request:objRequest})=>{
+  await signIn(objPage,objRequest);
+  const elDetails=objPage.locator('.staff-notifications');
+  await expect(elDetails).not.toHaveAttribute('open','');
+  await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText('Dark',{exact:true}).click();
+  await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter(objAnimation=>objAnimation.playState==='running').length)).toBe(0);
+  await objPage.getByText('Internal notification previews',{exact:true}).focus();
+  await objPage.keyboard.press('Enter');
+  await expect(objPage.getByRole('button',{name:'Refresh previews',exact:true})).toBeVisible();
+  await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText('Light',{exact:true}).click();
+  await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter(objAnimation=>objAnimation.playState==='running').length)).toBe(0);
+  await objPage.getByRole('button',{name:'Refresh previews',exact:true}).click();
+  await expect(objPage.locator('#notification-status')).toHaveText('Previews refreshed.');
+});
 test('employees read actual internal previews and Ready generation without sending or admin retry controls',async({page:objPage,request:objRequest})=>{
   await objRequest.get('/__test/preview-process');await signIn(objPage,objRequest);await objPage.getByText('Internal notification previews',{exact:true}).focus();await objPage.keyboard.press('Enter');await expect(objPage.locator('#notification-status')).toHaveText('Previews refreshed.');await objPage.keyboard.press('Tab');await expect(objPage.getByRole('button',{name:'Refresh previews',exact:true})).toBeFocused();await objPage.keyboard.press('Enter');await expect(objPage.locator('#notification-status')).toHaveText('Previews refreshed.');await expect(objPage.locator('#notification-list > li')).toHaveCount(2);await expect(objPage.locator('#notification-list')).toContainText('Nothing was sent or delivered.');await expect(objPage.locator('#notification-list')).not.toContainText('2025550100');
   for(const strStatus of ['Preparing','Baking','Ready']){await objPage.getByRole('button',{name:`Mark ${strStatus}`,exact:true}).click();await expect(objPage.locator('#orders-status')).toContainText(`Saved: ${strStatus}`);await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();}
