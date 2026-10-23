@@ -1,5 +1,19 @@
 # BE-07 acceptance handoff — gates retained
 
+## Current workflow — October 23, 2026
+
+The original macOS evidence and limitations below remain historical records.
+Use [TEST-01](https://trello.com/c/5lLwJGB8) for batched menu acceptance and the
+current [BE-07](https://trello.com/c/bpjfXwga) /
+[FE-07](https://trello.com/c/d3pei0I4) notes for later focused verification.
+Passing focused checks allows finished implementation to enter Ready for Testing;
+neither that status nor a teammate's acceptance of other staff screens closes
+these cards. Native visual, applicable browser/platform, manual accessibility and
+audit acceptance remain explicit checkpoint criteria. No historical result below
+is a claim that those checks ran again on a later commit.
+
+## Original handoff
+
 October 22, 2026. Card: https://trello.com/c/bpjfXwga.
 The human explicitly chose: **“Retain gates; teammates will verify missing checks.”**
 No Firefox, cross-platform or manual screen-reader requirement is waived. Keep

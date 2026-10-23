@@ -4,7 +4,6 @@ October 22 three-tier policy update: only the **Owner** publishes prices and
 manages service hours. Admins and Employees retain ingredient availability access.
 The server resolves ownership from the protected designation; existing admins
 are not implicitly owners. See [current account policy](staff-role-policy.md).
-Earlier admin-only descriptions below refer to the original two-tier implementation.
 
 Story: https://trello.com/c/bpjfXwga. October 22, 2026. This increment supplies
 actual owner/staff controls using existing storage, permissions and transactions.
@@ -14,7 +13,7 @@ It adds no dependency, migration, real provider integration or deployment.
 
 `src/staff/menu-service.js` executes reads/mutations inside the session service's
 synchronous authorized transaction. Employees/admins can manage ingredient
-availability; only admins publish prices or manage service hours. Caller-supplied
+availability; only the Owner publishes prices or manages service hours. Caller-supplied
 roles never grant access. Expired, revoked or disabled identities are rejected by
 the existing session service.
 
@@ -55,8 +54,8 @@ retry on a possibly committed, interrupted response.
   CSRF checks, strict 8 KiB JSON without inflation and safe errors. Routes are
   `/staff/menu`, `/api/staff/menu/csrf`, GET `/api/staff/menu/hours?date=...`, and
   POST `/api/staff/menu/{availability,prices,hours}`. Responses are private/no-store.
-- `src/views/pages/staff-menu.ejs`: escaped server-rendered initial data, employee
-  ingredient controls, admin price/hour forms and explicit labels/instructions.
+- `src/views/pages/staff-menu.ejs`: escaped server-rendered initial data, shared
+  ingredient controls, Owner-only price/hour forms and explicit labels/instructions.
   Private page retains noindex, consistent with staff indexing policy; SEO is
   inapplicable and is not silently reported as 100.
 - `src/public/js/staff-menu.js`: CSRF fetch, dollar-to-integer-cent conversion,
@@ -80,7 +79,7 @@ The HTTPS test verifies pinned host, anonymous redirect, employee/admin controls
 CSRF/origin, invalid/oversized/compressed JSON, persisted availability and conflicts.
 `npm run test:unit`: **249 pass**, zero failures/skips on this increment.
 
-`tests/staff-orders-e2e/menu.spec.js` covers real admin publication/reload,
+`tests/staff-orders-e2e/menu.spec.js` covers real Owner publication/reload,
 availability and hours changes with queue warnings, keyboard submission,
 employee restrictions and expired-session recovery. Light/dark snapshots are
 OS/browser/viewport specific; axe and 320-pixel reflow checks supplement them.
@@ -88,8 +87,20 @@ Commands and final browser/audit results are recorded in the verification note.
 Theme changes wait for actual animation completion before contrast checks; no
 accessibility rule or threshold is disabled.
 
-Windows and Linux execution/visual evidence is not available from this macOS
-checkout. Preserve other platforms' references and follow the team's cross-platform
-guide. Existing Firefox profile-startup failure and broader manual keyboard,
-zoom/contrast/screen-reader acceptance remain release gates. Do not mark BE-07
-complete or equate this implemented feature with integrated release acceptance.
+The preceding results describe the original macOS increment, not a new run.
+Current verification and remaining acceptance are tracked on
+[BE-07](https://trello.com/c/bpjfXwga),
+[FE-07](https://trello.com/c/d3pei0I4) and
+[TEST-01](https://trello.com/c/5lLwJGB8). The original Firefox launch limitation
+belongs to that environment; distinguish it from later native results.
+
+Under the [staged verification policy](../AGENTS.md#staged-verification-cadence),
+finished implementation with passing focused checks may move to Ready for Testing.
+That is not acceptance. TEST-01 covers the menu/editor/customer-availability
+journey, affected native browser/visual/accessibility checks and explicit remaining
+criteria. Preserve platform-specific references and review visual changes rather
+than accepting snapshots automatically. Keep manual keyboard, zoom/contrast and
+screen-reader observations specific to these screens; staff account acceptance
+does not prove the menu controls were reviewed. Retain private noindex behavior
+and record audit applicability explicitly. Existing QA cards retain integrated
+and hosted release acceptance; this guide does not certify those outcomes.
