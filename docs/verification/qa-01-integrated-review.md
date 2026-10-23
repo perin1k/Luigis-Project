@@ -73,6 +73,27 @@ remain valid for their documented commits/scopes; they do not prove this rerun.
 
 ## Release criteria retained
 
+### Privacy behavior follow-up
+
+At documentation HEAD `4da3655` (unchanged application baseline), the existing
+privacy suite passed **12/12** executions in 40.4 seconds across Chromium/WebKit,
+desktop/mobile. Command:
+
+```sh
+node node_modules/@playwright/test/cli.js test -c playwright.security.config.js --grep-invert 'privacy visual' --project=chromium-desktop --project=chromium-mobile --project=webkit-desktop --project=webkit-mobile --max-failures=1
+```
+
+The three original team-authored scenarios exercise reviewed contact correction
+and a restricted copy, Employee denial and session-expiry clearing (including late
+responses), and an interrupted correction whose committed result is verified on
+reload. Process exit zero; no failures or skips among these selected cases.
+Local log: `/private/tmp/luigis-qa01-privacy.log`. No test/application code changed.
+The two visual/axe scenarios were deliberately outside this behavioral run;
+their missing native-reference/manual/audit acceptance is not claimed passed or
+waived. Existing SEC ownership and implementation remain unchanged. Together with
+the integrated journeys above, this adds 12 successful executions to the earlier
+40; it does not establish full release acceptance.
+
 | Criterion | Evidence / remaining boundary |
 | --- | --- |
 | Connected customer confirmation, retries and private tracking | INT-01 scenarios exercise both service types, current menu changes, unavailable ingredients, ambiguous payment recovery and original submission retries. |
