@@ -1,5 +1,8 @@
 # Luigi's Pizza
 
+Receiving team: start with the [handoff guide](docs/handoff.md) for setup,
+workflow documentation, operator responsibilities and remaining release gates.
+
 The internal staff sign-in orchestration lives in `src/auth/login-service.js`;
 migration 008 persists throttles, short-lived MFA challenges and identity epochs.
 See `docs/authentication-design.md` for contracts and limits. The configured HTTPS
@@ -62,7 +65,8 @@ permissions must work; external services may use documented demonstration
 adapters. Live Stripe setup and actual charges are not required. Read
 [the integration boundary](docs/integrations.md) and
 [DECISION-07](https://trello.com/c/NKGL91hy) for current requirements, including
-encrypted full synthetic-number storage, which is not implemented yet.
+encrypted full synthetic-number storage implemented by the demonstration payment
+service. This does not enable real card processing or establish hosted acceptance.
 
 This is a three-person group project. Shared documentation describes the project,
 architecture, and contributor standards. Individual assignments and personal
