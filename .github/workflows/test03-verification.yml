@@ -1,6 +1,9 @@
 name: TEST-03 fulfillment, tracking and reporting acceptance
 
 on:
+  push:
+    branches: [dev]
+    paths: ['.github/workflows/test03-verification.yml']
   workflow_dispatch:
     inputs:
       phase:
@@ -74,13 +77,13 @@ jobs:
           defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
           defaults read org.webkit.Playwright AppleKeyboardUIMode
       - name: Connected checkpoint journeys and candidate collection
-        if: inputs.phase == 'collect'
+        if: inputs.phase == 'collect' || github.event_name == 'push'
         run: npx playwright test -c playwright.test03.config.js --update-snapshots=all ${{ matrix.projects }}
       - name: Strict reviewed-reference comparison
-        if: inputs.phase != 'collect'
+        if: inputs.phase == 'compare'
         run: npx playwright test -c playwright.test03.config.js --update-snapshots=none ${{ matrix.projects }}
       - name: Upload synthetic candidates for bounded internal review
-        if: inputs.phase == 'collect'
+        if: inputs.phase == 'collect' || github.event_name == 'push'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: test03-candidates-${{ matrix.os }}
