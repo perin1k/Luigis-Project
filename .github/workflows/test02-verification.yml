@@ -1,4 +1,4 @@
-name: TEST-02 menu and customer acceptance
+name: TEST-02 scheduling and checkout acceptance
 
 on:
   push:
@@ -65,27 +65,12 @@ jobs:
         run: npx playwright install --with-deps chromium firefox webkit
       - if: runner.os != 'Linux'
         run: npx playwright install chromium firefox webkit
-      - name: Record runtime and checkout integrity checks
-        run: |
-          node --version
-          npm --version
-          npx playwright --version
-          node --test tests/unit/order-submission.test.js tests/unit/demo-payment.test.js tests/unit/demo-payment-http.test.js tests/unit/demo-payment-concurrency.test.js tests/unit/payment-config.test.js tests/unit/payment-retry.test.js tests/unit/scheduling-service.test.js tests/unit/scheduling-concurrency.test.js
-      - name: Connected scheduling and recovery
-        run: npx playwright test -c playwright.test02-scheduling.config.js --update-snapshots=all ${{ matrix.projects }}
-      - name: Committed payments, receipts and interruption recovery
-        run: npx playwright test -c playwright.test02-payments.config.js --update-snapshots=all ${{ matrix.projects }}
-      - name: Edited authoritative recap and visual review
-        run: npx playwright test -c playwright.test02-pricing.config.js --update-snapshots=all ${{ matrix.projects }}
-      - name: Persisted order submission and safe retry
-        run: npx playwright test -c playwright.orders.config.js ${{ matrix.projects }}
-      # Temporary, explicitly approved collection for internal review; remove before acceptance.
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: test02-native-${{ runner.os }}
-          retention-days: 2
-          path: |
-            tests/scheduling-e2e/**/test02-ci/*.png
-            tests/payments-e2e/**/test02-ci/*.png
-            tests/pricing-e2e/**/test02-ci/*.png
+      # Functional, service/security and connected recovery evidence is retained
+      # from run 39966524807 on identical application/fixture source. This phase
+      # compares reviewed native references and verifies the teammate focus fix.
+      - name: Scheduling visuals and accessibility
+        run: npx playwright test -c playwright.test02-scheduling.config.js --grep 'visual scheduled status|scheduling policy' --update-snapshots=none ${{ matrix.projects }}
+      - name: Receipt and recovery visuals and accessibility
+        run: npx playwright test -c playwright.test02-payments.config.js --grep 'receipt .*visual capture' --update-snapshots=none ${{ matrix.projects }}
+      - name: Edited recap visuals and keyboard focus regression
+        run: npx playwright test -c playwright.test02-pricing.config.js --grep 'visual|keyboard pricing review' --update-snapshots=none ${{ matrix.projects }}

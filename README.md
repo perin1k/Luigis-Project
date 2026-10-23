@@ -795,3 +795,5 @@ BE-10: [inventory review, cancellation and full-refund lifecycle evidence](docs/
 FE-10: [connected private inventory, cancellation and refund status evidence](docs/verification/fe-10-connected-status.md).
 
 Customer checkout: [current BE-02/BE-03 integration and reconciled FE-03 receipt evidence](docs/verification/customer-checkout-checkpoint.md).
+
+TEST-02: [scheduling, persisted checkout and demonstration payment checkpoint](docs/verification/test-02-checkout-acceptance.md).

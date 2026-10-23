@@ -2,7 +2,7 @@ import objConfig from './playwright.pricing.config.js';
 
 // Separate native checkpoint references preserve contributors' existing baselines.
 export default { ...objConfig,
-  grep: /payment summary|visual priced review/,
+  grep: /payment summary|visual priced review|keyboard pricing review/,
   snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/test02-ci/{arg}-{projectName}-{platform}{ext}',
   updateSnapshots: 'none',
   outputDir: './test-results/test02-pricing',
