@@ -199,6 +199,27 @@ changes and infrastructure require a concrete approved increment; no workflow or
 billable resource is created by this policy. A documentation-only review cannot
 mark the application cross-platform release complete.
 
+## Native macOS keyboard navigation
+
+When testing native controls in macOS WebKit, enable Keyboard Navigation before
+browser launch. [Apple documents](https://support.apple.com/en-lamr/guide/safari/cpsh003/mac)
+that Tab reaches buttons and other controls when this setting is enabled. The
+[matching Playwright report](https://github.com/microsoft/playwright/issues/41808)
+records an app-scoped prerequisite for its disposable WebKit browser:
+
+```sh
+defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
+defaults read org.webkit.Playwright AppleKeyboardUIMode
+```
+
+The TEST-02 workflows apply this only on disposable hosted macOS runners, not on
+teammates' personal machines. Developers can enable Keyboard Navigation in macOS
+Keyboard settings for their own review. This is a platform input prerequisite,
+not permission to add unnecessary tabindex attributes, force focus from tests,
+skip keyboard cases or weaken assertions. Preserve the initial failure and actual
+follow-up outcome in [TEST-02's record](verification/test-02-checkout-acceptance.md).
+It does not establish real Safari/device acceptance.
+
 ## Tool references
 
 Staff authentication has a separate

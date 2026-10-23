@@ -1,5 +1,9 @@
 # BE-10 / FE-10 focused reconciliation — October 23, 2026
 
+## TEST-02 portion accepted; TEST-03 remains — October 23, 2026
+
+[TEST-02](test-02-checkout-acceptance.md) passed the scheduling/checkout service, connected browser, strict native visual/axe, keyboard, human Narrator/zoom and scoped audit gates. The record includes the resolved native macOS keyboard prerequisite and exact tested commits/runs. BE-10/FE-10 remain Ready for Testing, not Done: persisted cross-feature inventory changes, admin-reviewed whole-order cancellation/refund and corresponding customer/notification state require TEST-03. A static component gallery does not satisfy that integration acceptance. Final hosted/operator/integrated QA remains separate.
+
 Cards: [BE-10](https://trello.com/c/jJblyoFo) and
 [FE-10](https://trello.com/c/f8yQT7qN).
 Preserves the team's scheduling, inventory, tracking and refund implementation.

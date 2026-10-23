@@ -1,5 +1,9 @@
 # BE-02 unpaid persistence verification — 2026-10-21
 
+## TEST-02 feature acceptance — October 23, 2026
+
+The applicable feature checkpoint passed. See [TEST-02 acceptance](test-02-checkout-acceptance.md) for exact source/run links, native platform/browser visuals, connected journeys, human keyboard/Narrator/zoom review, contrast sampling and reused audit evidence. The initial macOS WebKit keyboard failure was resolved by enabling the documented native runner preference; assertions and application code were unchanged. BE-02/BE-03/FE-03 are accepted for their demonstration application scope. Existing final hosted, integrated privacy/security and operator gates remain separate. Historical pending notes below retain their original increment context and are superseded only by the explicit current evidence.
+
 ## Focused reconciliation — October 23, 2026
 
 Reviewed existing contributor implementation at `78f81cf` on native Windows,
