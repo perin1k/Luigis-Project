@@ -41,6 +41,59 @@ async function decide(objPage, strAction) {
   await objPage.getByRole('button', { name: 'Refresh order', exact: true }).click();
 }
 
+test('scheduled inventory review connects approved refund, private tracking, previews and Owner ledger', async ({ page: objPage, request: objRequest, objStaffPage, browser: objBrowser, baseURL: strBaseURL }) => {
+  const arrPaths = await (await objRequest.get('/__test/tracking')).json();
+  const objOwnerContext = await objBrowser.newContext({ baseURL: strBaseURL, ignoreHTTPSErrors: true });
+  try {
+    const objOwnerPage = await objOwnerContext.newPage();
+    await objOwnerPage.goto('/staff/sign-in');
+    await objOwnerPage.getByLabel('Username', { exact: true }).fill('owner');
+    await objOwnerPage.getByLabel('Password', { exact: true }).fill('Synthetic staff browser passphrase only');
+    await objOwnerPage.getByRole('button', { name: 'Sign in', exact: true }).click();
+    await objOwnerPage.getByLabel('Authenticator code', { exact: true }).fill(await (await objRequest.get('/__test/code?secret=owner')).text());
+    await objOwnerPage.getByRole('button', { name: 'Verify and sign in', exact: true }).click();
+    await expect(objOwnerPage).toHaveURL(/\/staff\/account$/);
+    const strReport = '/api/staff/analytics?from=2026-10-21&to=2026-10-21';
+    const objBefore = await (await objOwnerPage.request.get(strReport)).json();
+
+    await signInAdmin(objStaffPage, objRequest);
+    const strDetailPath = new URL(objStaffPage.url()).pathname;
+    await objStaffPage.goto('/staff/menu');
+    await objStaffPage.getByRole('button', { name: 'Mark Pepperoni unavailable', exact: true }).click();
+    await expect(objStaffPage.locator('#menu-status')).toContainText('Saved.');
+    await objStaffPage.goto(strDetailPath);
+    await expect(objStaffPage.getByRole('button', { name: 'Mark Preparing', exact: true })).toBeDisabled();
+    await objPage.goto(arrPaths[1]);
+    await expect(objPage.locator('#tracking-content')).toContainText('An ingredient needed for your order is unavailable');
+    await expect(objPage.locator('#tracking-content')).not.toContainText('Pepperoni');
+    await expect(objPage.locator('#tracking-content')).not.toContainText('refund completed');
+
+    await decide(objStaffPage, 'cancel');
+    await objPage.getByRole('button', { name: 'Refresh progress', exact: true }).click();
+    await expect(objPage.locator('#tracking-content')).toContainText('Demonstration refund awaiting team review.');
+    await objStaffPage.getByLabel('I approve the full demonstration refund.', { exact: true }).check();
+    await objStaffPage.getByRole('button', { name: 'Approve demo refund', exact: true }).click();
+    await expect(objStaffPage.locator('#refund-status')).toContainText('refund completed');
+    await objPage.getByRole('button', { name: 'Refresh progress', exact: true }).click();
+    await expect(objPage.locator('#tracking-content')).toContainText('Demonstration refund completed. No money was transferred.');
+
+    await objRequest.get('/__test/preview-process');
+    await objStaffPage.getByText('Internal notification previews', { exact: true }).click();
+    await expect(objStaffPage.locator('#notification-status')).toHaveText('Previews refreshed.');
+    await expect(objStaffPage.locator('#notification-list')).toContainText('refund');
+    await expect(objStaffPage.locator('#notification-list > li')).toHaveCount(6);
+    for (const elPreview of await objStaffPage.locator('#notification-list > li').all()) {
+      await expect(elPreview).toContainText('Nothing was sent or delivered.');
+      await expect(elPreview).toContainText('Generation: previewed');
+    }
+    const objAfter = await (await objOwnerPage.request.get(strReport)).json();
+    expect(objAfter.objPeriod.centsRefunds).toBeGreaterThan(objBefore.objPeriod.centsRefunds);
+    expect(objBefore.objPeriod.centsNetRecorded - objAfter.objPeriod.centsNetRecorded).toBe(objAfter.objPeriod.centsRefunds - objBefore.objPeriod.centsRefunds);
+    expect(objAfter.objPickup.intCompletedOrders).toBe(0);
+    expect(objAfter.objPickup.arrDates[0].intCancelled).toBe(objBefore.objPickup.arrDates[0].intCancelled + 1);
+  } finally { await objOwnerContext.close(); }
+});
+
 test('customer refresh preserves stale progress on network failure and clears unavailable private data', async ({ page: objPage, request: objRequest }) => {
   const arrPaths = await (await objRequest.get('/__test/tracking')).json();
   await objPage.goto(arrPaths[1]);
