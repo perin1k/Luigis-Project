@@ -40,6 +40,11 @@ export function createStaffFixture(strOrigin, { fnCreateApp = createApp } = {}) 
         objDatabase.prepare('INSERT INTO staff_credentials (user_id,username,password_hash,created_at,password_changed_at) VALUES (?,?,?,?,?)').run(strId, strId, PASSWORD_HASH, fnNow().toISOString(), fnNow().toISOString());
       }
     },
+    advanceTo(dtValue) {
+      const numNext = Date.parse(dtValue);
+      if (!Number.isFinite(numNext) || numNext < numNow) throw new Error('Fixture clock must move forward.');
+      numNow = numNext;
+    },
     expire() { numNow += 31 * 60000; },
     close() { objRuntime.destroy(); objMfa.destroy(); objDatabase.close(); } };
 }
