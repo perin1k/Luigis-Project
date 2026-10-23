@@ -20,7 +20,7 @@ use demonstration adapters, not application persistence or authorization.
 
 | Area | Current implementation | Remaining delivery |
 | --- | --- | --- |
-| Customer UI | Homepage, database-backed menu/pricing review, themes, availability/errors, isolated confirmation preview | Persisted order/payment/tracking integration and remaining screens |
+| Customer UI | Database-backed menu/pricing, availability and scheduled checkout; persisted order/demo payment, committed receipt and private tracking | INT-01 integrated acceptance, manual accessibility and final hosted QA; see the customer-journey record below |
 | Database | SQLite migrations, transactions, constraints and non-destructive menu seed | Reviewed services and additive schema changes |
 | Staff access | Mounted HTTPS staff/MFA/enrollment/recovery/account-management screens and real permissions | Firefox/runtime and manual accessibility acceptance; operator-owned real setup |
 | Payments | Local demo payments/full refunds, encrypted synthetic-number storage, committed order/hold confirmation and component accounting | Final acceptance; future remote-provider reconciliation remains separate |
@@ -50,6 +50,18 @@ and confirms orders/holds atomically; see [payment design](demo-payment-design.m
 It accepts no browser card numbers. `/preview/confirmation` remains a labelled,
 isolated design reference, not proof of an order. The actual checkout receipt is
 built from committed application records.
+
+The [INT-01 customer-journey record](verification/int-01-customer-journey.md)
+maps the existing server and browser contracts and records focused integration
+coverage. Customer drafts, contacts and payment request identifiers stay in page
+memory, not browser storage. A new ordering page starts empty. Tracking survives
+reload through the private URL fragment; a public order reference does not grant
+tracking access. Keep the private link separately if needed. An uncertain payment
+must be checked with its original request while the checkout page remains open;
+timeouts, throttles and server failures must not unlock editing or start a new
+payment. Reload does not restore that in-memory request, so do not interpret a
+fresh page as proof that a previous order failed or pay again for it. Recovery
+without the private link remains an authorized restaurant-team workflow.
 
 ## Synthetic payment-data safeguards and current design
 

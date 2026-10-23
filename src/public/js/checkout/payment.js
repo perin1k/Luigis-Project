@@ -5,7 +5,12 @@ export async function openSecureCheckout(objInput) {
   try{
     const objResponse=await fetch('/api/demo-payments',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',body:JSON.stringify(objInput),signal:objAbort.signal});
     const objResult=await objResponse.json();
-    if(!objResponse.ok){const objError=new Error(objResult.strMessage??'Unable to confirm demonstration payment. Retry to check the same request.');objError.bNeedsReview=[402,404,409].includes(objResponse.status);objError.bKnownResponse=objResponse.status!==429;throw objError;}
+    if(!objResponse.ok){const objError=new Error(objResult.strMessage??'Unable to confirm demonstration payment. Retry to check the same request.');objError.bNeedsReview=[402,404,409].includes(objResponse.status);
+      // A timeout, throttle or server failure can hide a committed payment.
+      // Keep the original request locked so recovery checks the same operation.
+      objError.bKnownResponse=objResponse.status>=400&&objResponse.status<500&&![408,429].includes(objResponse.status);
+      if(!objError.bKnownResponse)objError.message+=' Keep this page open and retry to check the same payment. Do not pay again in another checkout.';
+      throw objError;}
     if(objResult.strState!=='succeeded'||objResult.strAdapter!=='luigis-demo-v1')throw new Error('Unable to confirm demonstration payment. Retry to check the same request.');
     return objResult;
   }catch(objError){

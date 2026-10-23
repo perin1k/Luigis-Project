@@ -20,6 +20,8 @@ function reset(){objDatabase?.close();objDatabase=openDatabase(':memory:');apply
 reset();const objServer=createServer((objRequest,objResponse)=>{
   if(objRequest.url==='/__test/reset'){reset();return objResponse.end('reset');}
   if(objRequest.url==='/__test/decline'){bApprove=false;return objResponse.end('decline');}
+  if(objRequest.url==='/__test/price-change'){objDatabase.prepare('UPDATE pizza_sizes SET base_price_cents=base_price_cents+100').run();return objResponse.end('changed');}
+  if(objRequest.url==='/__test/pepperoni-unavailable'){objDatabase.prepare("UPDATE ingredients SET is_available=0,revision=revision+1 WHERE code='pepperoni'").run();return objResponse.end('changed');}
   if(objRequest.url==='/__test/near-close'){dtNow='2026-10-22T03:25:00.000Z';return objResponse.end('advanced');}
   if(objRequest.url==='/__test/after-cutoff'){dtNow='2026-10-22T03:30:00.001Z';return objResponse.end('advanced');}
   if(objRequest.url==='/__test/expire'){dtNow='2026-10-21T15:31:00.000Z';return objResponse.end('advanced');}
