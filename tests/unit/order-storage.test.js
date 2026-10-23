@@ -80,7 +80,7 @@ test('real catalog migration upgrades to order storage and persists accepted sna
     objDatabase.close();
     objDatabase = openDatabase(strPath);
     applyMigrations(objDatabase);
-    assert.equal(objDatabase.prepare('SELECT max(version) AS version FROM schema_migrations').get().version, 13);
+    assert.equal(objDatabase.prepare('SELECT max(version) AS version FROM schema_migrations').get().version, 14);
     assert.equal(objDatabase.prepare("SELECT accepted_quote_id FROM orders WHERE id = 'order1'").get().accepted_quote_id, 'quote1');
     assert.equal(objDatabase.prepare("SELECT base_price_cents FROM pizza_sizes WHERE id = 'size1'").get().base_price_cents, 500);
     assert.equal(objDatabase.prepare('PRAGMA foreign_key_check').all().length, 0);

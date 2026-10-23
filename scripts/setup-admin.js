@@ -40,8 +40,8 @@ async function main() {
     objTerminal = createInterface({ input: process.stdin, output: objOutput, terminal: true, historySize: 0 });
     objTerminal.on('SIGINT', () => objAbort.abort());
     objTerminal.on('close', () => objAbort.abort());
-    process.stdout.write('Initial admin setup — use a private terminal without recording or screen sharing.\n');
-    const strUsername = await ask('Individual admin username: ');
+    process.stdout.write('Initial owner setup — use a private terminal without recording or screen sharing.\n');
+    const strUsername = await ask('Individual owner username: ');
     let strPassword = await ask('Password (15+ characters; hidden): ', true);
     let strConfirmation = await ask('Repeat password (hidden): ', true);
     if (strPassword !== strConfirmation) throw new Error('Passwords do not match.');
@@ -61,7 +61,7 @@ async function main() {
     process.stdout.write('Save these single-use recovery codes privately now; they cannot be retrieved later:\n');
     for (const strCode of objConfirmed.arrRecoveryCodes) process.stdout.write(`${strCode}\n`);
     objConfirmed = null;
-    process.stdout.write('Initial admin created with verified MFA. Sign-in UI integration is still required.\nClear sensitive terminal scrollback after importing the authenticator secret.\n');
+    process.stdout.write('Initial owner created with verified MFA. Sign in using the configured HTTPS staff page.\nClear sensitive terminal scrollback after importing the authenticator secret.\n');
   } finally {
     clearTimeout(objTimer); objSetup?.cancel(); objTerminal?.close(); objOutput.end(); objDatabase.close();
   }

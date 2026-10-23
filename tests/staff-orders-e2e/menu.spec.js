@@ -1,11 +1,11 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-async function signIn(objPage,objRequest,bAdmin){await objPage.goto('/staff/sign-in');await objPage.getByLabel('Username',{exact:true}).fill(bAdmin?'admin':'employee');await objPage.getByLabel('Password',{exact:true}).fill('Synthetic staff browser passphrase only');await objPage.getByRole('button',{name:'Sign in',exact:true}).click();if(bAdmin){await objPage.getByLabel('Authenticator code',{exact:true}).fill(await(await objRequest.get('/__test/code')).text());await objPage.getByRole('button',{name:'Verify and sign in',exact:true}).click();}await expect(objPage).toHaveURL(/\/staff\/account$/);}
+async function signIn(objPage,objRequest,bAdmin){await objPage.goto('/staff/sign-in');await objPage.getByLabel('Username',{exact:true}).fill(bAdmin==='admin'?'admin':bAdmin?'owner':'employee');await objPage.getByLabel('Password',{exact:true}).fill('Synthetic staff browser passphrase only');await objPage.getByRole('button',{name:'Sign in',exact:true}).click();if(bAdmin){await objPage.getByLabel('Authenticator code',{exact:true}).fill(await(await objRequest.get(bAdmin==='admin'?'/__test/code':'/__test/code?secret=owner')).text());await objPage.getByRole('button',{name:'Verify and sign in',exact:true}).click();}await expect(objPage).toHaveURL(/\/staff\/account$/);}
 test.beforeEach(async({request:objRequest})=>{await objRequest.get('/__test/reset');});
 test('menu owner publishes prices, changes availability and closes a day with actual persisted review',async({page:objPage,request:objRequest})=>{
   await signIn(objPage,objRequest,true);await objPage.getByRole('link',{name:'Order queue',exact:true}).click();await objPage.getByRole('link',{name:'Menu management',exact:true}).click();
   await expect(objPage.getByRole('heading',{name:'Keep the menu fresh.',exact:true})).toBeVisible();
-  await objPage.locator('#base-small').fill('6.25');await objPage.getByRole('button',{name:'Publish reviewed prices',exact:true}).focus();await objPage.keyboard.press('Enter');await expect(objPage.locator('#menu-status')).toContainText('Saved.');
+  await objPage.locator('#base-small').fill('6.25');await expect(objPage.getByRole('button',{name:'Publish reviewed prices',exact:true})).toBeEnabled();await objPage.getByRole('button',{name:'Publish reviewed prices',exact:true}).focus();await objPage.keyboard.press('Enter');await expect(objPage.locator('#menu-status')).toContainText('Saved.');
   await objPage.reload();await expect(objPage.locator('#base-small')).toHaveValue('6.25');
   await objPage.getByRole('button',{name:'Mark Pepperoni unavailable',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('3 existing orders flagged');await expect(objPage.getByRole('button',{name:'Mark Pepperoni available',exact:true})).toBeVisible();
   await objPage.getByLabel('Service date',{exact:true}).fill('2026-10-21');await objPage.getByRole('button',{name:'Load current hours',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('Current hours loaded');await objPage.getByLabel('Closed all day',{exact:true}).check();await objPage.getByRole('button',{name:'Save reviewed hours',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('3 existing orders flagged');
@@ -29,4 +29,14 @@ test('menu concurrent tabs reject stale prices and hours while preserving entere
     await objOther.getByLabel('Closing hour (24-hour Central)',{exact:true}).fill('21');await objOther.getByRole('button',{name:'Save reviewed hours',exact:true}).click();await expect(objOther.getByRole('alert')).toContainText('Another team member changed');await expect(objOther.getByLabel('Closing hour (24-hour Central)',{exact:true})).toHaveValue('21');
     await objOther.getByRole('button',{name:'Load current hours',exact:true}).click();await expect(objOther.getByLabel('Closed all day',{exact:true})).toBeChecked();
   }finally{await objOther.close();}
+});
+
+test('manager can update availability but cannot read analytics or edit prices/hours',async({page:objPage,request:objRequest})=>{
+ await signIn(objPage,objRequest,'admin');await objPage.goto('/staff/menu');
+ await expect(objPage.getByRole('heading',{name:'Menu prices',exact:true})).toHaveCount(0);
+ expect((await objPage.request.get('/api/staff/menu/hours?date=2026-10-21')).status()).toBe(403);
+ expect((await objPage.request.get('/api/staff/analytics?from=2026-10-21&to=2026-10-21')).status()).toBe(403);
+ const objCsrf=await(await objPage.request.get('/api/staff/menu/csrf')).json();
+ expect((await objPage.request.post('/api/staff/menu/prices',{headers:{Origin:'https://localhost:3444','X-CSRF-Token':objCsrf.strCsrfToken},data:{}})).status()).toBe(403);
+ await objPage.getByRole('button',{name:'Mark Pepperoni unavailable',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('Saved.');
 });

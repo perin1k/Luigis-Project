@@ -16,6 +16,7 @@ import {createOrderExceptionService} from '../../src/staff/order-exception-servi
 import {createDemoRefundService} from '../../src/payments/demo-refund-service.js';
 function fixture(fnWork){const objDatabase=openDatabase(':memory:');applyMigrations(objDatabase);const fnNow=()=>new Date('2026-10-21T15:00:00.000Z');const arrOrders=seedStaffOrders(objDatabase,{intCount:1,fnNow});const objTokens={};
   for(const strRole of ['admin','employee']){objDatabase.prepare('INSERT INTO staff_users (id,identity_subject,role,created_at) VALUES (?,?,?,?)').run(strRole,strRole,strRole,fnNow().toISOString());const strToken=randomBytes(32).toString('hex');objTokens[strRole]=strToken;objDatabase.prepare('INSERT INTO staff_sessions (id,user_id,session_token_digest,authenticated_at,last_activity_at,mfa_verified_at,expires_at) VALUES (?,?,?,?,?,?,?)').run(randomUUID(),strRole,createHash('sha256').update(strToken).digest('hex'),fnNow().toISOString(),fnNow().toISOString(),strRole==='admin'?fnNow().toISOString():null,'2026-10-21T23:00:00.000Z');}
+  objDatabase.prepare('INSERT INTO staff_ownership VALUES(1,?,?)').run('admin',fnNow().toISOString());
   try{fnWork({objDatabase,arrOrders,objTokens,objService:createMenuService(objDatabase,createSessionService(objDatabase,{fnNow})),objCatalog:createCatalogService(objDatabase)});}finally{objDatabase.close();}}
 function prices(objSnapshot){return {strFingerprint:objSnapshot.objCatalog.strFingerprint,arrSizes:objSnapshot.objCatalog.arrSizes.map(({strCode,centsBase,centsTopping})=>({strCode,centsBase:centsBase+100,centsTopping})),arrDrinkSizes:objSnapshot.objCatalog.arrDrinkSizes.map(({strCode,centsPrice})=>({strCode,centsPrice}))};}
 test('inventory review blocks preparation then permits authorized whole-order cancellation and exact refund',()=>fixture(({objDatabase,arrOrders,objTokens,objService})=>{
@@ -44,7 +45,7 @@ test('inventory review blocks preparation then permits authorized whole-order ca
   assert.equal(JSON.stringify(objDatabase.prepare('SELECT * FROM order_lines WHERE order_id=? ORDER BY id').all(objOrder.strOrderId)),strLines);
   assert.equal(objDatabase.prepare('PRAGMA foreign_key_check').all().length,0);
 }));
-test('admin price publication clones recipes, changes authoritative fingerprint and preserves paid snapshots',()=>fixture(({objDatabase,objTokens,objService,objCatalog})=>{
+test('owner price publication clones recipes, changes authoritative fingerprint and preserves paid snapshots',()=>fixture(({objDatabase,objTokens,objService,objCatalog})=>{
   const objBefore=objService.read(objTokens.admin);const strHistory=JSON.stringify(objDatabase.prepare('SELECT * FROM order_quotes').all());const objInput=prices(objBefore);
   assert.equal(objService.prices(objTokens.employee,objInput),null);assert.equal(objService.prices('invalid',objInput),null);
   const objAfter=objService.prices(objTokens.admin,objInput);assert.notEqual(objAfter.objCatalog.strFingerprint,objBefore.objCatalog.strFingerprint);assert.equal(objAfter.objCatalog.intRevision,2);assert.equal(objAfter.objCatalog.arrSizes[0].centsBase,objBefore.objCatalog.arrSizes[0].centsBase+100);assert.equal(objAfter.objCatalog.arrSizes[0].bAvailable,true);

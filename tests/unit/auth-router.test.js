@@ -229,11 +229,11 @@ test('admin HTTPS deactivation revokes an existing employee session and repeats 
     obj.mapCookies.delete(AUTH_COOKIES.strSession);
     await signInAdmin(obj);
     assert.equal((await obj.send('/session', { objHeaders: { cookie: strEmployeeCookie }, bStore: false })).intStatus, 200);
-    const objResult = await obj.post('/employees/deactivate', { strEmployeeId: 'employee' });
+    const objResult = await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '1' });
     assert.equal(objResult.intStatus, 200); assert.deepEqual(objResult.objBody, { strState: 'disabled' });
     assert.equal(objResult.objHeaders['cache-control'], 'no-store');
     assert.equal((await obj.send('/session', { objHeaders: { cookie: strEmployeeCookie } })).intStatus, 401);
-    assert.deepEqual((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).objBody, { strState: 'already_disabled' });
+    assert.deepEqual((await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '2' })).objBody, { strState: 'already_disabled' });
     assert.equal(obj.objDb.prepare("SELECT count(*) AS total FROM audit_events WHERE action='staff_change'").get().total, 1);
     assert.equal((await obj.send('/session')).objBody.strRole, 'admin');
   } finally { await obj.close(); }
@@ -242,12 +242,12 @@ test('admin HTTPS deactivation revokes an existing employee session and repeats 
 test('deactivation denies unauthenticated, employee and MFA-pending callers without mutation', async () => {
   const obj = await fixture();
   try {
-    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '1' })).intStatus, 403);
     await obj.post('/login', { strUsername: 'employee', strPassword: PASSWORD });
-    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '1' })).intStatus, 403);
     await obj.post('/logout', {});
     await obj.post('/login', { strUsername: 'admin', strPassword: PASSWORD });
-    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '1' })).intStatus, 403);
     assert.equal(obj.objDb.prepare("SELECT state FROM staff_users WHERE id='employee'").get().state, 'active');
   } finally { await obj.close(); }
 });
@@ -258,9 +258,9 @@ test('deactivation rejects expired and revoked admin cookies', async () => {
     await signInAdmin(obj);
     const strCopied = obj.mapCookies.get(AUTH_COOKIES.strSession);
     obj.advance(30 * 60000);
-    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '1' })).intStatus, 403);
     obj.mapCookies.set(AUTH_COOKIES.strSession, strCopied);
-    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 403);
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '1' })).intStatus, 403);
     assert.equal(obj.objDb.prepare("SELECT state FROM staff_users WHERE id='employee'").get().state, 'active');
   } finally { await obj.close(); }
 });
@@ -270,7 +270,7 @@ test('deactivation protects admin/unknown targets and rejects role injection and
   try {
     await signInAdmin(obj);
     for (const strTarget of ['admin', 'unknown']) {
-      assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: strTarget })).intStatus, 403);
+      assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: strTarget, strRevision: '1' })).intStatus, 403);
     }
     for (const objBody of [{}, { strEmployeeId: '' }, { strEmployeeId: [] }, { strEmployeeId: 'x'.repeat(129) },
       { strEmployeeId: 'employee', strRole: 'admin' }, { strEmployeeId: 'employee', strActorId: 'admin' }]) {
@@ -284,16 +284,16 @@ test('deactivation requires CSRF and POST, and audit failure returns a safe erro
   const obj = await fixture();
   try {
     await signInAdmin(obj);
-    assert.equal((await obj.send('/employees/deactivate', { strMethod: 'POST', objBody: { strEmployeeId: 'employee' },
+    assert.equal((await obj.send('/employees/deactivate', { strMethod: 'POST', objBody: { strEmployeeId: 'employee', strRevision: '1' },
       objHeaders: { origin: ORIGIN } })).intStatus, 403);
     assert.equal((await obj.send('/employees/deactivate')).intStatus, 404);
     obj.objDb.exec("CREATE TRIGGER synthetic_deactivation_failure BEFORE INSERT ON audit_events WHEN NEW.action='staff_change' BEGIN SELECT RAISE(ABORT, 'private audit failure'); END");
-    const objResult = await obj.post('/employees/deactivate', { strEmployeeId: 'employee' });
+    const objResult = await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '1' });
     assert.equal(objResult.intStatus, 503); assert.ok(!objResult.strText.includes('private'));
     assert.equal(obj.objDb.prepare("SELECT state FROM staff_users WHERE id='employee'").get().state, 'active');
     assert.equal(obj.objDb.prepare("SELECT epoch FROM login_identity_versions WHERE user_id='employee'").get().epoch, 1);
     obj.objDb.exec('DROP TRIGGER synthetic_deactivation_failure');
-    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee' })).intStatus, 200);
+    assert.equal((await obj.post('/employees/deactivate', { strEmployeeId: 'employee', strRevision: '1' })).intStatus, 200);
   } finally { await obj.close(); }
 });
 

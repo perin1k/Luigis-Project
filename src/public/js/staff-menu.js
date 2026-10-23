@@ -20,3 +20,6 @@ for(const elForm of document.querySelectorAll('[data-menu-action]'))elForm.addEv
   status(`Saved. ${objResult.intReviews??0} existing orders flagged for review. Refresh other open staff pages to see the change.`);
 });});
 const elLoad=document.querySelector('#load-hours');if(elLoad)elLoad.addEventListener('click',()=>{const elForm=elLoad.form;work(elForm,async()=>{const strDate=elForm.elements.strDate.value;if(!strDate)throw new Error('Choose a service date.');const objResult=await request(`/api/staff/menu/hours?${new URLSearchParams({date:strDate})}`);elForm.dataset.revision=String(objResult.objDay.revision);elForm.dataset.loadedDate=strDate;elForm.elements.bClosed.checked=Boolean(objResult.objDay.is_closed);elForm.elements.intOpens.value=objResult.objDay.opens_at?hour(objResult.objDay.opens_at):10;elForm.elements.intCloses.value=objResult.objDay.closes_at?hour(objResult.objDay.closes_at):23;status('Current hours loaded. Review before saving.');});});
+
+// Enable mutation controls only after every handler is attached.
+for(const elButton of document.querySelectorAll('[data-menu-action] button'))elButton.disabled=false;

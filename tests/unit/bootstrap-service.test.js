@@ -61,7 +61,7 @@ test('first-admin setup persists nothing until MFA confirmation and then support
     const objLogin = createLoginService(obj.objDb, { objMfaService: objMfa, fnNow: obj.fnNow });
     const objChallenge = await objLogin.beginSignIn('alice.admin', PASSWORD, 'synthetic-source');
     const objSession = objLogin.completeMfa(objChallenge.strMfaChallenge, code(objEnrollment, obj), 'synthetic-source');
-    assert.equal(createSessionService(obj.objDb, { fnNow: obj.fnNow }).validateSession(objSession.strSessionToken).strRole, 'admin');
+    assert.equal(createSessionService(obj.objDb, { fnNow: obj.fnNow }).validateSession(objSession.strSessionToken).strRole, 'owner');
     await assert.rejects(obj.objSetup.beginSetup('second.admin', PASSWORD), /unavailable/);
   } finally { objMfa?.destroy(); obj.close(); }
 });
@@ -98,7 +98,7 @@ test('audit failure rolls back the complete account and requires a fresh code fo
   } finally { obj.close(); }
 });
 
-test('separate connections cannot commit two first admins and bootstrap marker survives role change', async () => {
+test('separate connections cannot commit two first admins and owner cannot be demoted and bootstrap stays closed', async () => {
   const strDirectory = mkdtempSync(join(tmpdir(), 'luigis-bootstrap-'));
   const obj = fixture(join(strDirectory, 'test.sqlite'));
   const objOther = fixture(join(strDirectory, 'test.sqlite'));
@@ -108,7 +108,7 @@ test('separate connections cannot commit two first admins and bootstrap marker s
     assert.ok(obj.objSetup.confirmSetup(code(objFirst, obj)));
     assert.throws(() => objOther.objSetup.confirmSetup(code(objSecond, objOther)), /unavailable/);
     assert.equal(obj.objDb.prepare('SELECT count(*) AS total FROM staff_users').get().total, 1);
-    obj.objDb.exec("UPDATE staff_users SET role='employee' WHERE role='admin'");
+    assert.throws(()=>obj.objDb.exec("UPDATE staff_users SET role='employee' WHERE role='admin'"),/Owner/);
     const objThird = createBootstrapService(obj.objDb, { strEncryptionKeyHex: KEY, fnNow: obj.fnNow });
     try { await assert.rejects(objThird.beginSetup('third.admin', PASSWORD), /unavailable/); }
     finally { objThird.cancel(); }

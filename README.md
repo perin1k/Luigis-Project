@@ -10,33 +10,36 @@ authentication routes and cookie/CSRF helpers. `src/app.js` mounts them only wit
 the configured authentication runtime. Direct TLS and an explicitly configured HTTPS
 origin are required; proxy/public deployment remains separately reviewed.
 
-`src/auth/staff-account-service.js` implements internal, admin-authorized employee
-deactivation. It uses the session service's synchronous `executeAuthorized` boundary
-to commit permissions, session/challenge revocation and audit history atomically.
-The isolated auth router exposes POST `/employees/deactivate` through this service;
-the mounted staff account screen provides administrator-only employee management.
+`src/auth/staff-account-service.js` implements revision-protected staff account
+changes. The Owner manages Employee/Admin roles and admin accounts; Admins manage
+employees only. Deactivation revokes access; reactivation requires fresh sign-in.
+The synchronous session boundary commits authorization, revocation and audit
+history together. The HTTPS account screen uses POST `/auth/staff/update`;
+the legacy deactivation route also requires a current account revision.
 
-Initial admin setup is available with `npm run admin:setup` after database migration
+Initial Owner setup is available with `npm run admin:setup` after database migration
 and private provisioning of `MFA_ENCRYPTION_KEY_HEX`. The interactive command asks
 for hidden password input and verifies authenticator enrollment before atomically
-creating the first admin. It has no default password or public route. See
-`docs/authentication-design.md` before running it, including secret handling,
-one-time setup, offline password-policy files and recovery procedures.
+creating the first Owner. It has no default password or public route. See
+`docs/staff-role-policy.md` for existing-installation owner designation, permissions
+and first administrator MFA setup, and `docs/authentication-design.md` for secret
+handling, one-time setup, offline password-policy files and recovery procedures.
 The implementation tests created only disposable synthetic accounts.
 
-Employee enrollment is implemented in `src/auth/staff-enrollment-service.js` and
+Staff enrollment is implemented in `src/auth/staff-enrollment-service.js` and
 migration 009. The isolated auth router can issue/revoke admin-authorized 24-hour
-invitations and accept them with an employee-chosen password. Only token digests
+invitations and accept them with a recipient-chosen password. Only the Owner may
+invite Admins, who must complete first MFA setup before signing in. Only token digests
 are stored. Tokens require private manual handoff; no notifications are sent.
 The HTTPS staff screens connect invitation creation/revocation and recipient enrollment.
 
-Account maintenance also provides admin-only paginated employee/invitation lists
+Account maintenance provides Owner/Admin-authorized paginated account/invitation lists
 and self-service password changes through the isolated router. Staff must verify
-their current password; admins additionally verify a fresh MFA code. Successful
+their current password; Owners/Admins additionally verify a fresh MFA code. Successful
 changes revoke sessions and require sign-in again. These services expose no hash
 or saved invitation token; see the authentication guide for contracts and limits.
 
-Account recovery now provides ten single-use admin recovery codes, password-plus-code
+Account recovery provides ten single-use privileged-account recovery codes, password-plus-code
 authenticator replacement, and `npm run account:recover` for the approved in-person
 procedure overseen by Brody. Recovery revokes access and keeps a persistent lock
 until enrollment completes; interrupted recovery never restores the lost factor.
@@ -46,10 +49,12 @@ All implementation verification used disposable synthetic accounts and keys.
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.
-Express currently serves the presentation layer. The repository also contains
-SQLite migration/menu-seed foundations and staff password/session/permission
-primitives developed in separate group increments. These are not yet connected
-to public ordering, payment or complete staff sign-in flows.
+Express serves the EJS presentation layer and configured application services.
+The group's incremental work includes SQLite persistence, public ordering and
+demonstration payments, protected tracking and staff authentication/operations.
+The three-tier account policy now governs Owner, Admin and Employee access.
+Implementation and acceptance are distinct; consult current design records and
+Trello for remaining verification and hosted/operator work.
 
 The approved delivery is a publicly hosted GCP/DuckDNS application with realistic
 customer, employee and admin screens. Data entry, validation, persistence and
@@ -115,6 +120,11 @@ members' incremental work and synchronizing authorized Trello/GitHub updates.
 prerequisites and the evidence required for Windows/macOS/Linux support.
 `docs/hosting-design.md` records TECH-01 ownership/funding/Spot decisions and the
 remaining storage, HTTPS, cost and recovery choices before deployment.
+`docs/staff-role-policy.md` records the Owner/Admin/Employee permission matrix,
+owner designation for existing installations, role changes, reactivation and
+first administrator MFA setup. New `admin:setup` runs create the Owner;
+`npm run owner:designate` privately designates an existing admin only when no
+Owner exists. No existing admin is promoted automatically by migration 014.
 A card or design approval is not proof of implemented behavior.
 
 ### Session validation (BE-08, first increment)

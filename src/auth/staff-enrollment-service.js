@@ -25,23 +25,25 @@ export function createStaffEnrollmentService(objDatabase, { fnNow = () => new Da
     if (!objInvite || objInvite.state !== 'pending' || dtNow.toISOString() < objInvite.created_at
       || dtNow.toISOString() >= objInvite.expires_at) return false;
     return Boolean(objDatabase.prepare(`SELECT u.id FROM staff_users u JOIN login_identity_versions v ON v.user_id = u.id
-      WHERE u.id = ? AND u.role = 'admin' AND u.state = 'active' AND v.epoch = ?`).get(objInvite.issued_by, objInvite.issuer_epoch));
+      WHERE u.id = ? AND u.role = 'admin' AND u.state = 'active' AND v.epoch = ?
+      AND (?='employee' OR EXISTS(SELECT 1 FROM staff_ownership WHERE user_id=u.id))`).get(objInvite.issued_by, objInvite.issuer_epoch,objInvite.requested_role));
   }
   return Object.freeze({
     listInvitations(strSessionToken, intOffset = 0, intLimit = 50) {
       if (!validPage(intOffset, intLimit)) return null;
-      return objSessions.executeAuthorized(strSessionToken, 'employees.manage', () => {
+      return objSessions.executeAuthorized(strSessionToken, 'employees.manage', (objIdentity) => {
         const arrRows = objDatabase.prepare(`SELECT id AS strInvitationId, username AS strUsername,
-          state AS strState, issued_by AS strIssuedBy, created_at AS strCreatedAt, expires_at AS strExpiresAt,
+          state AS strState, requested_role AS strRole, issued_by AS strIssuedBy, created_at AS strCreatedAt, expires_at AS strExpiresAt,
           closed_at AS strClosedAt, accepted_user_id AS strAcceptedUserId FROM staff_invitations
-          ORDER BY created_at, id LIMIT ? OFFSET ?`).all(intLimit + 1, intOffset);
+          WHERE requested_role='employee' OR ?='owner' ORDER BY created_at, id LIMIT ? OFFSET ?`).all(objIdentity.strRole,intLimit + 1, intOffset);
         return { arrInvitations: arrRows.slice(0, intLimit), intOffset, intLimit, bHasMore: arrRows.length > intLimit };
       });
     },
-    issueInvitation(strSessionToken, strUsername) {
+    issueInvitation(strSessionToken, strUsername, strRole = 'employee') {
       const strCanonical = username(strUsername);
-      if (!strCanonical) return null;
+      if (!strCanonical || !['employee','admin'].includes(strRole)) return null;
       return objSessions.executeAuthorized(strSessionToken, 'employees.manage', (objIdentity, dtNow) => {
+        if(strRole==='admin'&&objIdentity.strRole!=='owner')return null;
         objDatabase.prepare(`UPDATE staff_invitations SET state = 'expired', closed_at = ?
           WHERE username = ? AND state = 'pending' AND expires_at <= ?`)
           .run(dtNow.toISOString(), strCanonical, dtNow.toISOString());
@@ -51,8 +53,8 @@ export function createStaffEnrollmentService(objDatabase, { fnNow = () => new Da
         const strId = randomUUID();
         const strExpiry = new Date(dtNow.getTime() + 86400000).toISOString();
         const intEpoch = objDatabase.prepare('SELECT epoch FROM login_identity_versions WHERE user_id = ?').get(objIdentity.strUserId).epoch;
-        objDatabase.prepare(`INSERT INTO staff_invitations (id, username, token_digest, issued_by, issuer_epoch, created_at, expires_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?)`).run(strId, strCanonical, digest(strToken), objIdentity.strUserId, intEpoch, dtNow.toISOString(), strExpiry);
+        objDatabase.prepare(`INSERT INTO staff_invitations (id, username, token_digest, issued_by, issuer_epoch, created_at, expires_at, requested_role)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(strId, strCanonical, digest(strToken), objIdentity.strUserId, intEpoch, dtNow.toISOString(), strExpiry,strRole);
         return Object.freeze({ strInvitationId: strId, strInvitationToken: strToken, strExpiresAt: strExpiry });
       });
     },
@@ -60,6 +62,7 @@ export function createStaffEnrollmentService(objDatabase, { fnNow = () => new Da
       if (typeof strInvitationId !== 'string' || !strInvitationId.length || strInvitationId.length > 128) return null;
       return objSessions.executeAuthorized(strSessionToken, 'employees.manage', (objIdentity, dtNow) => {
         const objInvite = objDatabase.prepare('SELECT * FROM staff_invitations WHERE id = ?').get(strInvitationId);
+        if(objInvite?.requested_role==='admin'&&objIdentity.strRole!=='owner')return null;
         if (!objInvite || dtNow.toISOString() < objInvite.created_at) return null;
         if (objInvite.state === 'revoked') return Object.freeze({ strState: 'revoked' });
         if (objInvite.state !== 'pending') return null;
@@ -98,8 +101,9 @@ export function createStaffEnrollmentService(objDatabase, { fnNow = () => new Da
         if (dtNow < dtStarted || !usable(objInvite, dtNow)
           || objDatabase.prepare('SELECT user_id FROM staff_credentials WHERE username = ?').get(objBefore.username)) return null;
         const strUserId = randomUUID();
-        objDatabase.prepare("INSERT INTO staff_users (id, identity_subject, role, created_at) VALUES (?, ?, 'employee', ?)")
-          .run(strUserId, `local:${strUserId}`, dtNow.toISOString());
+        objDatabase.prepare("INSERT INTO staff_users (id, identity_subject, role, created_at) VALUES (?, ?, ?, ?)")
+          .run(strUserId, `local:${strUserId}`,objInvite.requested_role, dtNow.toISOString());
+        if(objInvite.requested_role==='admin')objDatabase.prepare('INSERT INTO staff_mfa_enrollments VALUES(?,?)').run(strUserId,dtNow.toISOString());
         objDatabase.prepare(`INSERT INTO staff_credentials (user_id, username, password_hash, created_at, password_changed_at)
           VALUES (?, ?, ?, ?, ?)`).run(strUserId, objInvite.username, strHash, dtNow.toISOString(), dtNow.toISOString());
         objDatabase.prepare("UPDATE staff_invitations SET state = 'accepted', closed_at = ?, accepted_user_id = ? WHERE id = ?")

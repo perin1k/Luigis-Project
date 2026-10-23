@@ -145,12 +145,12 @@ if (objAuthRuntime) {
     const objIdentity = objAuthRuntime.objSessionService.validateSession(objCookies[AUTH_COOKIES.strSession]);
     const strMode = objRequest.path.split('/').at(-1);
     if (strMode === 'account' && !objIdentity) return objResponse.redirect(303, '/staff/sign-in');
-    const objInitialLists = strMode === 'account' && objIdentity.strRole === 'admin'
+    const objInitialLists = strMode === 'account' && ['admin','owner'].includes(objIdentity.strRole)
       ? objAuthRuntime.readAccountLists(objCookies[AUTH_COOKIES.strSession]) : {};
     if (!objInitialLists) return objResponse.redirect(303, '/staff/sign-in');
     renderPage(objRequest, objResponse, fnNext, 'pages/staff', {
       strTitle: 'Staff access | Luigi’s Pizza', strDescription: 'Secure staff account access for Luigi’s Pizza.',
-      strMode, bOrderQueue: Boolean(objStaffOrdersService), bAdmin: objIdentity?.strRole === 'admin', objInitialLists,
+      strMode, bOrderQueue: Boolean(objStaffOrdersService), bAdmin: ['admin','owner'].includes(objIdentity?.strRole), bOwner: objIdentity?.strRole === 'owner', objInitialLists,
     });
   });
 }

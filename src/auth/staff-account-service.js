@@ -35,12 +35,14 @@ export function createStaffAccountService(objDatabase, { fnNow = () => new Date(
   return Object.freeze({
     listEmployees(strSessionToken, intOffset = 0, intLimit = 50) {
       if (!validPage(intOffset, intLimit)) return null;
-      return objSessions.executeAuthorized(strSessionToken, 'employees.manage', () => {
+      return objSessions.executeAuthorized(strSessionToken, 'employees.manage', (objIdentity) => {
         const arrRows = objDatabase.prepare(`SELECT u.id AS strUserId, c.username AS strUsername,
-          u.state AS strState, u.created_at AS strCreatedAt, u.disabled_at AS strDisabledAt
+          u.state AS strState, u.created_at AS strCreatedAt, u.disabled_at AS strDisabledAt,
+          u.revision AS intRevision, u.role AS strRole
           FROM staff_users u LEFT JOIN staff_credentials c ON c.user_id = u.id
-          WHERE u.role = 'employee' ORDER BY u.created_at, u.id LIMIT ? OFFSET ?`).all(intLimit + 1, intOffset);
-        return { arrEmployees: arrRows.slice(0, intLimit), intOffset, intLimit, bHasMore: arrRows.length > intLimit };
+          WHERE (u.role = 'employee' OR ? = 'owner') AND NOT EXISTS(SELECT 1 FROM staff_ownership WHERE user_id=u.id)
+          ORDER BY u.created_at, u.id LIMIT ? OFFSET ?`).all(objIdentity.strRole, intLimit + 1, intOffset);
+        return { arrEmployees: arrRows.slice(0, intLimit), bOwner: objIdentity.strRole === 'owner', intOffset, intLimit, bHasMore: arrRows.length > intLimit };
       });
     },
     async changeOwnPassword(strSessionToken, strCurrentPassword, strNewPassword, strCode, strSource) {
@@ -60,7 +62,7 @@ export function createStaffAccountService(objDatabase, { fnNow = () => new Date(
         if (!await verifyPassword(strCurrentPassword, objBefore.password_hash)) return null;
         strHash = await hashPassword(strNewPassword);
       } finally { intActivePasswordChanges -= 1; }
-      if (objBefore.strRole === 'admin') {
+      if (['admin','owner'].includes(objBefore.strRole)) {
         if (typeof objMfaService?.verifyCode !== 'function') throw new Error('MFA verification unavailable.');
         if (!objMfaService.verifyCode(objBefore.user_id, strCode)) return null;
       }
@@ -81,6 +83,38 @@ export function createStaffAccountService(objDatabase, { fnNow = () => new Date(
           VALUES (?, ?, 'staff_change', 'staff_user', ?, ?, ?, 'security', 'Staff account changed')`)
           .run(strEventId, objIdentity.strUserId, objIdentity.strUserId, dtNow.toISOString(), strEventId);
         return Object.freeze({ strState: 'password_changed' });
+      });
+    },
+    updateStaff(strSessionToken, strUserId, intRevision, strField, strValue) {
+      if(typeof strUserId!=='string'||!strUserId.length||strUserId.length>128
+        ||!Number.isSafeInteger(intRevision)||intRevision<1||intRevision>=Number.MAX_SAFE_INTEGER
+        || !((strField==='role'&&['employee','admin'].includes(strValue))||(strField==='state'&&['active','disabled'].includes(strValue)))) return null;
+      return objSessions.executeAuthorized(strSessionToken,strField==='role'?'staff.roles.change':'employees.manage',(objIdentity,dtNow)=>{
+        const objUser=objDatabase.prepare('SELECT * FROM staff_users WHERE id=?').get(strUserId);
+        if(!objUser||objUser.id===objIdentity.strUserId||objUser.revision!==intRevision
+          ||objDatabase.prepare('SELECT user_id FROM staff_ownership WHERE user_id=?').get(strUserId)
+          ||(objIdentity.strRole!=='owner'&&objUser.role!=='employee')||dtNow.toISOString()<objUser.created_at) return null;
+        if(objUser[strField]===strValue)return {strState:'unchanged'};
+        if(objDatabase.prepare('SELECT id FROM staff_sessions WHERE user_id=? AND revoked_at IS NULL AND last_activity_at>?').get(strUserId,dtNow.toISOString()))return null;
+        objDatabase.prepare('UPDATE staff_sessions SET revoked_at=? WHERE user_id=? AND revoked_at IS NULL').run(dtNow.toISOString(),strUserId);
+        // Invalidate once-only recovery/enrollment proofs as well as ordinary sessions.
+        objDatabase.prepare("UPDATE recovery_requests SET state='cancelled',closed_at=? WHERE user_id=? AND state='pending'").run(dtNow.toISOString(),strUserId);
+        if(strField==='role'){
+          objDatabase.prepare('DELETE FROM recovery_locks WHERE user_id=?').run(strUserId);
+          objDatabase.prepare('DELETE FROM staff_mfa_enrollments WHERE user_id=?').run(strUserId);
+          objDatabase.prepare("UPDATE recovery_codes SET state='revoked',closed_at=? WHERE user_id=? AND state='active'").run(dtNow.toISOString(),strUserId);
+          objDatabase.prepare('UPDATE staff_users SET role=?,revision=revision+1 WHERE id=?').run(strValue,strUserId);
+          objDatabase.prepare("UPDATE mfa_references SET state='revoked',revoked_at=? WHERE user_id=? AND state='active'").run(dtNow.toISOString(),strUserId);
+          if(strValue==='admin')objDatabase.prepare('INSERT INTO staff_mfa_enrollments VALUES(?,?)').run(strUserId,dtNow.toISOString());
+        }else{
+          objDatabase.prepare('UPDATE staff_users SET state=?,disabled_at=?,revision=revision+1 WHERE id=?').run(strValue,strValue==='disabled'?dtNow.toISOString():null,strUserId);
+          // Preserve recovery locks and first-enrollment eligibility. Reactivation
+          // must not turn a lost-factor recovery into password-only MFA reset.
+        }
+        const strEventId=randomUUID();
+        objDatabase.prepare(`INSERT INTO audit_events(id,actor_id,action,entity_type,entity_id,occurred_at,correlation_id,reason_code,safe_change_summary)
+          VALUES(?,?,'staff_change','staff_user',?,?,?,'security','Staff account changed')`).run(strEventId,objIdentity.strUserId,strUserId,dtNow.toISOString(),strEventId);
+        return {strState:'updated'};
       });
     },
     deactivateEmployee(strSessionToken, strEmployeeId) {

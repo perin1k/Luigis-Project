@@ -66,7 +66,7 @@ for (const elForm of document.querySelectorAll('form[data-endpoint]')) {
         elForm.hidden = true; document.querySelector('#mfa-form').hidden = false;
         announce('Password verified. Enter your authenticator code.'); document.querySelector('#strCode').focus();
       } else if (strResult === 'enrolled') {
-        elForm.hidden = true; announce('Your account is ready. Use your assigned username and new password to sign in.');
+        elForm.hidden = true; announce('Your account is ready. Employees can sign in now. New administrators must complete first authenticator setup on the recovery page before signing in.');
       } else if (strResult === 'password' || strResult === 'logout') {
         clearSecrets(); window.location.replace('/staff/sign-in');
       } else if (strResult === 'invited') {
@@ -112,26 +112,38 @@ async function loadList(elSection, intOffset = 0, objInitialResult) {
     const elList = elSection.querySelector('ul'); elList.replaceChildren();
     for (const objRecord of arrRecords) {
       const elItem = document.createElement('li');
-      elItem.textContent = `${objRecord.strUsername ?? 'Unassigned username'} · ${objRecord.strState}`;
+      const elName=document.createElement('span'); elName.textContent = `${objRecord.strUsername ?? 'Unassigned username'} · ${objRecord.strState}`; elItem.append(elName);
       if (!bEmployees && objRecord.strState === 'pending') {
         const elExpiry = document.createElement('p'); elExpiry.className = 'small';
         elExpiry.textContent = `Recorded expiry: ${objRecord.strExpiresAt}. The server checks validity when accepted.`; elItem.append(elExpiry);
       }
-      if (objRecord.strState === (bEmployees ? 'active' : 'pending')) {
-        const elAction = document.createElement('button'); elAction.className = 'btn btn-outline-primary'; elAction.type = 'button';
-        elAction.textContent = bEmployees ? `Deactivate ${objRecord.strUsername}` : `Revoke invitation for ${objRecord.strUsername}`;
-        elAction.addEventListener('click', async () => {
-          if (bSubmitting) return;
-          const strPrompt = bEmployees ? 'Deactivate this employee and revoke all their sessions?' : 'Revoke this invitation?';
-          if (!window.confirm(strPrompt)) return;
+      if (bEmployees) {
+        const elRole = document.createElement('p'); elRole.textContent = 'Role: ' + (objRecord.strRole==='admin'?'Admin':'Employee'); elItem.append(elRole);
+        async function update(strField, strValue, elAction) {
+          if (bSubmitting || !window.confirm('Change '+objRecord.strUsername+' '+strField+' to '+strValue+' and revoke its existing sessions?')) return;
           bSubmitting = true; elAction.disabled = true;
           try {
-            await request(bEmployees ? '/employees/deactivate' : '/employees/invitations/revoke', bEmployees
-              ? { strEmployeeId: objRecord.strUserId } : { strInvitationId: objRecord.strInvitationId });
-            announce(bEmployees ? 'Employee deactivated.' : 'Invitation revoked.'); await loadList(elSection, intOffset);
-          } catch (objError) { reportError(objError); elAction.disabled = false; }
+            await request('/staff/update', {strUserId:objRecord.strUserId,strRevision:String(objRecord.intRevision),strField,strValue});
+            announce(strField==='role'&&strValue==='admin'?'Account updated. Ask the new admin to complete first authenticator setup before signing in.':'Account updated. A fresh sign-in is required.'); await loadList(elSection,intOffset);
+          } catch(objError) { reportError(objError); elAction.disabled = false; }
           finally { bSubmitting = false; }
-        }); elItem.append(elAction);
+        }
+        const elState = document.createElement('button'); elState.type='button'; elState.className='btn btn-outline-primary';
+        elState.textContent=(objRecord.strState==='active'?'Deactivate ':'Reactivate ')+objRecord.strUsername;
+        elState.addEventListener('click',()=>update('state',objRecord.strState==='active'?'disabled':'active',elState));elItem.append(elState);
+        if (objResult.bOwner) {
+          const elRoleButton=document.createElement('button'); elRoleButton.type='button'; elRoleButton.className='btn btn-outline-primary';
+          elRoleButton.textContent=(objRecord.strRole==='employee'?'Promote to Admin: ':'Change to Employee: ')+objRecord.strUsername;
+          elRoleButton.addEventListener('click',()=>update('role',objRecord.strRole==='employee'?'admin':'employee',elRoleButton));elItem.append(elRoleButton);
+        }
+      } else if (objRecord.strState === 'pending') {
+        const elAction=document.createElement('button');elAction.type='button';elAction.className='btn btn-outline-primary';
+        elAction.textContent='Revoke invitation for '+objRecord.strUsername;
+        elAction.addEventListener('click',async()=>{
+          if(bSubmitting||!window.confirm('Revoke this invitation?'))return;bSubmitting=true;elAction.disabled=true;
+          try{await request('/employees/invitations/revoke',{strInvitationId:objRecord.strInvitationId});announce('Invitation revoked.');await loadList(elSection,intOffset);}
+          catch(objError){reportError(objError);elAction.disabled=false;}finally{bSubmitting=false;}
+        });elItem.append(elAction);
       }
       elList.append(elItem);
     }

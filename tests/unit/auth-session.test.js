@@ -71,7 +71,7 @@ test('permission checks deny unknown actions and employee access to admin capabi
   assert.ok(objService.authorizeSession(ADMIN_TOKEN, 'employees.manage'));
   assert.equal(objService.authorizeSession(ADMIN_TOKEN, 'admins.create'), null);
   assert.equal(objService.authorizeSession(ADMIN_TOKEN, '__proto__'), null);
-  assert.equal(canPerformAction('owner', 'menu.edit'), false);
+  assert.equal(canPerformAction('owner', 'menu.edit'), true);
   assert.equal(canPerformAction('admin', 'unknown'), false);
   assert.equal(objDatabase.prepare("SELECT last_activity_at FROM staff_sessions WHERE id = 'admin-session'").get().last_activity_at, '2026-10-21T12:10:00.000Z');
 }));
@@ -84,14 +84,19 @@ test('invalid and unknown bearer values fail without refreshing any session', ()
   assert.equal(objDatabase.prepare("SELECT last_activity_at FROM staff_sessions WHERE id = 'employee-session'").get().last_activity_at, '2026-10-21T12:00:00.000Z');
 }));
 
-test('the complete staff permission matrix preserves admin-only operations', () => {
+test('the complete staff permission matrix separates owner business controls', () => {
   for (const strAction of ['orders.read', 'orders.prepare', 'availability.update']) {
     assert.equal(canPerformAction('employee', strAction), true);
     assert.equal(canPerformAction('admin', strAction), true);
   }
-  for (const strAction of ['employees.manage', 'menu.edit', 'hours.manage', 'cancellation.decide', 'refund.approve', 'analytics.read']) {
+  for (const strAction of ['employees.manage', 'cancellation.decide', 'refund.approve']) {
     assert.equal(canPerformAction('employee', strAction), false);
     assert.equal(canPerformAction('admin', strAction), true);
+  }
+  for(const strAction of ['menu.edit','hours.manage','analytics.read','staff.roles.change']) {
+    assert.equal(canPerformAction('owner',strAction),true);
+    assert.equal(canPerformAction('admin',strAction),false);
+    assert.equal(canPerformAction('employee',strAction),false);
   }
   assert.equal(canPerformAction('admin', 'admins.create'), false);
   assert.equal(canPerformAction(null, 'orders.read'), false);

@@ -1,5 +1,11 @@
 # BE-07 persisted menu, availability and special-hours management
 
+October 22 three-tier policy update: only the **Owner** publishes prices and
+manages service hours. Admins and Employees retain ingredient availability access.
+The server resolves ownership from the protected designation; existing admins
+are not implicitly owners. See [current account policy](staff-role-policy.md).
+Earlier admin-only descriptions below refer to the original two-tier implementation.
+
 Story: https://trello.com/c/bpjfXwga. October 22, 2026. This increment supplies
 actual owner/staff controls using existing storage, permissions and transactions.
 It adds no dependency, migration, real provider integration or deployment.

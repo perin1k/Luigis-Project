@@ -100,6 +100,7 @@ export function createBootstrapService(objDatabase, { strEncryptionKeyHex, strKe
           last_verified_at = ?, last_counter = ? WHERE id = ?`).run(objFactor.mfa_reference_id,
           objFactor.confirmed_at, objFactor.last_verified_at, objFactor.last_counter, objFactor.id);
         audit('staff_change', 'staff_user', objUser.id, 'Staff account changed', dtCommitted);
+        objDatabase.prepare('INSERT INTO staff_ownership(singleton,user_id,designated_at) VALUES(1,?,?)').run(objUser.id,dtCommitted.toISOString());
         audit('mfa_change', 'mfa_reference', objFactor.id, 'MFA reference changed', dtCommitted);
         return issueRecoveryCodes(objDatabase, objUser.id, dtCommitted);
       });

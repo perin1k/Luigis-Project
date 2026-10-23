@@ -5,6 +5,11 @@ operator setup and acceptance remain on [BE-08](https://trello.com/c/JWv5cz7J) a
 [FE-08](https://trello.com/c/ZqKu1n46). This record grants no account access,
 changes no role and does not certify completed rollout.
 
+Current implementation follow-up: [three-tier staff role policy](staff-role-policy.md).
+The coordinated role services, additive migration and screens now exist; the table
+records the decision checkpoint below. Current BE-08/FE-08 verification and operator
+acceptance remain separate from this decision card's completion.
+
 ## Approved decisions and implementation boundaries
 
 | Area | Settled decision | Evidence / delivery boundary |

@@ -106,9 +106,12 @@ npm run db:seed
 npm run admin:setup
 ```
 
-The final command requires a private interactive terminal and MFA enrollment;
+The final command creates the initial Owner and requires a private interactive terminal and MFA enrollment;
 no shared/default password or unattended bypass exists. Brody Mensonides oversees
-recovery. Create individual staff identities through the reviewed admin flow.
+recovery. Follow the [staff role policy](staff-role-policy.md): the Owner creates
+Admins or Employees, and Admins create Employees only. Existing installations
+with no Owner require the private explicit designation procedure; migration 014
+does not promote an existing admin automatically.
 No developer database, saved guest link or existing test account is uploaded.
 
 ## 3. DNS and valid TLS, after authorization

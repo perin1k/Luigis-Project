@@ -7,8 +7,8 @@ payment/refund allocations, purchased quotes, bookings and timestamps. No new
 dependency, migration, provider evidence, external service or financial action.
 
 `src/staff/analytics-service.js` authorizes through the existing `analytics.read`
-permission and persisted MFA admin session in the same synchronous transaction as
-the reads. Employees, invalid/expired sessions and missing MFA cannot obtain a
+permission and persisted MFA Owner session in the same synchronous transaction as
+the reads. Admins, Employees, invalid/expired sessions and missing MFA cannot obtain a
 report. `src/staff/orders-router.js` adds GET `/api/staff/analytics?from=YYYY-MM-DD&to=YYYY-MM-DD`
 under its direct HTTPS, pinned host/origin, fetch-site, no-store/noindex and cookie
 guards. Exactly two valid calendar dates are required, in ascending order, with

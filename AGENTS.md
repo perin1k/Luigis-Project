@@ -177,6 +177,16 @@ on its existing cards.
 - Preserve the reviewed session and password primitives in `src/auth/`. Passwords
   are hashed, not encrypted as recoverable values; synthetic card encryption is a
   separate requirement. No default/shared staff password or browser-supplied role.
+- Staff access has three effective roles: Owner, Admin and Employee. Only the
+  Owner assigns Employee/Admin roles and manages admin accounts; admins may
+  invite, deactivate and reactivate employees only. The Owner alone edits menu,
+  prices and hours and reads sales analytics. Admins and Owner retain operational
+  cancellation/refund/review permissions. Follow `docs/staff-role-policy.md`.
+- Require authenticator MFA for both Owner and Admin. Promotion requires first
+  MFA enrollment before access. Role/state changes revoke sessions and pending
+  proofs; reactivation requires fresh sign-in and never restores revoked access.
+  Protect the single Owner against ordinary demotion/deactivation; never infer
+  ownership from an existing admin role or browser-supplied claim.
 - Local individual usernames/passwords and authenticator-app MFA for admins are
   the approved design. Idle expiry is 30 minutes and absolute expiry eight hours;
   activity cannot extend the latter. Protect secret enrollment/recovery and
@@ -330,7 +340,7 @@ counts, supported sizes, and monetary totals.
   with prominent alerts and no automatic timeout decision. After Preparing, block
   customer requests; admins may still cancel if the restaurant cannot fulfill.
   Prepared no-shows have no automatic refund; admins mark Not collected at close.
-- Staff/admins manually manage ingredient availability; admins edit prices/menu
+- Staff manually manage ingredient availability; only the Owner edits prices/menu
   and hours. Block affected recipes, never silently substitute. Preserve purchased
   prices and require review of changed unpaid totals. Do not add counted stock.
 - Guest tracking uses protected links, not automated lookup by name/contact/order
