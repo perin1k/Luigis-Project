@@ -22,11 +22,27 @@ use demonstration adapters, not application persistence or authorization.
 | --- | --- | --- |
 | Customer UI | Database-backed menu/pricing, availability and scheduled checkout; persisted order/demo payment, committed receipt and private tracking | INT-01 integrated acceptance, manual accessibility and final hosted QA; see the customer-journey record below |
 | Database | SQLite migrations, transactions, constraints and non-destructive menu seed | Reviewed services and additive schema changes |
-| Staff access | Mounted HTTPS staff/MFA/enrollment/recovery/account-management screens and real permissions | Firefox/runtime and manual accessibility acceptance; operator-owned real setup |
+| Staff access | Mounted HTTPS Owner/Admin/Employee accounts, MFA, staff operations and server permissions | INT-02 shared-record acceptance and final hosted QA; operator-owned real setup |
 | Payments | Local demo payments/full refunds, encrypted synthetic-number storage, committed order/hold confirmation and component accounting | Final acceptance; future remote-provider reconciliation remains separate |
 | Notifications | Restricted event-driven internal previews, admin retry and preview/contact/grant expiry; no email/SMS sending | Firefox/manual accessibility and broader privacy acceptance remain open |
 | Hosting | GCP/DuckDNS direction selected; no deployment claimed | Public HTTPS deployment, protected staff functions and reviewed costs |
 | Stripe/Apple Pay | Future provider/native Wallet integration | Separately authorized replacement and verification before live money |
+
+## Shared customer and staff records
+
+The runtime composes customer ordering/payment, staff queues/progress, menu,
+account, tracking and owner reporting services around the same configured SQLite
+database. The [INT-02 record](verification/int-02-shared-records.md) documents
+connected browser evidence and remaining acceptance. Owner alone can edit prices
+or read analytics; Admin handles operational exceptions/refunds and employee
+lifecycle; Employee handles preparation and ingredient availability. The approved
+[role policy](staff-role-policy.md) supersedes older admin-only analytics wording.
+
+The staff test fixture has an opt-in integrated checkout mode to exercise these
+contracts with separate role sessions and a shared disposable database. Synthetic
+identities, seeded orders and `/__test/` controls stay in tests; they are not
+production runtime wiring or hosted acceptance evidence. Existing narrow staff
+fixtures retain their previous default mode.
 
 ## Public demonstration checkout
 

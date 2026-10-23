@@ -1,4 +1,9 @@
 import {createPrivacyService} from '../../src/staff/privacy-service.js';
+import {randomBytes} from 'node:crypto';
+import {createSchedulingService} from '../../src/ordering/scheduling-service.js';
+import {createOrderService} from '../../src/ordering/order-service.js';
+import {createDemoPaymentService} from '../../src/payments/demo-payment-service.js';
+import {createSyntheticVault} from '../../src/payments/synthetic-vault.js';
 import {createMenuService} from '../../src/staff/menu-service.js';
 import {createCatalogService} from '../../src/ordering/catalog-service.js';
 import {createAnalyticsService} from '../../src/staff/analytics-service.js';
@@ -12,7 +17,7 @@ import {createApp} from '../../src/app.js';
 import {createStaffOrdersService} from '../../src/staff/orders-service.js';
 import {createStaffFixture} from './staff-app.js';
 import {seedStaffOrders} from './staff-orders-data.js';
-export function createOrdersFixture(strOrigin){
+export function createOrdersFixture(strOrigin,{bCustomerCheckout=false}={}){
   let bRefundApproved=true;let arrOrders=[];let arrTrackingPaths=[];let objNotices;let fnFailPreviews;
   const objFixture=createStaffFixture(strOrigin,{fnCreateApp(objOptions,objDatabase,{fnNow}){
     // The authentication fixture clock begins at 13:00 Chicago plus 30 seconds.
@@ -22,7 +27,11 @@ export function createOrdersFixture(strOrigin){
     const objTrackingService=createTrackingService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnNow});arrTrackingPaths=runTransaction(objDatabase,()=>arrOrders.map((objOrder)=>objTrackingService.issueForPayment(objOrder.strOrderId,fnNow().toISOString())));
     objNotices=createNotificationService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnNow});
     fnFailPreviews=()=>createNotificationService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnNow,fnRender(){throw new Error('fixture render failure');}}).processPending();
-    return createApp({...objOptions,objPrivacyService:createPrivacyService(objDatabase,objOptions.objAuthRuntime.objSessionService),objCatalogService:createCatalogService(objDatabase),objMenuService:createMenuService(objDatabase,objOptions.objAuthRuntime.objSessionService),objAnalyticsService:createAnalyticsService(objDatabase,objOptions.objAuthRuntime.objSessionService),objNotificationService:objNotices,objDemoRefundService:createDemoRefundService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnProcess:()=>bRefundApproved}),objTrackingService,objOrderExceptionService:createOrderExceptionService(objDatabase,objOptions.objAuthRuntime.objSessionService),objOrderProgressService:createOrderProgressService(objDatabase,objOptions.objAuthRuntime.objSessionService),objStaffOrdersService:createStaffOrdersService(objDatabase,objOptions.objAuthRuntime.objSessionService)});
+    const objCatalogService=createCatalogService(objDatabase);
+    const objSchedulingService=bCustomerCheckout?createSchedulingService(objDatabase,{fnNow:()=>fnNow().toISOString()}):undefined;
+    const objOrderService=bCustomerCheckout?createOrderService(objDatabase,objCatalogService,objSchedulingService):undefined;
+    const objPaymentService=bCustomerCheckout?createDemoPaymentService(objDatabase,{objTrackingService,objCatalogService,objSchedulingService,objVault:createSyntheticVault({strActiveKeyId:'integrated-fixture',mapKeys:{'integrated-fixture':randomBytes(32).toString('hex')}})}):undefined;
+    return createApp({...objOptions,objSchedulingService,objOrderService,objPaymentService,objPrivacyService:createPrivacyService(objDatabase,objOptions.objAuthRuntime.objSessionService),objCatalogService,objMenuService:createMenuService(objDatabase,objOptions.objAuthRuntime.objSessionService),objAnalyticsService:createAnalyticsService(objDatabase,objOptions.objAuthRuntime.objSessionService),objNotificationService:objNotices,objDemoRefundService:createDemoRefundService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnProcess:()=>bRefundApproved}),objTrackingService,objOrderExceptionService:createOrderExceptionService(objDatabase,objOptions.objAuthRuntime.objSessionService),objOrderProgressService:createOrderProgressService(objDatabase,objOptions.objAuthRuntime.objSessionService),objStaffOrdersService:createStaffOrdersService(objDatabase,objOptions.objAuthRuntime.objSessionService)});
   }});
   return {...objFixture,arrOrders,arrTrackingPaths,
     seedPendingRefund() {

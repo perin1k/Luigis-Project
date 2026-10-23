@@ -9,6 +9,7 @@ execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',jo
 let objFixture=createOrdersFixture('https://localhost:3444');
 const objServer=createServer({key:readFileSync(join(strDirectory,'key.pem')),cert:readFileSync(join(strDirectory,'cert.pem'))},(objRequest,objResponse)=>{
   if(objRequest.url==='/__test/reset'){objFixture.close();objFixture=createOrdersFixture('https://localhost:3444');return objResponse.end('reset');}
+  if(objRequest.url==='/__test/reset-integrated'){objFixture.close();objFixture=createOrdersFixture('https://localhost:3444',{bCustomerCheckout:true});return objResponse.end('reset');}
   if(objRequest.url==='/__test/expire'){objFixture.expire();return objResponse.end('expired');}
   if(objRequest.url==='/__test/closing'){objFixture.advanceTo('2026-10-22T04:00:00.000Z');return objResponse.end('closing');}
   if(objRequest.url==='/__test/tracking')return objResponse.setHeader('Content-Type','application/json').end(JSON.stringify(objFixture.arrTrackingPaths));
