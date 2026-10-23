@@ -153,6 +153,30 @@ axe/Lighthouse checks supplement manual keyboard, zoom and screen-reader review.
 
 ## Current evidence and release acceptance
 
+### DATA-02 storage workflow
+
+The approved `.github/workflows/storage-verification.yml` runs the same
+`npm run test:storage` command on Ubuntu 24.04, Windows Server 2022 and macOS 14,
+using Node 24.14.1 and `npm ci`. `scripts/verify-storage.js` supplies explicit
+test paths to Node without shell wildcard expansion. It propagates test failures
+and runs storage, migration/reopen/rollback, recreation, payment/concurrency,
+notification and Owner/Admin/Employee migration/lifecycle checks sequentially.
+The registry now includes additive migration 014; applied SQL remains immutable.
+
+Jobs run for relevant pushes and pull requests to `dev`, use pinned action
+commits and read-only repository permissions, and do not persist checkout
+credentials. They require no application secrets, live database, browser install,
+deployment, uploaded reports or dependency cache. Standard hosted runners are
+free for this public repository; review billing before changing its visibility
+or runner class. Repository Actions policy can still prevent execution.
+
+A workflow file is not a passing result. Verify all three jobs against the
+published commit before completing DATA-02. The historical macOS checkpoint in
+[the storage record](verification/data-02-storage.md) predates migration 014;
+current workflow outcomes must be distinguished from that preserved evidence.
+This storage-only workflow does not certify browser visuals, manual accessibility,
+private-key custody, the minimum supported Node version or full hosted acceptance.
+
 | Target | Available evidence | Still required |
 | --- | --- | --- |
 | Windows | Recorded local Node/unit/HTTPS and Chromium/Firefox/WebKit checks for reviewed increments, including receipt visuals | Full integrated acceptance, manual accessibility and actual operator/hosting configuration |

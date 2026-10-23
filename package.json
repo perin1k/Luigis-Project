@@ -16,6 +16,7 @@
     "dev": "node --watch src/server.js",
     "test": "playwright test",
     "test:unit": "node --test tests/unit/*.test.js",
+    "test:storage": "node scripts/verify-storage.js",
     "test:visual": "playwright test --grep visual",
     "test:report": "playwright show-report"
   },
