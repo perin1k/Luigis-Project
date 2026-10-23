@@ -1,10 +1,13 @@
-# BE-02 — unpaid order persistence increment
+# BE-02 — order submission and persistence
 
-This increment saves reviewed order details, not a confirmed restaurant order.
-[BE-10 scheduling](scheduling-design.md) now adds pickup selection and atomic
-capacity holds to the configured runtime. Payment success (BE-03) and guest tracking
-remain separate integrations. BE-02 cannot close until those acceptance requirements
-and the outstanding quality gates are satisfied.
+The submission service saves reviewed order details without confirming a restaurant
+order. The configured runtime now connects [scheduling](scheduling-design.md),
+[demonstration payment](demo-payment-design.md),
+[private tracking](tracking-and-exceptions.md) and
+[retention cleanup](retention-enforcement.md). These are existing contributor
+implementations, not new work supplied by this documentation update.
+See [current focused verification](verification/be-02-persistence.md).
+Full BE-02 acceptance remains on TEST-02; local implementation readiness is not Done.
 
 ## File guide and integration
 
@@ -26,10 +29,12 @@ and the outstanding quality gates are satisfied.
   its existing HTTPS requirements. Public deployment still needs its own review.
 - `src/public/js/ordering/order-wizard.js` sends the reviewed cart/contact data,
   retains a request UUID through retries, and announces saved-but-unpaid status.
-  A failed/lost response preserves input. It proceeds to the existing recoverable
-  payment boundary, which cannot report success. The details/payment partials
-  show the dine-in email alternative and the explicit unconfirmed status.
-  The ordering page tells visitors to use invented contacts for this class demo.
+  A failed/lost response preserves input. When demonstration payment is configured,
+  it proceeds through the real server adapter and shows confirmation only after
+  committed payment/order state; an isolated submission-only fixture remains
+  explicitly unconfirmed. The details/payment partials show the dine-in email
+  alternative and the unpaid status before payment. Demonstration data disclosures
+  remain part of the configured checkout.
 
 ## Request contract
 
@@ -55,15 +60,20 @@ serialized pricing content, so clients must preserve their request on retry.
 The browser keeps only the current pending request in memory, not local storage;
 refreshing loses the cart/retry capability. Editing creates a new request; this
 can leave previous unpaid records, not a second confirmed order or charge.
-The remaining checkout lifecycle must resolve abandoned records and integrate the
-approved retention policy. The 30-minute quote expiry does not extend when retried. The original isolated
-BE-02 service alone creates no capacity hold; the configured BE-10 integration now
-creates one atomically. A future payment
-service must enforce expiry and scheduling, not treat an idempotent response as
-permission to charge. Fulfillment status remains NULL, with no received timestamp, payment attempt, notification or tracking link.
-BE-10 adds the booking/hold; this does not establish payment or fulfillment.
+The configured retention lifecycle handles abandoned checkout contacts under the
+approved policy, preserving sanitized financial/order history. The 30-minute quote
+expiry does not extend when retried. The isolated BE-02 service alone creates no
+capacity hold; configured BE-10 creates one atomically. Before payment, fulfillment
+status remains NULL with no Received timestamp or confirmation. The demonstration
+payment service independently enforces expiry, cutoff, capacity, prices and
+availability; a submission replay is never proof of payment. Committed payment
+confirms the hold and Received state, records its event/notification intent and
+issues protected tracking access through the configured services. Internal preview
+notifications do not prove external delivery, and no real money moves.
 
 The simple explicit persistence service reuses existing schema invariants rather
 than introducing another draft store or framework. It intentionally leaves
-checkout orchestration to the separate scheduling/payment stories. This trades
-an incomplete end-to-end checkout for a focused, independently testable increment.
+checkout orchestration to the separate scheduling/payment services. This keeps
+submission independently testable while the configured runtime joins the services.
+Remaining connected browser/platform/accessibility and release gates stay explicit
+on TEST-02 and final QA rather than being inferred from storage primitives.
