@@ -89,12 +89,20 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
+          bArchiveFound=false
           for strSource in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
             if [[ -f "$strSource" ]]; then
               sudo sed -i 's|http://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|https://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|mirror+file:/etc/apt/apt-mirrors\.txt|https://archive.ubuntu.com/ubuntu|g' "$strSource"
-              grep -E '^(URIs:|deb )' "$strSource"
+              if grep -Eq '^(URIs:|deb ).*https://archive\.ubuntu\.com/ubuntu' "$strSource"; then
+                grep -E '^(URIs:|deb )' "$strSource"
+                bArchiveFound=true
+              fi
             fi
           done
+          if [[ "$bArchiveFound" != true ]]; then
+            echo 'No active Ubuntu archive source was selected.' >&2
+            exit 1
+          fi
       - name: Install locked browsers and Linux system prerequisites
         if: runner.os == 'Linux'
         timeout-minutes: 30
