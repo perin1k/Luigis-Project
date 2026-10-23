@@ -1,6 +1,12 @@
 name: TEST-01 menu and customer acceptance
 
 on:
+  push:
+    branches: [dev]
+    paths:
+      - '.github/workflows/test01-verification.yml'
+      - 'playwright.test01*.js'
+      - 'tests/staff-orders-e2e/menu-customer.spec.js'
   workflow_dispatch:
     inputs:
       references:
@@ -34,6 +40,7 @@ jobs:
     env:
       PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
       TEST01_NATIVE: '1'
+      TEST01_REFERENCE_MODE: all
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -75,13 +82,13 @@ jobs:
           openssl version
           node --test tests/unit/menu-service.test.js tests/unit/menu-http.test.js tests/unit/pricing-http.test.js tests/unit/catalog-pricing.test.js tests/unit/order-pricing.test.js tests/unit/http-hosting.test.js
       - name: Shared menu, customer and permission journeys
-        run: npx playwright test -c playwright.test01.config.js --update-snapshots=${{ inputs.references }} ${{ matrix.projects }}
+        run: npx playwright test -c playwright.test01.config.js --update-snapshots=${{ env.TEST01_REFERENCE_MODE }} ${{ matrix.projects }}
       - name: Availability, branded errors, visuals and accessibility
-        run: npx playwright test -c playwright.test01-public.config.js --update-snapshots=${{ inputs.references }} ${{ matrix.projects }}
+        run: npx playwright test -c playwright.test01-public.config.js --update-snapshots=${{ env.TEST01_REFERENCE_MODE }} ${{ matrix.projects }}
       - name: Persisted customer recovery journeys
         run: npx playwright test -c playwright.pricing.config.js --grep 'unavailable selected topping|changed database prices|network failures retain|withdraws stale prices' ${{ matrix.projects }}
       - name: Collect synthetic references only when explicitly requested
-        if: success() && inputs.references == 'all'
+        if: success() && env.TEST01_REFERENCE_MODE == 'all'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: test01-references-${{ matrix.os }}
