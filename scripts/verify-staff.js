@@ -6,7 +6,7 @@ console.log(JSON.stringify({ strPlatform: process.platform, strArchitecture: pro
   strOsRelease: release(), strNodeVersion: process.version }));
 const arrTests = ['auth-session', 'auth-runtime', 'auth-router', 'password-service',
   'mfa-service', 'login-service', 'bootstrap-service', 'staff-account-service',
-  'staff-enrollment-service', 'recovery-service', 'staff-roles']
+  'staff-enrollment-service', 'recovery-service', 'staff-roles', 'cookie-flags']
   .map((strName) => fileURLToPath(new URL(`../tests/unit/${strName}.test.js`, import.meta.url)));
 const objResult = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...arrTests],
   { cwd: fileURLToPath(new URL('..', import.meta.url)), stdio: 'inherit' });

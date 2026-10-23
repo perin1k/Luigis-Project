@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readCookieFlags } from '../helpers/cookie-flags.js';
 
 test.beforeEach(async ({ request: objRequest }) => { await objRequest.get('/__test/reset'); });
 
@@ -9,10 +10,8 @@ test('Strict session cookie is withheld on real cross-site navigation while None
   const pLogin = objPage.waitForResponse((objResponse) => objResponse.url().endsWith('/auth/login') && objResponse.request().method() === 'POST');
   await objPage.getByRole('button', { name: 'Sign in', exact: true }).click();
   const objLogin = await pLogin;
-  const objHeader = (await objLogin.headersArray()).find((objRow) => objRow.name.toLowerCase() === 'set-cookie'
-    && objRow.value.startsWith('__Host-luigis-session='));
   // Compare flags only: a failed assertion must never print the opaque session value.
-  expect(objHeader?.value.split(';').slice(1).map((strFlag) => strFlag.trim().toLowerCase()))
+  expect(readCookieFlags(await objLogin.headersArray(), '__Host-luigis-session'))
     .toEqual(expect.arrayContaining(['path=/', 'secure', 'httponly', 'samesite=strict']));
   await expect(objPage).toHaveURL(/\/staff\/account$/);
   await objPage.goto('/__test/cookie-control');
