@@ -555,12 +555,19 @@ human explicitly revises the acceptance requirements.
   notes and commits, record scoped progress/blockers and verified repository links,
   and close only the accepted card scope. Do not equate a module, migration,
   proposed design or demonstration external outcome with a completed application.
-- Preserve board organization: each prefix stays together and follows reviewed
-  dependency order, not necessarily its numeric ID. Current convention puts all FE
-  in In Progress, all BE in Sprint Backlog, future PAY in Future Ideas, completed
-  decisions in Approved Decisions and open TECH in Technical Decisions. Preserve
-  other members' explicitly authorized DATA/status changes rather than resetting
-  them to an older chat snapshot. Completion badges and notes identify actual state.
+- Active card ownership: before implementation begins, move the card to the
+  board's designated In Progress list and identify the responsible developer or
+  developers on the card. Check existing ownership and activity first; coordinate
+  before joining work already underway. Keep active cards grouped by prefix and
+  dependency order. Backlog placement represents planned work, not work currently
+  underway. Do not place every card with a given prefix in In Progress merely
+  because that workstream has started.
+- Preserve board organization: within each list, keep matching prefixes together
+  in reviewed dependency order, not necessarily numeric order. Use actual work
+  status to choose the list; completed decisions and future ideas retain their
+  designated lists. Preserve other members' explicitly authorized status changes
+  rather than resetting them to an older chat snapshot. Completion badges and
+  notes identify actual state; move a card to Done only after acceptance.
 - Record individual time honestly using the team's chosen tool and categories.
   Do not invent elapsed time, backfill unverified entries, or claim others' work.
 - Connections are optional until a task needs them. Do not block local approved
