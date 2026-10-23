@@ -43,10 +43,13 @@ npm ci
 npm run test:unit
 ```
 
-Run the applicable browser, accessibility and Lighthouse checks there; avoid
-running browser tooling on the serving e2-small VM. Preserve OS-specific snapshots.
-Firefox's recorded local startup failure, manual accessibility and integrated
-acceptance remain open; a passing local unit suite does not clear those gates.
+Reuse valid [TEST-01](verification/test-01-menu-acceptance.md),
+[TEST-02](verification/test-02-checkout-acceptance.md) and
+[TEST-03](verification/test-03-acceptance.md) native/browser/manual evidence after
+impact review; rerun invalidated checks on verification workers rather than the
+serving e2-small VM. Preserve OS-specific references. Historical local Firefox
+failures do not erase later accepted native runs, and checkpoint acceptance does
+not clear final integrated/hosted QA or actual Ubuntu runtime verification.
 
 Prepare an immutable, root/deployer-owned release directory with the selected
 source and lockfile. On the future host, production dependencies use
@@ -140,6 +143,10 @@ certificate pair before relying on unattended renewal. Do not copy partially
 updated credentials into a running service's paths. No renewal timer is created.
 
 ## 4. Service supervision and first launch
+
+Repository preparation now includes [review templates and target-side checks](../deploy/README.md),
+with a systemd unit and non-secret environment example. They are not installed or
+systemd-verified on Ubuntu. Do not enable them from repository presence alone.
 
 Prepare and review a systemd service with a dedicated identity, fixed working
 release directory, protected environment input and explicit data-mount dependency.

@@ -806,4 +806,6 @@ QA-02: [consolidated payment/privacy evidence and remaining operator gates](docs
 
 QA-03: [approved targets, race/recovery evidence and hosted measurement procedure](docs/verification/qa-03-concurrency-recovery.md).
 
+OPS-01 preparation: [review-only systemd/environment templates and rollback checks](deploy/README.md).
+
 TEST-02: [scheduling, persisted checkout and demonstration payment checkpoint](docs/verification/test-02-checkout-acceptance.md).
