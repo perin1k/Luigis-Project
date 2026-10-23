@@ -77,6 +77,12 @@ authorized commit/push, and Trello updates without requiring repeated prompts fo
 routine steps. Complete and move the card to Done only when its acceptance
 criteria are satisfied.
 
+Under the staged testing workflow in section 9, implementation with passing
+focused checks may move to Ready for Testing while explicitly linked checkpoint
+verification remains pending. This is not full-card completion or permission to
+mark the card Done. Continue through the approved checkpoint scope without
+requiring repeated prompts for routine steps; disclose remaining acceptance work.
+
 Partial increments are progress, not card completion. Stop for genuine blockers,
 unresolved decisions, or material scope changes; explain precisely what remains
 and why. Do not weaken acceptance criteria, move unfinished work elsewhere merely
@@ -134,8 +140,9 @@ on its existing cards.
   server responsibilities from browser responsibilities. Provide focused snippets
   or diffs when they help the reviewer understand the change.
 - Do not merge or close a task with unmet mandatory quality gates. Documentation
-  changes require content and diff review; application browser and Lighthouse
-  checks apply when there is a runnable application affected by the change.
+  changes require content and diff review. Schedule broader application browser,
+  visual, accessibility and Lighthouse checks at the section 9 checkpoints rather
+  than automatically rerunning every suite after every implementation increment.
 - Obtain the human's review before moving to an unapproved next increment.
 
 ## 3. Git and change management
@@ -485,6 +492,51 @@ alone does not establish WCAG 2.2 AA conformance.
 
 ## 9. Testing and quality gates
 
+### Staged verification cadence
+
+Batch broad verification at explicit milestones while retaining meaningful
+checks during development. This changes verification timing, not acceptance
+standards, required coverage, TDD, or security protections.
+
+- Each implementation increment: review the diff and run focused unit,
+  integration or browser checks for changed behavior, including relevant failure
+  and boundary cases. Verify affected authorization, authentication, payment and
+  sensitive-data protections immediately; never defer a known security failure
+  merely because a TEST card is planned. Add reusable tests alongside behavior.
+- Feature checkpoints (TEST cards): exercise the linked connected journeys,
+  affected supported browsers and viewports, automated accessibility and reviewed
+  visual differences. Include applicable manual accessibility and Lighthouse
+  checks before accepting the linked features; record any gate reserved for
+  final acceptance explicitly. Reuse existing fixtures, suites and valid evidence.
+- Final acceptance (existing QA cards): verify integrated customer, employee and
+  owner/admin behavior, the full supported browser/platform matrix, visual and
+  manual accessibility review, Lighthouse requirements and hosted deployment.
+  QA-02 retains payment/privacy verification; QA-03 retains concurrency/recovery
+  and performance verification; QA-01 retains integrated release acceptance.
+  TEST cards support these reviews rather than replace or duplicate them.
+- Select checks from the actual change and dependency impact. Do not rerun
+  unaffected broad suites or repeat successful checks without a new change,
+  failure, or unresolved concern. Documentation-only changes need content, link
+  and diff review, not application runtime suites. Independent approved work may
+  continue while CI runs, provided it does not invalidate or conflict with the
+  verification in progress. Do not disable or alter CI without reviewed scope.
+- Record the tested commit, environment, covered criteria, outcomes and remaining
+  gates on the checkpoint and link its evidence from the source cards. Later
+  changes require impact review and rerunning invalidated checks; earlier results
+  are not automatic evidence for changed behavior. Do not present unrun checks
+  as passes or silently waive existing quality gates.
+
+Ready for Testing requires finished implementation for the card's scope, passing
+focused checks, a reviewable commit and an explicit linked TEST/QA checkpoint with
+the remaining criteria recorded on the original card. Unfinished implementation
+and known defects remain In Progress or visibly blocked; do not relabel them as
+testing-only work. Checkpoint defects return affected cards to In Progress.
+Move a feature to Done only when its own acceptance criteria and applicable gates
+are satisfied; the product still requires final QA acceptance. Preserve already
+accepted cards and evidence unless a regression or changed requirement affects
+them. A checkpoint may accept only the individually verified source cards; it
+must remain open until its full scope passes.
+
 ### Test-driven development
 
 - Write behavior-focused tests before or alongside implementation.
@@ -563,11 +615,18 @@ human explicitly revises the acceptance requirements.
   underway. Do not place every card with a given prefix in In Progress merely
   because that workstream has started.
 - Preserve board organization: within each list, keep matching prefixes together
-  in reviewed dependency order, not necessarily numeric order. Use actual work
+  in reviewed dependency order, not necessarily numeric order. The designated
+  Development — Completion Order queue may interleave prefixes by dependency;
+  insert TEST checkpoints at their feature dependency boundaries so verification
+  is intermittent. Use actual work
   status to choose the list; completed decisions and future ideas retain their
   designated lists. Preserve other members' explicitly authorized status changes
   rather than resetting them to an older chat snapshot. Completion badges and
   notes identify actual state; move a card to Done only after acceptance.
+- Use Ready for Testing for implemented cards awaiting their linked checkpoint,
+  with source-card acceptance criteria retained. Move a TEST card to In Progress
+  when verification actually starts, check ownership first, and link results back
+  to its source cards. Neither a checkpoint link nor list placement is acceptance.
 - Record individual time honestly using the team's chosen tool and categories.
   Do not invent elapsed time, backfill unverified entries, or claim others' work.
 - Connections are optional until a task needs them. Do not block local approved
@@ -585,7 +644,9 @@ human explicitly revises the acceptance requirements.
 - [ ] Hungarian notation follows the documented rules and naming exceptions.
 - [ ] Business rules match the approved Luigi's requirements.
 - [ ] Tests precede or accompany behavior changes and cover failures/boundaries.
-- [ ] Applicable accessibility, browser, visual, and Lighthouse gates pass.
+- [ ] Focused checks pass; remaining broader gates have explicit TEST/QA links.
+- [ ] Before Done/merge, the card's applicable acceptance gates pass; final release
+  also requires the integrated QA gates.
 - [ ] Payment/customer information and secrets are handled safely.
 - [ ] Verification evidence is retained and limitations are disclosed in the agreed review format.
 - [ ] Human review occurs before unapproved next steps, merging, or task closure.
