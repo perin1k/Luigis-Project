@@ -1,5 +1,51 @@
 # Customer checkout acceptance checkpoint — October 22, 2026
 
+## FE-03 focused reconciliation — October 23, 2026
+
+Reviewed existing checkout presentation at `320d804` on Windows / Node 24.19.0
+with locked browsers. No application or test changes were needed. Chromium and
+Firefox desktop checks passed for edited contact/items/tax/after-tax tip/totals,
+withdrawal of stale totals after failed/changed authoritative checks, and dine-in
+email plus selected Central ready time in the payment recap:
+
+```sh
+node node_modules/@playwright/test/cli.js test -c playwright.pricing.config.js --project=chromium-desktop --project=firefox-desktop --grep 'payment summary uses current|payment summary withdraws stale'
+node node_modules/@playwright/test/cli.js test -c playwright.scheduling.config.js --project=chromium-desktop --project=firefox-desktop --grep 'payment recap preserves dine-in email'
+```
+
+Reused valid focused evidence instead of repeating unaffected flows. Application
+and test sources are unchanged between `78f81cf` and `320d804`; intervening changes
+are documentation only. The BE-10/FE-10 increment verified Chromium/Firefox
+lost-payment-response retry using the same payment identity, disabled Back/Edit
+controls while the outcome is unknown, focused receipt, missing-link recovery
+guidance and no duplicate payment. The BE-03 reconciliation verified committed
+confirmation/private tracking for both service/method presentations and throttled
+recovery, including the selected cases' axe checks. See
+[BE-10/FE-10 handoff](be-10-fe-10-increment.md) and
+[BE-03 handoff](be-03-payments.md). These are reused results, not new runs.
+
+Presentation responsibilities remain:
+
+- `src/views/partials/ordering/payment.ejs`: semantic service/contact/item recap,
+  payment breakdown, approved demonstration disclosure, generated-identifier and
+  Apple Pay method explanations, ready time and unpaid-hold status.
+- `src/public/js/ordering/order-wizard.js`: current server-price rendering,
+  return-to-review and processing/recovery locks, escaped text-only receipt,
+  receipt focus and validated private tracking link or team-assisted recovery help.
+- `src/public/js/checkout/payment.js`: bounded same-origin payment request,
+  interrupted-response recovery and distinct known outcomes; no client-invented
+  confirmation or native Wallet claim.
+
+The approved checkout collects no customer card number/expiry/CVV. FE-03 is ready
+for [TEST-02](https://trello.com/c/DlgHEJjl), not Done. Broad supported-platform,
+mobile/native visual, grouped manual accessibility and applicable audit acceptance
+remain on that checkpoint and final QA. No new broad visual, manual, Lighthouse
+or hosted result is claimed here. Historical paused/missing-integration and
+platform notes below are superseded where newer evidence applies; preserve their
+original context rather than claiming they ran again.
+
+## Original customer checkout checkpoint
+
 Scope: BE-02/BE-03 customer integration and existing FE-03 receipt presentation.
 This preserves contributor implementations and updates their verification, not
 claiming the application or external services fully accepted.
