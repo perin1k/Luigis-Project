@@ -1,5 +1,59 @@
 # BE-05 follow-up verification — October 22, 2026
 
+## Focused implementation reconciliation — October 23, 2026
+
+Reviewed existing team code at `0bad9bf2c0210aac6411552a1920f1accfcbd53f`
+on Windows x64, Node 24.22.1 and Playwright 1.64.1 with locked browsers.
+Preserved Perin's progress, private tracking and administrator-exception work
+(`d304fcc`, `767c92f`, `3485dc7`) and later shared integrations.
+No application, fixture, test, dependency or migration change was needed.
+
+Fresh focused service/HTTPS checks passed for ordered status transitions and
+persisted timestamps/events, stale revisions and invalid/unauthorized/unpaid
+updates, cancellation/review/ingredient/capacity preparation guards, event rollback,
+digest-only tracking grants and seven-day final-outcome/pending-case deadlines,
+admin-only link replacement and old-link revocation, cancellation/capacity/audit
+atomicity, closing-time Not collected, and payment/grant transaction rollback.
+Transport checks retain session, exact host/origin, CSRF and public/private data
+boundaries. Cancellation decisions remain distinct from financial refund results.
+
+Selected Chromium/Firefox desktop journeys passed for full progress with explicit
+refresh and holds, competing staff updates, expired write-session data clearing,
+private guest minimum output, admin cancellation/link replacement, keyboard
+skip/refresh and superseded parsed-response protection. These focused runs do not
+establish fresh native visuals, broad axe, manual accessibility or Lighthouse.
+
+Reproduction (OpenSSL/runtime prerequisites follow the cross-platform guide):
+
+```sh
+node --test tests/unit/order-progress.test.js tests/unit/tracking-exceptions.test.js tests/unit/staff-orders-http.test.js
+node node_modules/@playwright/test/cli.js test -c playwright.staff-orders.config.js orders.spec.js --project=chromium-desktop --project=firefox-desktop --grep 'status actions persist|another staff update|expired session while saving|private customer progress requires|admin reviewed cancellation persists|superseded parsed tracking|tracking keeps keyboard'
+```
+
+[Accepted TEST-02 evidence](test-02-checkout-acceptance.md) is reused for unchanged
+committed checkout-to-private-tracking issuance and interrupted-payment recovery,
+rather than repeating that suite. The unit checks above additionally exercised
+atomic grant issuance and failure rollback. Reused evidence is not a new run.
+
+File responsibilities remain in [progress design](../order-progress-design.md)
+and [tracking/exception guide](../tracking-and-exceptions.md):
+`src/staff/order-progress-service.js` owns guarded transactional progress;
+`src/staff/order-exception-service.js` owns authorized reviewed decisions;
+`src/tracking/tracking-service.js` owns grant lifecycle/minimum progress;
+routers enforce transport/request boundaries; `src/public/js/tracking.js`
+renders real responses and rejects stale results after a link change.
+
+BE-05 is **Ready for Testing, not Done**. [TEST-03](https://trello.com/c/WOZ38Ufw)
+retains connected fulfillment/inventory/cancellation/refund/notification acceptance,
+native supported browser/mobile visuals and axe, manual keyboard/zoom/contrast/
+representative screen-reader review and applicable audit verification. Preserve
+private-page noindex exceptions and final QA/INT/OPS gates. No external messages,
+real funds, hosted deployment or operator setup is claimed. Earlier Firefox startup
+and performance notes below retain their original environment/date: this Windows
+Firefox sample passed; earlier macOS behavior is not retroactively reclassified.
+
+## Original follow-up evidence
+
 Story: https://trello.com/c/HwkXU6Mn. Continues the implementation in `767c92f`.
 
 ## Changes
