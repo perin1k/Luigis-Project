@@ -808,4 +808,6 @@ QA-03: [approved targets, race/recovery evidence and hosted measurement procedur
 
 OPS-01 preparation: [review-only systemd/environment templates and rollback checks](deploy/README.md).
 
+OPS-03 preparation: [secret custody, injection, rotation/revocation and secure handoff](docs/secrets-operations.md).
+
 TEST-02: [scheduling, persisted checkout and demonstration payment checkpoint](docs/verification/test-02-checkout-acceptance.md).

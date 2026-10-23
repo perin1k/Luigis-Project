@@ -60,6 +60,10 @@ static content. Actual installation and resource creation are still unauthorized
 
 ## 2. Future host layout and configuration contract
 
+The [OPS-03 custody/handoff guide](secrets-operations.md) maps each secret to its
+current injection path, permitted consumers, rotation limits and unperformed
+host-side verification. It contains no actual secret material.
+
 Proposed paths below are Linux deployment paths, not existing local files:
 
 | Path | Purpose / access |
