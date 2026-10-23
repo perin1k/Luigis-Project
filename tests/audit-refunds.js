@@ -22,7 +22,8 @@ try{
   for(const strPath of [`/staff/orders/${strReference}`,arrLinks[0],arrLinks[1]]){
     const objResult=await lighthouse(`https://localhost:3444${strPath}`,{port:9227,logLevel:'error',output:'json',disableStorageReset:true,extraHeaders:{Cookie:strCookie}});
     arrReports.push({strState:strPath===arrLinks[0]?'refunded':strPath===arrLinks[1]?'received':'admin-refunded',strPath:strPath.startsWith('/track')?'/track':strPath==='/staff/orders'?strPath:'/staff/orders/:reference',strVersion:objResult.lhr.lighthouseVersion,
-      strProfile:'Default mobile simulated throttling; production NODE_ENV; isolated HTTPS staff fixture; macOS arm64',
+      strPlatform:process.platform,strArchitecture:process.arch,strNodeVersion:process.version,
+      strProfile:'Default mobile simulated throttling; production NODE_ENV; isolated HTTPS staff fixture; native execution OS',
       objConfiguration:{strFormFactor:objResult.lhr.configSettings.formFactor,strThrottlingMethod:objResult.lhr.configSettings.throttlingMethod,objScreenEmulation:objResult.lhr.configSettings.screenEmulation,objThrottling:objResult.lhr.configSettings.throttling},
       objScores:Object.fromEntries(Object.entries(objResult.lhr.categories).map(([strId,objCategory])=>[strId,objCategory.score*100])),
       arrAdvisories:Object.values(objResult.lhr.audits).filter((objAudit)=>objAudit.score!==null&&objAudit.score<1).map((objAudit)=>({strId:objAudit.id,strTitle:objAudit.title,numScore:objAudit.score,strDisplayValue:objAudit.displayValue,...(['errors-in-console','inspector-issues'].includes(objAudit.id)?{objDetails:objAudit.details}: {})}))});
