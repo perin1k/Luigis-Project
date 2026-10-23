@@ -93,3 +93,19 @@ tracking stylesheet, explicit natural-order refresh focus and a second
 request-generation check after JSON parsing; see
 [follow-up verification](verification/be-05-follow-up.md). Its automated keyboard
 checks complement the outstanding manual accessibility acceptance.
+
+## FE-10 connected scheduled-order messages
+
+Protected tracking now also returns `strCancellationState` (`none`, `pending`,
+`approved`, `denied`) from the latest persisted request and `bInventoryIssue` from
+an open inventory review (or its retained history on a cancelled order). No reason,
+ingredient identity, contact, amount, staff note or actor is exposed. These fields
+are read inside the same transaction and private-grant/deadline checks as progress.
+Resolved inventory reviews on active orders no longer show an active issue.
+
+The browser renders safe text nodes: a generic ingredient apology and whole-order
+review boundary, plus separate cancellation and demonstration-refund messages.
+Cancellation approval does not assert refund success. Existing no-store, noindex,
+fragment handling, revocation and retention remain intact. The read-only EJS status
+partial remains available to server-rendered consumers; guest tracking uses its
+existing browser renderer and genuine persisted records, not fixture examples.

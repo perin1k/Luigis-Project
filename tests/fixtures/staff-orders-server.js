@@ -15,7 +15,7 @@ const objServer=createServer({key:readFileSync(join(strDirectory,'key.pem')),cer
   if(objRequest.url==='/__test/refund-approve'){objFixture.approveRefund();return objResponse.end('approve');}
   if(objRequest.url==='/__test/preview-failure'){objFixture.failPreviews();return objResponse.end('failed');}
   if(objRequest.url==='/__test/preview-process'){objFixture.processPreviews();return objResponse.end('processed');}
-  if(objRequest.url==='/__test/code')return objResponse.end(objFixture.code());
+  if(objRequest.url.startsWith('/__test/code')){const objUrl=new URL(objRequest.url,'https://localhost:3444');if(objUrl.pathname==='/__test/code')return objResponse.end(objFixture.code(objUrl.searchParams.get('secret')));}
   return objFixture.objApp(objRequest,objResponse);
 });objServer.listen(3444,'127.0.0.1');
 for(const strSignal of ['SIGINT','SIGTERM'])process.once(strSignal,()=>objServer.close(()=>{objFixture.close();rmSync(strDirectory,{recursive:true,force:true});}));

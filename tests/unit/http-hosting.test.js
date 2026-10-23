@@ -2,7 +2,11 @@ import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { get } from 'node:http';
 import { gunzipSync, brotliDecompressSync } from 'node:zlib';
-import objApp from '../../src/app.js';
+import objApp, {createApp} from '../../src/app.js';
+import {openDatabase} from '../../src/data/database.js';
+import {applyMigrations} from '../../src/data/migrations.js';
+import {seedMenu} from '../../src/data/seed-menu.js';
+import {createCatalogService} from '../../src/ordering/catalog-service.js';
 
 let objServer;
 let intPort;
@@ -16,6 +20,30 @@ before(async () => {
 });
 after(async () => {
   if (objServer) await new Promise((fnResolve) => objServer.close(fnResolve));
+});
+
+test('configured ordering uses one blocking stylesheet with unchanged Bootstrap and order rules', async () => {
+  const objDatabase = openDatabase(':memory:');
+  applyMigrations(objDatabase); seedMenu(objDatabase);
+  const objConfigured = createApp({ objCatalogService: createCatalogService(objDatabase) }).listen(0, '127.0.0.1');
+  try {
+    await new Promise((fnResolve, fnReject) => { objConfigured.once('listening', fnResolve); objConfigured.once('error', fnReject); });
+    const strHtml = await (await fetch(`http://127.0.0.1:${objConfigured.address().port}/order`)).text();
+    assert.equal((strHtml.match(/rel="stylesheet"/g) ?? []).length, 1);
+    assert.match(strHtml, /href="\/css\/order-bundle.css"/);
+    assert.ok(strHtml.indexOf('/css/order-bundle.css') < strHtml.indexOf('/js/theme.js'));
+    assert.equal((strHtml.match(/src="\/js\/theme.js"/g) ?? []).length, 1);
+    const arrParts = [];
+    for (const strPath of ['/vendor/bootstrap.min.css', '/css/tokens.css', '/css/global.css', '/css/ordering.css']) {
+      arrParts.push((await requestText(strPath, 'identity')).objBody, Buffer.from('\n'));
+    }
+    assert.deepEqual((await requestText('/css/order-bundle.css', 'identity')).objBody, Buffer.concat(arrParts));
+    const objBrotli = await requestText('/css/order-bundle.css', 'br');
+    assert.equal(objBrotli.objHeaders['content-encoding'], 'br');
+    assert.deepEqual(brotliDecompressSync(objBrotli.objBody), Buffer.concat(arrParts));
+  } finally {
+    await new Promise((fnResolve) => objConfigured.close(fnResolve)); objDatabase.close();
+  }
 });
 
 function requestText(strPath, strEncoding, objOptions = {}) {
@@ -111,4 +139,51 @@ test('Brotli public assets preserve exact bytes, negotiation, caching and HEAD w
   }
   const objGzip=await requestText('/order','br, gzip');assert.equal(objGzip.objHeaders['content-encoding'],'gzip');
   assert.equal((await requestText('/vendor/bootstrap.min.css','br;q=0, gzip;q=0, identity;q=0')).intStatus,406);
+});
+
+test('security headers cover public assets, pages and failures without exposing the framework',async()=>{
+  for(const strPath of ['/','/order','/js/theme.js','/missing-security-fixture']){
+    const objResponse=await requestText(strPath,'identity');
+    assert.equal(objResponse.objHeaders['x-powered-by'],undefined,strPath);
+    assert.equal(objResponse.objHeaders['x-content-type-options'],'nosniff',strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/default-src 'self'/,strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/frame-ancestors 'none'/,strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/object-src 'none'/,strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/form-action 'self'/,strPath);
+    assert.ok(objResponse.objHeaders['referrer-policy'],strPath);
+  }
+});
+
+test('private source, templates, database and encoded traversal paths are never served as assets',async()=>{
+  for(const strPath of ['/.git/config','/package.json','/src/server.js','/src/views/pages/order.ejs',
+    '/data/luigis.sqlite','/src/data/migrations/005-access-and-audit.sql',
+    '/%2e%2e/package.json','/css/%2e%2e/%2e%2e/package.json','/%2eenv']){
+    const objResponse=await requestText(strPath,'identity');
+    assert.equal(objResponse.intStatus,404,strPath);
+    assert.equal(objResponse.objHeaders['cache-control'],'no-store',strPath);
+    assert.doesNotMatch(objResponse.objBody.toString(),/BEGIN PRIVATE KEY|CREATE TABLE audit_events|"dependencies"\s*:/,strPath);
+  }
+});
+
+test('forwarded headers cannot enable staff access or alter public response security on an unconfigured HTTP server',async()=>{
+  for(const strPath of ['/api/staff/orders','/api/auth/session','/staff/analytics']){
+    const objResponse=await requestText(strPath,'identity',{objHeaders:{
+      'X-Forwarded-Proto':'https','X-Forwarded-Host':'staff.example.invalid','X-Forwarded-For':'127.0.0.1',
+      Cookie:'staff_session=forged-security-fixture',Origin:'https://staff.example.invalid'}});
+    assert.equal(objResponse.intStatus,404,strPath);
+    assert.equal(objResponse.objHeaders['cache-control'],'no-store',strPath);
+    assert.match(objResponse.objHeaders['content-security-policy'],/frame-ancestors 'none'/,strPath);
+  }
+});
+
+test('anonymous checkout limit rejects before another service call and preserves a safe retry response',async()=>{
+  let intCalls=0;const objLimitedApp=createApp({objOrderService:{submitOrder(){intCalls++;return {strState:'unpaid',bReplayed:false};}}});
+  const objLimitedServer=objLimitedApp.listen(0,'127.0.0.1');await new Promise((fnResolve,fnReject)=>{objLimitedServer.once('listening',fnResolve);objLimitedServer.once('error',fnReject);});
+  const strOrigin=`http://127.0.0.1:${objLimitedServer.address().port}`;
+  try{
+    for(let intIndex=0;intIndex<60;intIndex++)assert.equal((await fetch(`${strOrigin}/api/orders`,{method:'POST',headers:{Origin:strOrigin,'Content-Type':'application/json'},body:'{}'})).status,201);
+    const objBlocked=await fetch(`${strOrigin}/API/ORDERS`,{method:'POST',headers:{Origin:strOrigin,'Content-Type':'application/json','X-Forwarded-For':'another-peer'},body:'{}'});
+    assert.equal(objBlocked.status,429);assert.equal(intCalls,60);assert.ok(Number(objBlocked.headers.get('retry-after'))>=1);assert.equal(objBlocked.headers.get('cache-control'),'no-store');assert.equal((await objBlocked.json()).strCode,'request_limit');
+    assert.equal((await fetch(`${strOrigin}/order`)).status,200);
+  }finally{await new Promise((fnResolve)=>objLimitedServer.close(fnResolve));}
 });

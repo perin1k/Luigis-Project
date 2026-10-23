@@ -1,3 +1,8 @@
+import {createOperationalRecorder} from './operations/telemetry.js';
+import {randomUUID} from 'node:crypto';
+import {createHealthRouter} from './operations/health-router.js';
+import {createMenuRouter} from './staff/menu-router.js';
+import {createAnonymousLimits} from './security/anonymous-limits.js';
 import express from 'express';
 import {createTrackingRouter} from './tracking/tracking-router.js';
 import { createStaffOrdersRouter } from './staff/orders-router.js';
@@ -11,8 +16,9 @@ import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService } = {}) {
+export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnWriteOperational } = {}) {
 const objApp = express();
+const objOperational=createOperationalRecorder({fnWrite:fnWriteOperational});
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;
 
@@ -38,6 +44,11 @@ mapTextAssets.set('/css/order-bundle.css', prepareText(Buffer.concat(
 // Expose only the intended Bootstrap stylesheet, never node_modules itself.
 mapTextAssets.set('/vendor/bootstrap.min.css', prepareText(
   readFileSync(fileURLToPath(new URL('../node_modules/bootstrap/dist/css/bootstrap.min.css', import.meta.url))), 'css'));
+
+// Ordering keeps the exact Bootstrap-first cascade in one blocking response.
+mapTextAssets.set('/css/order-bundle.css', prepareText(Buffer.concat([
+  mapTextAssets.get('/vendor/bootstrap.min.css').objBody, Buffer.from('\n'),
+  mapTextAssets.get('/css/order-bundle.css').objBody]), 'css'));
 
 // Tracking needs the same Bootstrap and staff rules, delivered in one request.
 mapTextAssets.set('/css/tracking-bundle.css', prepareText(Buffer.concat([
@@ -86,6 +97,9 @@ objApp.get('/', (objRequest, objResponse, fnNext) => {
     strDescription: "Explore Luigi's Pizza: 12, 14, and 18-inch pizzas, your choice of toppings, and fountain drinks. Dine-in and carry-out, daily 10 AM to 11 PM.",
   });
 });
+objApp.use(createAnonymousLimits());
+objApp.use(objOperational.requests);
+objApp.use(createHealthRouter(fnReadiness));
 if (objCatalogService) objApp.use('/api/pricing', createPricingRouter(objCatalogService));
 if (objPaymentService) objApp.use('/api/demo-payments', createDemoPaymentRouter(objPaymentService));
 if (objSchedulingService) objApp.use('/api/pickup-times', createSchedulingRouter(objSchedulingService));
@@ -120,6 +134,7 @@ objApp.get('/preview/confirmation', (objRequest, objResponse, fnNext) => {
   });
 });
 if (objTrackingService) objApp.use(createTrackingRouter(objTrackingService,renderPage));
+if (objAuthRuntime && objMenuService) objApp.use(createMenuRouter({objMenuService,strOrigin:objAuthRuntime.strOrigin,fnRender:renderPage}));
 if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage }));
 if (objAuthRuntime) {
   objApp.use('/auth', objAuthRuntime.objRouter);
@@ -135,12 +150,12 @@ if (objAuthRuntime) {
     const objIdentity = objAuthRuntime.objSessionService.validateSession(objCookies[AUTH_COOKIES.strSession]);
     const strMode = objRequest.path.split('/').at(-1);
     if (strMode === 'account' && !objIdentity) return objResponse.redirect(303, '/staff/sign-in');
-    const objInitialLists = strMode === 'account' && objIdentity.strRole === 'admin'
+    const objInitialLists = strMode === 'account' && ['admin','owner'].includes(objIdentity.strRole)
       ? objAuthRuntime.readAccountLists(objCookies[AUTH_COOKIES.strSession]) : {};
     if (!objInitialLists) return objResponse.redirect(303, '/staff/sign-in');
     renderPage(objRequest, objResponse, fnNext, 'pages/staff', {
       strTitle: 'Staff access | Luigi’s Pizza', strDescription: 'Secure staff account access for Luigi’s Pizza.',
-      strMode, bOrderQueue: Boolean(objStaffOrdersService), bAdmin: objIdentity?.strRole === 'admin', objInitialLists,
+      strMode, bOrderQueue: Boolean(objStaffOrdersService), bAdmin: ['admin','owner'].includes(objIdentity?.strRole), bOwner: objIdentity?.strRole === 'owner', objInitialLists,
     });
   });
 }
@@ -153,7 +168,9 @@ objApp.use((objRequest, objResponse, fnNext) => {
   });
 });
 objApp.use((objError, objRequest, objResponse, fnNext) => {
-  if (objResponse.headersSent) return fnNext(objError);
+  const strEventId=objResponse.locals.strOperationalId??randomUUID();objOperational.record('application_failed',strEventId,500);
+  if (objResponse.headersSent) return objResponse.destroy();
+  objResponse.set('X-Request-Id',strEventId);
   objResponse.status(500).set({ 'X-Robots-Tag': 'noindex', 'Cache-Control': 'no-store' });
   renderPage(objRequest, objResponse, () => {
     // Keep a safe fallback if the template itself cannot render.

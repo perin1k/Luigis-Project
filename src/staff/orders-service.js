@@ -44,7 +44,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
       const arrRows=objDatabase.prepare(`${SELECT_SQL} WHERE ${PAID_SQL} AND o.fulfillment_status IN ('Received','Preparing','Baking','Ready')
         AND (?='' OR d.service_date=?) AND (?='active' OR o.fulfillment_status=?)
         ORDER BY coalesce(b.promised_at,'9999'),o.id LIMIT ? OFFSET ?`).all(objFilter.strDate,objFilter.strDate,objFilter.strStatus,objFilter.strStatus,PAGE_SIZE+1,objFilter.intPage*PAGE_SIZE);
-      return {...objFilter,bCanAdminister:objIdentity.strRole==='admin',intPageSize:PAGE_SIZE,bHasNext:arrRows.length>PAGE_SIZE,strToday:chicagoDate(dtNow.toISOString()),dtCheckedAt:dtNow.toISOString(),
+      return {...objFilter,bOwner:objIdentity.strRole==='owner',bCanAdminister:['admin','owner'].includes(objIdentity.strRole),intPageSize:PAGE_SIZE,bHasNext:arrRows.length>PAGE_SIZE,strToday:chicagoDate(dtNow.toISOString()),dtCheckedAt:dtNow.toISOString(),
         arrOrders:arrRows.slice(0,PAGE_SIZE).map((objRow)=>summary(objRow,dtNow))};
     });
   }
@@ -62,7 +62,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
         }return {intQuantity:objLine.quantity,strDescription};
       });
       let objRefund;
-      if(objIdentity.strRole==='admin'){
+      if(['admin','owner'].includes(objIdentity.strRole)){
         const objPayment=objDatabase.prepare("SELECT * FROM demo_payment_attempts WHERE order_id=? AND quote_id=(SELECT accepted_quote_id FROM orders WHERE id=?) AND state='succeeded'").get(objRow.id,objRow.id);
         const objLast=objDatabase.prepare("SELECT state FROM demo_refund_attempts WHERE order_id=? ORDER BY requested_at DESC,rowid DESC LIMIT 1").get(objRow.id);
         const bConfirmed=Boolean(objDatabase.prepare("SELECT id FROM demo_refund_attempts WHERE order_id=? AND state='succeeded'").get(objRow.id));
@@ -71,7 +71,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
           centsNetRecorded:objPayment?objDatabase.prepare('SELECT coalesce(sum(signed_cents),0) AS n FROM demo_financial_allocations WHERE payment_id=?').get(objPayment.id).n:0,
           bCanApprove:Boolean(objPayment&&objRow.fulfillment_status==='Cancelled'&&bApproved&&!bConfirmed&&objLast?.state!=='pending')};
       }
-      return {...summary(objRow,dtNow),intRevision:objRow.revision,bCanAdminister:objIdentity.strRole==='admin',...(objRefund?{objRefund}:{}),dtCheckedAt:dtNow.toISOString(),arrItems,
+      return {...summary(objRow,dtNow),intRevision:objRow.revision,bCanAdminister:['admin','owner'].includes(objIdentity.strRole),...(objRefund?{objRefund}:{}),dtCheckedAt:dtNow.toISOString(),arrItems,
         objContact:!contactAvailable(objRow,dtNow)?null:{strName:objRow.customer_name??'',strPhone:objRow.phone??'',strEmail:objRow.phone?'':objRow.email??''}};
     });
   }

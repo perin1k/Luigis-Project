@@ -26,8 +26,8 @@ export function createSessionService(objDatabase, { fnNow = () => new Date() } =
   }
 
   function findSession(strDigest) {
-    return objDatabase.prepare(`SELECT s.*, u.role, u.state AS user_state FROM staff_sessions s
-      JOIN staff_users u ON u.id = s.user_id WHERE s.session_token_digest = ?`).get(strDigest);
+    return objDatabase.prepare(`SELECT s.*, u.role, r.effective_role, u.state AS user_state FROM staff_sessions s
+      JOIN staff_users u ON u.id = s.user_id JOIN staff_role_view r ON r.id=u.id WHERE s.session_token_digest = ?`).get(strDigest);
   }
 
   function recordRevocation(objSession, dtNow, strReason) {
@@ -64,9 +64,9 @@ export function createSessionService(objDatabase, { fnNow = () => new Date() } =
         const numMfa = parseTimestamp(objSession.mfa_verified_at);
         if (!Number.isFinite(numMfa) || numMfa < numAuthenticated || numMfa > numActivity) return null;
       }
-      if (bCheckPermission && !canPerformAction(objSession.role, strAction)) return null;
+      if (bCheckPermission && !canPerformAction(objSession.effective_role, strAction)) return null;
       objDatabase.prepare('UPDATE staff_sessions SET last_activity_at = ? WHERE id = ?').run(dtNow.toISOString(), objSession.id);
-      const objIdentity = Object.freeze({ strSessionId: objSession.id, strUserId: objSession.user_id, strRole: objSession.role });
+      const objIdentity = Object.freeze({ strSessionId: objSession.id, strUserId: objSession.user_id, strRole: objSession.effective_role });
       return fnWork ? fnWork(objIdentity, dtNow) : objIdentity;
     });
   }

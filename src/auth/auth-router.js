@@ -15,13 +15,13 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   for (const strMethod of ['validateSession', 'revokeSession']) {
     if (typeof objSessionService?.[strMethod] !== 'function') throw new TypeError('Session service required.');
   }
-  for (const strMethod of ['deactivateEmployee', 'listEmployees', 'changeOwnPassword']) {
+  for (const strMethod of ['updateStaff', 'listEmployees', 'changeOwnPassword']) {
     if (typeof objStaffAccountService?.[strMethod] !== 'function') throw new TypeError('Staff account service required.');
   }
   for (const strMethod of ['issueInvitation', 'revokeInvitation', 'acceptInvitation', 'listInvitations']) {
     if (typeof objStaffEnrollmentService?.[strMethod] !== 'function') throw new TypeError('Staff enrollment service required.');
   }
-  for (const strMethod of ['regenerateCodes', 'beginRecovery', 'confirmRecovery']) {
+  for (const strMethod of ['regenerateCodes', 'beginRecovery', 'beginPromotionEnrollment', 'confirmRecovery']) {
     if (typeof objRecoveryService?.[strMethod] !== 'function') throw new TypeError('Recovery service required.');
   }
   const objRouter = express.Router();
@@ -142,6 +142,14 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     freshCsrf(objResponse);
     return objResponse.json({ strState: 'reenrollment_required', strProvisioningUri: objResult.strProvisioningUri });
   });
+  objRouter.post('/promotion/start', async (objRequest,objResponse)=>{
+    if(!validBody(objRequest.body,['strUsername','strPassword']))return reject(objResponse,400);
+    const objResult=await objRecoveryService.beginPromotionEnrollment(objRequest.body.strUsername,objRequest.body.strPassword,objRequest.socket.remoteAddress);
+    if(!objResult)return reject(objResponse,403);
+    clearCookie(objResponse,AUTH_COOKIES.strSession);clearCookie(objResponse,AUTH_COOKIES.strChallenge);
+    objResponse.cookie(AUTH_COOKIES.strRecovery,objResult.strRecoveryToken,{...COOKIE_OPTIONS,maxAge:600000});freshCsrf(objResponse);
+    return objResponse.json({strState:'enrollment_required',strProvisioningUri:objResult.strProvisioningUri});
+  });
   objRouter.post('/recovery/confirm', (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strCode'])) return reject(objResponse, 400);
     const objResult = objRecoveryService.confirmRecovery(objResponse.locals.objAuthCookies[AUTH_COOKIES.strRecovery], objRequest.body.strCode);
@@ -159,9 +167,9 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     return objResponse.json(objResult);
   });
   objRouter.post('/employees/invitations', (objRequest, objResponse) => {
-    if (!validBody(objRequest.body, ['strUsername'])) return reject(objResponse, 400);
+    if (!validBody(objRequest.body, ['strUsername']) && !validBody(objRequest.body,['strUsername','strRole'])) return reject(objResponse, 400);
     const objResult = objStaffEnrollmentService.issueInvitation(
-      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strUsername);
+      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strUsername,objRequest.body.strRole??'employee');
     if (!objResult) return reject(objResponse, 403);
     return objResponse.status(201).json(objResult);
   });
@@ -180,13 +188,18 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     return objResponse.status(201).json(objResult);
   });
   objRouter.post('/employees/deactivate', (objRequest, objResponse) => {
-    if (!validBody(objRequest.body, ['strEmployeeId']) || !objRequest.body.strEmployeeId.length
-      || objRequest.body.strEmployeeId.length > 128) return reject(objResponse, 400);
-    const objResult = objStaffAccountService.deactivateEmployee(
-      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strEmployeeId);
+    if (!validBody(objRequest.body, ['strEmployeeId','strRevision']) || !objRequest.body.strEmployeeId.length
+      || objRequest.body.strEmployeeId.length > 128 || !/^[1-9][0-9]{0,15}$/.test(objRequest.body.strRevision)) return reject(objResponse, 400);
+    const objResult = objStaffAccountService.updateStaff(
+      objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strEmployeeId,Number(objRequest.body.strRevision),'state','disabled');
     // Use one denial for missing permission/session and protected/unknown targets.
     if (!objResult) return reject(objResponse, 403);
-    return objResponse.json(objResult);
+    return objResponse.json({strState:objResult.strState==='unchanged'?'already_disabled':'disabled'});
+  });
+  objRouter.post('/staff/update',(objRequest,objResponse)=>{
+    if(!validBody(objRequest.body,['strUserId','strRevision','strField','strValue'])||!/^[1-9][0-9]{0,15}$/.test(objRequest.body.strRevision))return reject(objResponse,400);
+    const objResult=objStaffAccountService.updateStaff(objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession],objRequest.body.strUserId,Number(objRequest.body.strRevision),objRequest.body.strField,objRequest.body.strValue);
+    return objResult?objResponse.json(objResult):reject(objResponse,403);
   });
   objRouter.post('/logout', (objRequest, objResponse) => {
     if (!validBody(objRequest.body, [])) return reject(objResponse, 400);

@@ -50,13 +50,21 @@ test('admin cancellation is atomic, releases capacity and keeps financial state 
 }));
 test('pending customer cancellation can be denied; only reviewed hours/inventory holds resolve; no-shows require closing',()=>fixture(({objDatabase,objService,objExceptions,objTracking,arrOrders})=>{
   const objOrder=arrOrders[0];let intRevision=objService.readOrder(ADMIN_TOKEN,objOrder.strReference).intRevision;
+  const strTrackingToken=objTracking.issueForPayment(objOrder.strOrderId,'2026-10-21T15:00:00.000Z').split('#')[1];
+  assert.equal(objTracking.readTracking(strTrackingToken).strCancellationState,'none');
   objDatabase.prepare("INSERT INTO cancellation_requests (id,order_id,source,reason_code,requested_at) VALUES ('request',?,'customer','fixture','2026-10-21T15:00:00.000Z')").run(objOrder.strOrderId);
+  assert.equal(objTracking.readTracking(strTrackingToken).strCancellationState,'pending');
   intRevision=objExceptions.decide(ADMIN_TOKEN,objOrder.strReference,{intRevision,strAction:'deny-cancellation'}).intRevision;
   assert.equal(objDatabase.prepare("SELECT state FROM cancellation_requests WHERE id='request'").get().state,'denied');
+  assert.equal(objTracking.readTracking(strTrackingToken).strCancellationState,'denied');
+  assert.equal(objTracking.readTracking(strTrackingToken).bInventoryIssue,false);
+  objDatabase.prepare("INSERT INTO fulfillment_reviews (id,order_id,trigger_type,trigger_reference,opened_at) VALUES ('inventory-review',?,'inventory_change','fixture','2026-10-21T15:00:00.000Z')").run(objOrder.strOrderId);
+  assert.equal(objTracking.readTracking(strTrackingToken).bInventoryIssue,true);
   objDatabase.prepare("INSERT INTO fulfillment_reviews (id,order_id,trigger_type,trigger_reference,opened_at) VALUES ('review',?,'hours_change','fixture','2026-10-21T15:00:00.000Z')").run(objOrder.strOrderId);
   intRevision=objExceptions.decide(ADMIN_TOKEN,objOrder.strReference,{intRevision,strAction:'resolve-review'}).intRevision;
   assert.equal(objDatabase.prepare("SELECT state FROM fulfillment_reviews WHERE id='review'").get().state,'resolved');
-  const strPath=objTracking.issueForPayment(objOrder.strOrderId,'2026-10-21T15:00:00.000Z');assert.equal(objTracking.readTracking(strPath.split('#')[1]).arrProgress.length,1);
+  assert.equal(objTracking.readTracking(strTrackingToken).arrProgress.length,1);
+  assert.equal(objTracking.readTracking(strTrackingToken).bInventoryIssue,false);
   assert.throws(()=>objExceptions.decide(ADMIN_TOKEN,objOrder.strReference,{intRevision,strAction:'not-collected'}),/closing/);
 }));
 test('prepared no-show can be marked only by a current admin at closing, without a refund',()=>fixture(({objDatabase,objService,objProgress,objExceptions,arrOrders})=>{

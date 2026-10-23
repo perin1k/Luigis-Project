@@ -1,5 +1,41 @@
 # BE-02 unpaid persistence verification — 2026-10-21
 
+## Focused reconciliation — October 23, 2026
+
+Reviewed existing contributor implementation at `78f81cf` on native Windows,
+Node 24.19.0 and the locked Playwright browsers. No application or test change
+was necessary. These focused checks passed:
+
+```sh
+node --test tests/unit/order-submission.test.js tests/unit/scheduling-service.test.js tests/unit/demo-payment.test.js tests/unit/demo-payment-concurrency.test.js
+node node_modules/@playwright/test/cli.js test -c playwright.orders.config.js --project=chromium-desktop --project=firefox-desktop
+```
+
+The service/HTTP checks verify contact rules, forged/stale input rejection,
+atomic rollback, immutable price snapshots, identical-request replay, conflicting
+request rejection, same-origin/size protections, scheduling/capacity, payment
+confirmation/decline/cutoff/expiry and rollback/concurrent-payment behavior.
+Chromium/Firefox desktop checks verify carry-out response loss after a real server
+commit without duplicate orders, dine-in contact/email preservation and explicit
+unpaid state in the submission-only fixture. Existing axe checks in those selected
+cases also passed; this is not a complete manual accessibility review.
+
+The [design/file guide](../order-submission-design.md) now distinguishes current
+configured payment/tracking/cleanup from the original isolated persistence scope.
+The earlier missing-integration and macOS Firefox-launch notes below are historical,
+not evidence that those services are absent or Windows Firefox is failing now.
+
+BE-02 is implementation-ready, not fully accepted. Remaining connected
+customer/employee data, supported browser/mobile/native visual, manual accessibility
+and applicable audit acceptance remain on [TEST-02](https://trello.com/c/DlgHEJjl)
+and final QA. No new broad visual, Lighthouse, hosted or live-provider result is
+claimed by this documentation-only reconciliation.
+
+## Original persistence increment
+
+Historical increment. See the [current customer integration checkpoint](customer-checkout-checkpoint.md)
+for subsequently implemented scheduling/payment/tracking and remaining acceptance.
+
 Approved increment: save validated unpaid order snapshots, prevent duplicate
 retries, integrate the wizard and keep unconfirmed status explicit. This is not
 full BE-02 acceptance: scheduling/payment integration and quality gates remain.

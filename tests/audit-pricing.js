@@ -10,6 +10,7 @@ try {
   if (!objCheck.ok || await objCheck.text() !== 'reset') throw new Error('Disposable pricing fixture required.');
   const objResult = await lighthouse('http://127.0.0.1:3004/order', { port: 9223, logLevel: 'error', output: 'json' });
   const objReport = { strUrl: objResult.lhr.finalDisplayedUrl, strVersion: objResult.lhr.lighthouseVersion,
+    strPlatform: process.platform, strArchitecture: process.arch, strNodeVersion: process.version,
     strProfile: `Default mobile simulated throttling; production NODE_ENV; ${platform()} ${release()} ${arch()}; isolated database`,
     objConfiguration: { strFormFactor: objResult.lhr.configSettings.formFactor, strThrottlingMethod: objResult.lhr.configSettings.throttlingMethod,
       objScreenEmulation: objResult.lhr.configSettings.screenEmulation, objThrottling: objResult.lhr.configSettings.throttling },

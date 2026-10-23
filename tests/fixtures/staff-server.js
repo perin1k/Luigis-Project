@@ -12,6 +12,20 @@ const objServer = createServer({ key: readFileSync(join(strDirectory, 'key.pem')
   // Only this disposable test server exposes deterministic fixture controls.
   const objUrl = new URL(objRequest.url, 'https://localhost:3443');
   objResponse.setHeader('Cache-Control', 'no-store');
+  if (objUrl.pathname === '/__test/cookie-control') {
+    objResponse.setHeader('Set-Cookie', '__Host-synthetic-control=synthetic-only; Path=/; Secure; HttpOnly; SameSite=None');
+    return objResponse.end('Synthetic cookie control ready');
+  }
+  if (objUrl.pathname === '/__test/cookie-presence') {
+    const arrNames = (objRequest.headers.cookie ?? '').split(';').map((strPart) => strPart.trim().split('=')[0]);
+    objResponse.setHeader('Content-Type', 'application/json');
+    return objResponse.end(JSON.stringify({ bHasSessionCookie: arrNames.includes('__Host-luigis-session'),
+      bHasControlCookie: arrNames.includes('__Host-synthetic-control') }));
+  }
+  if (objUrl.pathname === '/__test/cross-site') {
+    objResponse.setHeader('Content-Type', 'text/html');
+    return objResponse.end('<!doctype html><html lang="en"><title>Synthetic cross-site source</title><a href="https://localhost:3443/__test/cookie-presence">Open cookie probe</a></html>');
+  }
   if (objUrl.pathname === '/__test/reset') { objFixture.close(); objFixture = createStaffFixture('https://localhost:3443'); return objResponse.end('reset'); }
   if (objUrl.pathname === '/__test/code') return objResponse.end(objFixture.code(objUrl.searchParams.get('secret')));
   if (objUrl.pathname === '/__test/recovery-code') return objResponse.end(objFixture.arrRecoveryCodes[0]);

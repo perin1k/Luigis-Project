@@ -1,5 +1,10 @@
 # BE-08 / FE-08 staff integration verification
 
+Historical October 21 integration checkpoint. Current three-tier implementation,
+human review, approved browser/platform matrix and acceptance outcomes are tracked
+in [staff acceptance](../staff-acceptance.md). The milestone status and limitations
+below describe that earlier checkpoint; do not use them as current card status.
+
 Status: implemented increment, **acceptance incomplete**. Perin approved the
 file-level staff UI/runtime integration plan and commit/push/Trello synchronization.
 On October 21, 2026, Perin separately approved retaining noindex and an SEO-gate

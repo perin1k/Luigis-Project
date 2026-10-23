@@ -1,5 +1,30 @@
 # TECH-04 / BE-08 — Local staff authentication
 
+Latest approved target: [TECH-04 consolidated authentication decisions](authentication-decisions.md).
+The Owner/Admin/Employee rollout and its acceptance are distinct from the historical
+implementation milestones below; verify the coordinated BE-08/FE-08 work before use.
+
+## Current policy — October 22, 2026
+
+Current acceptance commands, the cross-site cookie investigation and the human
+review checklist are maintained in [staff acceptance](staff-acceptance.md).
+Historical Firefox startup and two-role limitations below are not current scope.
+
+The approved [three-tier account policy](staff-role-policy.md) supersedes earlier
+two-role and no-reactivation boundaries below. Owner controls Employee/Admin
+assignment and admin accounts; Admin manages employees only. Owner/Admin require
+MFA. Reactivation is supported without restoring revoked sessions. Menu/prices/hours
+and analytics are Owner-only. Migration 014 resolves ownership additively and does
+not promote existing admins automatically; see the private designation procedure.
+
+The mounted runtime/screens, enrollment, recovery and account lifecycle are
+implemented. Earlier foundation-stage statements about unmounted routers and
+missing UI below are historical, not the current backlog. Remaining BE-08/FE-08
+acceptance and hosted operator setup must be tracked against current verification;
+TECH-04 design completion alone does not certify those implementation gates.
+
+## Original design and implementation history
+
 Decision recorded October 21, 2026: the user approved individual local
 usernames/passwords and authenticator-app MFA for admins, starting with the
 password foundation. Scope is the synthetic, test-payment class demonstration.
@@ -798,6 +823,13 @@ configuration and deployment need their own reviewed configuration. The runtime
 does not provision a certificate, change OS trust, create a real key/account, or
 send invitations by email/SMS. Node does not automatically load a `.env` file.
 Keep keys and certificates out of Git and never paste them into Trello.
+
+Cross-platform setup follows [the shared compatibility guide](cross-platform.md).
+Staff HTTPS fixtures require OpenSSL on PATH on Windows, macOS and supported Linux;
+check the local installation before testing. OS certificate trust and private-file
+permissions are separate operator responsibilities. Platform differences never
+authorize weaker TLS, cookies, MFA or account recovery. No certificate installation,
+trust-store mutation or permission change is performed by these instructions.
 
 ### Reproducible integration checks
 

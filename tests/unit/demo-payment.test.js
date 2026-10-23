@@ -9,8 +9,8 @@ import { createSchedulingService } from '../../src/ordering/scheduling-service.j
 import { createOrderService } from '../../src/ordering/order-service.js';
 import { createDemoPaymentService } from '../../src/payments/demo-payment-service.js';
 import { createSyntheticVault,generateSyntheticNumber } from '../../src/payments/synthetic-vault.js';
-function fixture(fnWork){
-  const objDatabase=openDatabase(':memory:');applyMigrations(objDatabase);seedMenu(objDatabase);let dtNow='2026-10-21T15:00:00.000Z';
+function fixture(fnWork,{dtStart='2026-10-21T15:00:00.000Z'}={}){
+  const objDatabase=openDatabase(':memory:');applyMigrations(objDatabase);seedMenu(objDatabase);let dtNow=dtStart;
   const objCatalogService=createCatalogService(objDatabase);const objSchedulingService=createSchedulingService(objDatabase,{fnNow:()=>dtNow});
   const objVault=createSyntheticVault({strActiveKeyId:'test-v1',mapKeys:{'test-v1':randomBytes(32).toString('hex')}});
   const strOrderId=randomUUID();const objPricing={strCatalogFingerprint:objCatalogService.readCatalog().strFingerprint,arrPizzas:[{strSize:'large',strCrust:'regular',arrToppings:['pepperoni'],intQuantity:1}],arrDrinks:[],intTipPercent:10};
@@ -18,6 +18,32 @@ function fixture(fnWork){
   function service(objOptions={}){return createDemoPaymentService(objDatabase,{objVault,objCatalogService,objSchedulingService,...objOptions});}
   try{fnWork({objDatabase,objVault,service,objInput:{strOrderId,strRequestId:randomUUID(),strMethod:'card'},setNow:(dtValue)=>{dtNow=dtValue;}});}finally{objDatabase.close();}
 }
+test('payment accepts the exact service cutoff but releases an unpaid hold after it',()=>{
+  fixture(({service,objInput,setNow})=>{
+    setNow('2026-10-22T03:30:00.000Z');
+    const objPayment=service();
+    assert.equal(objPayment.pay(objInput).strState,'succeeded');
+    setNow('2026-10-22T03:31:00.000Z');
+    assert.equal(objPayment.pay(objInput).bReplayed,true);
+  },{dtStart:'2026-10-22T03:25:00.000Z'});
+  fixture(({objDatabase,service,objInput,setNow})=>{
+    setNow('2026-10-22T03:30:00.001Z');
+    assert.throws(()=>service().pay(objInput),(objError)=>objError.strCode==='checkout_closed'&&objError.intStatus===409);
+    assert.equal(objDatabase.prepare('SELECT state FROM capacity_holds').get().state,'released');
+    assert.equal(objDatabase.prepare('SELECT fulfillment_status FROM orders').get().fulfillment_status,null);
+    assert.equal(objDatabase.prepare('SELECT count(*) AS n FROM demo_payment_attempts').get().n,0);
+    assert.equal(objDatabase.prepare('SELECT count(*) AS n FROM demo_payment_secrets').get().n,0);
+  },{dtStart:'2026-10-22T03:25:00.000Z'});
+});
+
+test('payment honors a shortened special-hours cutoff rather than normal closing',()=>fixture(({objDatabase,service,objInput,setNow})=>{
+  objDatabase.prepare('UPDATE service_days SET closes_at=?,cutoff_at=?,latest_pickup_at=?').run('2026-10-22T01:00:00.000Z','2026-10-22T00:30:00.000Z','2026-10-22T00:50:00.000Z');
+  setNow('2026-10-22T00:30:00.001Z');
+  assert.throws(()=>service().pay(objInput),(objError)=>objError.strCode==='checkout_closed');
+  assert.equal(objDatabase.prepare('SELECT state FROM capacity_holds').get().state,'released');
+  assert.equal(objDatabase.prepare('SELECT count(*) AS n FROM demo_payment_attempts').get().n,0);
+},{dtStart:'2026-10-22T00:25:00.000Z'}));
+
 test('authenticated encryption binds every identity and key version; rotation retains old-key readability',()=>{
   const strOldKey=randomBytes(32).toString('hex');const strNewKey=randomBytes(32).toString('hex');const objIdentity={strPaymentId:randomUUID(),strOrderId:randomUUID(),strQuoteId:randomUUID()};
   const objOld=createSyntheticVault({strActiveKeyId:'old',mapKeys:{old:strOldKey}});const strNumber=generateSyntheticNumber();const objRecord=objOld.encrypt(strNumber,objIdentity);

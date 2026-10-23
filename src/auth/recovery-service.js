@@ -63,7 +63,7 @@ export function createRecoveryService(objDatabase, { strEncryptionKeyHex, strKey
       }
     }
   }
-  function start(objBefore, strMethod, strCodeDigest, strNewHash) {
+  function start(objBefore, strMethod, strCodeDigest, strNewHash, bFirstMfa = false) {
     const dtNow = clock(); expireStages(dtNow);
     if (mapStages.size >= 20) return null;
     let objDb = null; let objMfa = null; let objEnrollment = null;
@@ -90,8 +90,8 @@ export function createRecoveryService(objDatabase, { strEncryptionKeyHex, strKey
         }
         objDatabase.prepare("UPDATE recovery_requests SET state='cancelled',closed_at=? WHERE user_id=? AND state='pending'")
           .run(dtLocked.toISOString(), objBefore.user_id);
-        objDatabase.prepare(`INSERT INTO recovery_requests (id,user_id,token_digest,method,created_at,expires_at)
-          VALUES (?,?,?,?,?,?)`).run(strId, objBefore.user_id, strDigest, strMethod, dtNow.toISOString(), new Date(dtNow.getTime() + RECOVERY_MS).toISOString());
+        objDatabase.prepare(`INSERT INTO recovery_requests (id,user_id,token_digest,method,created_at,expires_at,purpose)
+          VALUES (?,?,?,?,?,?,?)`).run(strId, objBefore.user_id, strDigest, strMethod, dtNow.toISOString(), new Date(dtNow.getTime() + RECOVERY_MS).toISOString(),bFirstMfa?'first_mfa':'recovery');
         objDatabase.prepare(`INSERT INTO recovery_locks VALUES (?,?) ON CONFLICT(user_id) DO UPDATE SET request_id=excluded.request_id`)
           .run(objBefore.user_id, strId);
         objDatabase.prepare('UPDATE staff_sessions SET revoked_at=? WHERE user_id=? AND revoked_at IS NULL').run(dtLocked.toISOString(), objBefore.user_id);
@@ -113,7 +113,7 @@ export function createRecoveryService(objDatabase, { strEncryptionKeyHex, strKey
   return Object.freeze({
     async regenerateCodes(strSessionToken, strPassword, strCode, strSource) {
       const objBefore = objSessions.executeAuthorized(strSessionToken, 'account.password.change', (objIdentity) => {
-        if (objIdentity.strRole !== 'admin') return null;
+        if (!['admin','owner'].includes(objIdentity.strRole)) return null;
         return objDatabase.prepare(`SELECT c.*,u.role,u.state,v.epoch FROM staff_credentials c JOIN staff_users u ON u.id=c.user_id
           JOIN login_identity_versions v ON v.user_id=u.id WHERE c.user_id=?`).get(objIdentity.strUserId);
       });
@@ -131,6 +131,16 @@ export function createRecoveryService(objDatabase, { strEncryptionKeyHex, strKey
         auditRecovery(objDatabase, objBefore.user_id, dtNow);
         return { arrRecoveryCodes };
       });
+    },
+    async beginPromotionEnrollment(strUsername, strPassword, strSource) {
+      if(typeof strUsername!=='string'||!/^[a-zA-Z0-9._-]{3,64}$/.test(strUsername)||strUsername.includes('\n'))return null;
+      const strCanonical=strUsername.toLowerCase();const dtStarted=reserve(strCanonical,strSource);if(!dtStarted)return null;
+      const objBefore=identity(strCanonical);intActiveProofs+=1;let bValid;
+      try{bValid=await verifyPassword(strPassword,objBefore?.password_hash??DUMMY_HASH);}finally{intActiveProofs-=1;}
+      if(!bValid||!objBefore||objBefore.role!=='admin'||bDestroyed||clock()<dtStarted||clock()-dtStarted>=300000
+        ||!objDatabase.prepare('SELECT user_id FROM staff_mfa_enrollments WHERE user_id=?').get(objBefore.user_id)
+        ||objDatabase.prepare("SELECT id FROM mfa_references WHERE user_id=? AND state='active'").get(objBefore.user_id))return null;
+      return start(objBefore,'password_and_code',null,null,true);
     },
     async beginRecovery(strUsername, strPassword, strRecoveryCode, strSource) {
       if (typeof strUsername !== 'string' || strUsername.length > 64 || !/^[a-zA-Z0-9._-]{3,64}$/.test(strUsername)
@@ -196,6 +206,7 @@ export function createRecoveryService(objDatabase, { strEncryptionKeyHex, strKey
           .run(objStage.strNewHash,dtLocked.toISOString(),objStage.strUserId);
         objDatabase.prepare("UPDATE recovery_requests SET state='completed',closed_at=? WHERE id=?").run(dtLocked.toISOString(),objStage.strRequestId);
         objDatabase.prepare('DELETE FROM recovery_locks WHERE user_id=?').run(objStage.strUserId);
+        objDatabase.prepare('DELETE FROM staff_mfa_enrollments WHERE user_id=?').run(objStage.strUserId);
         const arrRecoveryCodes = objStage.strRole === 'admin' ? issueRecoveryCodes(objDatabase,objStage.strUserId,dtLocked) : [];
         auditRecovery(objDatabase,objStage.strUserId,dtLocked,objStage.strMethod === 'brody_in_person');
         return { strState: 'recovered', arrRecoveryCodes };

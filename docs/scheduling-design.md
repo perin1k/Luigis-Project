@@ -1,5 +1,10 @@
 # BE-10 — pickup selection and atomic capacity holds
 
+Current integrated-service reconciliation is recorded in
+[the BE-10/FE-10 focused increment](verification/be-10-fe-10-increment.md).
+The original scheduling-only scope below does not imply that later payment,
+inventory, refund or retention services are missing.
+
 This approved increment connects BE-02 unpaid order persistence to scheduling.
 It does not confirm payment, start preparation, issue refunds or complete BE-10.
 
@@ -81,11 +86,19 @@ unavailable choices are rejected. Changed availability returns 409 `pickup_chang
 Order responses include `objPickup` with preserved promised/expiry instants and
 current derived hold state. The opaque order reference grants no tracking access.
 
-Payment must still verify persisted amount, quote expiry, hold state and current
-availability. Only confirmed payment may confirm the hold/release fulfillment;
-late success requires recorded staff review. Confirmed payment failure/checkout
-expiry release hooks, paid-booking hours changes, pre-preparation inventory checks,
-cancellation/refund recovery, abandoned-order cleanup and a staff schedule editor
-remain subsequent work. Existing stored schedule overrides are supported; none are
-invented or changed by a public request. Card completion and deployment remain
-separate from this increment and its local verification.
+The current demonstration payment service rechecks the persisted quote, hold,
+capacity, service-day cutoff and ingredient/price availability before confirming
+fulfillment. Exactly at cutoff is allowed; a later unprocessed payment returns
+409 `checkout_closed` and releases its active capacity hold. The customer returns
+to pickup review with choices preserved. A replay of an already committed payment
+returns its receipt even after cutoff; it does not attempt another payment.
+
+Payment failure/expiry release, menu/hours-change review, pre-preparation inventory
+checks, administrator-reviewed cancellation, separate full demo refunds, tracking
+and retention cleanup now have implementations in their respective services.
+Owner schedule editing is described in [menu management](menu-management-design.md).
+The local payment adapter is synchronous: do not claim that asynchronous provider
+callbacks or late-provider-success handling were exercised. Real provider support
+remains future PAY-01 scope. Public requests cannot edit stored schedule overrides.
+Full connected acceptance remains on TEST-02/TEST-03 and final integrated QA;
+implemented services alone do not certify card completion or deployment.

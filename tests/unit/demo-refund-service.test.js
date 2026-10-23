@@ -27,6 +27,8 @@ test('full refund reverses items, tax and tip once and ends the pending tracking
   let intRevision=objService.readOrder(ADMIN_TOKEN,objOrder.strReference).intRevision;
   assert.throws(()=>objRefund.refund(ADMIN_TOKEN,objOrder.strReference,{intRevision,strRequestId:randomUUID()}),/cancellation/);
   intRevision=objExceptions.decide(ADMIN_TOKEN,objOrder.strReference,{intRevision,strAction:'cancel'}).intRevision;
+  assert.equal(objTracking.readTracking(strToken).strCancellationState,'approved');
+  assert.equal(objTracking.readTracking(strToken).strRefundState,'review-required');
   const objInput={intRevision,strRequestId:randomUUID()};assert.equal(objRefund.refund(EMPLOYEE_TOKEN,objOrder.strReference,objInput),null);
   const objResult=objRefund.refund(ADMIN_TOKEN,objOrder.strReference,objInput);assert.equal(objResult.strState,'succeeded');assert.equal(objResult.centsAmount,1186);assert.equal(objResult.bReplayed,false);
   assert.equal(objRefund.refund(ADMIN_TOKEN,objOrder.strReference,objInput).bReplayed,true);assert.equal(objRefund.refund(ADMIN_TOKEN,objOrder.strReference,{intRevision,strRequestId:randomUUID()}).strState,'succeeded');

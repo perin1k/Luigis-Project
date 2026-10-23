@@ -39,11 +39,12 @@ their respective access controls. No dependency or database schema was added.
 
 ## Remaining acceptance work
 
-- Review and approve any applicable correction/export workflow. There is no
-  general public export or contact-lookup endpoint; a tracking link must not be
-  treated as permission for broader personal-data export.
-- Review accurate public privacy/contact copy and designate verified contact
-  information before publication. Do not invent an address or claim legal compliance.
+- Admin-mediated contact correction/data-copy handling was approved October 22;
+  no public lookup/export feature is authorized or implemented. A tracking link
+  does not grant broader personal-data export permission.
+- The human deferred public privacy-policy publication and the contact email for
+  this class demonstration on October 22. No address is invented or published.
+  Revisit accurate policy/contact information before future hosted or real use.
 - Complete hosted verification of operator, proxy/log and external-copy/key controls
   before hosting. The [repository operator review](privacy-operator-review.md) records
   inspected controls and outstanding deployment checks.

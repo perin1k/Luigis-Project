@@ -31,7 +31,10 @@ export function createTrackingService(objDatabase,objSessions,{fnNow=()=>new Dat
     return runTransaction(objDatabase,()=>{
       const dtNow=fnNow().toISOString();const objOrder=resolveOrder(strToken,dtNow);if(!objOrder)return null;
       const objBooking=objDatabase.prepare('SELECT promised_at FROM fulfillment_bookings WHERE order_id=?').get(objOrder.id);
+      const objCancellation=objDatabase.prepare('SELECT state FROM cancellation_requests WHERE order_id=? ORDER BY requested_at DESC,rowid DESC LIMIT 1').get(objOrder.id);
       return {strReference:objOrder.public_reference,strStatus:objOrder.fulfillment_status,strService:objOrder.service_type,dtReadyAt:objBooking?.promised_at??null,
+        strCancellationState:objCancellation?.state??'none',
+        bInventoryIssue:Boolean(objDatabase.prepare("SELECT id FROM fulfillment_reviews WHERE order_id=? AND trigger_type='inventory_change' AND (state='open' OR ?='Cancelled') LIMIT 1").get(objOrder.id,objOrder.fulfillment_status)),
         bCanRequestCancellation:objOrder.fulfillment_status==='Received'&&!objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objOrder.id),
         strRefundState:objOrder.fulfillment_status==='Cancelled'?(objDatabase.prepare("SELECT state FROM demo_refund_attempts WHERE order_id=? ORDER BY CASE state WHEN 'succeeded' THEN 0 ELSE 1 END,requested_at DESC,rowid DESC LIMIT 1").get(objOrder.id)?.state??'review-required'):'not-applicable',
         bReviewPending:hasPendingCase(objDatabase,objOrder.id)||Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objOrder.id)||objDatabase.prepare("SELECT id FROM fulfillment_reviews WHERE order_id=? AND state='open'").get(objOrder.id)),

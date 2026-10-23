@@ -10,33 +10,36 @@ authentication routes and cookie/CSRF helpers. `src/app.js` mounts them only wit
 the configured authentication runtime. Direct TLS and an explicitly configured HTTPS
 origin are required; proxy/public deployment remains separately reviewed.
 
-`src/auth/staff-account-service.js` implements internal, admin-authorized employee
-deactivation. It uses the session service's synchronous `executeAuthorized` boundary
-to commit permissions, session/challenge revocation and audit history atomically.
-The isolated auth router exposes POST `/employees/deactivate` through this service;
-the mounted staff account screen provides administrator-only employee management.
+`src/auth/staff-account-service.js` implements revision-protected staff account
+changes. The Owner manages Employee/Admin roles and admin accounts; Admins manage
+employees only. Deactivation revokes access; reactivation requires fresh sign-in.
+The synchronous session boundary commits authorization, revocation and audit
+history together. The HTTPS account screen uses POST `/auth/staff/update`;
+the legacy deactivation route also requires a current account revision.
 
-Initial admin setup is available with `npm run admin:setup` after database migration
+Initial Owner setup is available with `npm run admin:setup` after database migration
 and private provisioning of `MFA_ENCRYPTION_KEY_HEX`. The interactive command asks
 for hidden password input and verifies authenticator enrollment before atomically
-creating the first admin. It has no default password or public route. See
-`docs/authentication-design.md` before running it, including secret handling,
-one-time setup, offline password-policy files and recovery procedures.
+creating the first Owner. It has no default password or public route. See
+`docs/staff-role-policy.md` for existing-installation owner designation, permissions
+and first administrator MFA setup, and `docs/authentication-design.md` for secret
+handling, one-time setup, offline password-policy files and recovery procedures.
 The implementation tests created only disposable synthetic accounts.
 
-Employee enrollment is implemented in `src/auth/staff-enrollment-service.js` and
+Staff enrollment is implemented in `src/auth/staff-enrollment-service.js` and
 migration 009. The isolated auth router can issue/revoke admin-authorized 24-hour
-invitations and accept them with an employee-chosen password. Only token digests
+invitations and accept them with a recipient-chosen password. Only the Owner may
+invite Admins, who must complete first MFA setup before signing in. Only token digests
 are stored. Tokens require private manual handoff; no notifications are sent.
 The HTTPS staff screens connect invitation creation/revocation and recipient enrollment.
 
-Account maintenance also provides admin-only paginated employee/invitation lists
+Account maintenance provides Owner/Admin-authorized paginated account/invitation lists
 and self-service password changes through the isolated router. Staff must verify
-their current password; admins additionally verify a fresh MFA code. Successful
+their current password; Owners/Admins additionally verify a fresh MFA code. Successful
 changes revoke sessions and require sign-in again. These services expose no hash
 or saved invitation token; see the authentication guide for contracts and limits.
 
-Account recovery now provides ten single-use admin recovery codes, password-plus-code
+Account recovery provides ten single-use privileged-account recovery codes, password-plus-code
 authenticator replacement, and `npm run account:recover` for the approved in-person
 procedure overseen by Brody. Recovery revokes access and keeps a persistent lock
 until enrollment completes; interrupted recovery never restores the lost factor.
@@ -46,10 +49,12 @@ All implementation verification used disposable synthetic accounts and keys.
 Online ordering system for Luigi's Pizzeria, developed for the DS 4330 case
 project. The frontend includes a responsive homepage and a six-step ordering
 wizard at `/order`: service, pizza, drinks, contact details, review, and payment.
-Express currently serves the presentation layer. The repository also contains
-SQLite migration/menu-seed foundations and staff password/session/permission
-primitives developed in separate group increments. These are not yet connected
-to public ordering, payment or complete staff sign-in flows.
+Express serves the EJS presentation layer and configured application services.
+The group's incremental work includes SQLite persistence, public ordering and
+demonstration payments, protected tracking and staff authentication/operations.
+The three-tier account policy now governs Owner, Admin and Employee access.
+Implementation and acceptance are distinct; consult current design records and
+Trello for remaining verification and hosted/operator work.
 
 The approved delivery is a publicly hosted GCP/DuckDNS application with realistic
 customer, employee and admin screens. Data entry, validation, persistence and
@@ -80,6 +85,11 @@ wizard state remain the responsibility of the existing browser modules.
 
 ## Run locally
 
+Windows, macOS and supported Linux distributions are compatibility targets.
+See [cross-platform setup and verification](docs/cross-platform.md) for prerequisites,
+shell examples, key/certificate differences and the current evidence limits.
+Targeting an OS does not mean its full acceptance matrix has already passed.
+
 Install Node.js 22.19 or newer with npm, then run:
 
 ```sh
@@ -90,16 +100,38 @@ npm start
 Visit http://127.0.0.1:3000. For automatic server restarts during development,
 use `npm run dev`. `PORT` and `HOST` environment variables override the local
 defaults. No database, secret, or payment credentials are needed for this page.
+These commands alone start the unconfigured presentation server, not the complete
+database-backed demonstration. Use the reviewed authentication/payment guides for
+integrated features; do not bypass their configuration to make a platform run.
 Public GCP/DuckDNS hosting is required; exact resources, HTTPS, costs and deployment
 are still implementation work. Staff/admin functions stay authenticated even
 though customer pages are public. No site-wide preview password gate is required.
+The approved hosting direction now uses a Compute Engine Spot VM funded through
+the sponsor's GCP credits. See [the hosting decision record](docs/hosting-design.md)
+for confirmed choices, interruption/restart limits and outstanding configuration.
+No deployment or continuous availability is established by that decision.
 
 ## File guide
 
 `AGENTS.md` defines shared contributor practices, including preserving other
 members' incremental work and synchronizing authorized Trello/GitHub updates.
 `docs/integrations.md` describes actual/demo services and future Stripe replacement.
+`docs/cross-platform.md` describes portable setup, platform-specific security
+prerequisites and the evidence required for Windows/macOS/Linux support.
+`docs/hosting-design.md` records TECH-01 ownership/funding/Spot decisions and the
+remaining storage, HTTPS, cost and recovery choices before deployment.
+`docs/staff-role-policy.md` records the Owner/Admin/Employee permission matrix,
+owner designation for existing installations, role changes, reactivation and
+first administrator MFA setup. New `admin:setup` runs create the Owner;
+`npm run owner:designate` privately designates an existing admin only when no
+Owner exists. No existing admin is promoted automatically by migration 014.
 A card or design approval is not proof of implemented behavior.
+
+`docs/staff-acceptance.md` describes the reusable `test:staff:unit` and
+`test:staff:functional` commands, the staff CI matrix, cross-site cookie
+enforcement checks, completed staff human accessibility review and separate
+operator installation responsibilities.
+Functional CI does not replace strict native visual acceptance.
 
 ### Session validation (BE-08, first increment)
 
@@ -487,7 +519,7 @@ playwright.config.js
 | `tests/e2e/theme.spec.js` | Checks theme preference persistence, system changes, storage failure recovery, dark-mode ordering accessibility, and dark visual references. |
 | `tests/unit/order-pricing.test.js` | Verifies size/topping pricing, combined subtotals, and invalid inputs for browser previews. |
 | `tests/unit/http-hosting.test.js` | Starts an ephemeral local HTTP server to verify raw compressed/uncompressed content, encoding negotiation, caching, HEAD/range handling, and private-file protection. Uses Node's test runner. |
-| `tests/e2e/*-snapshots/` | Reviewed Windows browser/viewport reference images for visual comparisons. |
+| `tests/e2e/*-snapshots/` | Reviewed OS/browser/viewport reference images for visual comparisons; references in other suites may target different operating systems. |
 | `README.md` | Setup, file explanations, and verification instructions. |
 
 Request flow: browser requests `/` or `/order` → Express renders the relevant EJS
@@ -596,7 +628,8 @@ control; generated reports, traces, and failure captures are ignored by Git.
 | `tests/e2e/*.spec.js-snapshots/` | Reference images used by visual tests to detect unintended layout changes. They are test inputs, not reports or deliverable screenshots. |
 | `playwright.config.js` | Runs the browser tests in Chromium, Firefox, and WebKit at desktop and mobile viewport sizes and manages the local test server. |
 
-Run unit tests with `npm run test:unit`. Set up browsers and run browser tests:
+Run unit tests with `npm run test:unit`. After `npm ci`, install the locked browser
+binaries and run browser tests. In Windows PowerShell:
 
 ```powershell
 $env:PLAYWRIGHT_BROWSERS_PATH = Join-Path (Get-Location) 'node_modules/.cache/ms-playwright'
@@ -604,6 +637,19 @@ npx playwright install chromium firefox webkit
 npm test
 npm run test:unit
 ```
+
+In macOS/Linux Bash or Zsh:
+
+```sh
+export PLAYWRIGHT_BROWSERS_PATH="$PWD/node_modules/.cache/ms-playwright"
+npx playwright install chromium firefox webkit
+npm test
+npm run test:unit
+```
+
+HTTPS fixtures also need OpenSSL on PATH. Linux browser system dependencies may
+need separate, reviewed OS package installation. See the
+[platform prerequisites](docs/cross-platform.md#prerequisites) before testing.
 
 The configuration looks for browsers inside
 `node_modules/.cache/ms-playwright`. Set `PLAYWRIGHT_BROWSERS_PATH` to that
@@ -622,7 +668,10 @@ npm run test:visual
 Review generated baseline images before accepting them. Screenshot creation
 alone is not visual approval. Review changes before updating baselines; never
 replace them merely to silence a failed comparison. Baselines depend on the
-operating system and browser version; the existing references are for Windows.
+operating system and browser version. The repository contains Windows (`win32`)
+and macOS (`darwin`) references with different coverage and freshness. Linux
+references and cross-platform release acceptance remain outstanding; missing
+baselines are not passes. Follow the [visual verification policy](docs/cross-platform.md#visual-references).
 Browser-specific baselines belong beside the test
 in the matching `*.spec.js-snapshots/` directory; reports and failure artifacts are ignored.
 
@@ -630,7 +679,8 @@ Automated axe checks supplement manual keyboard, zoom, and screen-reader reviews
 they do not establish full WCAG 2.2 AA conformance. WebKit tests do not substitute
 for all real Safari/device checks.
 
-For Lighthouse, start the server with `NODE_ENV=production`, then run:
+For Lighthouse, start the server in production mode using the shell-specific
+examples in [the cross-platform guide](docs/cross-platform.md#shell-configuration), then run:
 
 ```sh
 npx lighthouse http://127.0.0.1:3000 --output=json --output=html --output-path=./reports/lighthouse --chrome-flags="--headless" --view=false
@@ -703,3 +753,45 @@ full-story acceptance remains open.
 
 Disposable-demo contact, tracking, preview and ciphertext cleanup (SEC-02 increment):
 [retention rules, worker integration and verification](docs/retention-enforcement.md).
+
+Deployment preparation (OPS-01–07): [GCP/DuckDNS runbook](docs/deployment-runbook.md).
+This follows the approved Spot/direct-HTTPS design; it does not authorize or claim
+resource provisioning, publication, spending or completed hosted verification.
+
+Local health probes and safe operational events (OPS-04):
+[contracts, incident procedures and remaining hosted gates](docs/operations-monitoring.md).
+These do not configure alert delivery, log rotation or a hosted monitor.
+
+Disposable-data recreation (OPS-05):
+[isolated rehearsal, safe operator sequence and recovery limits](docs/disposable-data-recreation.md).
+A fresh seeded database is not restoration of order history or lost keys.
+
+Authentication decision record (TECH-04):
+[approved identity, hierarchy, MFA and recovery choices](docs/authentication-decisions.md).
+Decision completion does not establish acceptance of the coordinated BE-08/FE-08 rollout.
+
+Payment security and accounting decisions (TECH-06):
+[approved safeguards, key lifecycle, retention and refund choices](docs/payment-security-decisions.md).
+Decision completion does not replace payment, refund, security or release acceptance.
+
+Scheduling, tracking and notification decisions (TECH-05):
+[policy, concurrency, private-access and worker contract map](docs/scheduling-tracking-decisions.md).
+Feature and release acceptance remain on their implementation and QA cards.
+
+Retention and disposable-data decisions (TECH-02):
+[cleanup, sanitized history, key and copy lifecycle map](docs/retention-decisions.md).
+Broader privacy and hosted-operation acceptance remain separate.
+
+Review preparation (TECH-03):
+[approved team-led review, flexible timing and evidence checklist](docs/review-access-plan.md).
+Hosting is not activated and uninterrupted availability is not promised.
+
+DATA-02: [current storage verification and remaining platform evidence](docs/verification/data-02-storage.md).
+
+FE-02: [persisted availability and stale-draft server integration evidence](docs/verification/fe-02-integration.md).
+
+BE-10: [inventory review, cancellation and full-refund lifecycle evidence](docs/verification/be-10-lifecycle.md).
+
+FE-10: [connected private inventory, cancellation and refund status evidence](docs/verification/fe-10-connected-status.md).
+
+Customer checkout: [current BE-02/BE-03 integration and reconciled FE-03 receipt evidence](docs/verification/customer-checkout-checkpoint.md).

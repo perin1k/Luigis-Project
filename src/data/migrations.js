@@ -70,10 +70,11 @@ const DEMO_PAYMENTS_MIGRATION = Object.freeze({
 const DEMO_REFUNDS_MIGRATION = Object.freeze({intVersion:12,strName:'demo-refunds',strSql:readFileSync(new URL('./migrations/012-demo-refunds.sql',import.meta.url),'utf8')});
 
 const NOTIFICATION_PREVIEWS_MIGRATION=Object.freeze({intVersion:13,strName:'notification-previews',strSql:readFileSync(new URL('./migrations/013-notification-previews.sql',import.meta.url),'utf8')});
+const STAFF_ROLES_MIGRATION=Object.freeze({intVersion:14,strName:'staff-roles',strSql:readFileSync(new URL('./migrations/014-staff-roles.sql',import.meta.url),'utf8')});
 
 export function applyMigrations(objDatabase, arrMigrations = [
   CATALOG_MIGRATION, ORDERS_MIGRATION, PAYMENTS_MIGRATION, SCHEDULING_MIGRATION, ACCESS_MIGRATION,
-  CREDENTIALS_MIGRATION, MFA_MIGRATION, LOGIN_MIGRATION, INVITATIONS_MIGRATION, RECOVERY_MIGRATION, DEMO_PAYMENTS_MIGRATION, DEMO_REFUNDS_MIGRATION, NOTIFICATION_PREVIEWS_MIGRATION,
+  CREDENTIALS_MIGRATION, MFA_MIGRATION, LOGIN_MIGRATION, INVITATIONS_MIGRATION, RECOVERY_MIGRATION, DEMO_PAYMENTS_MIGRATION, DEMO_REFUNDS_MIGRATION, NOTIFICATION_PREVIEWS_MIGRATION, STAFF_ROLES_MIGRATION,
 ]) {
   let intPrevious = 0;
   for (const objMigration of arrMigrations) {

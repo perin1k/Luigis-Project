@@ -35,6 +35,63 @@ preferences within the approved task while preserving shared engineering standar
 
 ## 2. Mandatory human-in-the-loop workflow
 
+### Cross-platform compatibility
+
+- Target Windows, macOS and Linux distributions supported by the locked tooling
+  for development and application execution. Preserve equivalent customer,
+  employee and admin behavior, accessibility and security across these targets.
+  A target is not verified support until evidence exists for that environment.
+- Follow [the cross-platform guide](docs/cross-platform.md). Use the declared Node
+  requirement and lockfile; record actual Node/npm, OS and browser versions.
+  Do not change dependencies or introduce platform-specific tooling without the
+  applicable implementation plan and approval.
+- Use Node path/URL/temp-directory APIs, case-correct imports and argument-based
+  process execution. Avoid hardcoded machine paths, shell-specific npm scripts
+  and assumptions about path separators, filename case, executable bits or chmod.
+  Document necessary platform-specific commands with equivalent instructions.
+- Preserve integrity-sensitive bytes and the repository's .gitattributes rules.
+  Never rewrite pinned blocklists or applied migrations, alter checksums, or
+  perform broad line-ending normalization to make another platform pass.
+- Keep visual references specific to OS/browser/viewport. Review native rendering
+  differences rather than replacing another OS's snapshots or weakening checks.
+  Browser-engine coverage does not establish OS coverage or real Safari testing.
+- Preserve private-key, TLS, session and database protections on every platform.
+  Windows ACLs and POSIX ownership/modes need their respective verification;
+  disabling a security check is not a compatibility fix.
+- For affected executable work, verify relevant setup, runtime, unit/integration
+  and browser flows across the target systems before cross-platform release
+  acceptance. Record passes, failures and unavailable environments separately.
+  Documentation-only increments need content/link/diff review, not invented
+  runtime results. CI, OS package installation and infrastructure changes require
+  their own reviewed implementation scope; this policy does not provision them.
+
+### Full-card completion
+
+When asked to complete a Trello card, treat the entire card's acceptance criteria
+as the task. Review current implementation and dependencies, gather necessary
+decisions together, and present a plan covering the full remaining scope before
+implementation.
+
+After approval, continue through implementation, applicable verification,
+authorized commit/push, and Trello updates without requiring repeated prompts for
+routine steps. Complete and move the card to Done only when its acceptance
+criteria are satisfied.
+
+Under the staged testing workflow in section 9, implementation with passing
+focused checks may move to Ready for Testing while explicitly linked checkpoint
+verification remains pending. This is not full-card completion or permission to
+mark the card Done. Continue through the approved checkpoint scope without
+requiring repeated prompts for routine steps; disclose remaining acceptance work.
+
+Partial increments are progress, not card completion. Stop for genuine blockers,
+unresolved decisions, or material scope changes; explain precisely what remains
+and why. Do not weaken acceptance criteria, move unfinished work elsewhere merely
+to close a card, or claim unavailable verification passed.
+
+Distinguish decision cards from implementation cards: a decision card closes when
+its required decisions are settled and recorded; dependent implementation remains
+on its existing cards.
+
 ### Before implementation
 
 1. Identify the requested user story and inspect relevant files, repository
@@ -83,8 +140,9 @@ preferences within the approved task while preserving shared engineering standar
   server responsibilities from browser responsibilities. Provide focused snippets
   or diffs when they help the reviewer understand the change.
 - Do not merge or close a task with unmet mandatory quality gates. Documentation
-  changes require content and diff review; application browser and Lighthouse
-  checks apply when there is a runnable application affected by the change.
+  changes require content and diff review. Schedule broader application browser,
+  visual, accessibility and Lighthouse checks at the section 9 checkpoints rather
+  than automatically rerunning every suite after every implementation increment.
 - Obtain the human's review before moving to an unapproved next increment.
 
 ## 3. Git and change management
@@ -126,6 +184,16 @@ preferences within the approved task while preserving shared engineering standar
 - Preserve the reviewed session and password primitives in `src/auth/`. Passwords
   are hashed, not encrypted as recoverable values; synthetic card encryption is a
   separate requirement. No default/shared staff password or browser-supplied role.
+- Staff access has three effective roles: Owner, Admin and Employee. Only the
+  Owner assigns Employee/Admin roles and manages admin accounts; admins may
+  invite, deactivate and reactivate employees only. The Owner alone edits menu,
+  prices and hours and reads sales analytics. Admins and Owner retain operational
+  cancellation/refund/review permissions. Follow `docs/staff-role-policy.md`.
+- Require authenticator MFA for both Owner and Admin. Promotion requires first
+  MFA enrollment before access. Role/state changes revoke sessions and pending
+  proofs; reactivation requires fresh sign-in and never restores revoked access.
+  Protect the single Owner against ordinary demotion/deactivation; never infer
+  ownership from an existing admin role or browser-supplied claim.
 - Local individual usernames/passwords and authenticator-app MFA for admins are
   the approved design. Idle expiry is 30 minutes and absolute expiry eight hours;
   activity cannot extend the latter. Protect secret enrollment/recovery and
@@ -279,7 +347,7 @@ counts, supported sizes, and monetary totals.
   with prominent alerts and no automatic timeout decision. After Preparing, block
   customer requests; admins may still cancel if the restaurant cannot fulfill.
   Prepared no-shows have no automatic refund; admins mark Not collected at close.
-- Staff/admins manually manage ingredient availability; admins edit prices/menu
+- Staff manually manage ingredient availability; only the Owner edits prices/menu
   and hours. Block affected recipes, never silently substitute. Preserve purchased
   prices and require review of changed unpaid totals. Do not add counted stock.
 - Guest tracking uses protected links, not automated lookup by name/contact/order
@@ -424,6 +492,51 @@ alone does not establish WCAG 2.2 AA conformance.
 
 ## 9. Testing and quality gates
 
+### Staged verification cadence
+
+Batch broad verification at explicit milestones while retaining meaningful
+checks during development. This changes verification timing, not acceptance
+standards, required coverage, TDD, or security protections.
+
+- Each implementation increment: review the diff and run focused unit,
+  integration or browser checks for changed behavior, including relevant failure
+  and boundary cases. Verify affected authorization, authentication, payment and
+  sensitive-data protections immediately; never defer a known security failure
+  merely because a TEST card is planned. Add reusable tests alongside behavior.
+- Feature checkpoints (TEST cards): exercise the linked connected journeys,
+  affected supported browsers and viewports, automated accessibility and reviewed
+  visual differences. Include applicable manual accessibility and Lighthouse
+  checks before accepting the linked features; record any gate reserved for
+  final acceptance explicitly. Reuse existing fixtures, suites and valid evidence.
+- Final acceptance (existing QA cards): verify integrated customer, employee and
+  owner/admin behavior, the full supported browser/platform matrix, visual and
+  manual accessibility review, Lighthouse requirements and hosted deployment.
+  QA-02 retains payment/privacy verification; QA-03 retains concurrency/recovery
+  and performance verification; QA-01 retains integrated release acceptance.
+  TEST cards support these reviews rather than replace or duplicate them.
+- Select checks from the actual change and dependency impact. Do not rerun
+  unaffected broad suites or repeat successful checks without a new change,
+  failure, or unresolved concern. Documentation-only changes need content, link
+  and diff review, not application runtime suites. Independent approved work may
+  continue while CI runs, provided it does not invalidate or conflict with the
+  verification in progress. Do not disable or alter CI without reviewed scope.
+- Record the tested commit, environment, covered criteria, outcomes and remaining
+  gates on the checkpoint and link its evidence from the source cards. Later
+  changes require impact review and rerunning invalidated checks; earlier results
+  are not automatic evidence for changed behavior. Do not present unrun checks
+  as passes or silently waive existing quality gates.
+
+Ready for Testing requires finished implementation for the card's scope, passing
+focused checks, a reviewable commit and an explicit linked TEST/QA checkpoint with
+the remaining criteria recorded on the original card. Unfinished implementation
+and known defects remain In Progress or visibly blocked; do not relabel them as
+testing-only work. Checkpoint defects return affected cards to In Progress.
+Move a feature to Done only when its own acceptance criteria and applicable gates
+are satisfied; the product still requires final QA acceptance. Preserve already
+accepted cards and evidence unless a regression or changed requirement affects
+them. A checkpoint may accept only the individually verified source cards; it
+must remain open until its full scope passes.
+
 ### Test-driven development
 
 - Write behavior-focused tests before or alongside implementation.
@@ -494,12 +607,26 @@ human explicitly revises the acceptance requirements.
   notes and commits, record scoped progress/blockers and verified repository links,
   and close only the accepted card scope. Do not equate a module, migration,
   proposed design or demonstration external outcome with a completed application.
-- Preserve board organization: each prefix stays together and follows reviewed
-  dependency order, not necessarily its numeric ID. Current convention puts all FE
-  in In Progress, all BE in Sprint Backlog, future PAY in Future Ideas, completed
-  decisions in Approved Decisions and open TECH in Technical Decisions. Preserve
-  other members' explicitly authorized DATA/status changes rather than resetting
-  them to an older chat snapshot. Completion badges and notes identify actual state.
+- Active card ownership: before implementation begins, move the card to the
+  board's designated In Progress list and identify the responsible developer or
+  developers on the card. Check existing ownership and activity first; coordinate
+  before joining work already underway. Keep active cards grouped by prefix and
+  dependency order. Backlog placement represents planned work, not work currently
+  underway. Do not place every card with a given prefix in In Progress merely
+  because that workstream has started.
+- Preserve board organization: within each list, keep matching prefixes together
+  in reviewed dependency order, not necessarily numeric order. The designated
+  Development — Completion Order queue may interleave prefixes by dependency;
+  insert TEST checkpoints at their feature dependency boundaries so verification
+  is intermittent. Use actual work
+  status to choose the list; completed decisions and future ideas retain their
+  designated lists. Preserve other members' explicitly authorized status changes
+  rather than resetting them to an older chat snapshot. Completion badges and
+  notes identify actual state; move a card to Done only after acceptance.
+- Use Ready for Testing for implemented cards awaiting their linked checkpoint,
+  with source-card acceptance criteria retained. Move a TEST card to In Progress
+  when verification actually starts, check ownership first, and link results back
+  to its source cards. Neither a checkpoint link nor list placement is acceptance.
 - Record individual time honestly using the team's chosen tool and categories.
   Do not invent elapsed time, backfill unverified entries, or claim others' work.
 - Connections are optional until a task needs them. Do not block local approved
@@ -517,7 +644,9 @@ human explicitly revises the acceptance requirements.
 - [ ] Hungarian notation follows the documented rules and naming exceptions.
 - [ ] Business rules match the approved Luigi's requirements.
 - [ ] Tests precede or accompany behavior changes and cover failures/boundaries.
-- [ ] Applicable accessibility, browser, visual, and Lighthouse gates pass.
+- [ ] Focused checks pass; remaining broader gates have explicit TEST/QA links.
+- [ ] Before Done/merge, the card's applicable acceptance gates pass; final release
+  also requires the integrated QA gates.
 - [ ] Payment/customer information and secrets are handled safely.
 - [ ] Verification evidence is retained and limitations are disclosed in the agreed review format.
 - [ ] Human review occurs before unapproved next steps, merging, or task closure.

@@ -29,6 +29,7 @@ export function createDemoPaymentService(objDatabase,{objVault,objCatalogService
       if(!objHold || objHold.expires_at<=dtNow || objOrder.expires_at<=dtNow || objHold.promised_at<=dtNow) return reject('checkout_expired','The checkout hold expired. Choose a new ready time and review your order.');
       if(!objSchedulingService.hasCapacity(objInput.strOrderId,dtNow))return reject('capacity_changed','Pickup capacity changed. Choose a new ready time.');
       const objDay=objDatabase.prepare('SELECT * FROM service_days WHERE id=?').get(objHold.service_day_id);
+      if(objDay&&dtNow>objDay.cutoff_at)return reject('checkout_closed','Online ordering has closed for this service day. Choose a new ready time and review your order.');
       if(!objDay || objDay.is_closed || objHold.promised_at<objDay.opens_at || objHold.promised_at>objDay.latest_pickup_at || objOrder.fulfillment_status!==null
         || objDatabase.prepare("SELECT id FROM cancellation_requests WHERE order_id=? AND state='pending'").get(objInput.strOrderId)) return reject('order_changed','The order needs a new review before payment.');
       try {

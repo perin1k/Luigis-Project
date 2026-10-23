@@ -19,5 +19,7 @@ test('configured runtime cleans expired ciphertext and generates previews withou
     await new Promise((fnResolve,fnReject)=>{const intTimer=setTimeout(()=>fnReject(new Error('Disposable runtime did not start.')),5000);objChild.once('error',(objError)=>{clearTimeout(intTimer);fnReject(objError);});objChild.once('exit',()=>{clearTimeout(intTimer);fnReject(new Error('Disposable runtime exited.'));});objChild.stdout.on('data',(objChunk)=>{if(objChunk.toString().includes(`http://127.0.0.1:${intPort}`)){clearTimeout(intTimer);fnResolve();}});});
     const objRead=openDatabase(strPath);try{assert.equal(objRead.prepare("SELECT count(*) AS n FROM notification_outbox WHERE state='previewed'").get().n,2);assert.equal(objRead.prepare('SELECT count(*) AS n FROM notification_previews').get().n,2);assert.equal(objRead.prepare('SELECT count(*) AS n FROM demo_payment_secrets').get().n,0);}finally{objRead.close();}
     assert.equal((await fetch(`http://127.0.0.1:${intPort}/api/staff/orders/example/notifications`)).status,404);
+    assert.equal((await fetch(`http://127.0.0.1:${intPort}/health/live`)).status,200);
+    const objReady=await fetch(`http://127.0.0.1:${intPort}/health/ready`);assert.equal(objReady.status,503);assert.deepEqual(await objReady.json(),{strStatus:'not_ready'});
   }finally{if(objChild&&objChild.exitCode===null){const pExit=once(objChild,'exit');objChild.kill('SIGTERM');await pExit;}rmSync(strDirectory,{recursive:true,force:true});}
 });

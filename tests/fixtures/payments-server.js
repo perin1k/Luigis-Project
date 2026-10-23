@@ -20,6 +20,8 @@ function reset(){objDatabase?.close();objDatabase=openDatabase(':memory:');apply
 reset();const objServer=createServer((objRequest,objResponse)=>{
   if(objRequest.url==='/__test/reset'){reset();return objResponse.end('reset');}
   if(objRequest.url==='/__test/decline'){bApprove=false;return objResponse.end('decline');}
+  if(objRequest.url==='/__test/near-close'){dtNow='2026-10-22T03:25:00.000Z';return objResponse.end('advanced');}
+  if(objRequest.url==='/__test/after-cutoff'){dtNow='2026-10-22T03:30:00.001Z';return objResponse.end('advanced');}
   if(objRequest.url==='/__test/expire'){dtNow='2026-10-21T15:31:00.000Z';return objResponse.end('advanced');}
   if(objRequest.url==='/__test/count')return objResponse.end(JSON.stringify({intPayments:objDatabase.prepare('SELECT count(*) AS n FROM demo_payment_attempts').get().n,intConfirmed:objDatabase.prepare("SELECT count(*) AS n FROM orders WHERE fulfillment_status='Received'").get().n}));
   return objApp(objRequest,objResponse);

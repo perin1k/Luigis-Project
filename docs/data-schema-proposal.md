@@ -1,5 +1,13 @@
 # DATA-01 — Storage schema proposal
 
+October 22 account-policy update: [Owner/Admin/Employee policy](staff-role-policy.md)
+supersedes the original two-tier access design. Migration 014 adds a protected
+single-owner designation/effective-role view, admin-invitation role and restricted
+first-MFA enrollment markers without rewriting applied migrations or staff foreign
+keys. Reactivation and owner-controlled Employee/Admin changes are now required.
+Existing admins are not automatically owners. Original approved schema history
+below remains the foundation; current role behavior follows the linked policy.
+
 Status: schema proposal approved by the user, October 21, 2026. No database, migration,
 dependency, public API, or application behavior is implemented by this document.
 Story: [DATA-01](https://trello.com/c/qEievdfN).

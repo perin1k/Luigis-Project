@@ -14,21 +14,25 @@ export function createStaffFixture(strOrigin, { fnCreateApp = createApp } = {}) 
   const objDatabase = openDatabase(':memory:'); applyMigrations(objDatabase);
   let numNow = Date.parse('2026-10-21T18:00:00.000Z');
   const fnNow = () => new Date(numNow);
-  for (const strRole of ['employee', 'admin']) {
+  for (const strRole of ['employee', 'admin', 'owner']) {
     objDatabase.prepare('INSERT INTO staff_users (id,identity_subject,role,created_at) VALUES (?,?,?,?)')
-      .run(strRole, `synthetic-${strRole}`, strRole, fnNow().toISOString());
+      .run(strRole, `synthetic-${strRole}`, strRole === 'owner' ? 'admin' : strRole, fnNow().toISOString());
     objDatabase.prepare('INSERT INTO staff_credentials (user_id,username,password_hash,created_at,password_changed_at) VALUES (?,?,?,?,?)')
       .run(strRole, strRole, PASSWORD_HASH, fnNow().toISOString(), fnNow().toISOString());
   }
+  objDatabase.prepare('INSERT INTO staff_ownership VALUES(1,?,?)').run('owner',fnNow().toISOString());
   const objMfa = createMfaService(objDatabase, { strEncryptionKeyHex: 'ab'.repeat(32), fnNow });
   const objEnrollment = objMfa.beginEnrollment('admin');
   const objTotp = OTPAuth.URI.parse(objEnrollment.strProvisioningUri);
   objMfa.confirmEnrollment('admin', objEnrollment.strEnrollmentId, objTotp.generate({ timestamp: numNow }));
+  const objOwnerEnrollment=objMfa.beginEnrollment('owner');
+  const objOwnerTotp=OTPAuth.URI.parse(objOwnerEnrollment.strProvisioningUri);
+  objMfa.confirmEnrollment('owner',objOwnerEnrollment.strEnrollmentId,objOwnerTotp.generate({timestamp:numNow}));
   numNow += 30000;
   const arrRecoveryCodes = runTransaction(objDatabase, () => issueRecoveryCodes(objDatabase, 'admin', fnNow()));
   const objRuntime = createAuthRuntime(objDatabase, { strOrigin, strEncryptionKeyHex: 'ab'.repeat(32), fnNow });
   return { objApp: fnCreateApp({ objAuthRuntime: objRuntime }, objDatabase, { fnNow }), objDatabase, arrRecoveryCodes,
-    code(strSecret) { numNow += 30000; return (strSecret ? new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(strSecret) }) : objTotp).generate({ timestamp: numNow }); },
+    code(strSecret) { numNow += 30000; return (strSecret === 'owner' ? objOwnerTotp : strSecret ? new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(strSecret) }) : objTotp).generate({ timestamp: numNow }); },
     seedEmployees() {
       for (let intIndex = 0; intIndex < 12; intIndex += 1) {
         const strId = `sample.${String(intIndex).padStart(2, '0')}`;
