@@ -2,7 +2,7 @@ import express from 'express';
 import {randomBytes} from 'node:crypto';
 import {AUTH_COOKIES,COOKIE_OPTIONS,createCsrfProtection,readAuthCookies} from '../auth/auth-transport.js';
 import {StaffOrderError} from './orders-service.js';
-export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,objDemoRefundService,objNotificationService,objAnalyticsService,strOrigin,fnRender}){
+export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressService,objTrackingService,objOrderExceptionService,objDemoRefundService,objNotificationService,objAnalyticsService,strOrigin,fnRender,bPrivacy=false}){
   const objOrigin=new URL(strOrigin);if(objOrigin.protocol!=='https:'||objOrigin.origin!==strOrigin)throw new Error('Exact staff HTTPS origin required.');
   const objRouter=express.Router();const objCsrf=createCsrfProtection();
   objRouter.use(['/staff/orders','/api/staff/orders','/api/staff/analytics','/staff/analytics'],(objRequest,objResponse,fnNext)=>{
@@ -16,7 +16,7 @@ export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressS
       const objResult=bDetail?objStaffOrdersService.readOrder(objResponse.locals.strSessionToken,objRequest.params.reference):objStaffOrdersService.listOrders(objResponse.locals.strSessionToken,objRequest.query);
       if(!objResult)return bJson?objResponse.status(401).json({strMessage:'Your staff session expired. Sign in again.'}):objResponse.redirect(303,'/staff/sign-in');
       if(bJson)return objResponse.json(objResult);
-      fnRender(objRequest,objResponse,fnNext,'pages/staff-orders',{strTitle:bDetail?'Order details | Luigi’s Pizza':'Order queue | Luigi’s Pizza',strDescription:'Authorized staff order preparation queue.',objQueue:bDetail?null:objResult,objOrder:bDetail?objResult:null,bOrderProgress:Boolean(objOrderProgressService)});
+      fnRender(objRequest,objResponse,fnNext,'pages/staff-orders',{strTitle:bDetail?'Order details | Luigi’s Pizza':'Order queue | Luigi’s Pizza',strDescription:'Authorized staff order preparation queue.',objQueue:bDetail?null:objResult,objOrder:bDetail?objResult:null,bOrderProgress:Boolean(objOrderProgressService),bPrivacy});
     }catch(objError){
       const intStatus=objError instanceof StaffOrderError?objError.intStatus:503;const strMessage=objError instanceof StaffOrderError?objError.message:'Orders could not be loaded. Please try again.';
       if(bJson)return objResponse.status(intStatus).json({strMessage});

@@ -60,7 +60,9 @@ if(elAdvance)elAdvance.addEventListener('click',async()=>{
   finally{clearTimeout(intTimer);elRefresh.disabled=false;elMain.removeAttribute('aria-busy');}
 });
 const elAdminSubmit=document.querySelector('#admin-order-submit');
+document.querySelector('#admin-order-action')?.addEventListener('change',objEvent=>{elAdminSubmit.textContent=objEvent.target.value==='privacy'?'Open privacy review':'Save reviewed decision';});
 if(elAdminSubmit){elAdminSubmit.hidden=false;elAdminSubmit.addEventListener('click',async()=>{
+  if(document.querySelector('#admin-order-action').value==='privacy'){location.assign(`/staff/privacy/${encodeURIComponent(strReference)}`);return;}
   if(!document.querySelector('#admin-order-reviewed').checked){elError.hidden=false;elError.textContent='Review this order and confirm your decision first.';return;}
   elAdminSubmit.disabled=true;elRefresh.disabled=true;if(elAdvance)elAdvance.disabled=true;elError.hidden=true;
   const objAbort=new AbortController();const intTimer=setTimeout(()=>objAbort.abort(),10000);

@@ -1,5 +1,16 @@
 # SEC-02 operator and audit review
 
+October 23 application review: operational telemetry now accepts fixed event names,
+server-generated UUIDs, timestamps and status codes only (`src/operations/telemetry.js`).
+It does not serialize request URLs/bodies, cookies, exceptions or forwarded IDs;
+`operations.test.js` verifies deliberate private-data fixtures stay out of output.
+The approved hosted policy is direct TLS with no reverse proxy and seven-day
+local operational log rotation. Actual host IAM/ACLs, rotation and copy/key custody
+remain OPS-02/03/04 verification before publication, not application test results.
+The implemented [privacy workflow](privacy-request-workflow.md) and migration 015
+supersede the old proposed-procedure note below. No public audit endpoint exists.
+See [current acceptance evidence](verification/sec-acceptance.md).
+
 Reviewed October 22, 2026 against the local demonstration implementation. This
 records inspected controls and deployment prerequisites, not hosted verification.
 See [inventory](privacy-data-inventory.md) and

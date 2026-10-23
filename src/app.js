@@ -1,3 +1,4 @@
+import {createPrivacyRouter} from './staff/privacy-router.js';
 import {createOperationalRecorder} from './operations/telemetry.js';
 import {randomUUID} from 'node:crypto';
 import {createHealthRouter} from './operations/health-router.js';
@@ -16,7 +17,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnWriteOperational } = {}) {
+export function createApp({ objPrivacyService, objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnWriteOperational } = {}) {
 const objApp = express();
 const objOperational=createOperationalRecorder({fnWrite:fnWriteOperational});
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
@@ -135,7 +136,8 @@ objApp.get('/preview/confirmation', (objRequest, objResponse, fnNext) => {
 });
 if (objTrackingService) objApp.use(createTrackingRouter(objTrackingService,renderPage));
 if (objAuthRuntime && objMenuService) objApp.use(createMenuRouter({objMenuService,strOrigin:objAuthRuntime.strOrigin,fnRender:renderPage}));
-if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage }));
+if (objAuthRuntime && objPrivacyService) objApp.use(createPrivacyRouter({objPrivacyService,strOrigin:objAuthRuntime.strOrigin,fnRender:renderPage}));
+if (objAuthRuntime && objStaffOrdersService) objApp.use(createStaffOrdersRouter({ objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, strOrigin: objAuthRuntime.strOrigin, fnRender: renderPage, bPrivacy: Boolean(objPrivacyService) }));
 if (objAuthRuntime) {
   objApp.use('/auth', objAuthRuntime.objRouter);
   objApp.get(['/staff/sign-in', '/staff/enroll', '/staff/recovery', '/staff/account'], (objRequest, objResponse, fnNext) => {

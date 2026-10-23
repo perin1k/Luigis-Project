@@ -754,6 +754,12 @@ full-story acceptance remains open.
 Disposable-demo contact, tracking, preview and ciphertext cleanup (SEC-02 increment):
 [retention rules, worker integration and verification](docs/retention-enforcement.md).
 
+Admin/Owner customer contact correction and limited private data review:
+[privacy workflow, API, migration and file guide](docs/privacy-request-workflow.md).
+The page uses current staff MFA/CSRF protections; it adds no public data lookup.
+Focused security/privacy verification: `node scripts/verify-security.js` and
+`node node_modules/@playwright/test/cli.js test -c playwright.security.config.js`.
+
 Deployment preparation (OPS-01–07): [GCP/DuckDNS runbook](docs/deployment-runbook.md).
 This follows the approved Spot/direct-HTTPS design; it does not authorize or claim
 resource provisioning, publication, spending or completed hosted verification.

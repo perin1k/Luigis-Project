@@ -7,6 +7,7 @@ single-admin delivery restrictions and statements that reactivation is out of sc
 | --- | --- | --- | --- |
 | Read orders, advance preparation, toggle ingredient availability | Yes | Yes | Yes |
 | Decide cancellations, approve demo refunds, resolve operational holds, retry internal notifications | No | Yes | Yes |
+| Review requester-verified contact corrections and limited private data copies | No | Yes | Yes |
 | Edit menu/prices/special hours; read sales analytics | No | No | Yes |
 | Invite, deactivate or reactivate employees | No | Yes | Yes |
 | Invite/manage admins; change Employee/Admin role | No | No | Yes |

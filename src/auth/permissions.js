@@ -1,7 +1,7 @@
 const STAFF_ACTIONS = new Set(['orders.read', 'orders.prepare', 'availability.update', 'account.password.change']);
 const ADMIN_ACTIONS = new Set([
   ...STAFF_ACTIONS, 'employees.manage',
-  'cancellation.decide', 'refund.approve', 'notifications.retry',
+  'cancellation.decide', 'refund.approve', 'notifications.retry', 'privacy.manage',
 ]);
 const OWNER_ACTIONS = new Set([...ADMIN_ACTIONS, 'menu.edit', 'hours.manage', 'analytics.read', 'staff.roles.change']);
 

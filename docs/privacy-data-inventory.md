@@ -1,5 +1,13 @@
 # SEC-02 internal demonstration data inventory
 
+October 23 update: [the protected privacy workflow](privacy-request-workflow.md)
+implements requester-verified Admin/Owner contact correction and limited-copy
+review. Migration 015 adds sanitized append-only privacy evidence (opaque actor,
+order, action, revision and time; retained until teardown). No raw contact change
+values, public lookup, automatic export or external delivery. The public policy/
+contact-email deferral remains explicit. [SEC acceptance](verification/sec-acceptance.md)
+tracks current verification; the October 22 remaining-work notes below are history.
+
 Scope: current repository implementation, October 22, 2026. This is an internal
 engineering inventory, not a published privacy policy or a legal compliance claim.
 Story: https://trello.com/c/ehrcmOun. Use invented contacts only. No real orders,

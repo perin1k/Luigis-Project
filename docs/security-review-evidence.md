@@ -1,5 +1,17 @@
 # SEC-01 dependency, credential-pattern and route review
 
+October 23 consolidation: [SEC acceptance](verification/sec-acceptance.md) records
+the current configured-HTTPS matrix, fresh advisories/history scan and retained
+TEST-01–03 evidence. The October 22 open-item statements below describe the earlier
+increment. Current analytics is Owner-only; Admin and Owner require MFA. The
+approved deployment uses direct TLS and **no trusted proxy**; do not enable proxy
+trust from forwarded headers. Actual public host/IAM/TLS provisioning remains OPS.
+
+The new restricted privacy read/correction/copy family uses server `privacy.manage`
+permission, current MFA sessions, exact HTTPS host, strict cookies, CSRF for POST,
+1 KiB uncompressed JSON, revisions, read-time retention and append-only sanitized
+evidence. Full details: [privacy workflow](privacy-request-workflow.md).
+
 Review date: October 22, 2026. Scope: local demonstration source and reachable Git
 history; no deployed environment or provider account was scanned. This supplements
 [the threat model](security-threat-model.md), not a security certification.

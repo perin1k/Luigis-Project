@@ -1,5 +1,16 @@
 # SEC-01 focused threat model and HTTP boundary verification
 
+October 23 continuation: [current SEC acceptance](verification/sec-acceptance.md)
+consolidates the formerly open application review. New protected operations are
+requester-verified Admin/Owner contact correction and limited-copy review; risks
+include unverified requester impersonation, stale edits, resurrecting expired
+contacts, audit failure, accidental copying and late-response disclosure. Server
+role/MFA checks, review confirmation, transaction/revision/deadline enforcement,
+sanitized auditing and browser clearing are tested in the linked workflow.
+The human identity-review step cannot be automated or proven by a checkbox.
+Accepted TEST-01–03 covers unchanged UI/browser/manual flows. The approved runtime
+is direct HTTPS/no proxy trust; hosting configuration and final QA remain separate.
+
 October 22, 2026. Story: https://trello.com/c/3fVC3XbV.
 Scope is the current disposable demonstration, not certification or a hosted
 security assessment. No new application behavior, dependency or infrastructure
