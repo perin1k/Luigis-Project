@@ -21,6 +21,8 @@ accessibility and private operator verification are distinct gates.
   24.14.1, locked dependencies/browsers and read-only checkout permissions.
   Linux browser system prerequisites are installed only on the disposable hosted
   runner. Windows discovers OpenSSL from PATH or the installed Git directory.
+  Installation and execution share the repository-local browser path explicitly;
+  installing into the default user cache does not satisfy this configuration.
   There are no application secrets, deployment steps or uploaded artifacts.
 
 ## Cookie enforcement investigation
