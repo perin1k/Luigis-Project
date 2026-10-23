@@ -1,5 +1,30 @@
 # BE-01 pricing verification
 
+## Merge-resolution verification — 2026-10-22
+
+Reconciled local BE-01 commit `f3caecd` with incoming FE-03 commit `a133834`.
+Both the navigation-focus preservation and payment-summary price invalidation
+remain in `checkPrice()`. Both sets of browser tests are retained. The eight
+conflicting Windows pricing baselines use the incoming FE-03 images because the
+review page now includes its cancellation/refund notice. Each image was visually
+inspected, and comparisons passed without regenerating or relaxing baselines.
+
+- Unit/integration suite: **232/232 passed** using serial execution and Git's
+  existing OpenSSL on PATH.
+- Combined pricing/payment-summary suite: **66/66 passed** across Chromium,
+  Firefox and WebKit, desktop and mobile. Runs comprised 44 Chromium/WebKit and
+  22 Firefox tests, including keyboard journeys, visual comparisons, axe scans,
+  320px reflow, editing and stale/failed-price handling.
+- Firefox `157.0` now launches successfully outside the sandbox. Its earlier
+  startup limitation is superseded by the successful UI and visual checks above;
+  no root cause or environment repair is claimed.
+- Fresh Lighthouse 13.5.0 production-fixture audit: **100 Performance,
+  100 Accessibility, 100 Best Practices, 100 SEO**. Local generated report:
+  `reports/be-01-lighthouse.json`; test logs: `reports-merge-unit.log`,
+  `reports-merge-pricing.log`, `reports-merge-firefox-tests.log`.
+- Screen-reader, manual zoom and complete manual contrast/focus acceptance
+  remain pending. Conflict resolution does not mark BE-01 accepted or complete.
+
 ## Follow-up verification — 2026-10-22
 
 Status: implementation verified with the correction below; **card acceptance is
