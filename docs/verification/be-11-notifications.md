@@ -1,5 +1,60 @@
 # BE-11 verification — October 22, 2026
 
+## Focused implementation reconciliation — October 23, 2026
+
+Reviewed existing team preview/runtime code at
+`47a33e02b630d5dcdfb3615bf2ce632b87c0da97`, preserving Perin's `109da81`
+implementation and subsequent shared integrations. Windows x64 / Node 24.22.1 /
+Playwright 1.64.1, locked Chromium 156.0.8078.4 and Firefox 157.0 desktop.
+No application, fixture, test, dependency, schema or migration change was needed.
+
+Fresh notification service/runtime/HTTPS checks passed for genuine confirmation/
+Ready events, channel/template deduplication, sanitized rendering failures,
+admin-only idempotent retries, atomic generation/audit rollback, inventory apology,
+distinct cancellation/refund text, seven-day resolved expiry and pending-case
+extension, redacted-contact suppression, forged-event rejection, v13 upgrade
+preservation and cascading cleanup. A disposable configured server successfully
+performed startup processing and expired-ciphertext cleanup while public HTTP
+kept staff preview endpoints inaccessible. This is a startup runtime check, not
+new evidence of hosted operation or a long-running periodic worker.
+
+Selected Chromium/Firefox employee/admin journeys passed for actual preview and
+Ready generation, keyboard disclosure/refresh, absence of employee retry controls,
+admin failed-generation retry and repeat safety, and clearing private order/preview
+content after session expiry, including a delayed parsed body that must not restore
+it. No real email/SMS was sent, and no sent/delivered state is claimed.
+
+```sh
+node --test tests/unit/notification-service.test.js tests/unit/notification-runtime.test.js tests/unit/staff-orders-http.test.js
+node node_modules/@playwright/test/cli.js test -c playwright.staff-orders.config.js notifications.spec.js --project=chromium-desktop --project=firefox-desktop --grep 'employees read actual|admin retries failed|expired sessions clear'
+```
+
+File responsibilities remain in [notification design](../notification-preview-design.md):
+`src/notifications/outbox.js` queues deduplicated notices inside actual state-change
+transactions; `src/notifications/notification-service.js` validates event sources,
+generates bounded plain-text previews and enforces read/retry/retention rules;
+server runtime invokes processing; existing staff routes and browser panel enforce
+access and safe rendering. Raw customer contacts/card values/private tracking
+secrets are not duplicated into preview text. All relevant service and transport
+checks above used disposable synthetic records, not production data changes.
+
+[BE-09](be-09-refunds.md) and [FE-05](fe-05-tracking.md) retain current evidence for
+real cancellation/refund events and customer outcomes. This increment does not
+repeat those suites or imply external delivery. Earlier native visual/audit
+records below retain their original source/environment; they were not rerun or
+presented as new acceptance. Documentation links and diff were reviewed.
+
+BE-11 is **Ready for Testing, not Done**. [TEST-03](https://trello.com/c/WOZ38Ufw)
+retains native supported browser/mobile visuals and axe, manual keyboard/zoom/
+contrast/screen-reader review, applicable audits and connected fulfillment/
+exception/preview acceptance. Existing private noindex exceptions and final
+QA/INT/OPS boundaries remain. SEC-02 retains broader contact/grant cleanup;
+current preview deadline and redaction checks do not certify all privacy work.
+Earlier Firefox launch limitations are historical: this Windows sample passed,
+without certifying unrun environments or changing personal browser profiles.
+
+## Original implementation evidence
+
 Story: https://trello.com/c/7V9PKfRN. [Design and file guide](../notification-preview-design.md).
 
 ## Server and runtime checks
