@@ -1,5 +1,10 @@
 # OPS-04 local probes, redacted worker events and incident handoff
 
+QA-03's [approved workload/restart targets and measurement procedure](verification/qa-03-concurrency-recovery.md)
+include a ten-minute operator restart target only when VM, disk and keys are
+intact. This is not a measured result, uptime SLA or authorization to activate
+hosting/alerts; the existing monitor notification thresholds remain separate.
+
 October 22, 2026. Card: https://trello.com/c/k5lYEttU. Full-card scope includes
 hosted monitoring/alerts, operational logs and incident exercises. This implements
 and verifies the local parts; actual host configuration remains on hold under the

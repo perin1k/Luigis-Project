@@ -804,4 +804,6 @@ Customer checkout: [current BE-02/BE-03 integration and reconciled FE-03 receipt
 
 QA-02: [consolidated payment/privacy evidence and remaining operator gates](docs/verification/qa-02-payment-privacy.md).
 
+QA-03: [approved targets, race/recovery evidence and hosted measurement procedure](docs/verification/qa-03-concurrency-recovery.md).
+
 TEST-02: [scheduling, persisted checkout and demonstration payment checkpoint](docs/verification/test-02-checkout-acceptance.md).
