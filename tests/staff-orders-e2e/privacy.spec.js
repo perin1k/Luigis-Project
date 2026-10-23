@@ -1,6 +1,17 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+async function settleControls(objPage) {
+  // Focus/scroll and disabled-fieldset changes can start CSS transitions on the
+  // next render. Move the pointer off controls, allow two render frames, then
+  // await actual animations; an immediate zero-animation poll can race styling.
+  await objPage.mouse.move(0,0);
+  await objPage.evaluate(async()=>{
+    await new Promise(requestAnimationFrame);await new Promise(requestAnimationFrame);
+    await Promise.all(document.getAnimations().map(objAnimation=>objAnimation.finished.catch(()=>{})));
+  });
+}
+
 test.beforeEach(async({request:objRequest})=>{await objRequest.get('/__test/reset');});
 
 async function openPrivacy(objPage,objRequest,strUser='admin') {
@@ -76,7 +87,7 @@ test('uncertain correction preserves inputs and reload checks the committed resu
 
 for(const strTheme of ['Light','Dark'])test(`privacy visual ${strTheme}: keyboard, reflow and limited copy`,async({page:objPage,request:objRequest})=>{
   await openPrivacy(objPage,objRequest);await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText(strTheme,{exact:true}).click();
-  await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter(objAnimation=>objAnimation.playState==='running').length)).toBe(0);
+  await settleControls(objPage);
   // Explicit keyboard controls and native form semantics; no forced clicks.
   await objPage.getByLabel('I verified the requester and reviewed this order.').focus();await objPage.keyboard.press('Space');
   await expect(objPage.getByLabel('I verified the requester and reviewed this order.')).toBeChecked();
@@ -86,7 +97,7 @@ for(const strTheme of ['Light','Dark'])test(`privacy visual ${strTheme}: keyboar
   await expect(objPage.getByLabel('Limited order data copy',{exact:true})).toBeVisible();
   // Only the opaque reference value is normalized; genuine contact/item text remains visible.
   await objPage.getByLabel('Limited order data copy',{exact:true}).evaluate(elInput=>{const objValue=JSON.parse(elInput.value);objValue.strReference='00000000-0000-4000-8000-000000000000';elInput.value=JSON.stringify(objValue,null,2);elInput.blur();});
-  await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter(objAnimation=>objAnimation.playState==='running').length)).toBe(0);
+  await settleControls(objPage);
   expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
   await expect(objPage).toHaveScreenshot(`privacy-copy-${strTheme}.png`,{fullPage:true,animations:'disabled'});
   const intOriginalWidth=objPage.viewportSize().width;
