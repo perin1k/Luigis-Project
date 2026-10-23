@@ -810,4 +810,6 @@ OPS-01 preparation: [review-only systemd/environment templates and rollback chec
 
 OPS-03 preparation: [secret custody, injection, rotation/revocation and secure handoff](docs/secrets-operations.md).
 
+OPS-07 preparation: [maintenance, update/release procedure and clean-checkout limits](docs/maintenance-procedure.md).
+
 TEST-02: [scheduling, persisted checkout and demonstration payment checkpoint](docs/verification/test-02-checkout-acceptance.md).
