@@ -91,7 +91,8 @@ jobs:
         run: |
           for strSource in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
             if [[ -f "$strSource" ]]; then
-              sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|https://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$strSource"
+              sudo sed -i 's|http://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|https://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|mirror+file:/etc/apt/apt-mirrors\.txt|https://archive.ubuntu.com/ubuntu|g' "$strSource"
+              grep -E '^(URIs:|deb )' "$strSource"
             fi
           done
       - name: Install locked browsers and Linux system prerequisites

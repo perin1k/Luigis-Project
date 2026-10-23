@@ -31,7 +31,9 @@ accessibility and private operator verification are distinct gates.
   There are no application secrets, deployment steps or artifact uploads.
   The approved temporary collection steps were removed after candidate review.
   Linux replaces only the slow Azure Ubuntu archive URL with Ubuntu's main HTTPS
-  archive in the disposable runner's existing source files. Repository suites,
+  archive in the disposable runner's existing source files, including GitHub's
+  indirect `mirror+file:/etc/apt/apt-mirrors.txt` URI. The selected public archive
+  is logged. Repository suites,
   signing keys and package verification remain unchanged. This avoids the observed
   prerequisite-download timeout; it does not alter the developer's machine.
   The approved runner repair changes macOS 14 to macOS 15 to investigate the
