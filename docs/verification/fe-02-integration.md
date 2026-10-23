@@ -1,5 +1,35 @@
 # FE-02 persisted availability checkpoint
 
+## Current focused verification — October 23, 2026
+
+Reviewed existing contributor implementation at `e4d7907` on native Windows with
+Node 24.19.0 and the locked Playwright browsers. No application, dependency,
+schema, test or visual-reference change was needed. The following checks passed:
+
+```sh
+node --test tests/unit/pricing-http.test.js tests/unit/catalog-pricing.test.js tests/unit/order-pricing.test.js
+node --test tests/unit/http-hosting.test.js
+node node_modules/@playwright/test/cli.js test --config=playwright.pricing.config.js --project=chromium-desktop --project=firefox-desktop --grep 'unavailable selected topping|changed database prices|network failures retain|withdraws stale prices'
+```
+
+The service/HTTP checks cover persisted ingredient changes, stale fingerprints,
+blocked recipes, unaffected choices, restored availability and safe branded
+404/500 responses with no-store/noindex. The browser checks verify unavailable
+selection recovery, preserved remaining choices, stale-price withdrawal and
+network retry against actual isolated SQLite data. Local server checks required
+authorized loopback access; application protections were unchanged.
+
+FE-02 is implementation-ready under the [staged policy](../../AGENTS.md#staged-verification-cadence),
+not fully accepted. [TEST-01](https://trello.com/c/5lLwJGB8) retains the connected
+staff-edit-to-customer journey with BE-07/FE-07, affected platform/mobile/browser
+and native visual review, manual keyboard/zoom/contrast/screen-reader checks and
+applicable Lighthouse acceptance. No new visual, axe, manual, WebKit, mobile or
+Lighthouse result is claimed by this focused run. Existing final QA remains
+required. Preserve the historical evidence below without treating its environment
+limitations as current Windows failures or its passes as new runs.
+
+## Original persisted-availability checkpoint
+
 October 22, 2026. Card: https://trello.com/c/5gk80esm. Existing presentation and
 catalog integration are contributor work already present in dev. This increment
 adds a regression test, not a replacement availability source or UI feature.
