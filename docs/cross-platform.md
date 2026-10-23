@@ -215,6 +215,15 @@ Reviewed hosted visual references are separate from local developer references;
 the strict native CI command never updates them. See the staff record for current
 outcomes and the remaining deployment/operator boundaries.
 
+Staff feature acceptance verified October 23, 2026: all required unit/HTTPS,
+functional/accessibility and strict native visual jobs passed at commit
+`4f5974c872bcf1bc4125701c9cc52de3b378df9d` in
+[the staff workflow run](https://github.com/perin1k/Luigis-Project/actions/runs/39903130899).
+The approved native Windows WebKit diagnostic remains failed and unsupported;
+the required matrix is Windows Chromium/Firefox and macOS/Linux all three
+engines, each desktop/mobile. This completes BE-08/FE-08 application acceptance,
+not integrated customer/release acceptance or actual installation under OPS.
+
 - [Playwright installation and supported systems](https://playwright.dev/docs/intro)
 - [Playwright browser installation and dependencies](https://playwright.dev/docs/browsers)
 - [Playwright visual comparisons](https://playwright.dev/docs/test-snapshots)

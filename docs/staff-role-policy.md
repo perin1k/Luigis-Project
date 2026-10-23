@@ -108,6 +108,12 @@ TECH-04 records the approved policy/design. BE-08/FE-08 cover application accept
 OPS covers private real setup, certificate/key custody and hosted access. Never
 mark those tasks complete solely because the policy or migration exists.
 
+BE-08/FE-08 application acceptance completed October 23 after the required native
+matrix passed service, functional/accessibility and strict visual comparisons,
+and the guided human review completed without an issue reported. See the linked
+staff acceptance record for the exact source/run, approved exceptions and existing
+OPS boundaries. This does not certify an actual hosted installation.
+
 Native Windows WebKit reports `None` for the Strict session cookie and sends it
 on a cross-site navigation; this is an enforcement failure, not an inspection-only
 issue. On October 22 the human explicitly approved platform-appropriate coverage:

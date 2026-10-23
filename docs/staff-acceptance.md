@@ -4,6 +4,37 @@ BE-08 and FE-08 retain their complete acceptance scope. The three-tier services
 and screens are implemented; automated functional, native visual, human
 accessibility and private operator verification are distinct gates.
 
+## Accepted application features — October 23, 2026
+
+BE-08/FE-08 application acceptance is complete under the explicitly approved
+browser/platform matrix and existing private-page SEO exception. The final
+[strict verification run](https://github.com/perin1k/Luigis-Project/actions/runs/39903130899)
+tested commit `4f5974c872bcf1bc4125701c9cc52de3b378df9d` with Node 24.14.1 and
+locked Playwright 1.64.1. All required jobs passed service/HTTPS, browser behavior,
+automated accessibility and unchanged-reference native visual checks:
+
+| Hosted target | Required engines, desktop and mobile | Outcome |
+| --- | --- | --- |
+| Windows Server 2022 | Chromium, Firefox | Passed |
+| macOS 15 | Chromium, Firefox, WebKit | Passed |
+| Ubuntu 24.04 | Chromium, Firefox, WebKit | Passed |
+
+Native Windows WebKit's separately named diagnostic job still fails its Strict
+cookie reporting/enforcement checks; its other functional checks pass. This is
+the explicit unsupported-path limitation approved October 22, not a passing
+browser result. No required job ignores failures. Strict cookie assertions and
+application protections are unchanged, image updates are disabled and the final
+run uploaded no artifacts. The completed guided human review and existing staff
+audits are recorded below; neither is a blanket WCAG conformance certification.
+
+The accepted features include individual Owner/Admin/Employee identities,
+server-enforced authority, privileged MFA and first enrollment, private
+bootstrap/designation/recovery procedures, invitations, password changes,
+deactivation/reactivation, session revocation, error states and integrated staff
+screens. Actual installation of real accounts/keys/certificates and public
+hosting remain their existing OPS obligations under the role policy. They are
+not newly created deferrals or marked complete by these feature results.
+
 ## Reusable automated checks
 
 - `npm run test:staff:unit` runs the explicit auth/session/password/MFA/login,
@@ -175,8 +206,10 @@ cookie enforcement. Linux's latter attempt timed out downloading prerequisites
 from the Azure mirror, before browser execution. Its earlier browser evidence is
 retained separately; a final common-commit strict comparison is still required.
 
-Reviewed hosted references now exist; the final no-update comparison must pass
-before completing the cards. Existing private staff noindex SEO approval is
+Reviewed hosted references passed the final no-update comparison linked above.
+The direct/indirect source selection repair also passed its final Linux job;
+comment-only legacy source files do not interrupt selection, while no active
+archive causes an explicit setup failure. Existing private staff noindex SEO approval is
 retained; it is not a blanket audit waiver. Local staff audits previously passed
 Performance, Accessibility and Best Practices at 100, with SEO 60 under that
 explicit exception. This increment changes no application templates or assets.

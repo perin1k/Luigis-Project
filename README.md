@@ -129,7 +129,8 @@ A card or design approval is not proof of implemented behavior.
 
 `docs/staff-acceptance.md` describes the reusable `test:staff:unit` and
 `test:staff:functional` commands, the staff CI matrix, cross-site cookie
-enforcement checks and the remaining human accessibility/operator review.
+enforcement checks, completed staff human accessibility review and separate
+operator installation responsibilities.
 Functional CI does not replace strict native visual acceptance.
 
 ### Session validation (BE-08, first increment)
