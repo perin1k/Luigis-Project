@@ -79,13 +79,26 @@ changes. Retain that result; do not report HTTPS performance as 100 or attribute
 the difference to TLS without proving the cause. Real deployed HTTPS performance
 and its required 100 gate remain explicit final QA-01/OPS acceptance work under
 the staged policy. Local feature acceptance does not certify deployed performance.
+The human explicitly approved: **Accept feature checkpoint; verify hosted HTTPS
+in final QA.** That decision, the measured 99 and the required deployed 100 gate
+are recorded on [QA-01](https://trello.com/c/EB8UO8lI); no threshold was lowered.
 Correct 404/500 status, safe output and intentional noindex are checked directly;
 non-success error responses are not presented as successful indexable audit pages.
 
 ## Final checkpoint outcome
 
-Pending strict comparison on the committed source and reviewed native references.
-Keep TEST-01 and its source cards incomplete until that result is verified.
+Accepted October 23, 2026. The
+[final strict run](https://github.com/perin1k/Luigis-Project/actions/runs/39907710154)
+tested `c6783b1ecde6a096af3d0612b01013253027763e`. All three required platform jobs
+passed the scoped services/HTTP, connected menu/customer, permission/conflict,
+public availability/error, persisted recovery, axe and unchanged-reference native
+visual checks. Both themes, desktop/mobile and narrow reflow are covered by the
+selected cases. Snapshot updates were disabled and no artifacts were uploaded.
+
+Together with the scoped human review and explicit audit decisions above, this
+satisfies TEST-01 and the applicable BE-07, FE-07 and FE-02 feature acceptance.
+Earlier focused-run limitations remain historical evidence, not current failures.
+The final record changes documentation only after the verified source commit.
 Final integrated hosted acceptance, shared fulfillment/refund/analytics journeys,
 real operator installation and deployment remain on their existing QA/INT/OPS
 cards; no live provider integration or public release is certified here.

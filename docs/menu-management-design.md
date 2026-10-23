@@ -70,7 +70,13 @@ retry on a possibly committed, interrupted response.
 - Existing isolated staff fixtures now wire the real menu service. Test-only
   reset controls remain confined to fixture servers.
 
-## Verification and outstanding acceptance
+## Verification history and current acceptance
+
+BE-07/FE-07 feature acceptance completed through
+[TEST-01](verification/test-01-menu-acceptance.md) on October 23, 2026. That record
+contains current strict native platform/browser results, scoped human review and
+explicit audit decisions. The original increment results below are historical;
+final integrated/hosted QA remains separate.
 
 Seven service tests verify permissions, price cloning, fingerprint invalidation,
 unchanged purchased quotes, ingredient recipe blocking/review, stale writes,

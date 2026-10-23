@@ -1,5 +1,13 @@
 # FE-02 persisted availability checkpoint
 
+## Accepted checkpoint — October 23, 2026
+
+FE-02 completed feature acceptance through
+[TEST-01](test-01-menu-acceptance.md): shared staff/customer state, strict native
+browser/visual/accessibility checks and the scoped human review. Earlier
+implementation-ready/open-card notes below are historical. Final hosted QA,
+including the explicitly retained deployed HTTPS performance gate, remains.
+
 ## Current focused verification — October 23, 2026
 
 Reviewed existing contributor implementation at `e4d7907` on native Windows with

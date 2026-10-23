@@ -1,5 +1,13 @@
 # BE-07 acceptance handoff — gates retained
 
+## Accepted checkpoint — October 23, 2026
+
+BE-07 and FE-07 completed their feature acceptance through
+[TEST-01](test-01-menu-acceptance.md), including strict supported-platform native
+comparisons and scoped human review. The earlier open-card instructions below
+describe the historical handoff and are superseded by that accepted record.
+Final hosted QA and the explicitly retained deployed performance gate remain.
+
 ## Current workflow — October 23, 2026
 
 The original macOS evidence and limitations below remain historical records.
