@@ -52,6 +52,25 @@ ten existing scenarios across four projects. Both suite processes exited zero.
 No application change was required. Earlier launch failures remain documented;
 restoring the pinned browser files resolved the environment blocker.
 
+### Firefox follow-up
+
+On the same application baseline (documentation HEAD `93bc2d4`), the pinned
+Firefox 157.0 / revision 1555 downloaded successfully. A single Chromium-equivalent
+carry-out journey was selected with `--project=firefox-desktop --grep
+'carry-out committed' --max-failures=1`. Firefox exited before page creation with
+`Could not find profile folder` (process exit 1). One diagnostic rerun with
+`TMPDIR=/private/tmp` produced the same launch failure. Both test processes exited
+1; neither exercised application behavior. Logs:
+`/private/tmp/luigis-qa01-firefox-probe.log` and
+`/private/tmp/luigis-qa01-firefox-temp-probe.log`.
+
+Do not retry the full matrix against this known launch blocker or report a
+Firefox pass. No browser sandbox, certificate policy, test assertion, dependency
+or persistent OS setting was changed. Current patched integration scenarios still
+need native Firefox verification on a working runner, alongside the retained
+Windows/Linux and final acceptance gates. Earlier teammate native Firefox passes
+remain valid for their documented commits/scopes; they do not prove this rerun.
+
 ## Release criteria retained
 
 | Criterion | Evidence / remaining boundary |
