@@ -48,6 +48,14 @@ disable browser security, remove SameSite, suppress the failure or claim a serve
 flag can force a browser to enforce its cookie policy. Compare hosted results
 before attributing the problem to application code or all WebKit platforms.
 
+The locked Playwright 1.64.1 upstream
+[cookie tests](https://github.com/microsoft/playwright/blob/v1.64.1/tests/library/browsercontext-cookies.spec.ts#L110)
+mark native Windows WebKit Strict/Lax cookie reporting as expected failures
+(separately from the `webkit-wsl` channel). This corroborates a known platform
+limitation; it does not turn this application's enforcement failure into a pass.
+No WSL installation, browser upgrade or acceptance-matrix change is authorized
+by documenting that upstream distinction.
+
 ## Human accessibility review
 
 Use `node tests/fixtures/staff-server.js` with OpenSSL on PATH. This fixture is
@@ -82,6 +90,30 @@ failures privately; never fabricate human review from axe or screenshots.
    traps. Use actual browser zoom, not only a resized viewport.
 
 ## Remaining release boundaries
+
+### Reviewed status — October 22, 2026
+
+The human collaborator completed the guided local Chrome/Windows screen-reader
+(Narrator) review with no issue reported: sign-in labels/errors/focus, Employee
+sign-in, 200%/400% zoom in both themes, Owner MFA, role radio keys, account
+deactivation/reactivation, invitation token display/hiding, enrollment, recovery
+display/hiding and account pagination. Pagination and account actions were
+explicitly confirmed passing; recovery completion was reported as done without
+an issue. Exact browser/screen-reader versions were not supplied. These are human
+observations on the disposable fixture, not a full WCAG conformance claim or
+evidence for another OS/browser. No private token, code or password was collected.
+
+Hosted comparison at commit `d9d27253b43d973cd74b44a457d46404eb404441`:
+[staff verification run](https://github.com/perin1k/Luigis-Project/actions/runs/39878530147).
+Service/HTTPS checks passed on all three runners. Windows browser checks failed
+only the native WebKit Strict-cookie metadata and actual cross-site enforcement
+checks. macOS 14 Chromium/Firefox checks passed, but WebKit failed before page
+creation with `Page.overrideSetting: Unknown setting: PushAPIEnabled`; the suite
+then reached its global timeout with remaining tests unrun. That is a browser
+toolchain failure, not a passing WebKit comparison or an application-page result.
+Linux is still installing browser/system prerequisites at this recorded checkpoint;
+its browser behavior is unverified. Retain these limitations until a subsequent
+verified run supersedes them. No strict assertion or dependency was changed.
 
 Native visual comparisons still require reviewed OS-specific references. Existing
 private staff noindex SEO approval is retained; it is not a blanket audit waiver.

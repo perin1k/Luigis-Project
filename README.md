@@ -127,6 +127,11 @@ first administrator MFA setup. New `admin:setup` runs create the Owner;
 Owner exists. No existing admin is promoted automatically by migration 014.
 A card or design approval is not proof of implemented behavior.
 
+`docs/staff-acceptance.md` describes the reusable `test:staff:unit` and
+`test:staff:functional` commands, the staff CI matrix, cross-site cookie
+enforcement checks and the remaining human accessibility/operator review.
+Functional CI does not replace strict native visual acceptance.
+
 ### Session validation (BE-08, first increment)
 
 `src/auth/session-service.js` provides server-only `createSessionService`, with
