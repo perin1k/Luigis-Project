@@ -1,0 +1,32 @@
+name: TEST-02 native macOS keyboard regression
+
+on:
+  push:
+    branches: [dev]
+    paths: ['.github/workflows/test02-macos-keyboard.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keyboard:
+    runs-on: macos-15
+    timeout-minutes: 15
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.14.1'
+      - run: npm ci
+      - run: npx playwright install webkit
+      - name: Enable native keyboard navigation for the disposable WebKit app
+        run: |
+          defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
+          defaults read org.webkit.Playwright AppleKeyboardUIMode
+      - name: Both service types with native keyboard focus assertions
+        run: npx playwright test -c playwright.test02-pricing.config.js --project=webkit-desktop --project=webkit-mobile --grep 'keyboard pricing review' --update-snapshots=none

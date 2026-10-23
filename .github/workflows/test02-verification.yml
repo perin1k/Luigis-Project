@@ -65,6 +65,11 @@ jobs:
         run: npx playwright install --with-deps chromium firefox webkit
       - if: runner.os != 'Linux'
         run: npx playwright install chromium firefox webkit
+      - name: Enable native macOS keyboard navigation for WebKit
+        if: runner.os == 'macOS'
+        run: |
+          defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
+          defaults read org.webkit.Playwright AppleKeyboardUIMode
       # Functional, service/security and connected recovery evidence is retained
       # from run 39966524807 on identical application/fixture source. This phase
       # compares reviewed native references and verifies the teammate focus fix.
