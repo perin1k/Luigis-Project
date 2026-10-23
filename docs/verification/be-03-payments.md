@@ -1,5 +1,43 @@
 # BE-03 generated-identity payment increment — 2026-10-21
 
+## Focused reconciliation — October 23, 2026
+
+Reviewed existing contributor implementation at `b6ce91b` on native Windows,
+Node 24.19.0 and locked Playwright browsers. No application or test change was
+necessary. The approved input safeguard remains server-generated synthetic
+identifiers; no customer card number, expiry, CVV or claimed outcome is accepted.
+
+These focused checks passed:
+
+```sh
+node --test tests/unit/payment-config.test.js tests/unit/demo-payment.test.js tests/unit/demo-payment-http.test.js tests/unit/demo-payment-concurrency.test.js tests/unit/payment-retry.test.js
+node node_modules/@playwright/test/cli.js test -c playwright.payments.config.js --project=chromium-desktop --project=firefox-desktop --grep 'both methods show committed|throttled recovery'
+```
+
+The service/HTTP checks cover authenticated encryption, integrity/identity binding,
+fresh nonces, versioned-key readability, explicit configuration/no-key failure,
+masked output, rejection of supplied numbers/outcomes, bounded same-site JSON,
+atomic payment/order association, rollback, exact totals, normal/special cutoffs,
+idempotency/competing connections and expired-ciphertext removal while preserving
+masked history. POSIX permission/symlink cases are conditional and did not run on
+Windows; this is not Windows ACL or hosted key-custody acceptance.
+
+Chromium/Firefox desktop cases verify both service types and demonstration method
+presentations, server-committed confirmation/private tracking, no browser card
+fields, and rate-limited recovery using the original payment identity without a
+duplicate. Existing axe checks in the selected cases passed. These are functional
+demo presentations, not live processing or native Wallet verification.
+
+BE-03 is implementation-ready, not Done. [TEST-02](https://trello.com/c/DlgHEJjl)
+retains broader connected/browser/mobile/native visual/manual accessibility/audit
+acceptance. [QA-02](https://trello.com/c/51DKth51) retains consolidated payment and
+privacy verification, with actual hosted secrets/TLS on the existing OPS work.
+No new broad visual, manual, hosted or Lighthouse pass is claimed. Earlier
+missing-service notes below describe the original increment, not current absence
+of tracking, refunds, preview notifications or scheduled retention cleanup.
+
+## Original generated-identity increment
+
 Historical increment. See the [current customer integration checkpoint](customer-checkout-checkpoint.md)
 for subsequently implemented lifecycle services and refreshed receipt evidence.
 

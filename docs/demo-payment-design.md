@@ -2,6 +2,8 @@
 
 The [TECH-06 decision record](payment-security-decisions.md) consolidates approved
 safeguards, key lifecycle, accounting and remaining acceptance boundaries.
+Current focused verification and the staged acceptance handoff are recorded in
+[BE-03 payment verification](verification/be-03-payments.md).
 
 Approved scope: generated synthetic identities, encrypted full-number storage,
 server-owned demonstration outcomes and committed order/hold confirmation.
@@ -37,7 +39,8 @@ documentation does not provision keys, change permissions or certify an OS.
   its ACL. Missing configuration leaves payment unavailable; invalid configured
   files fail startup safely without printing key data.
 - `src/payments/demo-payment-service.js` owns the immediate SQLite transaction.
-  It rechecks accepted quote/expiry, active hold and future promise, current hours,
+  It rechecks accepted quote/expiry, active hold and future promise, current hours
+  and normal/special service-day cutoff,
   rolling capacity, pending cancellation, ingredient availability and current
   item/tax prices. Changed prices require a new review, not a silent charge.
   Optional tip stays the immutable accepted quote amount. The injected local
@@ -58,7 +61,8 @@ documentation does not provision keys, change permissions or certify an OS.
   safe errors. The wizard, order/payment templates and inline receipt display
   only committed results, purchased item descriptions/totals and masked identities.
   All dynamic receipt content is inserted as text. Native Wallet support is not
-  claimed. Guest tracking and notifications remain separate stories.
+  claimed. Configured guest tracking and notification services receive committed
+  state; their broader lifecycle acceptance remains on their own stories.
 
 ## Retry, expiry and failure behavior
 
@@ -105,7 +109,7 @@ Full generated numbers serve only demonstration encryption verification. Their
 ciphertext expires seven days after the attempt; it is independent of contact,
 tracking and financial-history retention. Successful new payment processing
 purges elapsed secret rows; internal `purgeExpiredSecrets()` can also be invoked
-by the later retention worker. No public cleanup route exists. Immutable masked
+by the configured retention worker. No public cleanup route exists. Immutable masked
 financial history remains until project teardown. SEC-02 now schedules expiry
 cleanup through [the retention worker](retention-enforcement.md). No hosted backup
 copy is created here; any future hosted copy needs the same explicit
@@ -122,10 +126,15 @@ deployment action is authorized by this implementation.
 
 Staff payment/refund analytics must explicitly read the local demo tables; they
 must not pretend these are Stripe captures or actual revenue/processor costs.
-Refunds, cancellation/reconciliation, tracking, internal notification previews,
-operator key setup on each hosted environment and final acceptance remain
+Refunds, cancellation/reconciliation, tracking and internal notification previews
+now have contributor implementations; inspect their current design/acceptance
+records rather than interpreting this original payment scope as missing code.
+Operator key setup on each hosted environment and final acceptance remain
 separate work. The default adapter approves generated identities; decline testing
 uses disposable server fixtures, not a browser-supplied success/failure flag.
+TEST-02 retains connected checkout acceptance and QA-02 retains consolidated
+payment/privacy review. Passing disposable fixtures does not certify real key
+custody, Windows ACLs, hosted TLS, live Stripe or native Apple Wallet integration.
 
 Crypto references: [Node.js authenticated encryption](https://nodejs.org/docs/latest-v24.x/api/crypto.html)
 and [OWASP cryptographic storage guidance](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html).
