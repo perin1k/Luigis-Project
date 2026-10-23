@@ -23,5 +23,15 @@ export function createOrdersFixture(strOrigin){
     fnFailPreviews=()=>createNotificationService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnNow,fnRender(){throw new Error('fixture render failure');}}).processPending();
     return createApp({...objOptions,objCatalogService:createCatalogService(objDatabase),objMenuService:createMenuService(objDatabase,objOptions.objAuthRuntime.objSessionService),objAnalyticsService:createAnalyticsService(objDatabase,objOptions.objAuthRuntime.objSessionService),objNotificationService:objNotices,objDemoRefundService:createDemoRefundService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnProcess:()=>bRefundApproved}),objTrackingService,objOrderExceptionService:createOrderExceptionService(objDatabase,objOptions.objAuthRuntime.objSessionService),objOrderProgressService:createOrderProgressService(objDatabase,objOptions.objAuthRuntime.objSessionService),objStaffOrdersService:createStaffOrdersService(objDatabase,objOptions.objAuthRuntime.objSessionService)});
   }});
-  return {...objFixture,arrOrders,arrTrackingPaths,processPreviews(){objNotices.processPending();},failPreviews(){fnFailPreviews();},declineRefund(){bRefundApproved=false;},approveRefund(){bRefundApproved=true;}};
+  return {...objFixture,arrOrders,arrTrackingPaths,
+    seedPendingRefund() {
+      // Exceptional persisted-state fixture, not a remote provider or production write path.
+      const objResult = objFixture.objDatabase.prepare(`INSERT INTO demo_refund_attempts
+        (id,payment_id,order_id,cancellation_request_id,adapter,policy_reference,state,amount_cents,currency,approved_by,requested_at)
+        SELECT '00000000-0000-4000-8000-000000000099',p.id,p.order_id,c.id,'luigis-demo-v1','demo-full-refund-v1','pending',p.amount_cents,'USD','admin',c.decided_at
+        FROM demo_payment_attempts p JOIN cancellation_requests c ON c.order_id=p.order_id
+        WHERE p.order_id=? AND p.state='succeeded' AND c.state='approved'`).run(arrOrders[0].strOrderId);
+      if (objResult.changes !== 1) throw new Error('A cancelled, paid fixture order is required.');
+    },
+    processPreviews(){objNotices.processPending();},failPreviews(){fnFailPreviews();},declineRefund(){bRefundApproved=false;},approveRefund(){bRefundApproved=true;}};
 }

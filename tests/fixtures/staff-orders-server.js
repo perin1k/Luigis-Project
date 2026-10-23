@@ -14,6 +14,7 @@ const objServer=createServer({key:readFileSync(join(strDirectory,'key.pem')),cer
   if(objRequest.url==='/__test/tracking')return objResponse.setHeader('Content-Type','application/json').end(JSON.stringify(objFixture.arrTrackingPaths));
   if(objRequest.url==='/__test/refund-decline'){objFixture.declineRefund();return objResponse.end('decline');}
   if(objRequest.url==='/__test/refund-approve'){objFixture.approveRefund();return objResponse.end('approve');}
+  if(objRequest.url==='/__test/refund-pending'){objFixture.seedPendingRefund();return objResponse.end('pending');}
   if(objRequest.url==='/__test/preview-failure'){objFixture.failPreviews();return objResponse.end('failed');}
   if(objRequest.url==='/__test/preview-process'){objFixture.processPreviews();return objResponse.end('processed');}
   if(objRequest.url.startsWith('/__test/code')){const objUrl=new URL(objRequest.url,'https://localhost:3444');if(objUrl.pathname==='/__test/code')return objResponse.end(objFixture.code(objUrl.searchParams.get('secret')));}

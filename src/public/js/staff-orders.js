@@ -89,7 +89,7 @@ if(elRefundButton)elRefundButton.addEventListener('click',async()=>{
     const objCsrf=await objCsrfResponse.json();
     const objResponse=await fetch(`/api/staff/orders/${encodeURIComponent(strReference)}/refund`,{method:'POST',credentials:'same-origin',cache:'no-store',signal:objAbort.signal,headers:{'Content-Type':'application/json','X-CSRF-Token':objCsrf.strCsrfToken},body:JSON.stringify({intRevision,strRequestId:strRefundRequestId})});
     const objResult=await objResponse.json();bUncertain=false;
-    if(objResponse.status===401||objResponse.status===403){clearPrivate();document.querySelector('#orders-signin').hidden=false;}
+    if(objResponse.status===401||objResponse.status===403){clearPrivate();document.querySelector('#orders-signin').hidden=false;throw new Error('Your staff session is unavailable. Sign in again.');}
     if(!objResponse.ok)throw new Error(objResult.strMessage??'Refund unavailable. Refresh before retrying.');
     document.querySelector('#refund-status').textContent=objResult.strMessage;strRefundRequestId=undefined;
   }catch(objError){elError.hidden=false;elError.textContent=objError.name==='AbortError'||objError instanceof TypeError?'Refund result could not be confirmed. Check the same request before starting another.':objError.message;}
