@@ -16,6 +16,11 @@ accessibility and private operator verification are distinct gates.
 - `npx playwright test -c playwright.staff.config.js` remains the full functional
   and strict native visual suite. The functional CI command does not replace it,
   create baselines or waive missing/stale native references.
+- `playwright.staff-native-ci.config.js` inherits the same tests, fixture and
+  assertions, selects visual checks and uses separate `*-snapshots/ci/` native
+  reference paths for the recorded hosted-runner images. It defaults to no image
+  updates and has a seven-minute overall limit. Local developer references are
+  preserved; hosted fonts are not assumed to match a developer's desktop.
 - `.github/workflows/staff-verification.yml` runs the unit/HTTPS and functional
   browser checks on Ubuntu 24.04, Windows Server 2022 and macOS 15 with Node
   24.14.1, locked dependencies/browsers and read-only checkout permissions.
@@ -23,12 +28,18 @@ accessibility and private operator verification are distinct gates.
   runner. Windows discovers OpenSSL from PATH or the installed Git directory.
   Installation and execution share the repository-local browser path explicitly;
   installing into the default user cache does not satisfy this configuration.
-  There are no application secrets, deployment steps or uploaded artifacts.
+  There are no application secrets, deployment steps or artifact uploads.
+  The approved temporary collection steps were removed after candidate review.
+  Linux replaces only the slow Azure Ubuntu archive URL with Ubuntu's main HTTPS
+  archive in the disposable runner's existing source files. Repository suites,
+  signing keys and package verification remain unchanged. This avoids the observed
+  prerequisite-download timeout; it does not alter the developer's machine.
   The approved runner repair changes macOS 14 to macOS 15 to investigate the
   older runner's WebKit protocol failure without changing locked dependencies.
   The job has a 60-minute ceiling, with separate service (8-minute), Linux
   installation (30-minute), other installation (15-minute) and browser
-  (17-minute) step limits. Browser tests retain their 15-minute global timeout.
+  (17-minute) step limits, plus an eight-minute native visual step. Browser
+  functional tests retain their 15-minute global timeout.
   Installation time no longer consumes most of a 30-minute overall allowance.
   A newer macOS runner does not establish support for the failing macOS 14 path;
   no result is claimed until its run completes.
@@ -44,14 +55,14 @@ ignore cookie, authorization, accessibility or functional failures. The unfilter
 local staff command still exposes the Windows diagnostic failure.
 
 The human also approved temporary internal collection of synthetic native visual
-candidates. `STAFF_VISUAL_REVIEW=true` explicitly regenerates candidates on the
-disposable runner; this is collection, not acceptance. Only successful native
-visual runs upload the two staff snapshot directories' native-OS PNGs using a
-pinned action, with one-day retention. No reports, traces, logs or real data are
-uploaded. Inspect every candidate before committing reviewed references, restore
-the setting to `false`, then rerun unchanged-reference comparisons. Required
-jobs run those strict visual comparisons in addition to functional checks.
-Do not leave candidate collection enabled or count generated images as reviewed.
+candidates. Collection runs used an explicit generation flag and a pinned upload
+action with one-day retention, containing native staff PNGs only. No reports,
+traces, logs or real data were uploaded. All required Windows/Linux/macOS scenes
+were inspected in both themes and desktop/mobile, with no layout issue found.
+The reviewed references are isolated in `*-snapshots/ci/`; local developer
+references are preserved. Temporary generation/upload steps and their flag have
+been removed. The final workflow compares those references with explicit
+`--update-snapshots=none`; generation is never counted as a comparison pass.
 
 ## Cookie enforcement investigation
 
@@ -66,6 +77,15 @@ positive control. A link from `https://127.0.0.1:3443` to
 must be absent while the None control is present. This distinguishes enforcement
 from an inspection-only metadata discrepancy or complete cookie blocking.
 The test fixture returns presence booleans only and is never mounted by the app.
+
+`tests/helpers/cookie-flags.js` reconstructs `Set-Cookie` rows before extracting
+flags: macOS WebKit can fragment an `Expires` date at its comma. Splitting only
+at a subsequent cookie name/value boundary preserves the rest of that date and
+its flags without borrowing flags from another cookie. Regression tests in
+`tests/unit/cookie-flags.test.js` reproduce fragmentation, combined/intact rows,
+missing cookies and flag isolation. The expected header flags and actual
+cross-site cookie-presence assertions are unchanged. The helper returns flags,
+never the opaque session value, for assertion output.
 
 Local Windows Chromium/Firefox pass this behavior check. Local Windows WebKit
 fails it: the session is sent cross-site despite the Strict header. Consequently,
@@ -117,7 +137,7 @@ failures privately; never fabricate human review from axe or screenshots.
    messages and focus must remain usable without clipped content or keyboard
    traps. Use actual browser zoom, not only a resized viewport.
 
-## Remaining release boundaries
+## Acceptance checkpoints and release boundaries
 
 ### Reviewed status — October 22, 2026
 
@@ -131,7 +151,7 @@ an issue. Exact browser/screen-reader versions were not supplied. These are huma
 observations on the disposable fixture, not a full WCAG conformance claim or
 evidence for another OS/browser. No private token, code or password was collected.
 
-Hosted comparison at commit `d9d27253b43d973cd74b44a457d46404eb404441`:
+Historical hosted comparison at commit `d9d27253b43d973cd74b44a457d46404eb404441`:
 [staff verification run](https://github.com/perin1k/Luigis-Project/actions/runs/39878530147).
 Service/HTTPS checks passed on all three runners. Windows browser checks failed
 only the native WebKit Strict-cookie metadata and actual cross-site enforcement
@@ -143,8 +163,23 @@ Linux is still installing browser/system prerequisites at this recorded checkpoi
 its browser behavior is unverified. Retain these limitations until a subsequent
 verified run supersedes them. No strict assertion or dependency was changed.
 
-Native visual comparisons still require reviewed OS-specific references. Existing
-private staff noindex SEO approval is retained; it is not a blanket audit waiver.
+Later candidate runs supersede those browser limitations where verified:
+[Windows/Linux collection](https://github.com/perin1k/Luigis-Project/actions/runs/39881614839)
+passed required browser checks on those OSes; the initial macOS header parser
+failed before the behavior probe. After the test-only parser repair,
+[Windows/macOS collection](https://github.com/perin1k/Luigis-Project/actions/runs/39882719419)
+passed their required browser checks, including actual macOS WebKit cross-site
+cookie enforcement. Linux's latter attempt timed out downloading prerequisites
+from the Azure mirror, before browser execution. Its earlier browser evidence is
+retained separately; a final common-commit strict comparison is still required.
+
+Reviewed hosted references now exist; the final no-update comparison must pass
+before completing the cards. Existing private staff noindex SEO approval is
+retained; it is not a blanket audit waiver. Local staff audits previously passed
+Performance, Accessibility and Best Practices at 100, with SEO 60 under that
+explicit exception. This increment changes no application templates or assets.
 Actual Owner bootstrap/designation, key custody, valid hosted TLS and operator
 recovery require their existing private procedures and real operator evidence.
-Passing synthetic fixtures does not certify those tasks or public deployment.
+These are existing OPS installation obligations under the role policy, distinct
+from BE-08/FE-08 application feature acceptance. Passing synthetic fixtures does
+not certify those tasks or public deployment, and none is marked complete here.

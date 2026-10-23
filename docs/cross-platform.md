@@ -208,8 +208,12 @@ on macOS 14. This distinction is intentional: the older macOS staff runner hit
 a WebKit protocol failure before page creation. The replacement runner retains
 the lockfile and strict assertions and must produce its own verified outcome.
 Separate bounded installation and test steps allow slow Linux prerequisites
-without claiming a timeout is a successful browser check. Native Windows WebKit
-cookie failures and OS-specific visual review remain explicit acceptance gates.
+without claiming a timeout is a successful browser check. Staff coverage now uses
+the explicitly approved Windows Chromium/Firefox and macOS/Linux three-engine
+matrix, retaining native Windows WebKit as a visible unsupported diagnostic.
+Reviewed hosted visual references are separate from local developer references;
+the strict native CI command never updates them. See the staff record for current
+outcomes and the remaining deployment/operator boundaries.
 
 - [Playwright installation and supported systems](https://playwright.dev/docs/intro)
 - [Playwright browser installation and dependencies](https://playwright.dev/docs/browsers)

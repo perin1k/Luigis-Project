@@ -108,12 +108,13 @@ TECH-04 records the approved policy/design. BE-08/FE-08 cover application accept
 OPS covers private real setup, certificate/key custody and hosted access. Never
 mark those tasks complete solely because the policy or migration exists.
 
-The Windows WebKit cookie observation remains an acceptance blocker: the strict
-server header is verified, but the browser cookie API reports `None`, and an
-actual cross-site navigation sends the session cookie when it should be withheld.
-This is not established as an inspection-only issue. Keep both strict assertions
-and compare the supported browser/platform paths; this does not authorize weaker
-cookie policy. See [staff acceptance](staff-acceptance.md) for reproduction,
-hosted verification boundaries and the human review checklist.
+Native Windows WebKit reports `None` for the Strict session cookie and sends it
+on a cross-site navigation; this is an enforcement failure, not an inspection-only
+issue. On October 22 the human explicitly approved platform-appropriate coverage:
+Windows Chromium/Firefox and macOS/Linux Chromium/Firefox/WebKit. Native Windows
+WebKit remains an unsupported diagnostic path with both strict assertions intact
+and its failure visible. Required platform paths must pass; no application cookie
+or browser security policy is weakened. See [staff acceptance](staff-acceptance.md)
+for reproduction, exact coverage, hosted outcomes and the human review checklist.
 Keep private pages unindexed. The existing staff-page SEO exception does not
 silently waive unrelated menu/analytics SEO or manual accessibility gates.
