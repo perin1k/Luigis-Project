@@ -31,6 +31,9 @@
 .staff-records h3, #detail-reference { font-size: 1.1rem; overflow-wrap: anywhere; }
 .staff-records li li { border: 0; padding-block: .25rem; }
 .staff-pagination { margin-top: 1rem; }
+.staff-review-notice { border: 2px solid var(--color-control-border); border-left: .4rem solid var(--color-accent); background: var(--color-panel); border-radius: .35rem; padding: 1rem; margin-block: 1rem; }
+.staff-review-notice > p { margin-bottom: .5rem; }
+.staff-review-notice > ul { margin-bottom: 0; }
 
 /* Reserve asynchronous progress space so loading does not move the footer. */
 .tracking-content { min-height: 14rem; }

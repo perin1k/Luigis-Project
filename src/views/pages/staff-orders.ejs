@@ -21,24 +21,24 @@
       <% if (objQueue) { %>
       <form method="get" action="/staff/orders" class="staff-queue-filters">
         <div><label for="queue-date" class="form-label">Service date (optional)</label><input id="queue-date" name="date" type="date" class="form-control" value="<%= objQueue.strDate %>"></div>
-        <div><label for="queue-status" class="form-label">Order status</label><select id="queue-status" name="status" class="form-select"><% for (const strStatus of ['active','Received','Preparing','Baking','Ready']) { %><option value="<%= strStatus %>" <%= strStatus === objQueue.strStatus ? 'selected' : '' %>><%= strStatus === 'active' ? 'All active orders' : strStatus %></option><% } %></select></div>
+        <div><label for="queue-status" class="form-label">Order status</label><select id="queue-status" name="status" class="form-select"><% for (const strStatus of ['active','Received','Preparing','Baking','Ready','Completed','Cancelled','Not collected']) { %><option value="<%= strStatus %>" <%= strStatus === objQueue.strStatus ? 'selected' : '' %>><%= strStatus === 'active' ? 'All active orders' : strStatus %></option><% } %></select></div>
         <button class="btn btn-primary" type="submit">Apply filters</button>
       </form>
       <% } %>
       <button id="refresh-orders" type="button" class="btn btn-outline-primary" hidden><%= objOrder ? 'Refresh order' : 'Refresh orders' %></button>
       <div id="orders-content">
       <% if (objQueue) { %>
-        <p id="orders-empty" <%= objQueue.arrOrders.length ? 'hidden' : '' %>>No confirmed-payment active orders match these filters.</p>
+        <p id="orders-empty" <%= objQueue.arrOrders.length ? 'hidden' : '' %>>No confirmed-payment orders match these filters.</p>
         <ul class="staff-records" id="orders-list"><% for (const objItem of objQueue.arrOrders) { %><li>
           <h3><a href="/staff/orders/<%= encodeURIComponent(objItem.strReference) %>"><%= objItem.strCustomerName %> · <span class="staff-order-reference font-monospace"><%= objItem.strReference %></span></a></h3>
           <p><%= objItem.strService === 'carry-out' ? 'Carry-out' : 'Dine-in' %> · <%= objItem.strStatus %> · <%= readyTime(objItem.dtReadyAt) %></p>
           <p><%= objItem.intPizzaQuantity %> pizzas · <%= objItem.intDrinkQuantity %> drinks<%= objItem.bReadyTimePassed ? ' · Ready time passed' : '' %></p>
-          <% if (objItem.arrWarnings.length) { %><ul><% for (const strWarning of objItem.arrWarnings) { %><li><%= strWarning %></li><% } %></ul><% } %>
+          <% if (objItem.arrWarnings.length) { %><div class="staff-review-notice"><p class="fw-bold">Staff review required</p><ul><% for (const strWarning of objItem.arrWarnings) { %><li><%= strWarning %></li><% } %></ul></div><% } %>
         </li><% } %></ul>
       <% } else { %>
         <h3 id="detail-reference"><%= objOrder.strCustomerName %> · <span class="staff-order-reference font-monospace"><%= objOrder.strReference %></span></h3>
         <p id="detail-summary"><%= objOrder.strService === 'carry-out' ? 'Carry-out' : 'Dine-in' %> · <%= objOrder.strStatus %> · <%= readyTime(objOrder.dtReadyAt) %><%= objOrder.bReadyTimePassed ? ' · Ready time passed' : '' %></p>
-        <ul id="detail-warnings"><% for (const strWarning of objOrder.arrWarnings) { %><li><%= strWarning %></li><% } %></ul>
+        <div id="detail-review" class="staff-review-notice" <%= objOrder.arrWarnings.length ? '' : 'hidden' %>><p class="fw-bold">Staff review required</p><ul id="detail-warnings"><% for (const strWarning of objOrder.arrWarnings) { %><li><%= strWarning %></li><% } %></ul></div>
         <h3>Items to prepare</h3><ul id="detail-items"><% for (const objItem of objOrder.arrItems) { %><li><%= objItem.intQuantity %> × <%= objItem.strDescription %></li><% } %></ul>
         <h3>Customer contact</h3><p id="detail-contact"><%= objOrder.objContact ? [objOrder.objContact.strName,objOrder.objContact.strPhone || objOrder.objContact.strEmail].filter(Boolean).join(' · ') : 'Contact details have been removed.' %></p>
       <% } %>

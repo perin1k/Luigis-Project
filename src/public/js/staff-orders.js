@@ -14,7 +14,7 @@ function renderQueue(objQueue){
   const elList=document.querySelector('#orders-list');elList.replaceChildren();document.querySelector('#orders-empty').hidden=objQueue.arrOrders.length>0;
   for(const objOrder of objQueue.arrOrders){const elItem=element('li','');const elTitle=element('h3','');const elLink=element('a','');renderReference(elLink,objOrder);elLink.href=`/staff/orders/${encodeURIComponent(objOrder.strReference)}`;elTitle.append(elLink);
     elItem.append(elTitle,element('p',summary(objOrder)),element('p',`${objOrder.intPizzaQuantity} pizzas · ${objOrder.intDrinkQuantity} drinks`));
-    if(objOrder.arrWarnings.length){const elWarnings=element('ul','');for(const strWarning of objOrder.arrWarnings)elWarnings.append(element('li',strWarning));elItem.append(elWarnings);}elList.append(elItem);
+    if(objOrder.arrWarnings.length){const elNotice=element('div','');elNotice.className='staff-review-notice';const elHeading=element('p','Staff review required');elHeading.className='fw-bold';const elWarnings=element('ul','');for(const strWarning of objOrder.arrWarnings)elWarnings.append(element('li',strWarning));elNotice.append(elHeading,elWarnings);elItem.append(elNotice);}elList.append(elItem);
   }
   const elPages=document.querySelector('#orders-pages');elPages.replaceChildren();
   for(const [strLabel,intPage,bShow] of [['Previous page',objQueue.intPage-1,objQueue.intPage>0],['Next page',objQueue.intPage+1,objQueue.bHasNext]])if(bShow){const elLink=element('a',strLabel);elLink.className='btn btn-outline-primary';elLink.href=`/staff/orders?${new URLSearchParams({date:objQueue.strDate,status:objQueue.strStatus,page:String(intPage)})}`;elPages.append(elLink);}
@@ -26,6 +26,7 @@ function renderDetail(objOrder){
   intRevision=objOrder.intRevision;progressControls(objOrder.strStatus,objOrder.arrWarnings.length>0);
   renderReference(document.querySelector('#detail-reference'),objOrder);document.querySelector('#detail-summary').textContent=summary(objOrder);
   const elWarnings=document.querySelector('#detail-warnings');elWarnings.replaceChildren();for(const strWarning of objOrder.arrWarnings)elWarnings.append(element('li',strWarning));
+  document.querySelector('#detail-review').hidden=objOrder.arrWarnings.length===0;
   const elItems=document.querySelector('#detail-items');elItems.replaceChildren();for(const objItem of objOrder.arrItems)elItems.append(element('li',`${objItem.intQuantity} × ${objItem.strDescription}`));
   document.querySelector('#detail-contact').textContent=objOrder.objContact?[objOrder.objContact.strName,objOrder.objContact.strPhone||objOrder.objContact.strEmail].filter(Boolean).join(' · '):'Contact details have been removed.';elStatus.textContent='Order refreshed.';
 }

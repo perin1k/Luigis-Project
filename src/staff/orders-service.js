@@ -1,6 +1,7 @@
 import { chicagoDate } from '../ordering/scheduling-service.js';
 import {orderRetentionDeadline} from '../data/order-retention.js';
 const ACTIVE_STATES=['Received','Preparing','Baking','Ready'];
+const FINAL_STATES=['Completed','Cancelled','Not collected'];
 const PAGE_SIZE=20;
 const PAID_SQL=`(EXISTS (SELECT 1 FROM demo_payment_attempts p WHERE p.order_id=o.id AND p.quote_id=o.accepted_quote_id AND p.state='succeeded')
   OR EXISTS (SELECT 1 FROM payment_attempts p WHERE p.order_id=o.id AND p.quote_id=o.accepted_quote_id AND p.state='succeeded'))`;
@@ -15,7 +16,7 @@ export function createStaffOrdersService(objDatabase,objSessionService){
     if(!objInput||typeof objInput!=='object'||Object.keys(objInput).some((strKey)=>!['date','status','page'].includes(strKey)))throw new StaffOrderError('Check the queue filters.');
     const strDate=objInput.date??'';const strStatus=objInput.status??'active';const strPage=objInput.page??'0';
     if(typeof strDate!=='string'||(strDate!==''&&(!/^\d{4}-\d{2}-\d{2}$/.test(strDate)||!Number.isFinite(Date.parse(`${strDate}T12:00:00Z`))||new Date(`${strDate}T12:00:00Z`).toISOString().slice(0,10)!==strDate))
-      ||typeof strStatus!=='string'||!['active',...ACTIVE_STATES].includes(strStatus)||typeof strPage!=='string'||!/^\d{1,5}$/.test(strPage))throw new StaffOrderError('Check the date, status and page.');
+      ||typeof strStatus!=='string'||!['active',...ACTIVE_STATES,...FINAL_STATES].includes(strStatus)||typeof strPage!=='string'||!/^\d{1,5}$/.test(strPage))throw new StaffOrderError('Check the date, status and page.');
     return {strDate,strStatus,intPage:Number(strPage)};
   }
   function warnings(strOrderId,strHoldState,strStatus){
@@ -41,8 +42,8 @@ export function createStaffOrdersService(objDatabase,objSessionService){
   function listOrders(strToken,objInput={}){
     return objSessionService.executeAuthorized(strToken,'orders.read',(objIdentity,dtNow)=>{
       const objFilter=parseFilters(objInput);
-      const arrRows=objDatabase.prepare(`${SELECT_SQL} WHERE ${PAID_SQL} AND o.fulfillment_status IN ('Received','Preparing','Baking','Ready')
-        AND (?='' OR d.service_date=?) AND (?='active' OR o.fulfillment_status=?)
+      const arrRows=objDatabase.prepare(`${SELECT_SQL} WHERE ${PAID_SQL}
+        AND (?='' OR d.service_date=?) AND ((?='active' AND o.fulfillment_status IN ('Received','Preparing','Baking','Ready')) OR o.fulfillment_status=?)
         ORDER BY coalesce(b.promised_at,'9999'),o.id LIMIT ? OFFSET ?`).all(objFilter.strDate,objFilter.strDate,objFilter.strStatus,objFilter.strStatus,PAGE_SIZE+1,objFilter.intPage*PAGE_SIZE);
       return {...objFilter,bOwner:objIdentity.strRole==='owner',bCanAdminister:['admin','owner'].includes(objIdentity.strRole),intPageSize:PAGE_SIZE,bHasNext:arrRows.length>PAGE_SIZE,strToday:chicagoDate(dtNow.toISOString()),dtCheckedAt:dtNow.toISOString(),
         arrOrders:arrRows.slice(0,PAGE_SIZE).map((objRow)=>summary(objRow,dtNow))};

@@ -45,12 +45,14 @@ Default queue shows all active Received/Preparing/Baking/Ready orders with an
 accepted quote and a successful matching demo payment or existing provider-test
 payment. Unpaid/failed orders cannot become operational queue entries merely by
 setting a fulfillment status. Completed/cancelled/not-collected records are absent
-from the active queue; authorized staff may read a paid historical detail directly.
+from the active queue; staff can select each final status explicitly and read a
+paid historical detail. These filters preserve the same authorization, payment
+matching, pagination and contact-retention boundaries as the active queue.
 
 Sort by preserved promised instant then immutable internal order ID; missing
 promises sort last and display a review warning. Each page contains 20 orders plus
 a next-page flag. Optional filters are a valid Chicago service date and one active
-status; page is a bounded nonnegative decimal integer. Default includes future and
+or final status; page is a bounded nonnegative decimal integer. Default includes future and
 past active promises so overdue work is not hidden by an implicit today-only filter.
 Live pages are independent fresh reads, not a frozen multi-page snapshot.
 

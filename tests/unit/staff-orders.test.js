@@ -37,8 +37,24 @@ test('queue filters, stable pages and status/date handling preserve active paid-
   objDatabase.prepare("UPDATE orders SET fulfillment_status='Completed',completed_at=? WHERE id=?").run('2026-10-21T15:00:00.000Z',arrOrders[0].strOrderId);
   assert.equal(objService.listOrders(EMPLOYEE_TOKEN,{status:'Received',date:'2026-10-21'}).arrOrders.length,20);
   assert.equal(objService.listOrders(EMPLOYEE_TOKEN,{date:'2026-10-22'}).arrOrders.length,0);
-  for(const objFilter of [{date:'2026-02-30'},{page:'-1'},{status:'Cancelled'},{role:'admin'},{date:['2026-10-21']}])assert.throws(()=>objService.listOrders(EMPLOYEE_TOKEN,objFilter));
+  for(const objFilter of [{date:'2026-02-30'},{page:'-1'},{status:'Unknown'},{role:'admin'},{date:['2026-10-21']}])assert.throws(()=>objService.listOrders(EMPLOYEE_TOKEN,objFilter));
 },23));
+test('final status filters distinguish paid outcomes without expanding the active queue or leaking contact',()=>fixture(({objDatabase,objService,arrOrders})=>{
+  const arrStates=['Completed','Cancelled','Not collected'];
+  for(const [intIndex,strStatus] of arrStates.entries())objDatabase.prepare('UPDATE orders SET fulfillment_status=?,completed_at=?,cancelled_at=?,not_collected_at=? WHERE id=?').run(strStatus,...arrStates.map((strCandidate)=>strCandidate===strStatus?'2026-10-21T15:00:00.000Z':null),arrOrders[intIndex].strOrderId);
+  assert.equal(objService.listOrders(EMPLOYEE_TOKEN).arrOrders.length,0);
+  for(const [intIndex,strStatus] of arrStates.entries()){
+    const objQueue=objService.listOrders(EMPLOYEE_TOKEN,{status:strStatus,date:'2026-10-21'});
+    assert.deepEqual(objQueue.arrOrders.map((objOrder)=>objOrder.strReference),[arrOrders[intIndex].strReference]);
+    assert.equal(objQueue.arrOrders[0].strStatus,strStatus);
+    assert.doesNotMatch(JSON.stringify(objQueue),/202555|unused@example|cents|ciphertext/);
+    assert.equal(objService.listOrders(EMPLOYEE_TOKEN,{status:strStatus,date:'2026-10-22'}).arrOrders.length,0);
+    assert.equal(objService.listOrders(null,{status:strStatus}),null);
+  }
+  const objVersion=objDatabase.prepare('SELECT id FROM catalog_versions LIMIT 1').get();
+  objDatabase.prepare("INSERT INTO orders (id,public_reference,service_type,catalog_version_id,fulfillment_status,cancelled_at) VALUES ('unpaid-final','unpaid-final','carry-out',?,'Cancelled','2026-10-21T15:00:00.000Z')").run(objVersion.id);
+  assert.equal(objService.listOrders(EMPLOYEE_TOKEN,{status:'Cancelled'}).arrOrders.length,1);
+}));
 test('unpaid orders stay hidden; cancellation/review and contact redaction are represented safely',()=>fixture(({objDatabase,objService,arrOrders})=>{
   const objFirst=arrOrders[0];
   objDatabase.prepare("INSERT INTO cancellation_requests (id,order_id,source,reason_code) VALUES ('cancel',?,'customer','synthetic_fixture')").run(objFirst.strOrderId);
