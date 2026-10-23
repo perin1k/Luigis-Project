@@ -33,13 +33,13 @@ jobs:
   staff:
     name: Staff (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-14]
+        os: [ubuntu-24.04, windows-2022, macos-15]
     steps:
       - name: Check out the tested commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -69,12 +69,16 @@ jobs:
           openssl version
           npx playwright --version
       - name: Verify staff services and HTTPS integration
+        timeout-minutes: 8
         run: npm run test:staff:unit
       - name: Install locked browsers and Linux system prerequisites
         if: runner.os == 'Linux'
+        timeout-minutes: 30
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Install locked native browsers
         if: runner.os != 'Linux'
+        timeout-minutes: 15
         run: npx playwright install chromium firefox webkit
       - name: Verify staff browser behavior and cookie enforcement
+        timeout-minutes: 17
         run: npm run test:staff:functional

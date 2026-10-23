@@ -201,6 +201,16 @@ mark the application cross-platform release complete.
 
 ## Tool references
 
+Staff authentication has a separate
+[acceptance workflow and checklist](staff-acceptance.md). Its current matrix uses
+Ubuntu 24.04, Windows Server 2022 and macOS 15; the storage matrix above remains
+on macOS 14. This distinction is intentional: the older macOS staff runner hit
+a WebKit protocol failure before page creation. The replacement runner retains
+the lockfile and strict assertions and must produce its own verified outcome.
+Separate bounded installation and test steps allow slow Linux prerequisites
+without claiming a timeout is a successful browser check. Native Windows WebKit
+cookie failures and OS-specific visual review remain explicit acceptance gates.
+
 - [Playwright installation and supported systems](https://playwright.dev/docs/intro)
 - [Playwright browser installation and dependencies](https://playwright.dev/docs/browsers)
 - [Playwright visual comparisons](https://playwright.dev/docs/test-snapshots)

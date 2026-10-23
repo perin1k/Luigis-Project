@@ -17,13 +17,21 @@ accessibility and private operator verification are distinct gates.
   and strict native visual suite. The functional CI command does not replace it,
   create baselines or waive missing/stale native references.
 - `.github/workflows/staff-verification.yml` runs the unit/HTTPS and functional
-  browser checks on Ubuntu 24.04, Windows Server 2022 and macOS 14 with Node
+  browser checks on Ubuntu 24.04, Windows Server 2022 and macOS 15 with Node
   24.14.1, locked dependencies/browsers and read-only checkout permissions.
   Linux browser system prerequisites are installed only on the disposable hosted
   runner. Windows discovers OpenSSL from PATH or the installed Git directory.
   Installation and execution share the repository-local browser path explicitly;
   installing into the default user cache does not satisfy this configuration.
   There are no application secrets, deployment steps or uploaded artifacts.
+  The approved runner repair changes macOS 14 to macOS 15 to investigate the
+  older runner's WebKit protocol failure without changing locked dependencies.
+  The job has a 60-minute ceiling, with separate service (8-minute), Linux
+  installation (30-minute), other installation (15-minute) and browser
+  (17-minute) step limits. Browser tests retain their 15-minute global timeout.
+  Installation time no longer consumes most of a 30-minute overall allowance.
+  A newer macOS runner does not establish support for the failing macOS 14 path;
+  no result is claimed until its run completes.
 
 ## Cookie enforcement investigation
 
