@@ -12,6 +12,27 @@ async function signIn(objPage){
 
 test.beforeEach(async({request:objRequest})=>{await objRequest.get('/__test/reset');});
 
+test('opaque reference wrapping keeps equal-length values at a stable mobile height',async({page:objPage,request:objRequest})=>{
+  await signIn(objPage);
+  const arrValues=['11111111-1111-4111-8111-111111111111','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','12345678-1234-4123-8123-123456789012','abcdefab-cdef-4abc-8def-abcdefabcdef'];
+  async function verifyReference(strSelector){
+    for(const intWidth of [390,320]){
+      await objPage.setViewportSize({width:intWidth,height:844});
+      const arrHeights=await objPage.locator(strSelector).first().evaluate((elValue,arrReferences)=>{
+        const strOriginal=elValue.textContent;
+        try{return arrReferences.map(strReference=>{elValue.textContent=strReference;return elValue.parentElement.getBoundingClientRect().height;});}
+        finally{elValue.textContent=strOriginal;}
+      },arrValues);
+      expect(new Set(arrHeights).size).toBe(1);
+    }
+  }
+  await verifyReference('.staff-order-reference');
+  const arrPaths=await(await objRequest.get('/__test/tracking')).json();
+  await objPage.goto(arrPaths[1]);
+  await expect(objPage.locator('#tracking-status')).toHaveText('Progress refreshed.');
+  await verifyReference('.tracking-reference');
+});
+
 test('FE-04 final filters survive refresh and review alerts remain prominent in both themes',async({page:objPage})=>{
   await signIn(objPage);
   await expect(objPage.locator('.staff-review-notice')).toContainText(['Staff review required']);

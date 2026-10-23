@@ -75,14 +75,14 @@ jobs:
           defaults read org.webkit.Playwright AppleKeyboardUIMode
       - name: Connected checkpoint journeys and candidate collection
         if: inputs.phase == 'collect'
-        # Retain initial full native functional evidence; recollect visuals affected
-        # by the hidden-disclosure fix and cover the added integration/regression.
-        run: npx playwright test -c playwright.test03.config.js --grep 'visual|private tracking explains persisted inventory|lost refund response|scheduled inventory review connects|collapsed notification controls' --update-snapshots=all ${{ matrix.projects }}
+        # Retain native functional and unchanged analytics evidence. References on
+        # operational/tracking pages now wrap deterministically without masking layout.
+        run: npx playwright test -c playwright.test03.config.js --grep 'visual|private tracking explains persisted inventory|lost refund response|opaque reference wrapping' --grep-invert 'analytics.*visual' --update-snapshots=all ${{ matrix.projects }}
       - name: Strict reviewed-reference comparison
         if: inputs.phase == 'compare'
         # Reuse passing collection journeys on unchanged application/fixture bytes.
         # Compare every visual case and run the new cross-feature integration.
-        run: npx playwright test -c playwright.test03.config.js --grep 'visual|private tracking explains persisted inventory|lost refund response|scheduled inventory review connects|collapsed notification controls' --update-snapshots=none ${{ matrix.projects }}
+        run: npx playwright test -c playwright.test03.config.js --grep 'visual|private tracking explains persisted inventory|lost refund response|opaque reference wrapping' --grep-invert 'analytics.*visual' --update-snapshots=none ${{ matrix.projects }}
       - name: Collect corrected approval-row visuals and regression
         if: inputs.phase == 'collect-approval'
         run: npx playwright test -c playwright.test03.config.js --grep 'admin detail visual|refund .*visual|notification .*visual|approval rows contain|refund submission requires|persisted pending refunds' --update-snapshots=all ${{ matrix.projects }}
@@ -96,4 +96,14 @@ jobs:
           name: test03-candidates-${{ matrix.os }}
           path: tests/staff-orders-e2e/*-snapshots/test03-ci/*.png
           if-no-files-found: error
+          retention-days: 2
+      - name: Retain bounded synthetic comparison differences
+        if: failure() && (inputs.phase == 'compare' || inputs.phase == 'compare-approval')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: test03-differences-${{ matrix.os }}
+          path: |
+            test-results/test03/**/*-actual.png
+            test-results/test03/**/*-diff.png
+          if-no-files-found: warn
           retention-days: 2
