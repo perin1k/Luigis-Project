@@ -8,6 +8,11 @@
   <div class="staff-intro"><p class="eyebrow">A seat at the owner’s table</p><h1>Sales, clearly served.</h1><p>Follow sales, refunds and the rhythm of your kitchen. All dates and pickup hours are Central.</p></div>
   <section class="staff-card mb-4" aria-labelledby="report-heading"><h2 id="report-heading">Choose your reporting dates</h2>
     <p id="report-instructions">Both dates are included. Choose up to 366 days. Changing dates reloads the report.</p>
+    <% if(objRanges){ %><nav class="analytics-ranges" aria-label="Reporting date shortcuts">
+      <% for(const objRange of objRanges.arrQuickRanges){ const bSelected=objFilter.from===objRange.strFrom&&objFilter.to===objRange.strTo; %>
+      <a class="btn btn-outline-primary" href="/staff/analytics?<%= new URLSearchParams({from:objRange.strFrom,to:objRange.strTo}).toString() %>" aria-current="<%= bSelected?'page':'false' %>"><%= objRange.strLabel %></a>
+      <% } %>
+    </nav><% } %>
     <form method="get" action="/staff/analytics" class="staff-queue-filters">
       <div><label for="report-from" class="form-label">From date</label><input id="report-from" type="date" name="from" min="1000-01-01" max="9999-12-31" required aria-describedby="report-instructions" class="form-control" value="<%= typeof objFilter.from==='string'?objFilter.from:'' %>"></div>
       <div><label for="report-to" class="form-label">Through date</label><input id="report-to" type="date" name="to" min="1000-01-01" max="9999-12-31" required aria-describedby="report-instructions" class="form-control" value="<%= typeof objFilter.to==='string'?objFilter.to:'' %>"></div>
@@ -25,7 +30,7 @@
     <section class="staff-card" aria-labelledby="average-heading"><h2 id="average-heading">Average item order</h2><p>Based on payment dates. Cancelled orders are excluded; paid no-shows stay included. Later cancellations or refunds can revise this cohort.</p>
       <dl class="analytics-values"><dt>Eligible paid orders</dt><dd><%= objCohort.intEligibleOrders %></dd><dt>Cohort net items</dt><dd><%= money(objCohort.centsNetItems) %></dd><dt>Average item value</dt><dd><strong><%= money(objCohort.centsAverageItems) %></strong></dd></dl>
       <% if(!objCohort.intEligibleOrders){ %><p>No eligible paid orders in this date range.</p><% } %>
-      <h3>Kitchen timing</h3><p><%= objPickup.intOnTime %> of <%= objPickup.intReadyCoverage %> orders with recorded ready times were ready by their promised pickup time.</p>
+      <h3>Kitchen timing</h3><p id="analytics-on-time">On-time share of recorded ready times: <strong><%= objPickup.intReadyCoverage?(100*objPickup.intOnTime/objPickup.intReadyCoverage).toFixed(1)+'%':'Not available' %></strong>. <%= objPickup.intOnTime %> of <%= objPickup.intReadyCoverage %> orders with recorded ready times were ready by their promised pickup time.</p>
       <p><%= objPickup.intMissingReadyTimes %> non-cancelled pickup orders have no ready time; <%= objPickup.intMissingPickupTimes %> paid-cohort orders have no pickup time.</p>
       <p>Average Received-to-Ready: <strong><%= objPickup.numAverageElapsedMinutes===null?'Not available':objPickup.numAverageElapsedMinutes.toFixed(1)+' minutes' %></strong>, from <%= objPickup.intElapsedCoverage %> valid timestamp pairs. Includes overnight waiting.</p>
     </section>
@@ -35,7 +40,17 @@
     <table class="table analytics-table analytics-table--items"><caption>Item quantities for the selected payment and refund dates</caption><thead><tr><th scope="col">Item</th><th scope="col">Sold</th><th scope="col">Refund</th><th scope="col">Net</th></tr></thead><tbody><% for(const objItem of objReport.arrBestSellers){ %><tr><th scope="row"><%= objItem.strLabel %></th><td><%= objItem.intPurchased %></td><td><%= objItem.intRefunded %></td><td><%= objItem.intNet %></td></tr><% } %></tbody></table><% } %>
   </section>
   <section class="staff-card" aria-labelledby="pickup-heading"><h2 id="pickup-heading">Pickup rhythm</h2><p><%= objPickup.intOrders %> paid orders have promised pickup dates in this range. Totals include the cancelled and not-collected outcomes shown separately.</p>
-    <% if(!objPickup.arrHours.length){ %><p>No promised pickup times in this date range.</p><% }else{ %><table class="table analytics-table"><caption>Promised pickup hour in America/Chicago</caption><thead><tr><th scope="col">Hour</th><th scope="col">Orders</th><th scope="col">Cancelled</th><th scope="col">Not collected</th></tr></thead><tbody><% for(const objHour of objPickup.arrHours){ %><tr><th scope="row"><%= String(objHour.intHour).padStart(2,'0') %>:00</th><td><%= objHour.intOrders %></td><td><%= objHour.intCancelled %></td><td><%= objHour.intNotCollected %></td></tr><% } %></tbody></table><% } %>
+    <dl class="analytics-values"><dt>Completed collections</dt><dd id="analytics-completed"><%= objPickup.intCompletedOrders %></dd></dl>
+    <p>Completed collections count only Completed orders by promised pickup date. Active orders, cancellations and no-shows are not completed collections.</p>
+    <% if(!objPickup.arrHours.length){ %><p>No promised pickup times in this date range.</p><% }else{ const arrTrends=[
+      {strTitle:'Pickup by date',strCaption:'Promised pickup date in America/Chicago',strColumn:'Date',strField:'strDate',arrBuckets:objPickup.arrDates},
+      {strTitle:'Pickup by day of week',strCaption:'Promised pickup weekday in America/Chicago',strColumn:'Day',strField:'strWeekday',arrBuckets:objPickup.arrWeekdays},
+      {strTitle:'Pickup by hour',strCaption:'Promised pickup hour in America/Chicago',strColumn:'Hour',strField:'intHour',arrBuckets:objPickup.arrHours}
+    ];for(const objTrend of arrTrends){ %>
+    <h3><%= objTrend.strTitle %></h3>
+    <table class="table analytics-table analytics-table--pickup"><caption><%= objTrend.strCaption %></caption><thead><tr><th scope="col"><%= objTrend.strColumn %></th><th scope="col">Orders</th><th scope="col">Cancelled</th><th scope="col">Not collected</th></tr></thead><tbody>
+      <% for(const objBucket of objTrend.arrBuckets){ %><tr><th scope="row"><%= objTrend.strField==='intHour'?String(objBucket.intHour).padStart(2,'0')+':00':objBucket[objTrend.strField] %></th><td><%= objBucket.intOrders %></td><td><%= objBucket.intCancelled %></td><td><%= objBucket.intNotCollected %></td></tr><% } %>
+    </tbody></table><% }} %>
   </section>
   <% } %>
 </main><%- include('../partials/footer') %></body></html>

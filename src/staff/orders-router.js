@@ -1,4 +1,3 @@
-import {chicagoDate} from '../ordering/scheduling-service.js';
 import express from 'express';
 import {randomBytes} from 'node:crypto';
 import {AUTH_COOKIES,COOKIE_OPTIONS,createCsrfProtection,readAuthCookies} from '../auth/auth-transport.js';
@@ -66,10 +65,16 @@ export function createStaffOrdersRouter({objStaffOrdersService,objOrderProgressS
     objRouter.use('/api/staff/orders/:reference/notifications/retry',(objError,objRequest,objResponse,fnNext)=>{if(!objError)return fnNext();return objResponse.status(objError.status===413?413:400).json({strMessage:'Check the preview request.'});});
   }
   if(objAnalyticsService)objRouter.get('/staff/analytics',(objRequest,objResponse,fnNext)=>{
-    const strToday=chicagoDate(new Date().toISOString());const objFilter=Object.keys(objRequest.query).length?objRequest.query:{from:strToday,to:strToday};
-    try{const objReport=objAnalyticsService.read(objResponse.locals.strSessionToken,objFilter);if(!objReport){objResponse.status(403);return fnRender(objRequest,objResponse,fnNext,'pages/error',{strTitle:'Owner access required | Luigi’s Pizza',strDescription:'Private owner access.',intStatus:403,strHeading:'Owner access required.',strMessage:'Sign in with your individual administrator account to view sales.'});}
-      fnRender(objRequest,objResponse,fnNext,'pages/staff-analytics',{strTitle:'Owner sales | Luigi’s Pizza',strDescription:'Private owner sales reporting.',objReport,objFilter,strError:''});
-    }catch(objError){const intStatus=objError instanceof StaffOrderError?objError.intStatus:503;objResponse.status(intStatus);fnRender(objRequest,objResponse,fnNext,'pages/staff-analytics',{strTitle:'Owner sales | Luigi’s Pizza',strDescription:'Private owner sales reporting.',objReport:null,objFilter,strError:objError instanceof StaffOrderError?objError.message:'Sales could not be loaded. Try again.'});}
+    let objRanges;let objFilter=objRequest.query;
+    function denyOwnerReport(){objResponse.status(403);return fnRender(objRequest,objResponse,fnNext,'pages/error',{strTitle:'Owner access required | Luigi’s Pizza',strDescription:'Private owner access.',intStatus:403,strHeading:'Owner access required.',strMessage:'Sign in with your individual Owner account to view sales.'});}
+    try{
+      objRanges=objAnalyticsService.readDateRanges(objResponse.locals.strSessionToken);
+      if(!objRanges)return denyOwnerReport();
+      objFilter=Object.keys(objRequest.query).length?objRequest.query:{from:objRanges.strToday,to:objRanges.strToday};
+      const objReport=objAnalyticsService.read(objResponse.locals.strSessionToken,objFilter);
+      if(!objReport)return denyOwnerReport();
+      fnRender(objRequest,objResponse,fnNext,'pages/staff-analytics',{strTitle:'Owner sales | Luigi’s Pizza',strDescription:'Private owner sales reporting.',objReport,objFilter,objRanges,strError:''});
+    }catch(objError){const intStatus=objError instanceof StaffOrderError?objError.intStatus:503;objResponse.status(intStatus);fnRender(objRequest,objResponse,fnNext,'pages/staff-analytics',{strTitle:'Owner sales | Luigi’s Pizza',strDescription:'Private owner sales reporting.',objReport:null,objFilter,objRanges,strError:objError instanceof StaffOrderError?objError.message:'Sales could not be loaded. Try again.'});}
   });
   if(objAnalyticsService)objRouter.get('/api/staff/analytics',(objRequest,objResponse)=>{
     try{const objResult=objAnalyticsService.read(objResponse.locals.strSessionToken,objRequest.query);return objResult?objResponse.json(objResult):objResponse.status(403).json({strMessage:'Administrative access is required.'});}

@@ -52,6 +52,9 @@
 .analytics-values dd { text-align: right; margin: 0; }
 .analytics-table { table-layout: fixed; overflow-wrap: anywhere; }
 .analytics-table--items th:first-child { width: 38%; }
+.analytics-table--pickup th:first-child { width: 35%; }
+.analytics-ranges { display: flex; flex-wrap: wrap; gap: .75rem; margin-block: 1rem; }
+.analytics-ranges .btn { display: inline-flex; align-items: center; min-height: 44px; }
 .analytics-table thead th { font-size: .75rem; text-transform: none; letter-spacing: 0; }
 .analytics-table tbody th { font: 650 1rem var(--font-body); }
 .staff-page .analytics-table > :not(caption) > * > * { padding: .5rem .25rem; }

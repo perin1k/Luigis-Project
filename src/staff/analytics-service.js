@@ -13,6 +13,15 @@ function validDate(strValue){return typeof strValue==='string'&&/^[1-9]\d{3}-\d{
 function safeCents(numValue){if(!Number.isSafeInteger(numValue))throw new StaffOrderError('Report total exceeds supported precision.',422);return numValue;}
 function halfUpAverage(centsTotal,intCount){const numTotal=BigInt(centsTotal),numCount=BigInt(intCount);return Number((numTotal*2n+numCount)/(numCount*2n));}
 export function createAnalyticsService(objDatabase,objSessions){
+  function readDateRanges(strToken){return objSessions.executeAuthorized(strToken,'analytics.read',(objIdentity,dtNow)=>{
+    const strToday=chicagoDate(dtNow.toISOString());
+    const arrQuickRanges=[1,7,30].map(intDays=>{
+      const dtStart=new Date(`${strToday}T12:00:00Z`);
+      dtStart.setUTCDate(dtStart.getUTCDate()-intDays+1);
+      return {strLabel:intDays===1?'Today':`Last ${intDays} Days`,strFrom:dtStart.toISOString().slice(0,10),strTo:strToday};
+    });
+    return {strToday,arrQuickRanges};
+  });}
   function read(strToken,objInput){return objSessions.executeAuthorized(strToken,'analytics.read',()=>{
     if(!objInput||Object.keys(objInput).length!==2||!validDate(objInput.from)||!validDate(objInput.to)||objInput.from>objInput.to||Date.parse(objInput.to)-Date.parse(objInput.from)>365*86400000)throw new StaffOrderError('Choose a valid date range of at most 366 days.',400);
     const fnInPeriod=(dtValue)=>Boolean(dtValue&&chicagoDate(dtValue)>=objInput.from&&chicagoDate(dtValue)<=objInput.to);
@@ -51,8 +60,8 @@ export function createAnalyticsService(objDatabase,objSessions){
     }
     return {arrBestSellers:[...mapItems.values()].sort((objLeft,objRight)=>objRight.intNet-objLeft.intNet||objLeft.strLabel.localeCompare(objRight.strLabel)),strAdapter:'luigis-demo-v1',strTimeZone:'America/Chicago',strFrom:objInput.from,strTo:objInput.to,objPeriod,
       objPaymentCohort:{intEligibleOrders:arrCohort.length,centsNetItems:centsCohortItems,centsAverageItems:arrCohort.length?halfUpAverage(centsCohortItems,arrCohort.length):null},
-      objPickup:{intOrders:arrPickup.length,intReadyEligibleOrders:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled').length,intMissingReadyTimes:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled'&&!objRow.ready_at).length,intMissingPickupTimes:arrPayments.filter((objRow)=>fnInPeriod(objRow.paid_at)&&!objRow.promised_at).length,intReadyCoverage,intOnTime,intElapsedCoverage,numAverageElapsedMinutes:intElapsedCoverage?numElapsedMinutes/intElapsedCoverage:null,arrHours:[...mapHours.values()].sort((objLeft,objRight)=>objLeft.intHour-objRight.intHour),arrDates:[...mapDates.values()].sort((objLeft,objRight)=>objLeft.strDate.localeCompare(objRight.strDate)),arrWeekdays:[...mapWeekdays.values()].sort((objLeft,objRight)=>objLeft.intWeekday-objRight.intWeekday)},
+      objPickup:{intOrders:arrPickup.length,intCompletedOrders:arrPickup.filter((objRow)=>objRow.fulfillment_status==='Completed').length,intReadyEligibleOrders:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled').length,intMissingReadyTimes:arrPickup.filter((objRow)=>objRow.fulfillment_status!=='Cancelled'&&!objRow.ready_at).length,intMissingPickupTimes:arrPayments.filter((objRow)=>fnInPeriod(objRow.paid_at)&&!objRow.promised_at).length,intReadyCoverage,intOnTime,intElapsedCoverage,numAverageElapsedMinutes:intElapsedCoverage?numElapsedMinutes/intElapsedCoverage:null,arrHours:[...mapHours.values()].sort((objLeft,objRight)=>objLeft.intHour-objRight.intHour),arrDates:[...mapDates.values()].sort((objLeft,objRight)=>objLeft.strDate.localeCompare(objRight.strDate)),arrWeekdays:[...mapWeekdays.values()].sort((objLeft,objRight)=>objLeft.intWeekday-objRight.intWeekday)},
       intCancelledAwaitingRefund:arrPayments.filter((objRow)=>objRow.fulfillment_status==='Cancelled'&&fnInPeriod(objRow.paid_at)&&!objDatabase.prepare("SELECT id FROM demo_refund_attempts WHERE payment_id=? AND state='succeeded'").get(objRow.id)).length};
   });}
-  return {read};
+  return {read,readDateRanges};
 }

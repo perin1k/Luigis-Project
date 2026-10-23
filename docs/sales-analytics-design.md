@@ -44,8 +44,9 @@ gain staff access. No contact, order identifier, card or secret link is returned
   two exceptional outcomes are counted separately. Empty periods return empty
   arrays, not invented observations. Derive weekdays from the Central date before
   calendar arithmetic, preserving UTC-midnight and daylight-saving boundaries.
-  These additive backend fields implement DECISION-04; FE-06 must display date/
-  weekday trends and provide its approved quick/custom date controls.
+  FE-06 displays these date/weekday trends alongside the hourly table.
+  `intCompletedOrders` counts paid orders whose current outcome is Completed,
+  filtered by promised pickup date, separately from active orders.
 - `objPickup` groups promised pickup times into local hours (0–23), independently
   of payment date. Order counts include separate cancellation and Not collected
   counts. Non-cancelled ready-time coverage and missing-time counts are explicit;
@@ -87,6 +88,21 @@ and noindex guards. Unauthorized/expired sessions receive a private-data-free
 403 error page. Invalid date ranges return an accessible error and preserved
 filter fields, without displaying a stale report. Default dates use the current
 Central day; submitted dates are revalidated by the service.
+
+FE-06 adds Today, Last 7 Days and Last 30 Days native links alongside the custom
+form. `readDateRanges` uses the authorized session's clock and inclusive Central
+calendar dates; calendar subtraction avoids treating a daylight-saving day as
+exactly 24 hours. Links and filtering work without dashboard JavaScript after
+sign-in; authentication retains its existing JavaScript requirements.
+
+The page renders captioned date, weekday and hour pickup tables, with exceptional
+outcomes in separate columns. Completed collections are labeled by their pickup
+date scope. On-time percentage is explicitly limited to recorded ready times;
+missing observations stay visible and are never treated as on-time orders.
+Received-to-Ready remains elapsed order time, not measured cooking time. Empty
+reports show no invented buckets and an unavailable percentage rather than 0%.
+See [FE-06 focused verification](verification/fe-06-analytics.md); native visual,
+manual accessibility and applicable audit acceptance remain with TEST-03.
 
 The admin order queue now exposes an Owner sales navigation link, using the
 persisted session role in `src/staff/orders-service.js`; employees do not receive

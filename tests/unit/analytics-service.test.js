@@ -71,3 +71,29 @@ test('weekday buckets include Sunday across the Central daylight-saving fallback
     assert.equal(objPickup.arrHours[0].intHour,10);
   }finally{objDatabase.close();}
 });
+
+test('Owner reporting shortcuts use inclusive Central calendar dates and remain permission protected',()=>fixture(({objService,token,setNow})=>{
+  const objRanges=objService.readDateRanges(token());
+  assert.equal(objRanges.strToday,'2026-10-21');
+  assert.deepEqual(objRanges.arrQuickRanges,[
+    {strLabel:'Today',strFrom:'2026-10-21',strTo:'2026-10-21'},
+    {strLabel:'Last 7 Days',strFrom:'2026-10-15',strTo:'2026-10-21'},
+    {strLabel:'Last 30 Days',strFrom:'2026-09-22',strTo:'2026-10-21'},
+  ]);
+  assert.equal(objService.readDateRanges(token('employee')),null);
+  setNow('2026-11-01T06:30:00.000Z');
+  assert.equal(objService.readDateRanges(token()).arrQuickRanges[1].strFrom,'2026-10-26');
+  setNow('2026-11-01T07:30:00.000Z');
+  assert.equal(objService.readDateRanges(token()).arrQuickRanges[1].strFrom,'2026-10-26');
+}));
+
+test('completed pickup counts stay separate from active paid orders',()=>fixture(({objDatabase,objService,objSessions,arrOrders,token})=>{
+  const objInput={from:'2026-10-21',to:'2026-10-21'};const strToken=token();
+  assert.equal(objService.read(strToken,objInput).objPickup.intCompletedOrders,0);
+  const objOrder=arrOrders[0];let intRevision=objDatabase.prepare('SELECT revision FROM orders WHERE id=?').get(objOrder.strOrderId).revision;
+  const objProgress=createOrderProgressService(objDatabase,objSessions);
+  for(const strStatus of ['Preparing','Baking','Ready','Completed'])intRevision=objProgress.advanceOrder(strToken,objOrder.strReference,{intRevision,strStatus}).intRevision;
+  const objPickup=objService.read(strToken,objInput).objPickup;
+  assert.equal(objPickup.intOrders,2);assert.equal(objPickup.intCompletedOrders,1);
+  assert.equal(objPickup.intReadyCoverage,1);assert.equal(objPickup.intMissingReadyTimes,1);
+}));
