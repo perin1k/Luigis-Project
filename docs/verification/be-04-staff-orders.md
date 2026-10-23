@@ -1,5 +1,48 @@
 # BE-04 verification — October 22, 2026
 
+## Focused implementation reconciliation — October 23, 2026
+
+Reviewed the existing teammate implementation at `c64e6acbfc2ffcb4d79d3fac8c26dd89e13f6403`
+on Windows x64, Node 24.22.1, Playwright 1.64.1 and locked browser revisions.
+Preserved Perin's original `b656003` implementation and the current FE-04 final-status
+filters/review notices. No application, fixture, test, dependency or migration
+change was needed; this is a documentation-only handoff after focused execution.
+
+Passed existing focused service/HTTPS checks for paid-order inclusion, active/final
+status and service-date filters, pagination, minimal contact and no employee
+financial fields, unknown/revoked/disabled/expired sessions, admin MFA, contact
+redaction, safe output, cookie/origin/host enforcement and rejection of plaintext
+or forwarded-protocol claims. Passed existing Chromium/Firefox desktop journeys
+for authenticated queue/detail/filter/refresh, expired-session private-data
+clearing, and recoverable network failure with explicitly stale prior results.
+These are fresh focused results, not new broad visual, axe, manual or audit runs.
+
+Reproduction (use the cross-platform guide for OpenSSL/runtime prerequisites):
+
+```sh
+node --test tests/unit/staff-orders.test.js tests/unit/staff-orders-http.test.js
+node node_modules/@playwright/test/cli.js test -c playwright.staff-orders.config.js orders.spec.js --project=chromium-desktop --project=firefox-desktop --grep 'authorized queue/detail|unauthenticated and expired|network recovery retains'
+```
+
+Integration/file responsibilities remain as described in
+[the staff-order guide](../staff-orders-design.md):
+`src/staff/orders-service.js` authorizes and reads persisted operational data;
+`src/staff/orders-router.js` enforces private HTTPS transport and serves HTML/JSON;
+`src/views/pages/staff-orders.ejs` renders escaped queue/detail content;
+`src/public/js/staff-orders.js` adds refresh and session/network recovery.
+Server permissions and persisted payment associations remain authoritative.
+
+BE-04 is **Ready for Testing, not Done**. Full native desktop/mobile visual/axe,
+keyboard/Narrator/zoom/contrast, applicable queue/detail Lighthouse, and connected
+fulfillment/exception acceptance remain grouped under
+[TEST-03](https://trello.com/c/WOZ38Ufw). Preserve the existing approved private-page
+noindex SEO exception, all other quality gates and final QA/INT/OPS boundaries.
+Current FE-04 changes require reviewed native references; old images are not
+silently regenerated or treated as current acceptance. Earlier Firefox launch
+limitations below are historical; this focused Windows Firefox run passed.
+
+## Original increment evidence
+
 Story: https://trello.com/c/nu8icTT7. Scope: read-only authorized employee queue
 and preparation details. Implementation/file guide: `../staff-orders-design.md`.
 No deployment, real staff enrollment, status change, dependency or migration.
