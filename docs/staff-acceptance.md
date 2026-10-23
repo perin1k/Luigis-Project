@@ -33,6 +33,26 @@ accessibility and private operator verification are distinct gates.
   A newer macOS runner does not establish support for the failing macOS 14 path;
   no result is claimed until its run completes.
 
+### Approved browser/platform matrix and temporary visual collection
+
+On October 22 the human explicitly approved required Chromium/Firefox coverage
+on Windows, and Chromium/Firefox/WebKit on macOS and Linux. Native Windows WebKit
+remains a separately named diagnostic matrix job with its original strict checks
+and visible failure; only that diagnostic job is allowed to fail. It is not Safari
+and is not claimed as a supported passing browser path. Required jobs cannot
+ignore cookie, authorization, accessibility or functional failures. The unfiltered
+local staff command still exposes the Windows diagnostic failure.
+
+The human also approved temporary internal collection of synthetic native visual
+candidates. `STAFF_VISUAL_REVIEW=true` explicitly regenerates candidates on the
+disposable runner; this is collection, not acceptance. Only successful native
+visual runs upload the two staff snapshot directories' native-OS PNGs using a
+pinned action, with one-day retention. No reports, traces, logs or real data are
+uploaded. Inspect every candidate before committing reviewed references, restore
+the setting to `false`, then rerun unchanged-reference comparisons. Required
+jobs run those strict visual comparisons in addition to functional checks.
+Do not leave candidate collection enabled or count generated images as reviewed.
+
 ## Cookie enforcement investigation
 
 The existing browser-cookie assertion still requires `SameSite=Strict`. The

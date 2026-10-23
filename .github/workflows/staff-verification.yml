@@ -31,15 +31,34 @@ concurrency:
 
 jobs:
   staff:
-    name: Staff (${{ matrix.os }})
+    name: Staff (${{ matrix.os }}, ${{ matrix.coverage }})
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.coverage == 'diagnostic' }}
     timeout-minutes: 60
     env:
       PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
+      # Temporary, human-approved candidate collection; restore false after review.
+      STAFF_VISUAL_REVIEW: 'true'
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-15]
+        include:
+          - os: ubuntu-24.04
+            coverage: required
+            snapshot_os: linux
+            projects: ''
+          - os: windows-2022
+            coverage: required
+            snapshot_os: win32
+            projects: --project=chromium-desktop --project=chromium-mobile --project=firefox-desktop --project=firefox-mobile
+          - os: macos-15
+            coverage: required
+            snapshot_os: darwin
+            projects: ''
+          - os: windows-2022
+            coverage: diagnostic
+            snapshot_os: win32
+            projects: --project=webkit-desktop --project=webkit-mobile
     steps:
       - name: Check out the tested commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -69,6 +88,7 @@ jobs:
           openssl version
           npx playwright --version
       - name: Verify staff services and HTTPS integration
+        if: matrix.coverage == 'required'
         timeout-minutes: 8
         run: npm run test:staff:unit
       - name: Install locked browsers and Linux system prerequisites
@@ -81,4 +101,19 @@ jobs:
         run: npx playwright install chromium firefox webkit
       - name: Verify staff browser behavior and cookie enforcement
         timeout-minutes: 17
-        run: npm run test:staff:functional
+        run: npm run test:staff:functional -- ${{ matrix.projects }}
+      - name: Collect native visual candidates or compare reviewed references
+        id: native-visual
+        if: matrix.coverage == 'required'
+        timeout-minutes: 8
+        run: npx playwright test -c playwright.staff.config.js --grep visual --reporter=list --output=test-results/staff-native-visual --update-snapshots=${{ env.STAFF_VISUAL_REVIEW == 'true' && 'all' || 'none' }} ${{ matrix.projects }}
+      - name: Temporarily retain synthetic native visual candidates for review
+        if: ${{ success() && steps.native-visual.outcome == 'success' && env.STAFF_VISUAL_REVIEW == 'true' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: staff-native-visual-${{ matrix.snapshot_os }}
+          path: |
+            tests/staff-e2e/staff.spec.js-snapshots/*-${{ matrix.snapshot_os }}.png
+            tests/staff-e2e/roles.spec.js-snapshots/*-${{ matrix.snapshot_os }}.png
+          retention-days: 1
+          if-no-files-found: error
