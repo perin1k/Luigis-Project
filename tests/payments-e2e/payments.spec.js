@@ -9,6 +9,24 @@ async function checkout(objPage,bDineIn=false){
   await objPage.getByLabel('Pickup or dine-in ready time').selectOption('0');await objPage.getByRole('button',{name:'Continue to payment',exact:true}).click();
 }
 test.beforeEach(async({request:objRequest})=>{await objRequest.get('/__test/reset');});
+
+test('crossing the service cutoff returns to pickup review without losing the basket',async({page:objPage,request:objRequest})=>{
+  await objRequest.get('/__test/near-close');
+  await checkout(objPage);
+  await objPage.route('**/api/demo-payments',async(objRoute)=>{
+    await objRequest.get('/__test/after-cutoff');
+    await objRoute.continue();
+  });
+  await objPage.getByRole('button',{name:'Confirm demo payment',exact:true}).click();
+  await expect(objPage.getByRole('alert')).toContainText('Online ordering has closed');
+  await expect(objPage.getByRole('heading',{name:'Looking delicious.',exact:true})).toBeVisible();
+  await expect(objPage.locator('#pickup-time')).toHaveValue('');
+  await expect(objPage.locator('#summary-items')).toContainText('Pepperoni');
+  await expect(objPage.locator('#order-review')).toContainText('Synthetic Guest');
+  await expect(objPage.locator('#demo-receipt')).toBeHidden();
+  const objCounts=await(await objRequest.get('/__test/count')).json();
+  expect(objCounts.intPayments).toBe(0);expect(objCounts.intConfirmed).toBe(0);
+});
 test('both methods show committed demo confirmation with no card fields or browser errors',async({page:objPage,request:objRequest})=>{
   const arrErrors=[];objPage.on('pageerror',(objError)=>arrErrors.push(objError.message));
   for(const bDineIn of [false,true]){await checkout(objPage,bDineIn);if(bDineIn)await objPage.getByRole('radio',{name:'Apple Pay',exact:true}).check();
