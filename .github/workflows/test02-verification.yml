@@ -1,0 +1,91 @@
+name: TEST-02 menu and customer acceptance
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - '.github/workflows/test02-verification.yml'
+      - 'playwright.test02*.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test02-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checkpoint:
+    name: TEST-02 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            projects: --project=chromium-desktop --project=chromium-mobile --project=firefox-desktop --project=firefox-mobile
+          - os: macos-15
+            projects: ''
+          - os: ubuntu-24.04
+            projects: ''
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.14.1'
+      - run: npm ci
+      - name: Locate OpenSSL runtime on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $strGitRoot = Split-Path (Split-Path (Get-Command git).Source)
+          foreach ($strRelative in @('mingw64/bin', 'usr/bin')) {
+            $strDirectory = Join-Path $strGitRoot $strRelative
+            if (Test-Path -LiteralPath $strDirectory) { Add-Content -LiteralPath $env:GITHUB_PATH -Value $strDirectory }
+          }
+      - name: Use the main Ubuntu archive for browser prerequisites
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          bArchiveFound=false
+          for strSource in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
+            if [[ -f "$strSource" ]]; then
+              sudo sed -i 's|http://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|https://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|mirror+file:/etc/apt/apt-mirrors\.txt|https://archive.ubuntu.com/ubuntu|g' "$strSource"
+              if grep -Eq '^(URIs:|deb ).*https://archive\.ubuntu\.com/ubuntu' "$strSource"; then bArchiveFound=true; fi
+            fi
+          done
+          if [[ "$bArchiveFound" != true ]]; then echo 'No active Ubuntu archive source selected.' >&2; exit 1; fi
+      - if: runner.os == 'Linux'
+        run: npx playwright install --with-deps chromium firefox webkit
+      - if: runner.os != 'Linux'
+        run: npx playwright install chromium firefox webkit
+      - name: Record runtime and checkout integrity checks
+        run: |
+          node --version
+          npm --version
+          npx playwright --version
+          node --test tests/unit/order-submission.test.js tests/unit/demo-payment.test.js tests/unit/demo-payment-http.test.js tests/unit/demo-payment-concurrency.test.js tests/unit/payment-config.test.js tests/unit/payment-retry.test.js tests/unit/scheduling-service.test.js tests/unit/scheduling-concurrency.test.js
+      - name: Connected scheduling and recovery
+        run: npx playwright test -c playwright.test02-scheduling.config.js --update-snapshots=all ${{ matrix.projects }}
+      - name: Committed payments, receipts and interruption recovery
+        run: npx playwright test -c playwright.test02-payments.config.js --update-snapshots=all ${{ matrix.projects }}
+      - name: Edited authoritative recap and visual review
+        run: npx playwright test -c playwright.test02-pricing.config.js --update-snapshots=all ${{ matrix.projects }}
+      - name: Persisted order submission and safe retry
+        run: npx playwright test -c playwright.orders.config.js ${{ matrix.projects }}
+      # Temporary, explicitly approved collection for internal review; remove before acceptance.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: test02-native-${{ runner.os }}
+          retention-days: 2
+          path: |
+            tests/scheduling-e2e/**/test02-ci/*.png
+            tests/payments-e2e/**/test02-ci/*.png
+            tests/pricing-e2e/**/test02-ci/*.png
