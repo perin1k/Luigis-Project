@@ -206,7 +206,7 @@ References: [uptime and alert pricing](https://cloud.google.com/products/observa
 [uptime check configuration](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs),
 [alert strategies](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies).
 
-## Historical unresolved gates (superseded as verified below)
+## Historical preparation gates (superseded by actual acceptance)
 
 The actual alert contact/channel, failure/reset semantics and permitted incident
 response actions still need configuration review before implementation. The
@@ -219,3 +219,14 @@ Actual Ubuntu host failure/recovery, DNS/cert/service/VM drills, log retention/c
 verification and cross-platform/manual acceptance require the retained environments
 and later hosting authorization. Keep OPS-04 open for these genuine blockers and
 remaining operational decisions. See the authoritative [hosting design](hosting-design.md).
+
+## Actual acceptance — October 24, 2026
+
+The approved hosted configuration and full representative drill are complete.
+[OPS-04 acceptance](verification/ops-04-monitoring.md) records exact native runs,
+effective retention settings, bounded cost/usage, actual incident open/recovery,
+restored data/health and Brody's confirmation of both operational emails.
+The earlier instructions-only and unconfigured-status statements above are
+historical, not current blockers. OPS-04 may move Done within its original scope.
+The broader hosted QA, maintenance/continuity and final handoff gates remain on
+their original cards; no unsupported live provider or business SLA is claimed.
