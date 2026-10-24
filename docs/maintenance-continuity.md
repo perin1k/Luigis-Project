@@ -34,6 +34,11 @@ Future receiving-person acceptance remains DOC-01.
    commit/hash/tool metadata under ignored `reports/source-release/`. Dirty checkouts
    and overwrite are refused. No workstation node_modules, database, environment,
    credentials, private logs or test identities are copied into the artifact.
+   Archive conversion is explicit: migrations retain the established hosted CRLF
+   bytes through `deploy/archive-attributes`, while personal Git auto-CRLF settings
+   are ignored. This changes only archive export, not repository/worktree SQL or
+   database checksums. Local databases retain their own original file-byte contract;
+   do not normalize applied migrations or overwrite a failed staged manifest.
 5. Stage the patched runtime using the reviewed `deploy/maintain-host.sh stage`.
    It verifies the official distribution checksum before extraction. Prepare each
    approved commit with `prepare FULL_COMMIT_SHA`; the host independently clones

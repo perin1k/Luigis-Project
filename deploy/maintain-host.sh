@@ -38,7 +38,9 @@ elif [[ "$strMode" == prepare ]]; then
   git -c credential.helper= -C "$strStage/checkout" fetch --quiet --depth=1 origin "$strCommit"
   git -C "$strStage/checkout" checkout --quiet --detach "$strCommit"
   [[ "$(git -C "$strStage/checkout" rev-parse HEAD)" == "$strCommit" && -z "$(git -C "$strStage/checkout" status --porcelain)" ]] || exit 1
-  git -C "$strStage/checkout" archive --format=tar --output="$strStage/source.tar" "$strCommit" src scripts deploy package.json package-lock.json
+  # Preserve the existing live migration bytes without editing SQL or DB checksums.
+  printf 'src/data/migrations/*.sql text eol=crlf\n' > "$strStage/archive-attributes"
+  git -c core.autocrlf=false -c core.attributesFile="$strStage/archive-attributes" -C "$strStage/checkout" archive --format=tar --output="$strStage/source.tar" "$strCommit" src scripts deploy package.json package-lock.json
   echo "Reviewed clean-checkout source: $strCommit"
   sha256sum "$strStage/source.tar" | cut -d ' ' -f 1
   install -d -o root -g root -m 0755 "$strRelease"

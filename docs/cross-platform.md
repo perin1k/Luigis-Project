@@ -161,7 +161,8 @@ axe/Lighthouse checks supplement manual keyboard, zoom and screen-reader review.
 
 The approved `.github/workflows/storage-verification.yml` runs the same
 `npm run test:storage` command on Ubuntu 24.04, Windows Server 2022 and macOS 14,
-using Node 24.14.1 and `npm ci`. `scripts/verify-storage.js` supplies explicit
+The original accepted run used Node 24.14.1; active workflows now use the patched
+24.22.1 baseline with `npm ci`. `scripts/verify-storage.js` supplies explicit
 test paths to Node without shell wildcard expansion. It propagates test failures
 and runs storage, migration/reopen/rollback, recreation, payment/concurrency,
 notification and Owner/Admin/Employee migration/lifecycle checks sequentially.

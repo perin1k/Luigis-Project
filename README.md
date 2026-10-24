@@ -93,7 +93,7 @@ See [cross-platform setup and verification](docs/cross-platform.md) for prerequi
 shell examples, key/certificate differences and the current evidence limits.
 Targeting an OS does not mean its full acceptance matrix has already passed.
 
-Install Node.js 22.19 or newer with npm, then run:
+Install the tested Node.js 24.22.1 with bundled npm 11.19.1, then run:
 
 ```sh
 npm ci
@@ -423,7 +423,7 @@ authorized services must validate active actors and admin permissions for the
 older records as well, with a separately reviewed migration for historical actor
 mapping if needed. Storage existence is not authentication or authorization.
 
-Requires the repository's Node 22.19+ runtime; built-in `node:sqlite` is experimental
+Requires the repository's patched Node 24.22.1 baseline; built-in `node:sqlite` is experimental
 and may emit a warning. No dependency was added. Database operations are synchronous
 and serialize writers; suitable for the small disposable demo, not a multi-server
 deployment assumption.
