@@ -184,6 +184,9 @@ or automatic financial action.
   `prune-certbot-logs.sh`/the retention service and daily timer expire only rotated
   Certbot logs older than seven days in its verified root-private directory;
   cleanup is daily and excludes active log, accounts, certificates and keys.
+  Install the journal drop-in as `zz-luigis-retention.conf` so Ubuntu's vendor
+  `syslog.conf` cannot override the no-forwarding setting; verify effective order
+  with `systemd-analyze cat-config systemd/journald.conf` after installation.
 - Two checks x three regions x 31 days x 1440 = 267,840 scheduled monthly
   executions, below Google's one-million project free allowance if no other usage
   consumes it. The installer checks current project inventory conservatively.

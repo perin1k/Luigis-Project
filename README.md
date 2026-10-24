@@ -768,16 +768,17 @@ Focused security/privacy verification: `node scripts/verify-security.js` and
 `node node_modules/@playwright/test/cli.js test -c playwright.security.config.js`.
 
 Deployment preparation (OPS-01–07): [GCP/DuckDNS runbook](docs/deployment-runbook.md).
-OPS-01 [release/service tooling and file guide](deploy/README.md) and
+OPS-01 [release/service tooling](deploy/README.md) and
 OPS-04 [monitoring, bounded private logs and incident runbooks](docs/operations-monitoring.md)
 describe the hosted operational controls. `deploy/monitoring.json` fixes the approved
 probe/alert scope; `scripts/configure-monitoring.js` uses the operator's existing
 GCP authentication in memory and stores no email/token in source.
-[current verification](docs/verification/ops-01-runtime.md).
+See [OPS-01 verification](docs/verification/ops-01-runtime.md).
 OPS-03 [private setup, permissions and credential lifecycle](docs/secret-custody.md)
-and [current verification / remaining real-host checks](docs/verification/ops-03-custody.md).
-This follows the approved Spot/direct-HTTPS design; it does not authorize or claim
-resource provisioning, publication, spending or completed hosted verification.
+and [accepted custody verification](docs/verification/ops-03-custody.md).
+Actual approved Spot/direct-HTTPS execution is recorded in
+[OPS-02 hosted evidence](docs/verification/ops-02-hosted.md); other operational and
+hosted QA/publication gates retain their own acceptance criteria.
 
 Local health probes and safe operational events (OPS-04):
 [contracts, incident procedures and remaining hosted gates](docs/operations-monitoring.md).

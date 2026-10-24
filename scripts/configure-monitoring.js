@@ -66,6 +66,11 @@ export async function configureMonitoring(fnApi,strEmail){
     if(objCheck){
       if(objCheck.monitoredResource?.labels?.host!==objConfig.strHost||objCheck.httpCheck?.path!==objExpected.httpCheck.path
         ||!objCheck.httpCheck?.useSsl||!objCheck.httpCheck?.validateSsl||objCheck.period!=='60s'
+        ||objCheck.disabled||objCheck.httpCheck?.port!==443||objCheck.httpCheck?.requestMethod!=='GET'
+        ||JSON.stringify([...(objCheck.selectedRegions??[])].sort())!==JSON.stringify([...objConfig.arrRegions].sort())
+        ||objCheck.contentMatchers?.[0]?.content!==objExpected.contentMatchers[0].content
+        ||objCheck.contentMatchers?.[0]?.matcher!=='CONTAINS_STRING'
+        ||objCheck.httpCheck.acceptedResponseStatusCodes?.length!==1||objCheck.httpCheck.acceptedResponseStatusCodes[0].statusValue!==200
         ||objCheck.userLabels?.managed_by!==LABELS.managed_by)throw new Error('Existing check differs; no overwrite.');
     }else objCheck=await fnApi('/uptimeCheckConfigs','POST',objExpected);
     const objPolicy=buildAlertPolicy(objCheck.name,objChannel.name,objConfig.arrChecks[intIndex]);
@@ -74,8 +79,12 @@ export async function configureMonitoring(fnApi,strEmail){
     if(arrPolicies[0]){
       const objExisting=arrPolicies[0];const objThreshold=objExisting.conditions?.[0]?.conditionThreshold;
       if(!objExisting.enabled||objExisting.userLabels?.managed_by!==LABELS.managed_by
-        ||objExisting.notificationChannels?.[0]!==objChannel.name||objThreshold?.filter!==objPolicy.conditions[0].conditionThreshold.filter
-        ||objThreshold?.duration!==objConfig.arrChecks[intIndex].intFailureSeconds+'s')throw new Error('Existing policy differs; no overwrite.');
+        ||objExisting.notificationChannels?.length!==1||objExisting.notificationChannels[0]!==objChannel.name||objExisting.conditions?.length!==1
+        ||objThreshold?.filter!==objPolicy.conditions[0].conditionThreshold.filter||objThreshold?.comparison!=='COMPARISON_GT'
+        ||objThreshold?.thresholdValue!==1||objThreshold?.aggregations?.[0]?.alignmentPeriod!=='60s'
+        ||objThreshold?.aggregations?.[0]?.perSeriesAligner!=='ALIGN_NEXT_OLDER'||objThreshold?.aggregations?.[0]?.crossSeriesReducer!=='REDUCE_COUNT_FALSE'
+        ||objThreshold?.duration!==objConfig.arrChecks[intIndex].intFailureSeconds+'s'
+        ||!['OPENED','CLOSED'].every(strPrompt=>objExisting.alertStrategy?.notificationPrompts?.includes(strPrompt)))throw new Error('Existing policy differs; no overwrite.');
     }else await fnApi('/alertPolicies','POST',objPolicy);
     arrNames.push(objCheck.name);
   }

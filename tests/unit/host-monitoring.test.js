@@ -24,4 +24,7 @@ test('configuration creates only approved resources, reuses them and refuses con
   assert.equal((await configureMonitoring(api,'operator@example.test')).intConfiguredChecks,2);assert.equal(intWrites,5);
   await configureMonitoring(api,'operator@example.test');assert.equal(intWrites,5);
   await assert.rejects(configureMonitoring(api,'someone-else@example.test'),/no overwrite/);
+  mapItems['/alertPolicies'][0].conditions[0].conditionThreshold.thresholdValue=99;
+  await assert.rejects(configureMonitoring(api,'operator@example.test'),/Existing policy differs/);
+  assert.equal(intWrites,5);
 });
