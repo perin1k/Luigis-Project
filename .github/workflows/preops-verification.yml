@@ -1,9 +1,6 @@
 name: Pre-OPS integrated application checkpoint
 
 on:
-  push:
-    branches: [dev]
-    paths: ['.github/workflows/preops-verification.yml']
   workflow_dispatch:
     inputs:
       phase:
@@ -11,7 +8,7 @@ on:
         required: true
         default: compare
         type: choice
-        options: [collect, compare]
+        options: [collect, collect-error, compare]
 
 permissions:
   contents: read
@@ -80,19 +77,25 @@ jobs:
           defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
           defaults read org.webkit.Playwright AppleKeyboardUIMode
       - name: Focused file-backed privacy and race checks
-        if: github.event_name == 'push' || inputs.phase == 'collect'
+        if: inputs.phase == 'collect'
         run: node scripts/verify-preops.js
       - name: Customer connected journeys and new error-state candidates
-        if: github.event_name == 'push' || inputs.phase == 'collect'
+        if: inputs.phase == 'collect'
         run: npx playwright test -c playwright.preops-customer.config.js --update-snapshots=all ${{ matrix.projects }}
       - name: Shared records across customer and staff sessions
-        if: github.event_name == 'push' || inputs.phase == 'collect'
+        if: inputs.phase == 'collect'
         run: npx playwright test -c playwright.preops-staff.config.js --update-snapshots=none ${{ matrix.projects }}
       - name: Strict new error-state comparison
         if: inputs.phase == 'compare'
-        run: npx playwright test -c playwright.preops-customer.config.js --grep 'ambiguous server failure' --update-snapshots=none ${{ matrix.projects }}
+        run: npx playwright test -c playwright.preops-customer.config.js --grep 'ambiguous server failure|manual-review fixture ambiguity' --update-snapshots=none ${{ matrix.projects }}
+      - name: Collect corrected error-state candidates only
+        if: inputs.phase == 'collect-error'
+        run: npx playwright test -c playwright.preops-customer.config.js --grep 'ambiguous server failure|manual-review fixture ambiguity' --update-snapshots=all ${{ matrix.projects }}
+      - name: Complete shared-record cases skipped after initial reflow failures
+        if: inputs.phase == 'collect-error' && runner.os != 'Linux'
+        run: npx playwright test -c playwright.preops-staff.config.js --update-snapshots=none ${{ matrix.projects }}
       - name: Bounded internal synthetic visual review
-        if: always() && (github.event_name == 'push' || inputs.phase == 'collect')
+        if: always() && (inputs.phase == 'collect' || inputs.phase == 'collect-error')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: preops-candidates-${{ matrix.os }}

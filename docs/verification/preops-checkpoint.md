@@ -20,7 +20,8 @@ approved this automated checkpoint and bounded native Actions/synthetic-image re
   payment/key/HTTP/refund/retention and QA-03 race/recreation/operations/runtime sets,
   plus the changed payment-retry contract. Explicit filenames avoid shell glob
   differences; failures propagate. No duplicate cases within that invocation.
-- `playwright.preops-customer.config.js` runs only John's six customer journeys;
+- `playwright.preops-customer.config.js` runs John's six customer journeys plus
+  a disposable human-review control regression;
   `playwright.preops-staff.config.js` runs only his four shared-record scenarios.
   Each uses its existing isolated fixture, one worker, zero retries and no automatic
   trace/video/screenshot capture. Native engine/viewport settings are inherited.
@@ -33,7 +34,9 @@ approved this automated checkpoint and bounded native Actions/synthetic-image re
   supported Windows 2022/macOS 15/Ubuntu 24.04 matrix. Collection runs the focused
   service set and connected journeys, uploading only synthetic new-state PNGs for
   two days. Comparison never updates images. The temporary dev-only path-scoped
-  registration trigger will be removed after collection; no production secret,
+  registration trigger is now removed. `collect-error` recollects only the changed
+  recovery state and completes Windows/macOS shared-record checks skipped by the
+  initial failure. No production secret,
   application database, trace or private key is uploaded.
 
 Initial local Windows x64/Node 24.22.1 result: 31 backend checks pass, no failures
@@ -41,6 +44,24 @@ or skips. The extended uncertain-result case passes Chromium/Firefox desktop,
 including unchanged same-request retry, axe and narrow layout assertions. Local
 image generation is candidate evidence, not accepted strict visual comparison.
 Native collection, complete reference review and comparison remain pending.
+
+Initial native collection on source `b4eb351` passed all 31 focused backend cases
+on Windows/macOS/Linux. Linux passed all 36 customer and 24 shared-record checks.
+Windows passed 23 customer checks and macOS 35; each failed the new 320px assertion
+in Firefox, so their staff steps did not run. Run: 40052989850. These failures are
+retained, not treated as passes. A fixed reference reproduced the overflow locally
+before the fix. `#order-save-status { overflow-wrap: anywhere; }` then passed the
+same Firefox-mobile regression plus original-operation recovery. Three reference
+patterns now exercise wrapping; only the displayed opaque reference is normalized
+for visual determinism, with actual IDs untouched and real text restored for retry.
+
+Human review: Brody reports all passed in Chrome with Windows Narrator: uncertain
+result announcement, locked editing, same-payment recovery, receipt/private tracking,
+keyboard access and 200%/400% zoom in Light/Dark. The fixture-only ambiguous-next
+control commits through the real service before returning one 503; its regression
+first failed with the missing route, then passed after adding the control. It is
+not part of the production runtime. Prior TEST/SEC manual checks cover unchanged
+states; no live transaction or external delivery is inferred.
 
 ## Criteria and remaining gates
 

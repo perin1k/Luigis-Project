@@ -88,6 +88,17 @@ test('INT-01 ambiguous server failure keeps the same payment locked for safe rec
   await expect(objPage.locator('#form-error')).toContainText('Keep this page open');
   await expect(objPage.getByRole('button',{name:'Edit order review',exact:true})).toBeDisabled();
   await expect(objPage.getByRole('button',{name:'Check demo payment result',exact:true})).toBeVisible();
+  const elSavedStatus=objPage.locator('#order-save-status');
+  const strSavedStatus=await elSavedStatus.textContent();const objViewport=objPage.viewportSize();
+  await objPage.setViewportSize({width:320,height:1000});
+  for(const strReference of ['a611b471-6198-45f4-85f6-6ff375e020d9','ffffffff-ffff-4fff-8fff-ffffffffffff','00000000-0000-4000-8000-000000000000']){
+    await elSavedStatus.evaluate((elNode,strText)=>{elNode.textContent=strText;},strSavedStatus.replace(/Reference: [a-f0-9-]{36}$/i,`Reference: ${strReference}`));
+    await expect.poll(()=>objPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  }
+  await objPage.setViewportSize(objViewport);
+  // Normalize only the opaque displayed reference for repeatable screenshots.
+  // Keep actual request/record IDs untouched and restore real text before retry.
+  await elSavedStatus.evaluate((elNode,strText)=>{elNode.textContent=strText;},strSavedStatus.replace(/Reference: [a-f0-9-]{36}$/i,'Reference: 00000000-0000-4000-8000-000000000000'));
   // The new recovery instruction needs its own accessibility/layout evidence;
   // accepted receipt/menu visuals are reused instead of recollecting them.
   for(const strTheme of ['Light','Dark']){
@@ -100,16 +111,25 @@ test('INT-01 ambiguous server failure keeps the same payment locked for safe rec
     expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
     await expect(objPage).toHaveScreenshot(['preops-ci',`uncertain-payment-${strTheme}.png`],{fullPage:true,animations:'disabled'});
   }
-  const objViewport=objPage.viewportSize();
-  await objPage.setViewportSize({width:320,height:1000});
-  expect(await objPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await objPage.setViewportSize(objViewport);
+  await elSavedStatus.evaluate((elNode,strText)=>{elNode.textContent=strText;},strSavedStatus);
   await objPage.unroute('**/api/demo-payments');
   const pRetry=objPage.waitForRequest('**/api/demo-payments');
   await objPage.getByRole('button',{name:'Check demo payment result',exact:true}).click();
   expect((await pRetry).postDataJSON().strRequestId).toBe(strRequestId);
   await expect(objPage.locator('#demo-receipt')).toBeVisible();
   expect((await(await objRequest.get('/__test/count')).json()).intPayments).toBe(1);
+});
+
+test('INT-01 manual-review fixture ambiguity commits once and recovers the original payment',async({page:objPage,request:objRequest})=>{
+  await reviewOrder(objPage);await objPage.getByRole('button',{name:'Continue to payment',exact:true}).click();
+  expect((await objRequest.get('/__test/ambiguous-next')).status()).toBe(200);
+  await objPage.getByRole('button',{name:'Confirm demo payment',exact:true}).click();
+  await expect(objPage.locator('#form-error')).toContainText('Keep this page open');
+  await expect(objPage.getByRole('button',{name:'Edit order review',exact:true})).toBeDisabled();
+  expect(await(await objRequest.get('/__test/count')).json()).toEqual({intPayments:1,intConfirmed:1});
+  await objPage.getByRole('button',{name:'Check demo payment result',exact:true}).click();
+  await expect(objPage.locator('#demo-receipt')).toBeVisible();
+  expect(await(await objRequest.get('/__test/count')).json()).toEqual({intPayments:1,intConfirmed:1});
 });
 
 test('INT-01 interrupted order persistence retries the original submission before paying once',async({page:objPage,request:objRequest})=>{

@@ -120,3 +120,6 @@ legend { font-weight: 700; margin-bottom: .8rem; padding: 0; }
   .drink-group .field { margin-bottom: .8rem; }
   .confirmation-card { padding: 1rem; }
 }
+#order-save-status {
+  overflow-wrap: anywhere;
+}
