@@ -57,8 +57,12 @@ The summary is operator-reported evidence, not a cryptographically attested repo
 
 ## Current results
 
-Local Windows / Node 24.22.1: focused policy tests and disposable Chromium
-success/interrupted-cleanup rehearsal passed. Native CI and actual hosted acceptance
-remain pending. No live order or temporary live account has been created yet.
+Local Windows / Node 24.22.1: four focused policy tests and disposable Chromium
+success/interrupted-cleanup rehearsal passed. Focused native CI at
+`2a31ae5f6816b95cafcdfa1a721349015e53211f`
+([run 40123751855](https://github.com/perin1k/Luigis-Project/actions/runs/40123751855)):
+macOS 15 and Ubuntu 24.04 passed; Windows 2022 is still installing Chromium at this
+recording. These are verifier portability results, not hosted acceptance.
+The private operator command was provided; no hosted result has been received.
 INT-02 stays In Progress until its remaining hosted evidence passes. Final hosted
 Lighthouse and product QA remain on their original QA cards.
