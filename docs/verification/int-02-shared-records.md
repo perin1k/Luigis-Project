@@ -74,6 +74,11 @@ supplies the approved environment; fixture results cannot satisfy that criterion
 
 ## Remaining acceptance and limits
 
+October 24 follow-up: the approved [private hosted verifier](int-02-hosted.md)
+targets the remaining public-host criterion without repeating accepted native
+coverage or changing production business behavior. See its current results before
+treating hosted acceptance as complete.
+
 This fixture verifies services sharing actual records in a disposable database;
 it does not prove disk durability across server restarts or actual hosted runtime
 configuration. Existing storage/security evidence remains separate. Customer and
