@@ -61,8 +61,19 @@ Local Windows / Node 24.22.1: four focused policy tests and disposable Chromium
 success/interrupted-cleanup rehearsal passed. Focused native CI at
 `2a31ae5f6816b95cafcdfa1a721349015e53211f`
 ([run 40123751855](https://github.com/perin1k/Luigis-Project/actions/runs/40123751855)):
-macOS 15 and Ubuntu 24.04 passed; Windows 2022 is still installing Chromium at this
-recording. These are verifier portability results, not hosted acceptance.
-The private operator command was provided; no hosted result has been received.
-INT-02 stays In Progress until its remaining hosted evidence passes. Final hosted
-Lighthouse and product QA remain on their original QA cards.
+Windows 2022, macOS 15 and Ubuntu 24.04 all passed. These are verifier portability
+results, separate from hosted acceptance.
+
+Brody supplied the private operator's sanitized hosted result for run
+`64fae18a01e1`, completed October 24, 2026 at 19:35:08.435 UTC against
+`https://luigispizzeria.duckdns.org`. All eight stages passed: Owner sign-in,
+temporary enrollment, role navigation, customer order, Employee tracking, Admin
+review/refund, Owner reporting and cleanup. The result reports no failure stage,
+temporary accounts cleaned, and the demonstration order resolved. This is
+operator-reported evidence; no private credentials or tracking paths were collected.
+
+Together with the accepted shared-record/pre-OPS evidence, this satisfies INT-02's
+remaining hosted criterion. No price changes or repeat live run were needed.
+John retains implementation ownership and Perin retains QA. Final hosted
+Lighthouse and product QA remain on their original QA cards; INT-02 acceptance
+does not close those separate release gates.
