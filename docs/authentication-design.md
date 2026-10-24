@@ -1,5 +1,9 @@
 # TECH-04 / BE-08 — Local staff authentication
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 Latest approved target: [TECH-04 consolidated authentication decisions](authentication-decisions.md).
 The Owner/Admin/Employee rollout and its acceptance are distinct from the historical
 implementation milestones below; verify the coordinated BE-08/FE-08 work before use.

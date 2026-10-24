@@ -1,5 +1,9 @@
 # GCP/DuckDNS deployment runbook
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 OPS-01 now supplies [reviewable release/service tooling](../deploy/README.md).
 Follow its manifest/preflight, exact schema compatibility and stopped atomic
 release-switch procedure. The approved GCP preview is installed and publicly

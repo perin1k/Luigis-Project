@@ -1,89 +1,69 @@
-# TECH-03 — Review access and acceptance plan
+# Show and review Luigi’s Pizza
 
-Card: [TECH-03](https://trello.com/c/Hggeidgg). Prepared October 22, 2026.
-Status: approved team-led staff/admin demonstration. Review timing is flexible;
-there is no fixed appointment or guaranteed availability commitment. This document
-does not create accounts, grant permissions, publish
-the application or revise release acceptance.
+For the professor/client, restaurant owner and anyone helping demonstrate the website.
+Start at [Luigi’s Pizza](https://luigispizzeria.duckdns.org). For everyday instructions,
+use [Using your website](handoff.md).
 
-## Approved access arrangement
+## What this version does
 
-Use public customer ordering with invented contact details and generated synthetic
-payment identities. Demonstrate employee and admin/owner screens through a team
-member's own authorized session, rather than distribute a shared privileged login.
-Do not expose credentials, MFA enrollment/recovery material, keys or raw data files.
-The professor can observe distinct permission boundaries and denied operations
-without receiving unnecessary administrative authority.
+Customers can place practice orders and follow their progress. Employees can work
+through orders. Managers can review cancellations/refunds. The owner can change
+prices/hours, manage staff access and read sales reports.
 
-If independent staff access is required for grading, first confirm the individual
-recipient, necessary role, access interval, MFA setup for privileged access and
-revocation owner. Provision privately through the reviewed account lifecycle only
-after approval; never publish passwords in this document, GitHub or Trello. Do not
-promote an account to Owner merely to make a review convenient.
+No money is charged. Use made-up contact details. No real card number or security
+code is needed. Payment/refund messages represent practice records. Message previews
+are not delivered emails or texts. Real payment services would require later setup.
 
-The human selected team-led staff/admin demonstration and requested flexible
-review access ("all times"), without specifying an appointment. Public customer
-access is intended throughout the remaining approved hosting period once release
-gates pass and activation is separately authorized; privileged demonstrations
-require coordination with a team member. No professor staff/admin account is
-requested. This is not guaranteed uninterrupted access: the approved Spot host
-can stop, and maintenance or incidents can interrupt service.
+The preview may be interrupted and is scheduled to stop November 1, 2026 at
+11 PM Central. Arrange a staff-screen demonstration with a team member; public
+customer access does not include permission to use staff accounts.
 
-The approved preview is now publicly hosted at
-[luigispizzeria.duckdns.org](https://luigispizzeria.duckdns.org), under the separate
-October 24 execution approvals. See [publication evidence](verification/ops-06-publication.md).
-The shutdown target remains November 1, 2026, 11 PM America/Chicago. Final release
-acceptance remains open; this guide grants no new provisioning or account access.
+## Walk through the website
 
-## Rehearsal and evidence checklist
+1. Begin as a customer. Choose carry-out or dine-in, add a pizza and review the price.
+   Explain where to edit an item or change an unavailable choice.
+2. Use invented contact details, select an offered ready time and read the no-charge
+   notice. Only submit a practice order if the demonstration organizer has agreed
+   who will handle and resolve it afterward.
+3. After confirmation, open **Track your order**. Keep the private link off shared
+   documents and screenshots.
+4. Have an authorized employee use their own account to show **Order queue** and
+   the order’s progress. Mark stages only when agreed for this practice order.
+5. Have a manager explain cancellation/refund review and an owner show menu controls
+   and **Owner sales**. Avoid publishing price/hour changes just to show a screen.
+6. Ask each person to sign out when finished. The organizer checks that any practice
+   orders and temporary access are handled appropriately.
 
-Run against isolated synthetic data using the reviewed configured runtime. Record
-the commit, environment, operator and actual result for every exercised scenario;
-leave unrun scenarios unverified. Never claim the checklist itself is evidence.
+A team member should enter passwords and phone codes privately before sharing a
+screen. Do not show invitation tokens, authenticator QR squares, setup keys or
+recovery codes. Do not borrow a privileged account. If the professor needs their
+own staff access, ask the owner to agree the role and access period first.
 
-- Customer: both service types, required contacts, editable choices, unavailable
-  ingredients, authoritative prices/tax/tip, pickup capacity and recoverable errors.
-- Demonstration payment: pre-submission no-charge disclosure, actual persisted
-  confirmation, safe decline/retry and duplicate-submission handling. Show masked
-  results only, with no real card entry or actual Apple Wallet/Stripe claim.
-- Guest tracking: protected link, progress, rejected invalid/revoked access and
-  administrator-reviewed replacement without contact/order-number lookup.
-- Employee: permitted queue/detail and preparation transitions; denied privileged
-  administration, including pending cancellation/inventory review locks.
-- Authorized admin/owner: applicable role boundaries, cancellation review, full
-  demonstration refund, menu/hours review, internal notification previews and
-  purchased-record analytics. Reconcile the current role rollout before rehearsal.
-- Operations: restart with retained state, readiness/worker failure handling and
-  disposable recreation limits; do not destroy the working dataset to demonstrate.
+## Review the written instructions
 
-Retain reproducible unit/integration results and per-flow Chromium, Firefox and
-WebKit functional/visual evidence on the required platforms. Windows/Linux and
-manual keyboard, zoom, contrast and representative screen-reader verification
-are tracked in [pre-OPS acceptance](verification/preops-checkpoint.md),
-[patched runtime acceptance](verification/ops-07-maintenance.md) and final QA.
-Historical failures are not passes; later accepted results apply only to their
-recorded scope. Preserve Lighthouse 100-category gates and
-only the page-specific SEO exceptions explicitly approved; do not infer new ones.
+The receiving reader may be Brody or another person who did not write the guide.
+You do not need to be a programmer or run technical commands.
 
-## Handoff and limitations
+Using the linked guides, explain:
 
-Provide reviewed source/commit, locked setup instructions, configuration names with
-safe placeholders, [cross-platform prerequisites](cross-platform.md), migration/seed
-procedures, deployment/rollback runbook and [recovery limits](disposable-data-recreation.md).
-Record actual verification, remaining limitations and operator responsibilities;
-source/setup/deployment handoff does not imply a continuing support obligation.
+- How a customer orders and checks progress, and what to do if checkout is uncertain.
+- How staff find orders and when to ask a manager for help.
+- Who can approve refunds, change prices and view sales.
+- Where to find sign-in, lost-phone and customer-information help.
+- Who to contact if the website stops working, its planned end date and its limits.
 
-External-service substitutes must be explicit: payments/refunds are local demo
-outcomes with committed records; notifications are internal previews, never sent
-or delivered messages; native Wallet and real merchant settlement are unexercised.
-The preview is deployed; it is not final release acceptance. QA-01/02/03, OPS-06 and DOC-01 retain
-their delivery scope and acceptance evidence.
+If you cannot find an answer, do not guess. Tell the team the document heading and
+what was unclear, or which button name did not match. This walkthrough checks the
+instructions; it is not a claim that every website test has passed.
 
-TECH-03's review-access and evidence decisions are settled under this flexible
-arrangement. No deployment start date is invented. Hosted activation, actual
-rehearsal and release sign-off must be recorded honestly on their existing
-implementation/acceptance cards; decision completion is not their acceptance.
+## Record what actually happened
 
-The [handoff package](handoff.md) now provides the receiving-person checklist,
-technical guide index, account/cost boundaries and third-party review inventory.
-Its independent rehearsal and client acceptance are still pending.
+The team records the reader’s name/date, guides reviewed, actions actually performed,
+what passed, what was unclear and what needs correction. Do not include passwords,
+security codes, private tracking links or customer details. Reading a restart
+instruction does not mean a restart was performed. Reading this checklist does not
+mean the review is complete.
+
+Current status: reader walkthrough and final client acceptance remain pending.
+Technical test evidence and developer tasks are tracked separately; reviewers do
+not need those engineering records to follow the end-user guides.

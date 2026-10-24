@@ -1,5 +1,9 @@
 # Third-party dependency and asset inventory
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 DOC-01 review, October 24, 2026. This is an inventory, not a replacement for
 upstream license/NOTICE texts or a grant of rights to the group's source.
 No root project license was found; the group/repository owner must settle

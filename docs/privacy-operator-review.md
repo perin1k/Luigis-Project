@@ -1,5 +1,9 @@
 # SEC-02 operator and audit review
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 October 23 application review: operational telemetry now accepts fixed event names,
 server-generated UUIDs, timestamps and status codes only (`src/operations/telemetry.js`).
 It does not serialize request URLs/bodies, cookies, exceptions or forwarded IDs;

@@ -1,5 +1,9 @@
 # OPS-03 private configuration and credential custody
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 Brody approved this implementation on October 23, 2026. Public hosting remains
 subject to OPS-02/06's separate resource, cost and execution review. This guide
 does not provision IAM, a VM, a certificate, a real key or an application account.

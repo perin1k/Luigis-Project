@@ -1,5 +1,9 @@
 # BE-07 persisted menu, availability and special-hours management
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 October 22 three-tier policy update: only the **Owner** publishes prices and
 manages service hours. Admins and Employees retain ingredient availability access.
 The server resolves ownership from the protected designation; existing admins

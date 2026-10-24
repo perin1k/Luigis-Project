@@ -1,183 +1,160 @@
-# Luigi's Pizza operator and developer handoff
+# Luigi’s Pizza: using your website
 
-Prepared October 24, 2026 for [DOC-01](https://trello.com/c/9ldFFK0U).
-Status: receiving-team review package; independent rehearsal and final QA pending.
-This guide does not transfer accounts, authorize spending or establish acceptance.
+For customers, restaurant staff, managers and the owner. You do not need programming
+knowledge to use this guide. Start at [Luigi’s Pizza](https://luigispizzeria.duckdns.org).
 
-## Delivery and current environment
+## Before you begin
 
-The public preview is [luigispizzeria.duckdns.org](https://luigispizzeria.duckdns.org).
-Customer ordering is public; staff functions require individual accounts, with
-authenticator MFA for Owner/Admin. Use invented contact details only. Checkout
-generates synthetic payment identities and moves no money; no real card/CVV input
-is required. Email/SMS are internal previews, not sent messages. Stripe/native
-Apple Pay and rewards/student deals remain future scope, not delivered integrations.
+The current website is a demonstration: **no money is charged**. Use made-up customer
+details during practice. Do not enter real card numbers or security codes. A payment
+success or refund message records a practice transaction only. Email and text-message
+previews are visible to authorized staff; the website does not send those messages.
 
-The observed hosted application source is
-`8ad900a2bbda07570c0df4fb7d1ebd6258986f2a` on Ubuntu 24.04, Node 24.22.1/npm
-11.19.1. Documentation and acceptance tooling have later commits on `dev`.
-Record both the delivered repository commit and actual deployed release in the
-receiving record; do not assume a documentation push deploys application code.
+You can order for carry-out or dine-in. Delivery is not offered. Times shown are
+Central Time. Normal hours are 10 AM–11 PM, with online orders accepted until
+10:30 PM and pickup by 10:50 PM. Allow at least 20 minutes; busy periods may require
+longer. Use the available times shown on the website rather than promising a time
+that is not offered. After the cutoff, the next open day is offered.
 
-Read [publication evidence](verification/ops-06-publication.md),
-[hosted integration acceptance](verification/int-02-hosted.md) and
-[maintenance acceptance](verification/ops-07-maintenance.md) for exercised scope.
-QA-01/02/03 remain final acceptance gates, including hosted Lighthouse,
-payment/privacy, load/recovery and applicable human/device review.
+## Choose the help you need
 
-## Setup, architecture and data guide
+- Ordering or following an order: continue below.
+- Signing in, setting up your phone’s security code or recovering access:
+  [Staff sign-in help](account-help.md).
+- Correcting customer details or handling a request for an information copy:
+  [Customer information requests](customer-information-help.md).
+- Showing the website to your professor or client: [Demonstration guide](review-access-plan.md).
+- Finding any guide: [Documentation directory](README.md).
 
-1. Obtain the repository from its owner, record the exact commit, and follow
-   [AGENTS.md](../AGENTS.md) and [cross-platform setup](cross-platform.md).
-   Install the declared Node version and use `npm ci` with the committed lockfile.
-2. `npm start` alone serves the unconfigured presentation at
-   `http://127.0.0.1:3000`; it does not configure integrated staff/payment/storage.
-   Follow [authentication](authentication-design.md),
-   [payment configuration](demo-payment-design.md) and the
-   [deployment runbook](deployment-runbook.md) for the integrated environment.
-3. For a new authorized environment, use the reviewed migrations and menu seed
-   (`npm run db:migrate`, `npm run db:seed`) with its explicit database path.
-   Never seed over a hosted database for a demo or edit an applied migration.
-   Initial Owner creation is private, one-time setup with verified MFA; use the
-   [custody guide](secret-custody.md), not a shared/default password.
+## Place an order
 
-| Layer or contract | Guide and responsibility |
-| --- | --- |
-| Express/Node server, EJS templates, Bootstrap/browser modules | [README file guide](../README.md#file-guide); server owns validation/prices/permissions, browser owns interactions |
-| SQLite schema, migrations, cents/timestamps | [Data design](data-schema-proposal.md); preserve immutable migration bytes/checksums and purchased snapshots |
-| Menu/pricing and authoritative order submission | [Pricing](pricing-design.md), [order service/API](order-submission-design.md) |
-| Chicago scheduling, cutoff/capacity/holds | [Scheduling API and rules](scheduling-design.md) |
-| Staff sessions, invitations, roles and recovery | [Authentication](authentication-design.md), [role policy](staff-role-policy.md) |
-| Queue/detail/status, private guest grants | [Staff API](staff-orders-design.md), [progress](order-progress-design.md), [tracking](tracking-and-exceptions.md) |
-| Demo payments/refunds and future provider seam | [Payments](demo-payment-design.md), [refunds](demo-refund-design.md), [integration boundaries](integrations.md) |
-| Owner catalog/hours and analytics | [Menu](menu-management-design.md), [sales metrics](sales-analytics-design.md) |
-| Contact handling, retention and notification previews | [Privacy](privacy-request-workflow.md), [retention jobs](retention-enforcement.md), [previews](notification-preview-design.md) |
+1. Open the website and begin an order. Choose carry-out or dine-in, then select
+   **Continue** to move through the steps.
+2. Choose your pizza size, crust and toppings, then select **Add pizza**. Add drinks
+   if wanted. Unavailable ingredients cannot be selected.
+3. Review your items and prices. Use the on-screen editing controls to correct an
+   item before paying. Follow any message asking you to review a changed price.
+4. Enter your name and contact details. Carry-out needs a phone number. Dine-in
+   needs a phone number or email address. For practice, use invented details.
+5. Choose a time under **Pickup or dine-in ready time**. Check the order, contact
+   details, time, tax and optional tip. No tip is required.
+6. Select **Continue to payment**. Read the no-charge notice, then select
+   **Confirm demo payment** once. Wait for the result.
+7. When the receipt appears, select **Track your order**. Save that private link
+   somewhere only you can access. It lets you follow this order.
 
-Configuration names and non-secret paths are in
-[`deploy/runtime.env.example`](../deploy/runtime.env.example). Its historical
-runtime comment is superseded by the current package/maintenance pin above.
-Key values must be privately provisioned; the template intentionally omits them.
-`AUTH_ORIGIN`, HTTPS files, database path and payment/MFA keys must belong to the
-same reviewed environment. No keys, local databases, browser profiles or gcloud
-credentials belong in the source handoff. Runtime flags and permission checks
-are documented in the linked guides; disabling them is not setup troubleshooting.
+The website currently allows up to six pizzas and ten drinks per order. If it cannot
+offer your preferred time or ingredients, choose another offered option. Do not
+split orders to bypass the limit.
 
-## Everyday workflows
+## Follow or cancel an order
 
-| Person | Workflow and boundary |
-| --- | --- |
-| Customer | Select carry-out/dine-in, build/review items, supply required contact, choose ready time and confirm no-charge demo checkout. Save the private tracking link. Request cancellation before Preparing; requests require staff review |
-| Employee | Sign in individually; read queue/details, advance permitted preparation states and manage ingredient availability. No Owner analytics, menu-price edits or refund authority |
-| Admin | Complete MFA; manage Employees only, review cancellations/fulfillment exceptions and approve full demo refunds. Use internal notification previews without claiming delivery |
-| Owner | Complete MFA; manage Admin/Employee roles, menu/prices/hours and sales analytics. Review existing bookings affected by changes; never silently substitute or rewrite purchased totals |
+Open your saved tracking link and select **Refresh progress** to check for updates.
+Staff move orders through Preparing, Baking, Ready and Completed.
 
-Every order needs usable contact information; carry-out needs a phone. The server
-enforces America/Chicago scheduling, capacity and authoritative totals. Customer
-cancellation is blocked at Preparing; restaurant inability to fulfill requires an
-authorized review. No automatic refund for prepared no-shows. Private tracking
-links are bearer access: do not put them in public evidence. Staff verify identity
-before contact correction/limited-copy access or tracking-link replacement.
+You may request cancellation before Preparing begins. A manager must review the
+request; requesting it does not mean the order has already been cancelled or refunded.
+Once Preparing begins, customer cancellation requests are blocked. Ask the restaurant
+for help if it cannot fulfill an order. Do not post your tracking link publicly.
+If you lose it, ask a manager for help; knowing a name or order number alone is not
+proof that someone should receive private order information.
 
-On a payment interruption, keep the original operation identifiers and use the
-same-operation retry/check result path. Do not create another payment merely
-because a response was lost. Refresh stale staff records before resubmitting.
-For suspected credential exposure, preserve safe incident times/IDs and follow
-private recovery/revocation instructions; never send setup secrets or recovery
-codes to chat, logs or a third-party QR service.
+## When checkout does not finish
 
-## Operations, recovery and cost
+Read the message before taking another action. If the website says the result is
+uncertain, **keep that page open** and use **Check demo payment result**. Do not
+start another order to repeat the payment. If it reports a recoverable failure,
+follow its retry instructions; your choices should remain available. If you are
+still stuck, tell the restaurant what the message says without sharing private links.
 
-Use [release tooling](../deploy/README.md) and
-[maintenance](maintenance-continuity.md) for canonical source packaging, target
-installation, compatible rollback and forward recovery. An accepted older source
-may require the patched runtime; do not reactivate a vulnerable runtime or change
-SQL bytes/checksums to force compatibility. Existing actual-host redeploy/restart
-and rollback evidence is linked above; no outage rehearsal is authorized here.
+## Staff: work through the order queue
 
-Check public live/ready/preview probes and [monitoring](operations-monitoring.md)
-before diagnosing DNS, certificate, VM, process or worker failures. A working
-homepage alone does not prove order recovery. Read private logs only as an
-authorized operator, with redaction and bounded retention. Authenticator recovery
-requires the [reviewed recovery procedures](authentication-design.md), not a
-permission bypass. Root and the running service can read required keys.
+1. [Sign in](https://luigispizzeria.duckdns.org/staff/sign-in) with your own staff account.
+2. Open **Order queue**, find the correct customer order and open its details.
+3. Check the items, ready time and any review warning before beginning work.
+   Ask a manager about a held or flagged order; do not work around the warning.
+4. Use the offered **Mark Preparing**, **Mark Baking** and **Mark Ready** buttons
+   only when those stages have actually been reached. Complete the order when
+   it has been collected or served using the action offered on the screen.
+5. Use **Refresh order** or **Refresh orders** to check current information. If a
+   message says someone changed the order, refresh and review it before trying again.
 
-There is **no application-managed backup** for this disposable demonstration.
-Retained disks are not backups; lost keys/data cannot be reconstructed from source.
-[Recreation](disposable-data-recreation.md) uses a separate empty database with
-fresh identities and is not restoration of existing orders. Any future business
-backup/restore plan requires approved retention, encryption/key custody and a
-tested restoration procedure before a durability promise.
+To mark a missing ingredient, open **Menu management** and select the matching
+**Mark … unavailable** button. Mark it available again only when it can be used.
+Existing affected orders need manager review; restoring an ingredient does not
+remove that review requirement. Never silently substitute ingredients.
 
-Brody controls GCP project `capstone-510915`, billing and DuckDNS; Perin controls
-the GitHub repository. The VM is `luigis-preview`, e2-small Spot, us-central1-a.
-Spot interruption/restart depends on capacity. The approved stop is November 1,
-2026 at 11 PM America/Chicago (November 2 at 05:00 UTC). Retain disks/keys; deletion
-requires separate authorization. Storage charges continue after stop. The $25
-monthly alerts budget and $10 planning allowance are not caps; credit coverage
-is unverified. No ongoing support, uptime SLA or personal-account transfer is included.
+## Managers: cancellations, refunds and customer help
 
-## Account and responsibility transfer checklist
+Managers use the **Admin** account role. Open the order and read its warnings.
+Choose the appropriate **Decision**, check **I reviewed this order and the selected
+decision**, then select **Save reviewed decision**. Only approve an action you have
+actually reviewed.
 
-- Repository owner grants approved individual access; identify the receiving
-  maintainer and record the delivered commit. Agree source redistribution terms;
-  no root project license has been selected. See [notices](third-party-notices.md).
-- Receiving organization establishes its own cloud/billing and DNS responsibility.
-  Review resource quotas, prices, budget alerts, support and stop/deletion policy.
-  Do not hand over the sponsor's personal Google password or DuckDNS token in docs.
-- Operator and recipient privately agree least-privilege GCP/IAP access, key/TLS
-  custody, monitoring recipients and renewal responsibilities. Review rotations
-  and any data transfer before execution; this checklist executes none of them.
-- Application accounts use genuine individual invitations and role policies.
-  Owner/Admin enroll MFA and retain recovery codes privately. Owner succession
-  needs a separately reviewed procedure; do not demote the single Owner or infer
-  that a cloud operator is automatically the application Owner.
-- SQLite/data and key custody transfer together only through approved private
-  procedures. Identify required retention and external copies. Do not export
-  customer details or decrypt synthetic card records for a handoff demonstration.
-- Future payment/notification providers require receiving-business accounts and
-  reviewed live integration. There are no current Stripe settlement or customer
-  messaging credentials to transfer. Certbot/Let's Encrypt and DuckDNS lifecycle
-  remain operator duties; see the deployment/custody guides.
+Cancellation and refund are separate steps. If a cancelled order needs a refund,
+refresh its details, check **I approve the full demonstration refund**, then select
+**Approve demo refund**. Check the result before telling the customer it is complete.
+Practice refunds return the full practice payment, including tax and tip; no real
+money moves. An order already prepared but not collected does not receive an
+automatic refund.
 
-## Reusable verification commands
+**Internal notification previews** show what a message would say. They do not mean
+an email or text has been sent. Arrange any necessary customer contact yourself
+through the restaurant’s approved contact method.
 
-From a configured clean checkout with the supported runtime:
+For contact corrections, use [Customer information requests](customer-information-help.md).
 
-```sh
-npm ci
-npm run test:unit
-npm run test:storage
-npm run test:staff:unit
-npx --no-install playwright install
-npm run test:staff:functional
-```
+## Owner: prices, hours and sales
 
-Browser OS dependencies and native reference rules are in the cross-platform
-guide. These commands are options for the affected scope, not a request to repeat
-every suite for documentation edits. Existing accepted checkpoint evidence may be
-reused after impact review. Never run fixture controls on a public deployment.
-The private hosted verifier requires separate real Owner participation and creates
-a labeled demo order; do not rerun it merely to read the accepted result.
+Only the **Owner** can change prices or service hours, view sales reports and manage
+Admin accounts. Managers can manage Employee accounts but cannot create more Admins.
 
-## Independent receiving-person rehearsal — pending
+For prices, open **Menu management**, enter the intended dollar amounts and review
+all affected prices. Select **Publish reviewed prices**, then check the success
+message. Earlier purchases keep their purchased prices. An unpaid customer may need
+to review a changed total before continuing.
 
-Someone other than the implementer must use this package and record their name,
-date, delivered/deployed commits, environment and actual pass/fail/gaps. Coordinate
-privileged operations with the authorized operator; do not share staff logins.
+For a special day, enter its **Service date** and select **Load current hours**.
+Choose **Closed all day** or enter opening/closing hours. The screen uses a 24-hour
+clock: 10 means 10 AM, 23 means 11 PM. Select **Save reviewed hours** and review
+orders affected by the change; their promised times do not move automatically.
 
-1. Locate the public customer entry and explain no-charge/internal-preview limits.
-2. Locate setup/configuration/migration/test instructions and explain presentation
-   startup versus integrated runtime. Prefer an isolated checkout/data path for
-   any execution; no hosted data reset or new resource creation is implied.
-3. Walk through customer, Employee, Admin and Owner permissions using the approved
-   team-led [review access arrangement](review-access-plan.md).
-4. Find incident, compatible rollback, private MFA recovery and shutdown procedures;
-   explain loss/recreation limits and continuing costs. A walkthrough does not
-   count as executing a rollback or infrastructure transfer.
-5. Identify ownership, secrets that must not be copied, notices and unresolved QA.
-6. Record accepted delivery scope, failed steps, responsible follow-up and client
-   sign-off separately. Leave unperformed checks unverified.
+For reports, open **Owner sales**. Choose **Today**, **Last 7 Days**, **Last 30 Days**,
+or enter **From date** and **Through date** and select **Update report**. You can
+review sales, refunds, popular items and busy days/hours whenever needed.
+Payments are counted on the date paid; refunds on the date refunded. Busy-period
+figures use the promised pickup date/time. Cancelled and uncollected orders are
+shown separately. Practice activity is not real business revenue. A missing timing
+figure means there is not enough recorded information; it does not mean zero wait.
 
-Current record: **not performed; receiver not yet identified**. DOC-01 remains
-unfinished until the independent rehearsal, required notice/source-term review
-and final QA acceptance are recorded. This document is not client sign-off.
+## Sign out and protect access
+
+Use **Sign out** when finished, especially on a shared computer. Do not share staff
+passwords or security codes. See [Staff sign-in help](account-help.md) for invitations,
+account reactivation and lost-phone help. A business account does not grant access
+to the website’s hosting account or technical files.
+
+## If the website is unavailable
+
+Tell the owner or designated website support person when it stopped working and
+what you were trying to do. Do not send passwords, security codes or customer
+information in a public message. Avoid repeated payment attempts. Restaurant
+staff should follow the owner’s agreed service arrangements while it is unavailable.
+The website does not automatically switch to a replacement ordering service.
+
+For this project, Brody handles hosting support and Perin manages repository access.
+The preview is scheduled to stop November 1, 2026 at 11 PM Central. Hosting may
+have interruptions before then. The owner must agree any extension and its costs;
+stopping the website does not remove every ongoing storage charge. This version
+has no automatic backup service, so stored information may be lost. Do not rely
+on it as the only record for a real business. Technical maintenance belongs with
+[website support](developer-handoff.md), not everyday restaurant staff.
+
+## Review this guide
+
+As the receiving reader, explain where you would find ordering, staff work, sales,
+account recovery and help during an outage. Tell the team which step is unclear or
+which screen does not match. You do not need to run commands or change the website.
+Brody may perform this reader walkthrough; no extra teammate is required just
+because the writing was prepared with an assistant. Record only checks actually
+performed. The reader walkthrough and final project acceptance are still pending.

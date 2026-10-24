@@ -1,5 +1,9 @@
 # BE-06 sales reporting and owner dashboard
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 Story: https://trello.com/c/4K7rYt9e. The initial API increment added genuine server aggregates. The dashboard
 follow-up below connects them to a private owner page; full acceptance is still
 pending. It uses the existing demo

@@ -1,5 +1,9 @@
 # Maintenance and continuity — OPS-07
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 ## Supported baseline and people
 
 The reviewed patched baseline is Node.js 24.22.1 with bundled npm 11.19.1 and the

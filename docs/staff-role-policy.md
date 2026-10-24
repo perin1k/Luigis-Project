@@ -1,5 +1,9 @@
 # Owner, Admin and Employee account policy
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 Approved October 22, 2026 under TECH-04. This supersedes earlier two-tier policy,
 single-admin delivery restrictions and statements that reactivation is out of scope.
 

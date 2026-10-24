@@ -86,6 +86,13 @@ separators, choice cards, and summary. Both reuse the semantic theme colors.
 The empty order summary gives a direct instruction to add a pizza; pricing and
 wizard state remain the responsibility of the existing browser modules.
 
+## Help for customers, staff and owners
+
+Start with [Using your website](docs/handoff.md) or
+[Find the right guide](docs/README.md). These explain everyday tasks in plain
+language, including sign-in and recovery help. The setup, file and test sections
+below are developer references; end users do not need to follow them.
+
 ## Run locally
 
 Windows, macOS and supported Linux distributions are compatibility targets.

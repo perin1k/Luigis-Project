@@ -1,5 +1,9 @@
 # SEC-02 restricted customer privacy workflow
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 Approved October 23, 2026. This implements the October 22 Admin-mediated contact
 correction/limited-copy decision, with explicitly approved additive audit storage.
 It is for invented demonstration contacts, not a general legal data-export service.

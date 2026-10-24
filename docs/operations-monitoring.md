@@ -1,5 +1,9 @@
 # OPS-04 local probes, redacted worker events and incident handoff
 
+> For developers and technical website support. Restaurant staff and owners using
+> the website should start with [Using your website](handoff.md) and
+> [Find the right guide](README.md). This technical reference is not an everyday user manual.
+
 QA-03's [approved workload/restart targets and measurement procedure](verification/qa-03-concurrency-recovery.md)
 include a ten-minute operator restart target only when VM, disk and keys are
 intact. This is not a measured result, uptime SLA or authorization to activate
