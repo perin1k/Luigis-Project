@@ -1,5 +1,14 @@
 name: Focused OPS monitoring verification
 on:
+  push:
+    branches: [dev]
+    paths:
+      - 'src/operations/**'
+      - 'tests/unit/operations.test.js'
+      - 'tests/unit/host-monitoring.test.js'
+      - 'scripts/configure-monitoring.js'
+      - 'deploy/monitoring.json'
+      - '.github/workflows/monitoring-verification.yml'
   workflow_dispatch:
 permissions:
   contents: read
