@@ -764,6 +764,8 @@ Focused security/privacy verification: `node scripts/verify-security.js` and
 `node node_modules/@playwright/test/cli.js test -c playwright.security.config.js`.
 
 Deployment preparation (OPS-01–07): [GCP/DuckDNS runbook](docs/deployment-runbook.md).
+OPS-01 [release/service tooling and file guide](deploy/README.md) and
+[current verification](docs/verification/ops-01-runtime.md).
 This follows the approved Spot/direct-HTTPS design; it does not authorize or claim
 resource provisioning, publication, spending or completed hosted verification.
 

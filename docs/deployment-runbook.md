@@ -1,5 +1,12 @@
 # GCP/DuckDNS deployment runbook — preparation only
 
+OPS-01 now supplies [reviewable release/service tooling](../deploy/README.md).
+Follow its manifest/preflight, exact schema compatibility and stopped atomic
+release-switch procedure. The unit remains uninstalled on GCP; repository/CI
+verification does not lift the cloud execution hold below. Current native
+application acceptance is recorded in [the pre-OPS checkpoint](verification/preops-checkpoint.md),
+superseding historical missing-browser notes only within its documented scope.
+
 Prepared October 22, 2026 for OPS-01/02/03/04/05/06/07. The human explicitly
 requested instructions only: **do not provision, publish, spend, change accounts,
 install host software, schedule jobs or delete data under this document alone**.
@@ -32,7 +39,7 @@ feature must be checked for eligible services and approved separately. See
 
 Choose the exact reviewed Git commit and record its full identifier, package-lock
 hash, Node/npm versions and verification results. The currently tested local
-Node version is 24.14.1, not proof of Linux support. Follow
+Node version for deployment is 24.14.1. Follow
 [cross-platform checks](cross-platform.md); validate the selected runtime on the
 actual Ubuntu target before release acceptance. Do not silently update packages.
 
@@ -45,8 +52,9 @@ npm run test:unit
 
 Run the applicable browser, accessibility and Lighthouse checks there; avoid
 running browser tooling on the serving e2-small VM. Preserve OS-specific snapshots.
-Firefox's recorded local startup failure, manual accessibility and integrated
-acceptance remain open; a passing local unit suite does not clear those gates.
+The pre-OPS checkpoint records native/manual application acceptance, including
+working-runner Firefox verification. Actual hosted acceptance remains open;
+a passing local unit suite does not clear those gates.
 
 Prepare an immutable, root/deployer-owned release directory with the selected
 source and lockfile. On the future host, production dependencies use
