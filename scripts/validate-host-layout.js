@@ -6,10 +6,12 @@ function within(strParent,strChild){const strRelative=relative(strParent,strChil
 function privateFile(strPath,intOwner){const objStat=lstatSync(strPath);
   if(!objStat.isFile()||objStat.uid!==intOwner||(objStat.mode&0o077)!==0||objStat.nlink!==1)
     throw new Error('Private single-owner regular file required.');}
-function rootPath(strPath){let strNext=strPath;
+function rootPath(strPath,strRootRole='configuration'){let strNext=strPath;let intDepth=0;
   while(true){const objStat=lstatSync(strNext);
-    if(objStat.uid!==0||(!objStat.isSymbolicLink()&&(objStat.mode&0o022)!==0))throw new Error('Root-controlled deployment path required.');
-    const strParent=dirname(strNext);if(strParent===strNext)break;strNext=strParent;}
+    if(objStat.uid!==0||(!objStat.isSymbolicLink()&&(objStat.mode&0o022)!==0)){
+      const objError=new Error('Root-controlled deployment path required.');
+      objError.objRootMetadata={strRootRole,intDepth,intUid:objStat.uid,intMode:objStat.mode&0o777};throw objError;}
+    const strParent=dirname(strNext);if(strParent===strNext)break;strNext=strParent;intDepth++;}
 }
 
 /** Ubuntu host policy only; never pretend POSIX checks establish Windows ACLs. */
@@ -37,7 +39,7 @@ export function validateHostLayout(objEnvironment,strReleaseDirectory){
   const objTlsDirectory=lstatSync(dirname(objEnvironment.TLS_KEY_PATH));
   if(!objTlsDirectory.isDirectory()||objTlsDirectory.uid!==intUid||(objTlsDirectory.mode&0o777)!==0o700)
     throw new Error('Private service-owned TLS directory required.');
-  strHostCheck='source_roots';rootPath(strRelease);rootPath('/opt/luigis/current');rootPath('/opt/luigis/runtime/bin/node');
+  strHostCheck='source_roots';rootPath(strRelease,'release');rootPath('/opt/luigis/current','pointer');rootPath('/opt/luigis/runtime/bin/node','runtime');
   function inspect(strPath){const objStat=lstatSync(strPath);
     if(objStat.uid!==0||(!objStat.isSymbolicLink()&&(objStat.mode&0o022)!==0))throw new Error('Application identity must not modify release content.');
     if(objStat.isSymbolicLink()){
@@ -48,5 +50,6 @@ export function validateHostLayout(objEnvironment,strReleaseDirectory){
     else if(!objStat.isFile())throw new Error('Regular release files required.');
   }
   strHostCheck='source_tree';inspect(strRelease);return true;
-  }catch{const objError=new Error('Hosted permission check failed.');objError.strHostCheck=strHostCheck;throw objError;}
+  }catch(objCause){const objError=new Error('Hosted permission check failed.');objError.strHostCheck=strHostCheck;
+    objError.objRootMetadata=objCause.objRootMetadata;throw objError;}
 }

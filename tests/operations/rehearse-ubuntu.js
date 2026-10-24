@@ -157,7 +157,7 @@ try{
   const objState=spawnSync('systemctl',['show','luigis.service','--property=Result,ExecMainCode,ExecMainStatus,ExecStartPre'],{encoding:'utf8'});
   console.error(objState.stdout);
   const objJournal=spawnSync('journalctl',['-u','luigis.service','--no-pager','--output=cat','-n','30'],{encoding:'utf8'});
-  for(const strLine of objJournal.stdout.split('\n'))if(/^(Release check failed:|Hosted runtime preflight failed;|Hosted layout check:|Unable to start:|Unable to start the configured server\.)/.test(strLine))console.error(strLine);
+  for(const strLine of objJournal.stdout.split('\n'))if(/^(Release check failed:|Hosted runtime preflight failed;|Hosted layout check:|Hosted root metadata:|Unable to start:|Unable to start the configured server\.)/.test(strLine))console.error(strLine);
 }finally{
   spawnSync('systemctl',['stop','luigis.service']);
   if(bMounted)spawnSync('umount',[strData]);

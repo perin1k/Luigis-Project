@@ -43,5 +43,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   catch(objError){console.error('Hosted runtime preflight failed; review private configuration without logging its values.');
     if(['service_identity','database','environment','payment_tls','source_roots','source_tree'].includes(objError.strHostCheck))
       console.error('Hosted layout check: '+objError.strHostCheck);
+    if(objError.objRootMetadata)console.error('Hosted root metadata: '+JSON.stringify(objError.objRootMetadata));
     process.exitCode=1;}
 }
