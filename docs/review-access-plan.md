@@ -29,11 +29,11 @@ require coordination with a team member. No professor staff/admin account is
 requested. This is not guaranteed uninterrupted access: the approved Spot host
 can stop, and maintenance or incidents can interrupt service.
 
-Public hosting remains on hold:
-the instruction is preparation only, not provisioning. The approved hosted shutdown
-target remains November 1, 2026, 11 PM America/Chicago; this does not establish a
-deployment start date or promise availability. Follow [hosting decisions](hosting-design.md)
-and [deployment instructions](deployment-runbook.md) after separate activation.
+The approved preview is now publicly hosted at
+[luigispizzeria.duckdns.org](https://luigispizzeria.duckdns.org), under the separate
+October 24 execution approvals. See [publication evidence](verification/ops-06-publication.md).
+The shutdown target remains November 1, 2026, 11 PM America/Chicago. Final release
+acceptance remains open; this guide grants no new provisioning or account access.
 
 ## Rehearsal and evidence checklist
 
@@ -59,8 +59,10 @@ leave unrun scenarios unverified. Never claim the checklist itself is evidence.
 Retain reproducible unit/integration results and per-flow Chromium, Firefox and
 WebKit functional/visual evidence on the required platforms. Windows/Linux and
 manual keyboard, zoom, contrast and representative screen-reader verification
-remain required teammate work where unavailable in this Mac session. The recorded
-Firefox startup failure is not a pass. Preserve Lighthouse 100-category gates and
+are tracked in [pre-OPS acceptance](verification/preops-checkpoint.md),
+[patched runtime acceptance](verification/ops-07-maintenance.md) and final QA.
+Historical failures are not passes; later accepted results apply only to their
+recorded scope. Preserve Lighthouse 100-category gates and
 only the page-specific SEO exceptions explicitly approved; do not infer new ones.
 
 ## Handoff and limitations
@@ -74,10 +76,14 @@ source/setup/deployment handoff does not imply a continuing support obligation.
 External-service substitutes must be explicit: payments/refunds are local demo
 outcomes with committed records; notifications are internal previews, never sent
 or delivered messages; native Wallet and real merchant settlement are unexercised.
-Hosting plans are not a deployed endpoint. QA-01/02/03, OPS-06 and DOC-01 retain
+The preview is deployed; it is not final release acceptance. QA-01/02/03, OPS-06 and DOC-01 retain
 their delivery scope and acceptance evidence.
 
 TECH-03's review-access and evidence decisions are settled under this flexible
 arrangement. No deployment start date is invented. Hosted activation, actual
 rehearsal and release sign-off must be recorded honestly on their existing
 implementation/acceptance cards; decision completion is not their acceptance.
+
+The [handoff package](handoff.md) now provides the receiving-person checklist,
+technical guide index, account/cost boundaries and third-party review inventory.
+Its independent rehearsal and client acceptance are still pending.

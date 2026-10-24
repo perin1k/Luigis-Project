@@ -106,13 +106,14 @@ defaults. No database, secret, or payment credentials are needed for this page.
 These commands alone start the unconfigured presentation server, not the complete
 database-backed demonstration. Use the reviewed authentication/payment guides for
 integrated features; do not bypass their configuration to make a platform run.
-Public GCP/DuckDNS hosting is required; exact resources, HTTPS, costs and deployment
-are still implementation work. Staff/admin functions stay authenticated even
+The approved GCP/DuckDNS preview is publicly hosted; see
+[deployment evidence](docs/verification/ops-06-publication.md) and the
+[operator/developer handoff](docs/handoff.md). Staff/admin functions stay authenticated even
 though customer pages are public. No site-wide preview password gate is required.
 The approved hosting direction now uses a Compute Engine Spot VM funded through
 the sponsor's GCP credits. See [the hosting decision record](docs/hosting-design.md)
 for confirmed choices, interruption/restart limits and outstanding configuration.
-No deployment or continuous availability is established by that decision.
+Final QA and receiving-person handoff remain open; continuous availability is not guaranteed.
 
 ## File guide
 
