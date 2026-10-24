@@ -36,39 +36,39 @@ log agent/export or custom metric-ingestion credential was added.
 - Source archive SHA-256, immutable-release manifest and retained-schema readiness
   checks passed before activating `aca76e7d402b36da9e84a85c7f99b97e4282acc0`.
   Existing data/keys were preserved and compatible prior releases retained.
-- Trusted public live/ready/preview probes returned200 with only the minimal
+- Trusted public live/ready/preview probes returned 200 with only the minimal
   fixed JSON and no-store metadata. Empty synthetic order/payment requests
-  returned their designed422 validation denial with fresh server-generated IDs;
+  returned their designed 422 validation denial with fresh server-generated IDs;
   actual journal events matched those IDs and contained only approved fields.
   No order/payment was created and no real transaction/provider was invoked.
-- The dedicated VM journal uses persistent64MiB/runtime16MiB limits, seven-day
+- The dedicated VM journal uses persistent 64 MiB/runtime 16 MiB limits, seven-day
   retention, hourly file rotation and compression. Ubuntu's vendor syslog override
   was detected and corrected by installing `zz-luigis-retention.conf`; effective
   configuration confirms no syslog/console/kernel forwarding. Journal use measured
-  11.5M. Private Certbot logs measured88KiB; its daily cleanup timer is enabled.
+  11.5M. Private Certbot logs measured 88 KiB; its daily cleanup timer is enabled.
 - Actual root-private rotated-log rehearsal removed an eight-day-old empty
   synthetic log and preserved the fresh counterpart, then cleaned only the test
   files. Active log, TLS keys, accounts and certificates were untouched. Retention
   cleanup is scheduled, not an exact deletion deadline; it cannot run while a VM
   is stopped, and retained disks are not erased by the approved stop deadline.
-- The two checks plan267,840 executions in a31-day month, below the current
-  project free allowance of1,000,000. Existing inventory and actual resource
+- The two checks plan 267,840 executions in a 31-day month, below the current
+  project free allowance of 1,000,000. Existing inventory and actual resource
   configuration were checked; no cloud log storage or new compute was purchased.
   This is a planned usage bound, not a bill/credit guarantee. Existing traffic,
   disks, project costs and alert-budget limitations remain documented.
 
 ## Actual incident and private recipient acceptance
 
-The app was deliberately stopped at17:47:52UTC with an eight-minute automatic
+The app was deliberately stopped at 17:47:52UTC with an eight-minute automatic
 recovery safeguard. GCP samples showed all three locations failing and the exact
 policy aggregation exceeded its threshold. Incident `0.oe7ctlyswdir` opened
-at17:53:15UTC. Google evaluation/notification lag is included in this observed
+at 17:53:15UTC. Google evaluation/notification lag is included in this observed
 result; a three-minute condition is not a three-minute email guarantee.
 
-The operator restored trusted readiness at17:54:12UTC, six minutes20seconds after
+The operator restored trusted readiness at 17:54:12UTC, six minutes 20 seconds after
 the controlled stop, and cancelled the safeguard only after readiness succeeded.
 The final compatible release then started successfully. The incident closed
-at17:56:05UTC after healthy measurements. Brody explicitly confirmed receiving
+at 17:56:05UTC after healthy measurements. Brody explicitly confirmed receiving
 both the outage and recovery emails; no email contents/private links were collected.
 
 After the drill, service/retention/journald status was healthy. SQLite integrity
