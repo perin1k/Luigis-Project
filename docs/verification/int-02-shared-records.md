@@ -64,6 +64,14 @@ four-scenario matrix: **16 passed** across Chromium/Firefox desktop/mobile in
 3.0 minutes. `git diff --check` passed. No production defect was found in these checks;
 the approved increment supplies missing connected evidence and documentation.
 
+## Grouped pre-OPS follow-up
+
+The [pre-OPS checkpoint](preops-checkpoint.md) adds current native cross-role
+coverage using these same four scenarios; accepted TEST/SEC checks are reused
+after impact review. John's implementation and Perin's QA ownership are preserved.
+The original hosted role/navigation/access criterion remains unverified until OPS
+supplies the approved environment; fixture results cannot satisfy that criterion.
+
 ## Remaining acceptance and limits
 
 This fixture verifies services sharing actual records in a disposable database;

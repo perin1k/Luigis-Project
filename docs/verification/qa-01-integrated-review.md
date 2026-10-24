@@ -137,3 +137,13 @@ the integrated journeys above, this adds 12 successful executions to the earlier
 
 No card may move to Done on this local record alone. A receiving human must
 accept actual scope and commit, and required hosting/quality evidence must exist.
+
+## Current pre-OPS follow-up
+
+See the [grouped pre-OPS checkpoint](preops-checkpoint.md) for native Windows,
+macOS and Linux integrated results, new uncertain-payment-state verification,
+Brody's manual acceptance and current public-order audit. It supersedes the old
+missing-native-evidence status only within its documented scope; local Firefox
+startup failures above remain historical failures, not rewritten passes. Final
+public HTTPS, actual-host operations and receiving-team/handoff acceptance remain
+QA-01 requirements. Perin retains QA ownership; John retains INT implementation.

@@ -87,6 +87,14 @@ the same **20 backend checks** and all **6 Chromium desktop journey checks** pas
 again (browser run 51.3 seconds). The three-engine runs above occurred before this
 reconciliation; they are not claimed as a new three-engine run of the later base.
 
+## Grouped pre-OPS follow-up
+
+The [pre-OPS checkpoint](preops-checkpoint.md) records current native integrated
+verification, changed-error accessibility/visual review, Brody's Chrome/Narrator
+manual pass and the post-fix public-page audit. It preserves John's implementation
+and the original results above. It also records the reproduced narrow-reference
+wrapping defect and its scoped CSS fix; initial failures remain explicit.
+
 ## Limits and remaining acceptance
 
 In-memory checkout retries do not survive navigation/reload. This increment does

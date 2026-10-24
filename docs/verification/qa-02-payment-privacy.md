@@ -54,6 +54,13 @@ test/documentation increment. Unaffected broad suites/audits were not repeated.
 
 ## Remaining acceptance and handoff
 
+Current follow-up: [pre-OPS checkpoint](preops-checkpoint.md) consolidates native
+file-backed and connected-browser evidence and the changed-error human review.
+[SEC acceptance](sec-acceptance.md) now records completed SEC-01/02, including the
+patched dependency and native privacy verification. Those earlier pending SEC
+dependencies are resolved; actual hosted custody remains outstanding. Earlier
+results and limitations below retain their original scope and dates.
+
 - Reconcile final SEC-01/02 privacy/access findings; those cards are active in
   another team task and are not closed or modified by this work.
 - Supply current integrated native/browser/manual evidence where INT-01/02 and

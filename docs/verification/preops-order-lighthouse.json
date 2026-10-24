@@ -1,0 +1,65 @@
+{
+  "strUrl": "http://127.0.0.1:3008/order",
+  "strVersion": "13.5.0",
+  "strPlatform": "win32",
+  "strArchitecture": "x64",
+  "strNodeVersion": "v24.22.1",
+  "strProfile": "Default mobile simulated throttling; production NODE_ENV; native execution OS; isolated database",
+  "objConfiguration": {
+    "strFormFactor": "mobile",
+    "strThrottlingMethod": "simulate",
+    "objScreenEmulation": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "objThrottling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    }
+  },
+  "objScores": {
+    "performance": 100,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "agentic-browsing": 100
+  },
+  "arrAdvisories": [
+    {
+      "strId": "first-contentful-paint",
+      "strTitle": "First Contentful Paint",
+      "numScore": 0.98,
+      "strDisplayValue": "1.4 s"
+    },
+    {
+      "strId": "unused-css-rules",
+      "strTitle": "Reduce unused CSS",
+      "numScore": 0,
+      "strDisplayValue": "Est savings of 32 KiB"
+    },
+    {
+      "strId": "cache-insight",
+      "strTitle": "Use efficient cache lifetimes",
+      "numScore": 0,
+      "strDisplayValue": "Est savings of 40 KiB"
+    },
+    {
+      "strId": "network-dependency-tree-insight",
+      "strTitle": "Network dependency tree",
+      "numScore": 0
+    },
+    {
+      "strId": "render-blocking-insight",
+      "strTitle": "Render-blocking requests",
+      "numScore": 0,
+      "strDisplayValue": "Est savings of 450 ms"
+    }
+  ]
+}

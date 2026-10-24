@@ -90,6 +90,12 @@ email/SMS. OPS-05 disposable recreation is not an unperformed backup restore.
 
 ## Remaining acceptance
 
+The [pre-OPS checkpoint](preops-checkpoint.md) reuses these tests in one explicit
+file-backed native union and adds current customer/shared-record browser evidence.
+This resolves available pre-host verification without claiming that a CI fixture
+is the approved GCP target. The host-load and operator procedures above remain
+unperformed on that target and remain on QA-03.
+
 Accepted TEST-02/03 and [INT-01](int-01-customer-journey.md)/
 [INT-02](int-02-shared-records.md) retain connected retries/revisions, inventory,
 refund and shared-record evidence with their limits. Purchased prices and

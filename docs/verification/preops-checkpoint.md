@@ -63,6 +63,32 @@ first failed with the missing route, then passed after adding the control. It is
 not part of the production runtime. Prior TEST/SEC manual checks cover unchanged
 states; no live transaction or external delivery is inferred.
 
+Post-fix public order audit: Lighthouse 13.5.0, Windows x64/Node 24.22.1,
+production-mode isolated fixture, unchanged default mobile simulated throttling:
+Performance/Accessibility/Best Practices/SEO all 100. Actual OS metadata replaces
+the helper's outdated hardcoded platform label; scoring settings are unchanged.
+[Sanitized audit metadata](preops-order-lighthouse.json) retains configuration and
+advisories, with no credentials or customer records. This HTTP loopback result
+does not replace QA-01's real hosted HTTPS requirement or audit dynamic states.
+
+Corrected-state collection [40053993124](https://github.com/perin1k/Luigis-Project/actions/runs/40053993124)
+on `5e7d5789cedd115affb3d0a40add9ec9fd259590` passed all three jobs: Windows
+8 changed-error/fixture checks and 16 shared-record checks; macOS 12 and 24;
+Linux 12 changed-error/fixture checks, reusing its initial 24 staff passes.
+All jobs use Node 24.14.1 and locked Playwright 1.64.1, Chromium 156.0.8078.4,
+Firefox 157.0 and WebKit 27.2 where supported. Windows intentionally uses
+Chromium/Firefox; macOS/Linux include WebKit, under the existing platform decision.
+No retries, selected failures or skips. New wrapping assertions retain 320px and
+three reference patterns. The initial unrelated customer and backend successes
+are reused: the production change is limited to saved-status text wrapping;
+the fixture wrapper is disabled by default and delegates to the original service.
+
+All 32 corrected native Light/Dark candidate PNGs were inspected internally via
+OS contact sheets and enlarged representative mobile views. Error, disclosure,
+recap, references and recovery controls remain readable without overlap. Only
+these reviewed deterministic references are committed; initial random-reference
+candidates are not used. Strict independent comparison remains pending.
+
 ## Criteria and remaining gates
 
 | Card | Applicable pre-OPS verification | Requirements that cannot be inferred from it |
