@@ -16,7 +16,7 @@ WorkingDirectory=/opt/luigis/current
 EnvironmentFile=/etc/luigis/runtime.env
 Environment=NODE_ENV=production
 ExecStartPre=/opt/luigis/runtime/bin/node scripts/release.js check /opt/luigis/current ready
-ExecStartPre=/opt/luigis/runtime/bin/node scripts/validate-runtime.js
+ExecStartPre=/opt/luigis/runtime/bin/node scripts/validate-runtime.js --host
 ExecStart=/opt/luigis/runtime/bin/node src/server.js
 Restart=on-failure
 RestartSec=5

@@ -1,4 +1,4 @@
-name: OPS-01 release and Ubuntu service rehearsal
+name: OPS release, custody and Ubuntu service rehearsal
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
             if (Test-Path -LiteralPath $strDirectory) { Add-Content -LiteralPath $env:GITHUB_PATH -Value $strDirectory }
           }
       - name: Focused portable release and runtime checks
-        run: node --test tests/unit/release.test.js tests/unit/deployment-runtime.test.js
+        run: node --test tests/unit/release.test.js tests/unit/deployment-runtime.test.js tests/unit/host-secrets.test.js
       - name: Disposable Ubuntu systemd, release and schema rollback rehearsal
         if: runner.os == 'Linux'
         shell: bash

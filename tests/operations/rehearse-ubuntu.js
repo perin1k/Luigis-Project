@@ -2,10 +2,9 @@
 import assert from 'node:assert/strict';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {cpSync,mkdirSync,writeFileSync,readFileSync,chmodSync,chownSync,symlinkSync,renameSync,
-  existsSync,unlinkSync,mkdtempSync,rmSync} from 'node:fs';
+  existsSync,unlinkSync,mkdtempSync,rmSync,lstatSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {tmpdir} from 'node:os';
-import {randomBytes} from 'node:crypto';
 import {request} from 'node:https';
 import {DatabaseSync} from 'node:sqlite';
 
@@ -71,15 +70,14 @@ try{
   mkdirSync(strData);run('mount',['-t','tmpfs','-o','size=64m,mode=0700','luigis-ops-rehearsal',strData]);bMounted=true;
   chownSync(strData,intUid,intGid);asService([join(strA,'scripts/migrate.js')]);asService([join(strA,'scripts/seed-menu.js')]);chmodSync(strDatabase,0o600);
   const objDatabase=new DatabaseSync(strDatabase);objDatabase.prepare('UPDATE pizza_sizes SET base_price_cents=base_price_cents+100').run();objDatabase.close();
-  mkdirSync(join(strConfig,'tls'),{recursive:true});chmodSync(strConfig,0o711);chmodSync(join(strConfig,'tls'),0o700);chownSync(join(strConfig,'tls'),intUid,intGid);
+  strStage='private environment creation';
+  node([join(strA,'scripts/setup-host-secrets.js'),'create',strConfig,strData,strA,'https://localhost','ci-demo']);
+  assert.throws(()=>node([join(strA,'scripts/setup-host-secrets.js'),'create',strConfig,strData,strA,'https://localhost','ci-demo']));
+  mkdirSync(join(strConfig,'tls'));chmodSync(join(strConfig,'tls'),0o700);chownSync(join(strConfig,'tls'),intUid,intGid);
   run('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',join(strConfig,'tls/privkey.pem'),
     '-out',join(strConfig,'tls/fullchain.pem'),'-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost','-days','1']);
-  const strPayment=join(strConfig,'payment-keys.json');writeFileSync(strPayment,JSON.stringify({strActiveKeyId:'fixture',mapKeys:{fixture:randomBytes(32).toString('hex')}}));
+  const strPayment=join(strConfig,'payment-keys.json');
   for(const strPath of [strPayment,join(strConfig,'tls/privkey.pem'),join(strConfig,'tls/fullchain.pem')]){chmodSync(strPath,0o600);chownSync(strPath,intUid,intGid);}
-  const objEnvironment={NODE_ENV:'production',HOST:'127.0.0.1',PORT:'443',AUTH_ORIGIN:'https://localhost',DATABASE_PATH:strDatabase,
-    TLS_KEY_PATH:join(strConfig,'tls/privkey.pem'),TLS_CERT_PATH:join(strConfig,'tls/fullchain.pem'),
-    DEMO_PAYMENT_KEYS_PATH:strPayment,MFA_ENCRYPTION_KEY_HEX:randomBytes(32).toString('hex')};
-  writeFileSync(join(strConfig,'runtime.env'),Object.entries(objEnvironment).map(([strKey,strValue])=>`${strKey}=${strValue}`).join('\n')+'\n',{mode:0o600});
   protect(join(strRoot,'releases'));symlinkSync(strA,join(strRoot,'current'));cpSync(join(strA,'deploy/luigis.service'),strUnit);
   strStage='unit validation and first HTTPS startup';
   try{run('systemd-analyze',['verify',strUnit]);}
@@ -99,6 +97,23 @@ try{
   }
   assert.equal(bRestarted,true,'Only the disposable service must restart with a new ready process.');
   console.log('PASS: systemd restarts the killed disposable application with a new ready process.');
+  stop();strStage='permission and missing-key rejection';
+  for(const [strPath,intUnsafeMode,intPrivateMode] of [[strDatabase,0o644,0o600],[strData,0o755,0o700],
+    [join(strConfig,'runtime.env'),0o644,0o600],[join(strA,'src/server.js'),0o666,0o644]]){
+    chmodSync(strPath,intUnsafeMode);assert.throws(()=>run('systemctl',['start','luigis.service']));stop();chmodSync(strPath,intPrivateMode);
+  }
+  chownSync(strPayment,0,0);assert.throws(()=>run('systemctl',['start','luigis.service']));stop();chownSync(strPayment,intUid,intGid);
+  renameSync(strPayment,join(strConfig,'held-payment.json'));assert.throws(()=>run('systemctl',['start','luigis.service']));stop();
+  renameSync(join(strConfig,'held-payment.json'),strPayment);
+  console.log('PASS: unsafe database/directory/environment/source permissions, wrong key owner and missing key refuse startup.');
+  strStage='private payment-key rotation and service reload';
+  const objEnvironmentBefore=readFileSync(join(strConfig,'runtime.env'));
+  const strCandidate=join(strConfig,'next-payment.json');
+  node([join(strA,'scripts/setup-host-secrets.js'),'prepare-payment-rotation',strPayment,strCandidate]);
+  assert.equal(lstatSync(strCandidate).uid,intUid);
+  renameSync(strPayment,join(strConfig,'previous-payment.json'));renameSync(strCandidate,strPayment);
+  await start();assert.equal(readFileSync(join(strConfig,'runtime.env')).equals(objEnvironmentBefore),true);
+  console.log('PASS: service reloads a privately staged payment key version without changing its authenticator key.');
   const objAssetA=await get('/css/order-bundle.css');assert.equal(objAssetA.intStatus,200);assert.match(objAssetA.objHeaders['cache-control'],/max-age=3600/);
   strStage='compatible release and rollback';
   stop();assert.match(check(strB,'ready'),/"intPending":0/);switchStopped(strB);await start();

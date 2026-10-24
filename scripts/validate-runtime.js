@@ -4,9 +4,10 @@ import {pathToFileURL} from 'node:url';
 import {X509Certificate,createPrivateKey} from 'node:crypto';
 import {createSecureContext} from 'node:tls';
 import {loadPaymentVault} from '../src/payments/payment-config.js';
+import {validateHostLayout} from './validate-host-layout.js';
 
 /** Validate the hosted configuration without listening or issuing staff access. */
-export function validateRuntime(objEnvironment=process.env){
+export function validateRuntime(objEnvironment=process.env,{bHostedLayout=false}={}){
   if(objEnvironment.NODE_ENV!=='production'||!objEnvironment.HOST||
     !/^[a-f0-9]{64}$/.test(objEnvironment.MFA_ENCRYPTION_KEY_HEX??''))throw new Error('Complete hosted configuration required.');
   const intPort=Number(objEnvironment.PORT);const objOrigin=new URL(objEnvironment.AUTH_ORIGIN);
@@ -31,10 +32,13 @@ export function validateRuntime(objEnvironment=process.env){
     Date.parse(objCertificate.validFrom)>Date.now()||Date.parse(objCertificate.validTo)<=Date.now())throw new Error('Current matching TLS certificate required.');
   createSecureContext({key:objKey,cert:objCert,minVersion:'TLSv1.2'});
   if(!loadPaymentVault(objEnvironment.DEMO_PAYMENT_KEYS_PATH))throw new Error('Private payment key required.');
+  if(bHostedLayout)validateHostLayout(objEnvironment,process.cwd());
   return true;
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
-  try{validateRuntime();console.log('Hosted runtime preflight passed.');}
+  try{
+    if(process.argv.length>3||(process.argv.length===3&&process.argv[2]!=='--host'))throw new Error('Unknown preflight option.');
+    validateRuntime(process.env,{bHostedLayout:process.argv[2]==='--host'});console.log('Hosted runtime preflight passed.');}
   catch{console.error('Hosted runtime preflight failed; review private configuration without logging its values.');process.exitCode=1;}
 }
