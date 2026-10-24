@@ -27,7 +27,8 @@ test('hosted preflight validates matching TLS/private keys and rejects incomplet
     const strDataKey=join(strData,'payment.json');writeFileSync(strDataKey,readFileSync(strPayment));chmodSync(strDataKey,0o600);
     assert.throws(()=>validateRuntime({...objEnvironment,DEMO_PAYMENT_KEYS_PATH:strDataKey}),/separate/);
     const objResult=spawnSync(process.execPath,['scripts/validate-runtime.js'],{env:{...objEnvironment,PORT:'bad'},encoding:'utf8'});
-    assert.equal(objResult.status,1);assert.doesNotMatch(objResult.stdout+objResult.stderr,new RegExp(strSecret));
+    assert.equal(objResult.status,1);
+    assert.equal((objResult.stdout+objResult.stderr).includes(strSecret),false,'CLI diagnostics must not contain the disposable key.');
     assert.match(objResult.stderr,/preflight failed/);
   }finally{rmSync(strRoot,{recursive:true,force:true});}
 });
