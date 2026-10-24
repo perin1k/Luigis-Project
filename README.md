@@ -2,6 +2,7 @@
 
 Receiving team: start with the [handoff guide](docs/handoff.md) for setup,
 workflow documentation, operator responsibilities and remaining release gates.
+Deployment review: [provisional cost comparison and account-access prerequisites](docs/deployment-cost-review.md).
 Current integrated release verification: [QA-01 evidence and retained gates](docs/verification/qa-01-integrated-review.md).
 
 The internal staff sign-in orchestration lives in `src/auth/login-service.js`;
