@@ -19,7 +19,8 @@ const strScratch=mkdtempSync(join(tmpdir(),'luigis-ops-'));let bMounted=false;le
 let strStage='isolated host preparation';
 const strDatabase=join(strData,'luigis-demo.sqlite');const strNode=join(strRoot,'runtime/bin/node');
 function run(strCommand,arrArgs,objOptions={}){
-  return execFileSync(strCommand,arrArgs,{encoding:'utf8',stdio:['ignore','pipe','pipe'],...objOptions});
+  try{return execFileSync(strCommand,arrArgs,{encoding:'utf8',stdio:['ignore','pipe','pipe'],...objOptions});}
+  catch(objError){if(strCommand==='systemctl')console.error(String(objError.stderr??''));throw objError;}
 }
 function node(arrArgs,objOptions={}){return run(strNode,arrArgs,objOptions);}
 function asService(arrArgs,objOptions={}){
@@ -40,7 +41,13 @@ async function get(strPath){return new Promise((fnResolve,fnReject)=>{
     objResponse.on('end',()=>fnResolve({intStatus:objResponse.statusCode,objHeaders:objResponse.headers,strBody}));
   });objRequest.on('error',fnReject);objRequest.setTimeout(3000,()=>objRequest.destroy(new Error('Probe timeout')));objRequest.end();
 });}
-async function start(){run('systemctl',['reset-failed','luigis.service']);run('systemctl',['start','luigis.service']);
+async function start(){
+  const objReset=spawnSync('systemctl',['reset-failed','luigis.service'],{encoding:'utf8'});
+  if(objReset.status!==0){
+    if(!/not loaded/.test(objReset.stderr))throw new Error('Unable to reset the disposable unit.');
+    console.log('Initial unit is not loaded yet; no failed state exists to reset.');
+  }
+  run('systemctl',['start','luigis.service']);
   const intDeadline=Date.now()+10000;
   while(Date.now()<intDeadline){try{if((await get('/health/ready')).intStatus===200)return;}catch{}
     await new Promise(fnResolve=>setTimeout(fnResolve,100));}

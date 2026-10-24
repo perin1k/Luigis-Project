@@ -2,23 +2,18 @@ name: OPS-01 release and Ubuntu service rehearsal
 
 on:
   workflow_dispatch:
-  push:
-    branches: [dev]
-    paths:
-      - '.github/workflows/ops-runtime.yml'
-      - 'deploy/**'
-      - 'scripts/release.js'
-      - 'scripts/validate-runtime.js'
-      - 'tests/unit/release.test.js'
-      - 'tests/unit/deployment-runtime.test.js'
-      - 'tests/operations/rehearse-ubuntu.js'
+    inputs:
+      scope:
+        description: 'Full portable checks or Ubuntu rehearsal follow-up only'
+        type: choice
+        options: [all, ubuntu]
+        default: all
 
 permissions:
   contents: read
 
 jobs:
   focused:
-    if: github.ref == 'refs/heads/dev'
     strategy:
       fail-fast: false
       matrix:
@@ -27,14 +22,17 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        if: github.ref == 'refs/heads/dev' && (inputs.scope != 'ubuntu' || runner.os == 'Linux')
         with:
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        if: github.ref == 'refs/heads/dev' && (inputs.scope != 'ubuntu' || runner.os == 'Linux')
         with:
           node-version: '24.14.1'
       - run: npm ci
+        if: github.ref == 'refs/heads/dev' && (inputs.scope != 'ubuntu' || runner.os == 'Linux')
       - name: Locate OpenSSL on Windows
-        if: runner.os == 'Windows'
+        if: github.ref == 'refs/heads/dev' && runner.os == 'Windows' && inputs.scope != 'ubuntu'
         shell: pwsh
         run: |
           $strGitRoot = Split-Path (Split-Path (Get-Command git).Source)
@@ -43,9 +41,10 @@ jobs:
             if (Test-Path -LiteralPath $strDirectory) { Add-Content -LiteralPath $env:GITHUB_PATH -Value $strDirectory }
           }
       - name: Focused portable release and runtime checks
+        if: github.ref == 'refs/heads/dev' && (inputs.scope != 'ubuntu' || runner.os == 'Linux')
         run: node --test tests/unit/release.test.js tests/unit/deployment-runtime.test.js
       - name: Disposable Ubuntu systemd, release and schema rollback rehearsal
-        if: runner.os == 'Linux'
+        if: github.ref == 'refs/heads/dev' && runner.os == 'Linux'
         shell: bash
         env:
           LUIGIS_OPS_REHEARSAL: disposable-runner
