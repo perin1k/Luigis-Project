@@ -39,7 +39,7 @@ jobs:
             if (Test-Path -LiteralPath $strDirectory) { Add-Content -LiteralPath $env:GITHUB_PATH -Value $strDirectory }
           }
       - name: Focused portable release and runtime checks
-        run: node --test tests/unit/release.test.js tests/unit/deployment-runtime.test.js tests/unit/host-secrets.test.js
+        run: node --test tests/unit/release.test.js tests/unit/deployment-runtime.test.js tests/unit/host-secrets.test.js tests/unit/gcp-provision.test.js tests/unit/private-token-input.test.js tests/unit/tls-install.test.js tests/unit/duckdns.test.js
       - name: Disposable Ubuntu systemd, release and schema rollback rehearsal
         if: runner.os == 'Linux'
         shell: bash

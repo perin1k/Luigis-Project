@@ -82,9 +82,10 @@ try{
   strStage='private environment creation';
   node([join(strA,'scripts/setup-host-secrets.js'),'create',strConfig,strData,strA,'https://localhost','ci-demo']);
   assert.throws(()=>node([join(strA,'scripts/setup-host-secrets.js'),'create',strConfig,strData,strA,'https://localhost','ci-demo']));
-  mkdirSync(join(strConfig,'tls'));chmodSync(join(strConfig,'tls'),0o700);chownSync(join(strConfig,'tls'),intUid,intGid);
-  run('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',join(strConfig,'tls/privkey.pem'),
-    '-out',join(strConfig,'tls/fullchain.pem'),'-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost','-days','1']);
+  const strFixtureKey=join(strScratch,'fixture-key.pem');const strFixtureCert=join(strScratch,'fixture-cert.pem');
+  run('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',strFixtureKey,
+    '-out',strFixtureCert,'-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost','-days','1']);
+  node([join(strA,'scripts/install-tls.js'),strFixtureKey,strFixtureCert,'localhost']);
   const strPayment=join(strConfig,'payment-keys.json');
   for(const strPath of [strPayment,join(strConfig,'tls/privkey.pem'),join(strConfig,'tls/fullchain.pem')]){chmodSync(strPath,0o600);chownSync(strPath,intUid,intGid);}
   console.log(JSON.stringify({strStage:'disposable_parent_policy',intOriginalOptUid:objOptBefore.uid,intOriginalOptMode:objOptBefore.mode&0o777}));
@@ -111,6 +112,13 @@ try{
   }
   assert.equal(bRestarted,true,'Only the disposable service must restart with a new ready process.');
   console.log('PASS: systemd restarts the killed disposable application with a new ready process.');
+  strStage='complete TLS generation activation';
+  const strPriorTls=realpathSync(join(strConfig,'tls'));
+  assert.throws(()=>node([join(strA,'scripts/install-tls.js'),strFixtureKey,strFixtureCert,'wrong.invalid']));
+  assert.equal(realpathSync(join(strConfig,'tls')),strPriorTls);
+  node([join(strA,'scripts/install-tls.js'),strFixtureKey,strFixtureCert,'localhost']);await start();
+  assert.notEqual(realpathSync(join(strConfig,'tls')),strPriorTls);
+  console.log('PASS: invalid TLS pair/hostname preserves active certificate; complete pair switches atomically and active HTTPS restarts.');
   stop();strStage='permission and missing-key rejection';
   for(const [strPath,intUnsafeMode,intPrivateMode] of [[strDatabase,0o644,0o600],[strData,0o755,0o700],
     [join(strConfig,'runtime.env'),0o644,0o600],[join(strA,'src/server.js'),0o666,0o644]]){

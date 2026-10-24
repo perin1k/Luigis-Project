@@ -38,7 +38,14 @@ export function validateHostLayout(objEnvironment,strReleaseDirectory){
   for(const strKey of ['DEMO_PAYMENT_KEYS_PATH','TLS_KEY_PATH','TLS_CERT_PATH']){
     privateFile(objEnvironment[strKey],intUid);rootPath(dirname(dirname(objEnvironment[strKey])));
   }
-  const objTlsDirectory=lstatSync(dirname(objEnvironment.TLS_KEY_PATH));
+  const strTlsDirectory=dirname(objEnvironment.TLS_KEY_PATH);const objTlsPointer=lstatSync(strTlsDirectory);
+  if(objTlsPointer.isSymbolicLink()){
+    const strVersions=join(dirname(strTlsDirectory),'certificates');
+    if(objTlsPointer.uid!==0||!within(realpathSync(strVersions),realpathSync(strTlsDirectory)))
+      throw new Error('Root-controlled private TLS generation required.');
+    rootPath(strVersions);
+  }
+  const objTlsDirectory=lstatSync(realpathSync(strTlsDirectory));
   if(!objTlsDirectory.isDirectory()||objTlsDirectory.uid!==intUid||(objTlsDirectory.mode&0o777)!==0o700)
     throw new Error('Private service-owned TLS directory required.');
   strHostCheck='source_roots';rootPath(strRelease,'release');rootPath('/opt/luigis/current','pointer');rootPath('/opt/luigis/runtime/bin/node','runtime');
