@@ -27,6 +27,6 @@ test('bucket saturation fails closed without eviction that could reset an attack
 });
 
 test('health probes have a bounded independent peer budget',()=>{
-  const fnLimit=createAnonymousLimits({fnNow:()=>0});for(let intIndex=0;intIndex<120;intIndex++)assert.equal(request(fnLimit,{strPath:intIndex%2?'/health/ready':'/health/live'}).bPassed,true);
+  const fnLimit=createAnonymousLimits({fnNow:()=>0});const arrPaths=['/health/ready','/health/live','/HEALTH/previews/'];for(let intIndex=0;intIndex<120;intIndex++)assert.equal(request(fnLimit,{strPath:arrPaths[intIndex%3]}).bPassed,true);
   assert.equal(request(fnLimit,{strPath:'/HEALTH/READY'}).intStatus,429);assert.equal(request(fnLimit,{strPath:'/api/orders'}).bPassed,true);
 });

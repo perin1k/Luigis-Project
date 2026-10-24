@@ -41,7 +41,7 @@ is recorded separately; configured resources alone do not close the card.
   are sent close the connection rather than delegate raw exception logging.
 - `src/app.js` mounts probes after shared security headers and anonymous limits.
   `src/security/anonymous-limits.js` adds a separate 120-probe/minute socket-peer
-  budget shared by live/ready, including case variants. Forwarded addresses do
+  budget shared by live/ready/previews, including case variants. Forwarded addresses do
   not bypass it. A throttled probe returns 429/Retry-After, distinct from dependency
   failure. NAT/proxy/process-reset limitations still apply; hosting remains direct
   TLS with one process. Do not interpret a 429 as proof of a database outage.

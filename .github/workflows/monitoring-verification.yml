@@ -4,8 +4,10 @@ on:
     branches: [dev]
     paths:
       - 'src/operations/**'
+      - 'src/security/anonymous-limits.js'
       - 'tests/unit/operations.test.js'
       - 'tests/unit/host-monitoring.test.js'
+      - 'tests/unit/anonymous-limits.test.js'
       - 'scripts/configure-monitoring.js'
       - 'deploy/monitoring.json'
       - '.github/workflows/monitoring-verification.yml'
@@ -28,4 +30,4 @@ jobs:
         with:
           node-version: '24.14.1'
       - run: npm ci --ignore-scripts
-      - run: node --test tests/unit/operations.test.js tests/unit/host-monitoring.test.js
+      - run: node --test tests/unit/operations.test.js tests/unit/host-monitoring.test.js tests/unit/anonymous-limits.test.js
