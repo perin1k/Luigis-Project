@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 async function reviewOrder(objPage,bDineIn=false){
   await objPage.goto('/order');
@@ -87,6 +88,22 @@ test('INT-01 ambiguous server failure keeps the same payment locked for safe rec
   await expect(objPage.locator('#form-error')).toContainText('Keep this page open');
   await expect(objPage.getByRole('button',{name:'Edit order review',exact:true})).toBeDisabled();
   await expect(objPage.getByRole('button',{name:'Check demo payment result',exact:true})).toBeVisible();
+  // The new recovery instruction needs its own accessibility/layout evidence;
+  // accepted receipt/menu visuals are reused instead of recollecting them.
+  for(const strTheme of ['Light','Dark']){
+    await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText(strTheme,{exact:true}).click();
+    await objPage.mouse.move(0,0);
+    await objPage.evaluate(async()=>{
+      await new Promise(requestAnimationFrame);await new Promise(requestAnimationFrame);
+      await Promise.all(document.getAnimations().map(objAnimation=>objAnimation.finished.catch(()=>{})));
+    });
+    expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
+    await expect(objPage).toHaveScreenshot(['preops-ci',`uncertain-payment-${strTheme}.png`],{fullPage:true,animations:'disabled'});
+  }
+  const objViewport=objPage.viewportSize();
+  await objPage.setViewportSize({width:320,height:1000});
+  expect(await objPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await objPage.setViewportSize(objViewport);
   await objPage.unroute('**/api/demo-payments');
   const pRetry=objPage.waitForRequest('**/api/demo-payments');
   await objPage.getByRole('button',{name:'Check demo payment result',exact:true}).click();

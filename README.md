@@ -1,6 +1,7 @@
 # Luigi's Pizza
 
 Current integrated release verification: [QA-01 evidence and retained gates](docs/verification/qa-01-integrated-review.md).
+Current pre-OPS verification: [focused native integration checkpoint and remaining gates](docs/verification/preops-checkpoint.md).
 
 The internal staff sign-in orchestration lives in `src/auth/login-service.js`;
 migration 008 persists throttles, short-lived MFA challenges and identity epochs.
