@@ -1,6 +1,7 @@
 # SEC-02 / SEC-01 application acceptance
 
-October 23, 2026. In progress; final strict native comparison remains pending.
+Accepted October 23, 2026 for the scoped application security/privacy cards.
+Final hosted/integrated release and deferred public-policy gates remain separate.
 Cards: [SEC-02](https://trello.com/c/ehrcmOun),
 [SEC-01](https://trello.com/c/3fVC3XbV).
 
@@ -113,8 +114,10 @@ John Sevier's `174b043` payment uncertainty fix and `be24de4` optional integrate
 fixture are preserved. Their [INT-01](int-01-customer-journey.md) and
 [INT-02](int-02-shared-records.md) evidence is reused for the stated scenarios,
 not authorship or full-card acceptance. Default privacy fixture behavior is unchanged.
-The parser security patch from `618e177` remains: the lockfile is byte-identical
-to that patched commit (body-parser 2.4.0, qs 6.16.1 and original integrity hashes).
+The parser security patch from `618e177` remains. Before the final developer-tool
+update below, the lockfile was verified byte-identical to that patched commit
+(body-parser 2.4.0, qs 6.16.1 and original integrity hashes). Production dependency
+entries remain unchanged by the later fast-uri-only patch.
 Current patched [QA evidence](qa-01-integrated-review.md) and its
 [privacy audit](qa-01-privacy-lighthouse.json) remain available and unmodified
 apart from a historical handoff link, not new results claimed by this chat.
@@ -149,6 +152,47 @@ The final workflow is manual-only; ordinary pushes cannot trigger recollection.
 Final strict comparison runs without image updates. Existing default Admin/refund
 consent-row checks passed locally in Chromium/Firefox after adding privacy navigation.
 The native comparison below verifies the final combined source and reviewed refs.
+
+## Final strict result and late advisory resolution
+
+[Final strict run 40051638544](https://github.com/perin1k/Luigis-Project/actions/runs/40051638544)
+at `58373e4d3b168242c7262ef2d4f90897dbceb3e6` passed Windows 20, Linux 30 and
+macOS 30 browser cases. Logs report no failures, retries, skips or flaky cases.
+All reference comparisons ran with `--update-snapshots=none`; no tolerance changed.
+This validates the corrected copy viewport as well as genuine correction/copy,
+denied/expired access, late-response clearing, interrupted-response recovery,
+keyboard, reflow and tagged axe checks on the final combined application.
+
+The current advisory recheck then found one affected development package,
+`fast-uri` 3.1.8 through Ajv's existing `^3.0.1` range, with four related URI
+canonicalization advisories (highest moderate). Production-only audit remained
+zero. The human explicitly approved a narrow patch. Only the existing package's
+version/resolved/integrity fields change to 3.1.9; package.json, runtime packages,
+frameworks and public application assets are unchanged. See the
+[maintainer advisory and patched versions](https://github.com/fastify/fast-uri/security/advisories/GHSA-w74x-v6f9-j3xg).
+Other npm-linked findings: GHSA-xhq7-xmqj-769h, GHSA-wjr9-j795-jxcr and
+GHSA-333x-w4r6-6crp. No new library, override or lifecycle script was introduced.
+
+A clean locked installation with lifecycle scripts disabled verified installed
+fast-uri 3.1.9/body-parser 2.4.0. Fresh runtime-only and full npm audits both returned
+zero advisories afterward. The browser/server source and its native dependencies
+are unchanged by this development audit-tool patch; native browser evidence above
+is retained. The existing privacy Lighthouse helper is exercised with the patched
+toolchain; final sanitized audit outcome is recorded below. No unrelated suite is
+rerun or old audit relabeled as a new measurement.
+
+That patched-toolchain audit passed Performance 100, Accessibility 100 and Best
+Practices 100, retaining SEO 60 under the approved private noindex exception.
+The current `sec-privacy-lighthouse.json` is this fresh sanitized result, with
+unchanged Lighthouse 13.5.0/default-mobile configuration on Windows x64/Node
+24.22.1 and the production disposable HTTPS fixture. The earlier measurement is
+retained in commit history. No score threshold or page-indexing rule changed.
+
+Both SEC cards satisfy their applicable approved application criteria, including
+the implemented privacy request workflow. This does not accept any outstanding
+OPS/DOC work, publish a deferred privacy/contact policy, clear final QA, or claim
+legal/security certification. The original criteria, earlier failures and team
+provenance remain visible rather than changing gates to close these cards.
 
 The existing configured startup/worker integration test also passed locally after
 the new production service wiring. It uses isolated synthetic data, not a deployed

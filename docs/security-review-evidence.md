@@ -1,5 +1,14 @@
 # SEC-01 dependency, credential-pattern and route review
 
+Final October 23 review: see [accepted SEC evidence](verification/sec-acceptance.md).
+The final scan found newly reported fast-uri advisories in the development-tool
+tree after the earlier zero-advisory results below. The human approved updating
+only that transitive package 3.1.8→3.1.9 within Ajv's existing range. Clean locked
+installation verified fast-uri 3.1.9 and the retained production parser 2.4.0;
+runtime-only and full npm audits then both returned zero advisories. Historical
+zero results remain dated evidence, not a guarantee that advisories cannot change.
+No new library, application API, policy, infrastructure or security exception.
+
 October 23 maintenance follow-up (OPS-07): a fresh install subsequently reported
 GHSA-27r3-jxmh-p828 in locked body-parser 2.3.0. The focused lockfile patch selects
 2.4.0 within Express's existing range; no direct dependency, application route or
