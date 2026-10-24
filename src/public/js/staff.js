@@ -1,6 +1,33 @@
 const elMain = document.querySelector('[data-staff-mode]');
 const elStatus = document.querySelector('#staff-status');
 let bSubmitting = false;
+let intSetupTimer;
+function clearAuthenticator(){
+  clearTimeout(intSetupTimer);
+  const elCanvas=document.querySelector('#authenticator-qr');
+  if(elCanvas){elCanvas.width=0;elCanvas.height=0;elCanvas.hidden=true;}
+  const elKey=document.querySelector('#setup-key');if(elKey)elKey.value='';
+  const elVisuals=document.querySelector('#authenticator-visuals');if(elVisuals)elVisuals.hidden=true;
+}
+function showAuthenticator(objQrCode){
+  clearAuthenticator();
+  document.querySelector('#authenticator-visuals').hidden=false;
+  const elCanvas=document.querySelector('#authenticator-qr');
+  try{
+    const {intSize,strModules}=objQrCode??{};
+    if(!Number.isInteger(intSize)||intSize<21||intSize>177||typeof strModules!=='string'
+      ||strModules.length!==intSize**2||!/^[01]+$/.test(strModules))throw new Error();
+    elCanvas.width=(intSize+8)*4;elCanvas.height=elCanvas.width;
+    const objContext=elCanvas.getContext('2d');
+    objContext.fillStyle='#fff';objContext.fillRect(0,0,elCanvas.width,elCanvas.height);
+    objContext.fillStyle='#000';
+    for(let intIndex=0;intIndex<strModules.length;intIndex++)if(strModules[intIndex]==='1')
+      objContext.fillRect((intIndex%intSize+4)*4,(Math.floor(intIndex/intSize)+4)*4,4,4);
+    elCanvas.hidden=false;
+  }catch{elCanvas.width=0;elCanvas.height=0;elCanvas.hidden=true;}
+  intSetupTimer=setTimeout(()=>{clearAuthenticator();announce('Private setup details hidden after ten minutes. Confirmation may have expired.');},600000);
+  return !elCanvas.hidden;
+}
 function announce(strMessage, bFocus = true) {
   elStatus.hidden = false; elStatus.textContent = strMessage;
   if (bFocus) elStatus.focus();
@@ -35,6 +62,7 @@ async function request(strPath, objBody) {
   return objResponse.status === 204 ? {} : objResponse.json();
 }
 function clearSecrets() {
+  clearAuthenticator();
   for (const elInput of document.querySelectorAll('input[type=password], input[autocomplete=one-time-code], textarea')) elInput.value = '';
   for (const strId of ['recovery-codes', 'invitation-result', 'recovery-enrollment']) {
     const elPanel = document.getElementById(strId); if (elPanel) elPanel.hidden = true;
@@ -78,9 +106,11 @@ for (const elForm of document.querySelectorAll('form[data-endpoint]')) {
         announce('Previous recovery codes are invalid. Save this replacement set privately.'); showCodes(objResult.arrRecoveryCodes);
       } else if (strResult === 'recovery') {
         elForm.hidden = true;
+        const bHasQr=showAuthenticator(objResult.objQrCode);
         document.querySelector('#setup-key').value = new URL(objResult.strProvisioningUri).searchParams.get('secret');
         document.querySelector('#recovery-enrollment').hidden = false;
-        announce('Old access is revoked. Add the setup key to your authenticator, then confirm a new code.');
+        announce(bHasQr?'Scan the QR code with your authenticator app or enter the private setup key, then confirm a new code. Previous access is revoked during replacement.'
+          :'QR display is unavailable. Enter the private setup key in your authenticator app, then confirm a new code.');
         document.querySelector('#setup-key').focus();
       } else if (strResult === 'recovered') {
         clearSecrets(); elForm.hidden = true;
@@ -97,6 +127,7 @@ for (const elForm of document.querySelectorAll('form[data-endpoint]')) {
   });
 }
 for (const elButton of document.querySelectorAll('[data-clear]')) elButton.addEventListener('click', () => {
+  if(elButton.dataset.clear==='authenticator-visuals')clearAuthenticator();
   const elPanel = document.getElementById(elButton.dataset.clear);
   for (const elField of elPanel.querySelectorAll('textarea')) elField.value = '';
   elPanel.hidden = true; announce('Private information hidden.');

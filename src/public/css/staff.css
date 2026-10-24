@@ -77,3 +77,6 @@
   /* Firefox can retain suspended theme transitions in collapsed details. */
   transition: none;
 }
+/* A white quiet zone keeps the private QR scannable in either theme. */
+.authenticator-qr { display: block; max-width: 100%; height: auto; margin-block: 1rem; background: #fff; image-rendering: pixelated; }
+.authenticator-qr[hidden] { display: none; }

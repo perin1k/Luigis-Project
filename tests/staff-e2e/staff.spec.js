@@ -73,14 +73,36 @@ test('admin MFA, invitation enrollment, revoke and employee deactivation', async
     await expect(objPage.getByText('revoked.employee · revoked', { exact: true })).toBeVisible();
   } finally { await objRecipientContext.close(); }
 });
-test('admin recovery requires new MFA and exposes replacement codes once', async ({ page: objPage, request: objRequest }) => {
+test('admin recovery requires new MFA and exposes replacement codes once', async ({ page: objPage, request: objRequest },objTestInfo) => {
   await objPage.goto('/staff/recovery'); await audit(objPage);
   await objPage.getByLabel('Username', { exact: true }).fill('admin');
   await objPage.getByLabel('Password', { exact: true }).fill(PASSWORD);
   await objPage.getByLabel('Unused recovery code').fill(await (await objRequest.get('/__test/recovery-code')).text());
   await objPage.getByRole('button', { name: 'Begin authenticator replacement' }).click();
   const elKey = objPage.getByLabel('Private setup key'); await expect(elKey).toBeVisible();
+  const elQr=objPage.getByRole('img',{name:'Private authenticator setup QR code'});
+  await expect(elQr).toBeVisible();
+  expect(await elQr.evaluate(elCanvas=>{
+    const objContext=elCanvas.getContext('2d');
+    return {bWhiteQuietZone:[...objContext.getImageData(0,0,1,1).data].join(',')==='255,255,255,255',
+      bBlackFinder:[...objContext.getImageData(16,16,1,1).data].join(',')==='0,0,0,255'};
+  })).toEqual({bWhiteQuietZone:true,bBlackFinder:true});
+  await audit(objPage);
+  const objViewport=objPage.viewportSize();
+  await objPage.setViewportSize({width:320,height:900});
+  for(const strTheme of ['Dark','Light']){
+    await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText(strTheme,{exact:true}).click();
+    await audit(objPage);
+    expect(await objPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    const objBox=await elQr.boundingBox();expect(objBox.x>=0&&objBox.x+objBox.width<=320).toBe(true);
+    if(objTestInfo.project.name==='chromium-desktop'&&strTheme==='Dark')
+      await objPage.screenshot({path:objTestInfo.outputPath('synthetic-authenticator-qr.png'),fullPage:true});
+  }
+  await objPage.setViewportSize(objViewport);
   const strSecret = await elKey.inputValue();
+  await objPage.getByRole('button',{name:'Hide setup key and QR code'}).click();
+  await expect(elQr).toBeHidden();await expect(elKey).toHaveValue('');
+  expect(await objPage.locator('#authenticator-qr').evaluate(elCanvas=>elCanvas.width===0&&elCanvas.height===0)).toBe(true);
   await objPage.getByLabel('New authenticator code').fill(await code(objRequest, strSecret));
   await objPage.getByRole('button', { name: 'Confirm replacement' }).click();
   const elCodes = objPage.getByLabel('Private recovery codes'); await expect(elCodes).toBeVisible();
@@ -92,6 +114,40 @@ test('admin recovery requires new MFA and exposes replacement codes once', async
   await objPage.getByLabel('Authenticator code', { exact: true }).fill(await code(objRequest, strSecret));
   await objPage.getByRole('button', { name: 'Verify and sign in' }).click(); await expect(objPage).toHaveURL(/account$/);
 });
+test('authenticator QR expiry clears private pixels and key without browser storage',async({page:objPage,request:objRequest})=>{
+  await objPage.clock.install();
+  await objPage.goto('/staff/recovery');
+  await objPage.getByLabel('Username',{exact:true}).fill('admin');
+  await objPage.getByLabel('Password',{exact:true}).fill(PASSWORD);
+  await objPage.getByLabel('Unused recovery code').fill(await(await objRequest.get('/__test/recovery-code')).text());
+  await objPage.getByRole('button',{name:'Begin authenticator replacement'}).click();
+  await expect(objPage.locator('#authenticator-qr')).toBeVisible();
+  await objPage.clock.fastForward(600001);
+  await expect(objPage.locator('#authenticator-qr')).toBeHidden();
+  await expect(objPage.locator('#setup-key')).toHaveValue('');
+  expect(await objPage.locator('#authenticator-qr').evaluate(elCanvas=>elCanvas.width===0&&elCanvas.height===0)).toBe(true);
+  expect(await objPage.evaluate(()=>localStorage.length===0&&sessionStorage.length===0)).toBe(true);
+});
+
+test('authenticator QR failure preserves manual setup and page exit clears secrets',async({page:objPage,request:objRequest})=>{
+  await objPage.route('**/auth/recovery/start',async objRoute=>{
+    const objResponse=await objRoute.fetch();const objBody=await objResponse.json();
+    objBody.objQrCode={intSize:21,strModules:'invalid'};
+    await objRoute.fulfill({response:objResponse,json:objBody});
+  });
+  await objPage.goto('/staff/recovery');
+  await objPage.getByLabel('Username',{exact:true}).fill('admin');
+  await objPage.getByLabel('Password',{exact:true}).fill(PASSWORD);
+  await objPage.getByLabel('Unused recovery code').fill(await(await objRequest.get('/__test/recovery-code')).text());
+  await objPage.getByRole('button',{name:'Begin authenticator replacement'}).click();
+  await expect(objPage.locator('#staff-status')).toContainText('QR display is unavailable');
+  await expect(objPage.locator('#authenticator-qr')).toBeHidden();
+  await expect(objPage.getByLabel('Private setup key')).toBeVisible();
+  await objPage.evaluate(()=>window.dispatchEvent(new Event('pagehide')));
+  await expect(objPage.locator('#setup-key')).toHaveValue('');
+  await expect(objPage.locator('#recovery-enrollment')).toBeHidden();
+});
+
 test('validation, network failure, expired session, keyboard and responsive themes', async ({ page: objPage, request: objRequest }) => {
   await objPage.goto('/staff/sign-in');
   await objPage.getByLabel('Username', { exact: true }).fill('employee');

@@ -2,6 +2,7 @@ import express from 'express';
 import { randomBytes } from 'node:crypto';
 import { AUTH_COOKIES, COOKIE_OPTIONS, createCsrfProtection, readAuthCookies } from './auth-transport.js';
 import { validPage } from './staff-account-service.js';
+import { createAuthenticatorQr } from './authenticator-qr.js';
 
 /** JSON authentication boundary; runtime mounting requires direct TLS and a pinned origin. */
 export function createAuthRouter({ objLoginService, objSessionService, objStaffAccountService, objStaffEnrollmentService, objRecoveryService, strOrigin }) {
@@ -140,7 +141,8 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     clearCookie(objResponse, AUTH_COOKIES.strSession); clearCookie(objResponse, AUTH_COOKIES.strChallenge);
     objResponse.cookie(AUTH_COOKIES.strRecovery, objResult.strRecoveryToken, { ...COOKIE_OPTIONS, maxAge: 600000 });
     freshCsrf(objResponse);
-    return objResponse.json({ strState: 'reenrollment_required', strProvisioningUri: objResult.strProvisioningUri });
+    return objResponse.json({ strState: 'reenrollment_required', strProvisioningUri: objResult.strProvisioningUri,
+      objQrCode:createAuthenticatorQr(objResult.strProvisioningUri) });
   });
   objRouter.post('/promotion/start', async (objRequest,objResponse)=>{
     if(!validBody(objRequest.body,['strUsername','strPassword']))return reject(objResponse,400);
@@ -148,7 +150,8 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     if(!objResult)return reject(objResponse,403);
     clearCookie(objResponse,AUTH_COOKIES.strSession);clearCookie(objResponse,AUTH_COOKIES.strChallenge);
     objResponse.cookie(AUTH_COOKIES.strRecovery,objResult.strRecoveryToken,{...COOKIE_OPTIONS,maxAge:600000});freshCsrf(objResponse);
-    return objResponse.json({strState:'enrollment_required',strProvisioningUri:objResult.strProvisioningUri});
+    return objResponse.json({strState:'enrollment_required',strProvisioningUri:objResult.strProvisioningUri,
+      objQrCode:createAuthenticatorQr(objResult.strProvisioningUri)});
   });
   objRouter.post('/recovery/confirm', (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strCode'])) return reject(objResponse, 400);

@@ -862,3 +862,25 @@ Perin explicitly approved an SEO-gate exception on October 21, 2026 for these fo
 private staff pages, retaining their noindex protection. This does not waive
 performance, accessibility, browser or manual review requirements. See
 `docs/verification/be-08-staff-ui.md` for measured outcomes and unresolved gates.
+## Authenticator QR addition — October 24, 2026
+
+The approved pinned `qrcode` 1.5.4 dependency generates the full provisioning URI's
+QR module pattern on the server. `src/auth/authenticator-qr.js` validates the
+internal time-based URI and returns bounded binary modules. Existing authorized
+`/auth/recovery/start` and `/auth/promotion/start` responses include `objQrCode`;
+they retain no-store headers, TLS/origin/CSRF protections and the same password,
+recovery-code or promotion requirements. No public QR endpoint, new database
+column, storage mechanism, external service or relaxed CSP is introduced.
+
+`staff.ejs` retains the labeled manual key and adds a named canvas with instructions
+and Hide setup key and QR code. `staff.js` draws black modules on a white background
+with a four-module quiet zone in both themes. The QR carries the same secret as
+the manual key and must be treated as sensitive. Rendering failure leaves manual
+entry available. Hiding, successful confirmation, page exit and ten-minute display
+expiry clear the key and reset the canvas dimensions, removing its pixels.
+The existing initial Owner terminal bootstrap is unchanged.
+
+Focused tests cover exact provisioning-pattern mapping, invalid input, protected
+HTTP recovery, first MFA enrollment, QR rendering, hide/success/expiry/page-exit
+clearing, manual fallback, accessible naming and narrow reflow in both themes.
+No actual operator secret is used in screenshots, tests or stored evidence.

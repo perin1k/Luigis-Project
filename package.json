@@ -26,7 +26,8 @@
     "bootstrap": "5.3.8",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
-    "otpauth": "9.5.2"
+    "otpauth": "9.5.2",
+    "qrcode": "1.5.4"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",

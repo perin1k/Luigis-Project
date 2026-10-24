@@ -704,6 +704,10 @@ services, `src/app.js` mounts private staff views only when supplied that runtim
 and `src/server.js` enables it only with complete direct-HTTPS configuration.
 `src/views/pages/staff.ejs` and `src/views/partials/staff/field.ejs` render staff
 forms; `src/public/js/staff.js` handles browser requests/focus/private displays;
+`src/auth/authenticator-qr.js` generates local QR module patterns using pinned
+QRCode; the browser draws them on a private canvas for first MFA setup/replacement.
+No external QR service or secret-bearing image URL is used. Manual key entry remains
+available; hiding, completing, leaving or ten-minute expiry clears QR pixels/key.
 `src/public/css/staff.css` supplies responsive brand styling. Browser code never
 establishes permissions. See [authentication design](docs/authentication-design.md#mounted-staff-experience-be-08--fe-08)
 for settings, private operator setup, limitations and the isolated three-browser

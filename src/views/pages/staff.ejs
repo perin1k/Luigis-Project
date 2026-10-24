@@ -52,7 +52,12 @@
             <button class="btn btn-primary mt-2" type="submit" disabled>Begin first authenticator setup</button>
           </form>
         </details>
-        <div id="recovery-enrollment" hidden><p>Add a time-based account to your authenticator app using this private setup key (SHA-1, six digits, 30 seconds). Keep it off shared screens.</p><label for="setup-key">Private setup key</label><textarea id="setup-key" class="form-control" readonly rows="3" spellcheck="false"></textarea>
+        <div id="recovery-enrollment" hidden>
+          <div id="authenticator-visuals"><p id="authenticator-instructions">In your authenticator app, choose Add account and scan this QR code. Alternatively, enter the private setup key as a time-based account (SHA-1, six digits, 30 seconds). Both contain the same secret: keep them off shared screens and out of chat.</p>
+            <canvas id="authenticator-qr" class="authenticator-qr" role="img" aria-label="Private authenticator setup QR code" aria-describedby="authenticator-instructions" hidden></canvas>
+            <label for="setup-key">Private setup key</label><textarea id="setup-key" class="form-control" readonly rows="3" spellcheck="false"></textarea>
+            <button class="btn btn-outline-primary mt-3" type="button" data-clear="authenticator-visuals">Hide setup key and QR code</button>
+          </div>
           <form method="post" action="/auth/unavailable" data-endpoint="/recovery/confirm" data-result="recovered">
             <%- include('../partials/staff/field', {strId:'strCode',strLabel:'New authenticator code',strType:'text',strAutocomplete:'one-time-code',intMax:6,strHint:'Confirm within 10 minutes. You have up to five attempts.'}) %>
             <button class="btn btn-primary" type="submit" disabled>Confirm replacement</button>

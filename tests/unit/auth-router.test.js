@@ -396,6 +396,8 @@ test('HTTPS recovery replaces admin MFA without issuing a session and returns re
     const strOldSessionCookie = `${AUTH_COOKIES.strSession}=${obj.mapCookies.get(AUTH_COOKIES.strSession)}`;
     const objStart = await obj.post('/recovery/start', { strUsername:'admin',strPassword:PASSWORD,strRecoveryCode:objCodes.objBody.arrRecoveryCodes[0] });
     assert.equal(objStart.intStatus,200); assert.equal(objStart.objBody.strState,'reenrollment_required');
+    assert.equal(objStart.objHeaders['cache-control'],'no-store');
+    assert.equal(objStart.objBody.objQrCode.strModules.length,objStart.objBody.objQrCode.intSize**2);
     assert.equal(Object.hasOwn(objStart.objBody,'strRecoveryToken'),false);
     const strRecoveryCookie=objStart.objHeaders['set-cookie'].find((strValue)=>strValue.startsWith(`${AUTH_COOKIES.strRecovery}=`));
     for(const strFlag of ['Secure','HttpOnly','SameSite=Strict','Path=/']) assert.ok(strRecoveryCookie.includes(strFlag));
