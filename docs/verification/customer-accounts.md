@@ -45,6 +45,11 @@ orders and their existing cancellation/refund/privacy rules intact.
 
 ## Remaining gates
 
+The first native run `40143966895` failed at browser launch because the workflow
+installed browsers in the default cache while configuration expected the repository
+cache. It is not a browser pass. The workflow now declares the same browser path
+for installation and execution; a corrected run is required.
+
 The focused Windows/macOS/Linux workflow verifies the final commit and supported
 WebKit on macOS/Linux. No Windows WebKit/Safari support claim is made.
 Visual reference review, grouped human keyboard/screen-reader/zoom checks,
