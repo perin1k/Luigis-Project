@@ -1,6 +1,6 @@
 # OPS-02 / OPS-03 actual-host checkpoint — October 24, 2026
 
-Status: In Progress. Brody's approved hosting/custody work; this does not replace
+Status: OPS-02 accepted October 24, 2026. Brody's approved hosting/custody work; this does not replace
 the team's hosted QA acceptance or claim another developer's work.
 
 ## Executed and verified
@@ -56,14 +56,46 @@ credential fix. Actual Ubuntu DNS service and TLS installer passed as above.
 No unrelated browser/manual/Lighthouse suites were repeated for these operator
 changes. No source migration or customer-facing behavior changed.
 
-## Still required before acceptance
+## Actual-host completion
 
-- Human-only initial Owner password/authenticator/recovery enrollment and actual
-  HTTPS sign-in; confirm sponsor custody without recording credentials.
-- Actual application startup/health/public entry/access/robots verification and
-  graceful restart with retained data; inspect hosted service/key isolation.
-- Preserve the linked hosted QA requirements; a valid certificate and provisioned
-  VM do not establish customer/employee/admin acceptance or Lighthouse scores.
+The subsequent QR release `7b627ef7116e9a3aaa2e46a2d11eb706c2256ae8` is active.
+The application is running. Brody confirmed private replacement authenticator
+enrollment, saving new recovery codes and successful hosted Owner sign-in.
+[OPS-03 custody](ops-03-custody.md) records the accepted identity/key/log/copy
+inspection and [QR evidence](ops-03-authenticator-qr.md) records required native
+Windows/macOS/Ubuntu passes and the visible optional Windows WebKit diagnostic.
 
-The app remains stopped until the private initial Owner enrollment succeeds.
-No card is marked Done from this intermediate checkpoint.
+An additional actual-host graceful restart passed: the old process exited
+normally with status 0 and systemd Result=success, a different new process started,
+and trusted HTTPS readiness returned 200 after normal startup retries. Read-only
+before/after comparison confirmed unchanged database inode and logical contents
+of staff users/credentials/ownership, MFA factors, recovery codes and migration
+history. SQLite integrity and foreign-key checks passed. No records, keys or
+database files were replaced, seeded or migrated during this check. Private
+digests were kept root-only under `/run`; no account values were printed.
+
+Actual hostname public checks passed for `/`, `/order`, sign-in, recovery and
+live/ready health endpoints. Menu/hours are the existing `/#menu` and `/#visit`
+anchors; `/menu` is not an application route. Account/orders/menu pages redirect
+anonymous users to sign-in; Owner analytics returns its designed 403 denial.
+Staff/session/menu/analytics APIs return 401/403 without proof. Private and health
+responses retain no-store/noindex policy. Public customer pages remain accessible
+under the approved exposure model; indexing restrictions are not authorization.
+The source, `.env`, setup script, node_modules, database and disposable fixture
+paths checked all return 404. No blanket claim about every possible URL is made.
+
+## Original acceptance criteria
+
+| Criterion | Evidence |
+| --- | --- |
+| Provision only approved resources | Recorded approved VM/disks/network/host identity and stop deadline; no fallback, existing-resource deletion or attached service account |
+| HTTPS/origin/network/storage/environment separation | Trusted live certificate, tested renewal hook/DNS updater, pinned direct HTTPS origin, IAP-only SSH and isolated fresh hosted keys/data |
+| Retained restricted data across restart/redeploy | Compatible QR release switch plus the actual graceful restart/inode/table-integrity comparison above; private mount/file protections inspected |
+| Access/indexing/preview exposure | Public customer entry, private no-store/noindex boundaries and actual authentication denials; private source/data/fixture paths inaccessible |
+| Health/restart/entry point/ownership | Actual HTTPS live/ready/public endpoints, clean SIGTERM/systemd exit/restart, human Owner sign-in; Brody controls the verified GCP/DuckDNS operator accounts |
+| Verify actual hosted target | All completion checks above used the approved GCP VM and real hostname, with valid trusted TLS |
+
+OPS-02 may move Done. Hosted customer/employee/admin journey, accessibility,
+Lighthouse, load/interruption, monitoring/cost and final publication/handoff gates
+retain their original QA/OPS/DOC cards. No broad end-product acceptance, durable
+backup guarantee or credit coverage is inferred from this card's completion.

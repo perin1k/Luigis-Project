@@ -214,7 +214,9 @@ path and new demo identities. Do not overwrite the hosted database to demonstrat
 recovery. Persistent disks are not backups; optional snapshots need separate
 retention/key approval. At the approved end time, stop service/VM, verify the site
 is unavailable, retain disks/keys and review continuing storage charges. Deletion
-requires its own authorization; no shutdown automation has been scheduled here.
+requires its own authorization. The approved VM stop deadline is configured for
+November 2, 2026 at 05:00 UTC (November 1 at 11 PM America/Chicago); retained disks
+continue to exist and incur storage charges after the stop.
 
 ## Prepared versus executed
 
@@ -225,6 +227,11 @@ budget alerts and VM stop deadline, installed the pinned runtime and initialized
 fresh hosted data/keys. No service account is attached. IAP operator access works.
 The DuckDNS token was transferred with VM-specific encryption and stored root-only.
 DNS activation and free certificate issuance/installation/renewal rehearsal passed.
-Private Owner enrollment and serving the public HTTPS app remain to be verified.
+Private Owner enrollment/replacement, saved recovery-code custody and actual Owner
+sign-in were confirmed by Brody. The app is serving trusted public HTTPS. Actual
+graceful restart, retained database/staff/schema integrity, public entry and private
+route/source/data denial checks passed; see [OPS-02 evidence](verification/ops-02-hosted.md).
 Do not interpret resource creation or native CI passes as hosted acceptance.
-OPS-02 and OPS-03 remain In Progress pending their actual-host criteria.
+OPS-02 and OPS-03 are accepted within their original scopes. The broader hosted
+QA, monitoring/cost, publication and receiving-person handoff gates remain on their
+original cards; this is not final project acceptance.
