@@ -126,6 +126,31 @@ Rollback resets server-prepared text, not an already cached browser response.
 
 ## Validation and source references
 
+### Private Windows DNS handoff
+
+`scripts/encrypt-duckdns-transfer.js` reads the token on local standard input
+and writes only RSA-OAEP/SHA-256 ciphertext for a one-time VM public key.
+`deploy/prepare-dns-transfer.sh` creates that root-private key on the target VM;
+only its public key is downloaded through authenticated IAP. Upload the ciphertext
+as `/tmp/luigis-duckdns-transfer.bin`. Install the reviewed standalone receiver
+`scripts/decrypt-duckdns-transfer.js` root-owned outside the immutable app release
+as `/usr/local/lib/luigis-operators/decrypt-duckdns-transfer.mjs`, then invoke it
+with the pinned runtime as root. It accepts only the named host's unexpired
+payload, creates the root-only credential without overwrite and removes its
+one-time private transfer key. Never pass the plaintext token in shell arguments.
+This accommodates Windows SDK transports that do not preserve piped stdin.
+
+The DNS updater accepts Ubuntu systemd's `0440` credential only at the exact
+per-service credential directory, with root ownership and a verified read-only,
+nosuid/nodev/noexec mount. Ordinary writable/group-exposed files remain rejected.
+The persistent credential remains root-owned `0600`; DynamicUser and
+LoadCredential keep the application identity separate from DNS credentials.
+
+Focused checks: `node --test tests/unit/dns-transfer.test.js tests/unit/duckdns.test.js`.
+The encryption check uses invented input and verifies expiry, no plaintext output,
+invalid-input rejection and overwrite refusal. These operator files do not serve
+browser content or alter the database schema.
+
 Run focused tests with `node --test tests/unit/release.test.js tests/unit/deployment-runtime.test.js`.
 The approved workflow additionally exercises the real Ubuntu service using only
 disposable secrets/data and a local certificate trusted by its probe. It stages

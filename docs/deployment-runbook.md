@@ -218,8 +218,12 @@ requires its own authorization; no shutdown automation has been scheduled here.
 
 ## Prepared versus executed
 
-This document was checked against runtime, migration/seed, bootstrap and key-loader
-code plus the linked current primary documentation. No cloud account was accessed,
-resources provisioned, package installed, DNS changed, certificate issued, service
-started on a host or job scheduled. No billable estimate or Linux deployment test
-was invented. OPS cards remain open for configuration and live verification.
+Initial preparation was checked against runtime, migration/seed, bootstrap and
+key-loader code plus the linked primary documentation. Authorized execution on
+October 24, 2026 has since provisioned the approved Spot VM/network/retained disks,
+budget alerts and VM stop deadline, installed the pinned runtime and initialized
+fresh hosted data/keys. No service account is attached. IAP operator access works.
+The DuckDNS token was transferred with VM-specific encryption and stored root-only;
+DNS activation, public HTTPS and private Owner enrollment are still being verified.
+Do not interpret resource creation or native CI passes as hosted acceptance.
+OPS-02 and OPS-03 remain In Progress pending their actual-host criteria.
