@@ -75,7 +75,9 @@ try{
   writeFileSync(join(strConfig,'runtime.env'),Object.entries(objEnvironment).map(([strKey,strValue])=>`${strKey}=${strValue}`).join('\n')+'\n',{mode:0o600});
   protect(join(strRoot,'releases'));symlinkSync(strA,join(strRoot,'current'));cpSync(join(strA,'deploy/luigis.service'),strUnit);
   strStage='unit validation and first HTTPS startup';
-  run('systemd-analyze',['verify',strUnit]);run('systemctl',['daemon-reload']);await start();
+  try{run('systemd-analyze',['verify',strUnit]);}
+  catch(objError){console.error(String(objError.stderr??'').split('\n').filter(strLine=>strLine.includes('luigis.service')).join('\n'));throw objError;}
+  strStage='first HTTPS startup';run('systemctl',['daemon-reload']);await start();
   assert.equal((await get('/staff/sign-in')).intStatus,200);assert.equal((await get('/__test/reset')).intStatus,404);
   const intPid=Number(run('systemctl',['show','luigis.service','--property=MainPID','--value']).trim());
   const strStatus=readFileSync(`/proc/${intPid}/status`,'utf8');assert.match(strStatus,new RegExp(`Uid:\\s+${intUid}\\s`));
@@ -107,6 +109,10 @@ try{
 }catch{
   // Do not print environment, keys, request bodies, raw stderr or database values.
   console.error(`OPS disposable rehearsal failed at ${strStage}; no private configuration values printed.`);process.exitCode=1;
+  const objState=spawnSync('systemctl',['show','luigis.service','--property=Result,ExecMainCode,ExecMainStatus,ExecStartPre'],{encoding:'utf8'});
+  console.error(objState.stdout);
+  const objJournal=spawnSync('journalctl',['-u','luigis.service','--no-pager','--output=cat','-n','30'],{encoding:'utf8'});
+  for(const strLine of objJournal.stdout.split('\n'))if(/^(Release check failed:|Hosted runtime preflight failed;|Unable to start:|Unable to start the configured server\.)/.test(strLine))console.error(strLine);
 }finally{
   spawnSync('systemctl',['stop','luigis.service']);
   if(bMounted)spawnSync('umount',[strData]);
