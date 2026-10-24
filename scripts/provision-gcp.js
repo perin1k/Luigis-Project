@@ -18,7 +18,7 @@ export function buildProvisionPlan(objConfig){
     const strName=strVm+'-'+strSuffix;
     arrPlan.push({strKind:'firewall',strName,arrDescribe:['compute','firewall-rules','describe',strName],
       strPort,strSource,arrArgs:['compute','firewall-rules','create',strName,'--network='+strNetwork,
-        '--direction=INGRESS','--priority=1000','--action=ALLOW','--allow=tcp:'+strPort,
+        '--direction=INGRESS','--priority=1000','--allow=tcp:'+strPort,
         '--source-ranges='+strSource,'--target-tags='+strVm]});
   }
   arrPlan.push({strKind:'vm',strName:strVm,arrDescribe:['compute','instances','describe',strVm,'--zone='+strZone],
