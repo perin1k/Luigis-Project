@@ -15,7 +15,7 @@ a { touch-action: manipulation; }
 .site-nav a:hover { text-decoration: underline; }
 .theme-control { min-width: 0; padding: 0; border: 0; margin: 0; }
 .theme-label { float: none; width: auto; margin: 0 0 .2rem; padding: 0; font-size: .7rem; font-weight: 700; letter-spacing: .04em; }
-.theme-control .btn { min-height: 40px; min-width: 44px; padding: .35rem .45rem; font-size: .7rem; }
+.theme-control .btn { min-height: 40px; min-width: 44px; padding: .35rem .45rem; font-size: .7rem; transition: none; }
 .theme-control .btn-check:focus-visible + .btn { outline: 3px solid var(--color-focus); outline-offset: 3px; }
 .form-control { min-height: 48px; background-color: var(--color-surface); color: var(--color-ink); border-color: var(--color-control-border); }
 .form-control:focus { background-color: var(--color-surface); color: var(--color-ink); border-color: var(--color-focus); box-shadow: none; outline: 3px solid var(--color-focus); outline-offset: 3px; }

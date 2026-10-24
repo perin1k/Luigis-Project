@@ -50,6 +50,15 @@ installed browsers in the default cache while configuration expected the reposit
 cache. It is not a browser pass. The workflow now declares the same browser path
 for installation and execution; a corrected run is required.
 
+Corrected run `40144216041`: macOS/Linux Chromium/Firefox journeys passed (16
+each), and WebKit functional journeys passed, but its axe checks caught theme
+control contrast during color interpolation. The shared appearance buttons now
+switch colors without that transition; strict axe checks are retained. A new
+native run must verify the fix. Required Windows shared staff visual comparisons
+in `40143966836` also differ after the intentional new header links; these are
+unaccepted visual changes to review at the planned cleanup checkpoint, not green
+results or permission for automatic baseline replacement.
+
 The focused Windows/macOS/Linux workflow verifies the final commit and supported
 WebKit on macOS/Linux. No Windows WebKit/Safari support claim is made.
 Visual reference review, grouped human keyboard/screen-reader/zoom checks,
