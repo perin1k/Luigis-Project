@@ -1,17 +1,18 @@
-# GCP/DuckDNS deployment runbook — preparation only
+# GCP/DuckDNS deployment runbook
 
 OPS-01 now supplies [reviewable release/service tooling](../deploy/README.md).
 Follow its manifest/preflight, exact schema compatibility and stopped atomic
-release-switch procedure. The unit remains uninstalled on GCP; repository/CI
-verification does not lift the cloud execution hold below. Current native
+release-switch procedure. The approved GCP preview is installed and publicly
+accessible; see [publication evidence](verification/ops-06-publication.md).
+Current native
 application acceptance is recorded in [the pre-OPS checkpoint](verification/preops-checkpoint.md),
 superseding historical missing-browser notes only within its documented scope.
 
-Prepared October 22, 2026 for OPS-01/02/03/04/05/06/07. The human explicitly
-requested instructions only: **do not provision, publish, spend, change accounts,
-install host software, schedule jobs or delete data under this document alone**.
-This is a reviewed sequence to execute after separate authorization, not evidence
-that a hosted environment exists. The team's [approved hosting record](hosting-design.md)
+Originally prepared October 22, 2026 for OPS-01/02/03/04/05/06/07; subsequently
+executed within explicit October 24 approvals. **Do not provision, publish, spend,
+change accounts, install host software, schedule jobs or delete data under this
+document alone.** The execution records distinguish completed operations from
+future actions requiring approval. The team's [approved hosting record](hosting-design.md)
 is authoritative; do not replace its choices with another architecture.
 
 ## Approved target and launch prerequisites
@@ -39,7 +40,9 @@ feature must be checked for eligible services and approved separately. See
 
 Choose the exact reviewed Git commit and record its full identifier, package-lock
 hash, Node/npm versions and verification results. The currently tested local
-Node version for deployment is 24.14.1. Follow
+Node version for deployment is 24.22.1 with bundled npm 11.19.1. Use the current
+[maintenance procedure](maintenance-continuity.md), including the canonical
+source builder and immutable migration-byte compatibility checks. Follow
 [cross-platform checks](cross-platform.md); validate the selected runtime on the
 actual Ubuntu target before release acceptance. Do not silently update packages.
 
