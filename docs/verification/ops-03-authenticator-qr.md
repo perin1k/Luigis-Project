@@ -27,10 +27,8 @@ secret-bearing image URL, CSP relaxation or secret browser storage is introduced
 
 Implementation/file guide: [authentication design](../authentication-design.md).
 New QR tests join the existing native staff CI through `scripts/verify-staff.js`
-and existing Playwright suites. Native CI/hosted checks and human phone scanning,
-private credential replacement and final Owner sign-in must be recorded separately.
-The previously exposed factor/recovery set remains unaccepted until replaced
-privately; no exposed value is reproduced here. OPS-03 is not Done from this change.
+and existing Playwright suites. Native CI results and human acceptance are recorded
+separately below. OPS-03 is not Done from this change alone.
 
 Hosted update: release `7b627ef7116e9a3aaa2e46a2d11eb706c2256ae8` was staged with
 the source archive checksum, locked production install, root-controlled manifest
@@ -44,6 +42,15 @@ returned 200. Missing-proof recovery returned 403 without QR data. CSP remained
 unchanged. The retained data mount remained rw/nosuid/nodev/noexec.
 
 Automatic native staff [run 40079701553](https://github.com/perin1k/Luigis-Project/actions/runs/40079701553)
-is still pending acceptance; storage run 40079701584 passed. Native jobs must be
-reviewed separately rather than inferred from the local Windows engine passes.
-Private phone scanning, factor replacement and Owner sign-in are still required.
+is still pending acceptance; storage run 40079701584 passed. At this check, required
+Windows/macOS/Ubuntu jobs are in progress; the optional Windows WebKit diagnostic
+failed. This does not waive required platform-appropriate coverage. Native results
+must be reviewed separately rather than inferred from local engine passes.
+
+Human acceptance: on October 24, Brody explicitly confirmed all four private steps
+completed: scanned the replacement QR, confirmed its authenticator code, saved the
+new recovery codes privately and successfully signed in to the hosted Owner page
+using the replacement authenticator. This is human-reported hosted acceptance;
+no credential, QR image or recovery value was requested or recorded. The previously
+exposed factor/recovery set was replaced through the reviewed recovery flow.
+This closes the private QR/setup check, not the remaining OPS-03 custody criteria.

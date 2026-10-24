@@ -95,3 +95,14 @@ configuration, real file/ACL and log/copy custody inspection, private Owner MFA/
 recovery-code enrollment and actual HTTPS sign-in, and authorized human custody
 handoff. Do not mark OPS-03 Done from this repository/CI checkpoint. Instructions
 and synthetic tests do not substitute for those private operator actions.
+
+### Actual-host follow-up — October 24, 2026
+
+The earlier unperformed-host statements above describe the initial checkpoint.
+Approved resources, hosted identity/file isolation, DNS and TLS installation/
+renewal are now recorded in [OPS-02 hosted evidence](ops-02-hosted.md). Brody has
+explicitly confirmed successful replacement QR enrollment, private storage of new
+recovery codes and actual hosted Owner sign-in; see
+[QR acceptance](ops-03-authenticator-qr.md). The private Owner setup/sign-in gate
+is satisfied. Remaining full custody/log/copy/operator review and native QR CI
+acceptance must still be completed before marking OPS-03 Done.
