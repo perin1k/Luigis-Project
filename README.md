@@ -768,6 +768,8 @@ Focused security/privacy verification: `node scripts/verify-security.js` and
 `node node_modules/@playwright/test/cli.js test -c playwright.security.config.js`.
 
 Deployment preparation (OPS-01–07): [GCP/DuckDNS runbook](docs/deployment-runbook.md).
+OPS-07 [patched runtime, clean-checkout deployment and continuity](docs/maintenance-continuity.md)
+defines the current Node 24.22.1/npm 11.19.1 baseline and maintenance responsibilities.
 OPS-01 [release/service tooling](deploy/README.md) and
 OPS-04 [monitoring, bounded private logs and incident runbooks](docs/operations-monitoring.md)
 describe the hosted operational controls. `deploy/monitoring.json` fixes the approved

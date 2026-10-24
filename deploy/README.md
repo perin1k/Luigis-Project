@@ -26,7 +26,7 @@ development and application behavior keep their existing supported paths.
 
 ## Release preparation and trust
 
-Use Node **24.14.1**, npm **11.11.0** and the reviewed lockfile. Place the verified
+Use Node **24.22.1**, npm **11.19.1** and the reviewed lockfile. Place the verified
 runtime at `/opt/luigis/runtime/bin/node`; the service does not depend on a user's
 shell, nvm profile or PATH. Verify the downloaded Node distribution's published
 checksum before installation. Resolve and record the exact approved Ubuntu image
@@ -125,6 +125,11 @@ can help an operator's smoke test, but does not invalidate other visitors' cache
 Rollback resets server-prepared text, not an already cached browser response.
 
 ## Validation and source references
+
+Patched runtime maintenance, clean-checkout packaging/redeployment and compatible
+rollback: [OPS-07 maintenance guide](../docs/maintenance-continuity.md).
+`deploy/maintain-host.sh` stages a reviewed runtime and new immutable releases;
+it does not replace keys/data or seed an existing hosted database.
 
 ### Private Windows DNS handoff
 

@@ -28,6 +28,6 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '24.14.1'
+          node-version: '24.22.1'
       - run: npm ci --ignore-scripts
       - run: node --test tests/unit/operations.test.js tests/unit/host-monitoring.test.js tests/unit/anonymous-limits.test.js

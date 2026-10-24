@@ -10,7 +10,10 @@ configuration, dependency or key permissions.
 
 ## Prerequisites
 
-- Use Node.js meeting `package.json`'s current `>=22.19` requirement, including
+- Use the patched, tested Node.js **24.22.1** and bundled npm **11.19.1**; the
+  repository's `.node-version`/`.nvmrc` declare that baseline. `package.json`
+  permits patched 24.x versions from 24.22.1; another version still needs actual
+  verification. Older pinned evidence below remains historical. This includes
   `node:sqlite`, with npm. Agree a tested Node/npm version for a shared verification
   run; the minimum declaration does not certify every later runtime. Install the
   exact locked dependencies with `npm ci` in each checkout. Do not copy

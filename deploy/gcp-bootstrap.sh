@@ -17,17 +17,17 @@ if [[ "$strMode" == system ]]; then
   if [[ ! -e "$strRuntime" ]]; then
     strStage="$(mktemp -d /var/tmp/luigis-install.XXXXXXXX)"
     trap 'if [[ "$strStage" == /var/tmp/luigis-install.* && -d "$strStage" ]]; then rm -rf -- "$strStage"; fi' EXIT
-    strPackage=node-v24.14.1-linux-x64.tar.xz
-    curl --fail --silent --show-error --proto '=https' --tlsv1.2 "https://nodejs.org/dist/v24.14.1/$strPackage" -o "$strStage/$strPackage"
-    curl --fail --silent --show-error --proto '=https' --tlsv1.2 https://nodejs.org/dist/v24.14.1/SHASUMS256.txt -o "$strStage/SHASUMS256.txt"
+    strPackage=node-v24.22.1-linux-x64.tar.xz
+    curl --fail --silent --show-error --proto '=https' --tlsv1.2 "https://nodejs.org/dist/v24.22.1/$strPackage" -o "$strStage/$strPackage"
+    curl --fail --silent --show-error --proto '=https' --tlsv1.2 https://nodejs.org/dist/v24.22.1/SHASUMS256.txt -o "$strStage/SHASUMS256.txt"
     (cd "$strStage"; grep "  $strPackage\$" SHASUMS256.txt | sha256sum --check --status)
     install -d -o root -g root -m 0755 "$strRuntime"
     tar --extract --xz --file "$strStage/$strPackage" --directory "$strRuntime" --strip-components=1 --no-same-owner
     chown -R root:root "$strRuntime"
     chmod -R go-w "$strRuntime"
   fi
-  [[ "$("$strRuntime/bin/node" --version)" == v24.14.1 ]] || { echo 'Runtime version differs; no overwrite.' >&2; exit 1; }
-  [[ "$("$strRuntime/bin/node" "$strRuntime/lib/node_modules/npm/bin/npm-cli.js" --version)" == 11.11.0 ]] || exit 1
+  [[ "$("$strRuntime/bin/node" --version)" == v24.22.1 ]] || { echo 'Runtime version differs; no overwrite.' >&2; exit 1; }
+  [[ "$("$strRuntime/bin/node" "$strRuntime/lib/node_modules/npm/bin/npm-cli.js" --version)" == 11.19.1 ]] || exit 1
   strDevice="$(readlink -f /dev/disk/by-id/google-luigis-data)"
   [[ -b "$strDevice" && "$(lsblk -dn -o TYPE "$strDevice")" == disk && "$(blockdev --getsize64 "$strDevice")" == 10737418240 ]] || { echo 'Expected dedicated10GB data device missing.' >&2; exit 1; }
   strType="$(blkid -s TYPE -o value "$strDevice" || true)"
