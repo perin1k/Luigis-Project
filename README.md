@@ -766,6 +766,8 @@ Focused security/privacy verification: `node scripts/verify-security.js` and
 Deployment preparation (OPS-01–07): [GCP/DuckDNS runbook](docs/deployment-runbook.md).
 OPS-01 [release/service tooling and file guide](deploy/README.md) and
 [current verification](docs/verification/ops-01-runtime.md).
+OPS-03 [private setup, permissions and credential lifecycle](docs/secret-custody.md)
+and [current verification / remaining real-host checks](docs/verification/ops-03-custody.md).
 This follows the approved Spot/direct-HTTPS design; it does not authorize or claim
 resource provisioning, publication, spending or completed hosted verification.
 

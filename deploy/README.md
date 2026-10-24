@@ -12,7 +12,9 @@ disposable CI rehearsal on a developer computer or the eventual GCP machine.
 | `luigis.service` | Ubuntu systemd supervision, required mount/existing DB, private environment, unprivileged direct HTTPS, release/runtime preflight and bounded restart/shutdown |
 | `runtime.env.example` | Non-secret configuration contract; no valid MFA key or staff credential |
 | `../scripts/release.js` | Operator-created release manifest and read-only source/runtime/schema compatibility checks; never installs, migrates, seeds or switches the running release |
-| `../scripts/validate-runtime.js` | Complete HTTPS/MFA configuration, current matching TLS key/certificate, private payment-key loading and key separation checks; no listener or account creation |
+| `../scripts/validate-runtime.js` | Complete HTTPS/MFA configuration, current matching TLS key/certificate, private payment-key loading and key separation checks; the service's `--host` mode also enforces OPS-03 layout policy |
+| `../scripts/setup-host-secrets.js` | OPS-03 private, no-overwrite initial key/environment creation and staged payment-key rotation |
+| `../scripts/validate-host-layout.js` | OPS-03 actual Linux service identity, private data/key files and protected root-owned configuration/source/dependencies |
 | `../tests/unit/release.test.js` | Source/lock change, runtime mismatch, schema compatibility, missing DB and read-only preservation regression checks |
 | `../tests/unit/deployment-runtime.test.js` | Disposable certificate/configuration rejection and redacted CLI failure checks |
 | `../tests/operations/rehearse-ubuntu.js` | Opt-in root-only disposable Actions host: real systemd/mount/direct HTTPS and release/schema rollback rehearsal; removes only its own isolated installation |
@@ -65,6 +67,10 @@ directory and release. The environment file is root-owned mode 0600; the payment
 key and service-readable TLS files are private regular files, mode 0600. The
 existing payment loader requires payment-key ownership by the service user.
 Provision/verify real custody under OPS-03, including individual Owner setup.
+Follow [the private setup and credential lifecycle guide](../docs/secret-custody.md).
+The generated environment declares `LUIGIS_ENVIRONMENT=hosted-demo`; the systemd
+unit's `validate-runtime.js --host` requires the protected hosted layout rather
+than treating portable development preflight as real host custody verification.
 
 ## Forward deployment and compatible rollback
 

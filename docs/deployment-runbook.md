@@ -83,11 +83,16 @@ other and from developer/test keys. Follow the existing
 [private bootstrap](authentication-design.md#implemented-local-first-admin-setup)
 and [payment-key format](demo-payment-design.md#key-custody-rotation-and-deletion).
 Do not generate production keys in this chat or put them in arguments, logs or Git.
+OPS-03 now supplies the reviewed [no-overwrite setup, hosted permission preflight
+and staged rotation procedure](secret-custody.md). Use it only after the host's
+separate installation authorization. The service explicitly requires `--host`
+checks; real hosted ownership and private Owner enrollment remain unverified.
 
 Non-secret runtime settings, to be placed by the authorized operator:
 
 ```text
 NODE_ENV=production
+LUIGIS_ENVIRONMENT=hosted-demo
 HOST=0.0.0.0
 PORT=443
 AUTH_ORIGIN=https://luigispizzeria.duckdns.org
