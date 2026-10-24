@@ -31,3 +31,19 @@ and existing Playwright suites. Native CI/hosted checks and human phone scanning
 private credential replacement and final Owner sign-in must be recorded separately.
 The previously exposed factor/recovery set remains unaccepted until replaced
 privately; no exposed value is reproduced here. OPS-03 is not Done from this change.
+
+Hosted update: release `7b627ef7116e9a3aaa2e46a2d11eb706c2256ae8` was staged with
+the source archive checksum, locked production install, root-controlled manifest
+and read-only retained-schema compatibility check (zero pending migrations).
+The existing database and keys were not replaced or migrated. Actual Ubuntu QR
+generation passed, then the service stopped, its release pointer switched atomically
+and the unprivileged service restarted. Trusted HTTPS readiness passed after normal
+startup retries. The previous compatible release was retained for rollback.
+Public recovery returned 200/no-store with QR markup and current renderer; readiness
+returned 200. Missing-proof recovery returned 403 without QR data. CSP remained
+unchanged. The retained data mount remained rw/nosuid/nodev/noexec.
+
+Automatic native staff [run 40079701553](https://github.com/perin1k/Luigis-Project/actions/runs/40079701553)
+is still pending acceptance; storage run 40079701584 passed. Native jobs must be
+reviewed separately rather than inferred from the local Windows engine passes.
+Private phone scanning, factor replacement and Owner sign-in are still required.
