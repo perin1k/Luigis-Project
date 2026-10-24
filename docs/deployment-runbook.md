@@ -155,8 +155,9 @@ It must require the actual data mount, restart on application failure with backo
 handle SIGTERM shutdown and run exactly one Node process. Grant only the narrowly
 reviewed bind capability required for 443; do not run Node as root or modify the
 Node binary globally. Restrict writable paths to required data/runtime locations.
-Validate the unit and permissions on Ubuntu before enabling it; this guide does
-not ship an installed/tested service unit.
+Use the reviewed unit in `deploy/luigis.service`. Its disposable Ubuntu CI
+rehearsal is recorded under OPS-01; it is not installed on GCP. Validate the actual
+host's unit, disk identity and permissions before enabling it there.
 
 Keep Node's direct-TLS/pinned-host checks and socket-peer throttling. A proxy or
 TLS-terminating load balancer would require a new reviewed trust/address design.

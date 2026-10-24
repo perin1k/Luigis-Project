@@ -125,7 +125,9 @@ The approved workflow additionally exercises the real Ubuntu service using only
 disposable secrets/data and a local certificate trusted by its probe. It stages
 two compatible releases, checks changed text after restart and rollback, introduces
 a clearly synthetic additive migration, rejects the now-incompatible old release,
-then starts a compatible forward release. Finally it unmounts the disposable data
+then starts a compatible forward release. It also kills only its own verified
+application service and confirms a new ready process after supervised restart.
+Finally it unmounts the disposable data
 mount and verifies refusal even when a boot-disk decoy DB exists. This is not GCP
 durability, public TLS, an operator recovery rehearsal or a backup restore.
 
