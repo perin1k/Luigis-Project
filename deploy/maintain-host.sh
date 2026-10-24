@@ -62,12 +62,14 @@ elif [[ "$strMode" == activate ]]; then
   strRuntimeVersion=$(/opt/luigis/runtime/bin/node --version)
   [[ "$strRuntimeVersion" == v24.14.1 || "$strRuntimeVersion" == v24.22.1 ]] || exit 1
   if [[ -d /opt/luigis/runtime && ! -L /opt/luigis/runtime ]]; then
-    [[ "$strRuntimeVersion" == v24.14.1 && ! -e /opt/luigis/runtimes/node-v24.14.1 ]] || exit 1
+    strPreservedRuntime=/opt/luigis/runtimes/node-v24.14.1
+    if [[ "$strRuntimeVersion" == v24.22.1 ]]; then strPreservedRuntime=/opt/luigis/runtimes/node-v24.22.1-bootstrap;fi
+    [[ ! -e "$strPreservedRuntime" && ! -L "$strPreservedRuntime" ]] || exit 1
   fi
   pointTo(){ ln -s "$1" /opt/luigis/current.next;mv -T /opt/luigis/current.next /opt/luigis/current; }
   recover(){ systemctl stop luigis.service || true;pointTo "$strFallbackRelease";systemctl reset-failed luigis.service;systemctl start luigis.service;echo 'Patched-runtime fallback started; verify trusted health before resuming.' >&2; }
   systemctl stop luigis.service
-  if [[ ! -L /opt/luigis/runtime ]]; then mv /opt/luigis/runtime /opt/luigis/runtimes/node-v24.14.1;fi
+  if [[ ! -L /opt/luigis/runtime ]]; then mv /opt/luigis/runtime "$strPreservedRuntime";fi
   ln -s "$strPatched" /opt/luigis/runtime.next
   mv -T /opt/luigis/runtime.next /opt/luigis/runtime
   trap recover ERR
