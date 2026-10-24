@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync,spawnSync} from 'node:child_process';
 import {cpSync,mkdirSync,writeFileSync,readFileSync,chmodSync,chownSync,symlinkSync,renameSync,
-  existsSync,unlinkSync,mkdtempSync,rmSync,lstatSync} from 'node:fs';
+  existsSync,unlinkSync,mkdtempSync,rmSync,lstatSync,realpathSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {tmpdir} from 'node:os';
 import {request} from 'node:https';
@@ -65,7 +65,8 @@ const strC=join(strRoot,'releases','c'.repeat(40));
 try{
   run('useradd',['--system','--user-group','--home-dir','/nonexistent','--shell','/usr/sbin/nologin','luigis']);bUser=true;
   const intUid=Number(run('id',['-u','luigis']).trim());const intGid=Number(run('id',['-g','luigis']).trim());
-  mkdirSync(dirname(strNode),{recursive:true});cpSync(process.execPath,strNode);chmodSync(strNode,0o755);
+  mkdirSync(dirname(strNode),{recursive:true});cpSync(realpathSync(process.execPath),strNode,{dereference:true});
+  chownSync(strNode,0,0);chmodSync(strNode,0o755);
   mkdirSync(strA,{recursive:true});
   for(const strName of ['src','scripts','deploy','package.json','package-lock.json'])cpSync(join(strWorkspace,strName),join(strA,strName),{recursive:true});
   // Independent production-only lockfile install, no dev tools or inherited modules.

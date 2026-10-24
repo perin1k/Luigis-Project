@@ -6,12 +6,14 @@ function within(strParent,strChild){const strRelative=relative(strParent,strChil
 function privateFile(strPath,intOwner){const objStat=lstatSync(strPath);
   if(!objStat.isFile()||objStat.uid!==intOwner||(objStat.mode&0o077)!==0||objStat.nlink!==1)
     throw new Error('Private single-owner regular file required.');}
-function rootPath(strPath,strRootRole='configuration'){let strNext=strPath;let intDepth=0;
+function rootPath(strPath,strRootRole='configuration'){
+  for(const strStart of new Set([strPath,realpathSync(strPath)])){let strNext=strStart;let intDepth=0;
   while(true){const objStat=lstatSync(strNext);
     if(objStat.uid!==0||(!objStat.isSymbolicLink()&&(objStat.mode&0o022)!==0)){
       const objError=new Error('Root-controlled deployment path required.');
       objError.objRootMetadata={strRootRole,intDepth,intUid:objStat.uid,intMode:objStat.mode&0o777};throw objError;}
     const strParent=dirname(strNext);if(strParent===strNext)break;strNext=strParent;intDepth++;}
+  }
 }
 
 /** Ubuntu host policy only; never pretend POSIX checks establish Windows ACLs. */
