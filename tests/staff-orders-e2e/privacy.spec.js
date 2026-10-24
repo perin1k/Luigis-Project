@@ -96,8 +96,14 @@ for(const strTheme of ['Light','Dark'])test(`privacy visual ${strTheme}: keyboar
   await objPage.getByRole('button',{name:'Show limited data copy',exact:true}).click();
   await expect(objPage.getByLabel('Limited order data copy',{exact:true})).toBeVisible();
   // Only the opaque reference value is normalized; genuine contact/item text remains visible.
-  await objPage.getByLabel('Limited order data copy',{exact:true}).evaluate(elInput=>{const objValue=JSON.parse(elInput.value);objValue.strReference='00000000-0000-4000-8000-000000000000';elInput.value=JSON.stringify(objValue,null,2);elInput.blur();});
+  await objPage.getByLabel('Limited order data copy',{exact:true}).evaluate(elInput=>{
+    const objValue=JSON.parse(elInput.value);objValue.strReference='00000000-0000-4000-8000-000000000000';
+    elInput.value=JSON.stringify(objValue,null,2);
+    // A readonly copy must be captured from its first line, not an inherited caret offset.
+    elInput.setSelectionRange(0,0);elInput.blur();elInput.scrollTop=0;elInput.scrollLeft=0;
+  });
   await settleControls(objPage);
+  expect(await objPage.getByLabel('Limited order data copy',{exact:true}).evaluate(elInput=>elInput.scrollTop)).toBe(0);
   expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
   await expect(objPage).toHaveScreenshot(`privacy-copy-${strTheme}.png`,{fullPage:true,animations:'disabled'});
   const intOriginalWidth=objPage.viewportSize().width;

@@ -1,9 +1,6 @@
 name: SEC application security and privacy acceptance
 
 on:
-  push:
-    branches: [dev]
-    paths: ['.github/workflows/security-verification.yml']
   workflow_dispatch:
     inputs:
       phase:
@@ -80,16 +77,16 @@ jobs:
           defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
           defaults read org.webkit.Playwright AppleKeyboardUIMode
       - name: Focused security, migration and privacy checks
-        if: github.event_name == 'push' || inputs.phase == 'collect'
+        if: inputs.phase == 'collect'
         run: node scripts/verify-security.js
       - name: Collect new synthetic privacy candidates
-        if: github.event_name == 'push' || inputs.phase == 'collect'
+        if: inputs.phase == 'collect'
         run: npx playwright test -c playwright.security.config.js --update-snapshots=all ${{ matrix.projects }}
       - name: Compare reviewed native privacy references
         if: inputs.phase == 'compare'
         run: npx playwright test -c playwright.security.config.js --update-snapshots=none ${{ matrix.projects }}
       - name: Bounded synthetic visual review
-        if: always() && (github.event_name == 'push' || inputs.phase == 'collect')
+        if: always() && inputs.phase == 'collect'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: security-candidates-${{ matrix.os }}
