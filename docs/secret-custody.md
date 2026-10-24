@@ -3,7 +3,9 @@
 Brody approved this implementation on October 23, 2026. Public hosting remains
 subject to OPS-02/06's separate resource, cost and execution review. This guide
 does not provision IAM, a VM, a certificate, a real key or an application account.
-The actual host/private Owner checks remain on [OPS-03](https://trello.com/c/3tuwMEqv).
+Actual-host acceptance is recorded in [OPS-03 evidence](verification/ops-03-custody.md),
+including the separate private Owner confirmation. This procedure itself does not
+provision resources; the approved executed hosting scope is recorded there.
 
 ## People, application accounts and operating-system identities
 
@@ -142,7 +144,8 @@ attach keys/codes to a handoff document. DOC-01 retains receiving-person accepta
 version in its private directory:
 
 ```sh
-/opt/luigis/runtime/bin/node /opt/luigis/current/scripts/setup-host-secrets.js prepare-payment-rotation /etc/luigis/payment-keys.json /etc/luigis/payment-keys.next.json
+cd /opt/luigis/current
+/opt/luigis/runtime/bin/node scripts/setup-host-secrets.js prepare-payment-rotation /etc/luigis/payment-keys.json /etc/luigis/payment-keys.next.json
 ```
 
 The candidate has a new active key and retains all prior keys. It refuses an
@@ -189,3 +192,31 @@ References: [authentication](authentication-design.md), [payment key format/life
 [systemd execution settings](https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html),
 [Node file creation](https://nodejs.org/download/release/v24.14.1/docs/api/fs.html),
 [deployment guide](../deploy/README.md), [OPS-03 evidence](verification/ops-03-custody.md).
+
+## Executed sponsor custody — October 24, 2026
+
+Brody is the current GCP/DuckDNS operator and application Owner. His verified
+operator login controls root access through IAP/OS Login; application staff roles
+do not confer cloud access. The VM has no attached cloud service account/scopes.
+Existing project-level Google service-agent/default-account grants were inspected
+and preserved; they were not attached or delegated to the application.
+
+Hosted MFA/payment keys remain in private VM configuration outside source and data;
+the application receives only its required key access. DNS credentials remain
+operator-only and reach the separate DynamicUser updater through LoadCredential.
+TLS originals are Certbot/root-controlled; private service-readable generations
+are installed atomically. Operator SSH keys are confined by Windows ACLs to the
+owner, Administrators and SYSTEM. The local DuckDNS copy is Windows-user-encrypted,
+not plaintext; uploaded transfer copies are ciphertext and the temporary VM
+private transfer key was removed. Generated archives/ciphertext remain Git-ignored.
+
+Brody confirmed replacement authenticator enrollment, private storage of the new
+recovery codes and hosted Owner sign-in. No new credentials were supplied in chat.
+Selected service/bootstrap/DNS journals, Certbot log and three source archives
+were checked in memory for actual hosted key/token values; none matched. The
+service identity cannot read operator configuration/DNS/log files or alter source.
+These are bounded checks, not a universal history/log scan or a security certification.
+
+No additional person received credentials. Future receiving-person handoff remains
+DOC-01 and must use a private channel with verified access. No application-managed
+backup or recovery after loss of original MFA encryption keys is promised.

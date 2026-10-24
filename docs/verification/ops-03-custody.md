@@ -106,3 +106,46 @@ recovery codes and actual hosted Owner sign-in; see
 [QR acceptance](ops-03-authenticator-qr.md). The private Owner setup/sign-in gate
 is satisfied. Remaining full custody/log/copy/operator review and native QR CI
 acceptance must still be completed before marking OPS-03 Done.
+
+### Full OPS-03 acceptance — October 24, 2026
+
+The remaining review above is now completed. Actual host stat/access checks
+confirmed root `0600` environment and DNS token, service `0600` payment/TLS/data
+files and `0700` data/TLS directories. The application runs as `luigis`, with
+NoNewPrivileges, strict read-only system protection, private home/temp and only
+the HTTPS bind capability. It cannot read operator environment/DNS/Certbot logs
+or modify the active release. Persistent mount protections remain intact.
+
+Instance OS Admin Login is assigned to the verified sponsor; OS Login/project-key
+blocking and disabled serial access are configured. No service account/scopes are
+attached. Existing project owner/default-account/service-agent bindings were
+reviewed without broadening or deleting them. Sponsor SSH private-key ACLs allow
+only owner rights, local Administrators and SYSTEM. The named local DNS token
+copy is DPAPI ciphertext; generated deployment files are Git-ignored. The VM
+one-time transfer private key is absent.
+
+A bounded VM-memory comparison of actual MFA/payment/DNS values against the
+application/bootstrap/DNS journals, Certbot log and three deployment source archives
+found no matches. Bootstrap journals also contained no provisioning URI, private
+key marker or recovery-code-shaped value. No secret content was printed or saved
+by this inspection. Journal files are root/systemd-journal `0640`; Certbot's log
+is within its root-only `0700` directory and unreadable by the application.
+
+Required native QR staff jobs all passed on Windows, macOS and Ubuntu in
+[40079701553](https://github.com/perin1k/Luigis-Project/actions/runs/40079701553).
+The optional Windows WebKit diagnostic failure remains visible under the approved
+platform policy. Earlier missing/invalid/staged-rotation service tests and actual
+Ubuntu rejection/reload evidence remain valid; no live key rotation was necessary
+or performed. No unsupported MFA master-key rotation is claimed.
+
+The human-reported hosted replacement/Owner sign-in and private recovery-code
+custody are recorded in [QR acceptance](ops-03-authenticator-qr.md).
+[Custody guide](../secret-custody.md) records Brody as the current verified
+operator/custodian, credential lifecycle and private handoff procedure. No other
+recipient was introduced; DOC-01 retains future receiving-person acceptance.
+
+All five original OPS-03 criteria are satisfied for the approved hosted demo:
+protected injection/least-privilege service, separate fresh environment keys,
+documented/tested lifecycle, bounded artifact/log/operator protections, and
+controlled verified Owner setup. OPS-03 may move Done. OPS-02/04/06/07 and hosted
+QA/DOC acceptance retain their own criteria; this is not complete-project acceptance.

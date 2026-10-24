@@ -42,10 +42,12 @@ returned 200. Missing-proof recovery returned 403 without QR data. CSP remained
 unchanged. The retained data mount remained rw/nosuid/nodev/noexec.
 
 Automatic native staff [run 40079701553](https://github.com/perin1k/Luigis-Project/actions/runs/40079701553)
-is still pending acceptance; storage run 40079701584 passed. At this check, required
-Windows/macOS/Ubuntu jobs are in progress; the optional Windows WebKit diagnostic
-failed. This does not waive required platform-appropriate coverage. Native results
-must be reviewed separately rather than inferred from local engine passes.
+has passed all required Windows/macOS/Ubuntu jobs; storage run 40079701584 passed.
+The optional Windows WebKit diagnostic failed at browser/cookie verification.
+Required platform-appropriate coverage is preserved under the earlier approved
+Windows Chromium/Firefox and macOS/Linux WebKit policy. This diagnostic remains
+visible and is not reported as a pass. Native evidence is distinct from local
+engine checks and does not claim real Safari acceptance.
 
 Human acceptance: on October 24, Brody explicitly confirmed all four private steps
 completed: scanned the replacement QR, confirmed its authenticator code, saved the
