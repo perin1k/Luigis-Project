@@ -232,6 +232,9 @@ sign-in were confirmed by Brody. The app is serving trusted public HTTPS. Actual
 graceful restart, retained database/staff/schema integrity, public entry and private
 route/source/data denial checks passed; see [OPS-02 evidence](verification/ops-02-hosted.md).
 Do not interpret resource creation or native CI passes as hosted acceptance.
-OPS-02 and OPS-03 are accepted within their original scopes. The broader hosted
-QA, monitoring/cost, publication and receiving-person handoff gates remain on their
-original cards; this is not final project acceptance.
+OPS-02, OPS-03 and OPS-04 are accepted within their original scopes. Current
+patched runtime/OS maintenance, clean-checkout deployment and continuity evidence
+is recorded in [OPS-07 acceptance](verification/ops-07-maintenance.md) and the
+[maintenance guide](maintenance-continuity.md). Broader hosted QA, publication and
+receiving-person handoff retain their original gates; this is not final project
+acceptance.

@@ -39,19 +39,24 @@ Future receiving-person acceptance remains DOC-01.
    are ignored. This changes only archive export, not repository/worktree SQL or
    database checksums. Local databases retain their own original file-byte contract;
    do not normalize applied migrations or overwrite a failed staged manifest.
-5. Stage the patched runtime using the reviewed `deploy/maintain-host.sh stage`.
+5. On the approved Ubuntu host, stage the patched runtime using
+   `sudo bash deploy/maintain-host.sh stage` from the reviewed source checkout.
    It verifies the official distribution checksum before extraction. Prepare each
-   approved commit with `prepare FULL_COMMIT_SHA`; the host independently clones
+   approved commit with `sudo bash deploy/maintain-host.sh prepare FULL_COMMIT_SHA`;
+   the host independently clones
    the public repository, checks the exact commit, installs locked production
    dependencies without lifecycle scripts and creates a new integrity manifest
    under that runtime. No hosted migration, seed, data/key replacement or initial
    Owner creation is performed. Compare the source digest with clean CI metadata.
 6. Prepare both the new release and a known compatible fallback under the patched
    runtime. Run read-only source/schema readiness checks first. Execute
-   `activate NEW_SHA FALLBACK_SHA` as the authorized root operator in a maintenance
+   `sudo bash deploy/maintain-host.sh activate NEW_SHA FALLBACK_SHA` in a maintenance
    window. It stops the service, switches protected runtime/release pointers and
    requires trusted HTTPS readiness. Its failure fallback uses the patched runtime;
    failure to recover still requires operator investigation, not a data reset.
+   Existing unversioned runtime directories are preserved without overwrite,
+   including the fresh-bootstrap layout. An old unpatched binary is not an
+   accepted recovery target; keep any retained copy root-only.
 7. Rehearse rollback to that patched-compatible release and forward activation.
    Verify minimal probes, database integrity, retained staff/security records,
    real HTTPS and a private human sign-in. Restore the current reviewed release.
@@ -103,13 +108,13 @@ is authorized by an operational alert.
 
 The sponsor controls project `capstone-510915` billing and DuckDNS; repository
 ownership remains with Perin. Existing credits are not guaranteed bill coverage.
-The USD25 monthly alert and USD10 preview planning allowance are not hard caps;
+The USD 25 monthly alert and USD 10 preview planning allowance are not hard caps;
 VM/disk/network and other project usage can still incur costs. Monitoring was
 planned below its current free execution allowance without cloud log export.
 Recheck prices/usage before extending or transferring the environment.
 
-The approved VM STOP deadline is November 1, 2026 at 11PM America/Chicago
-(November 2 at05:00UTC). Retained disks/keys continue to exist and storage costs
+The approved VM STOP deadline is November 1, 2026 at 11 PM America/Chicago
+(November 2 at 05:00 UTC). Retained disks/keys continue to exist and storage costs
 continue after stop. Deletion, longer operation, snapshots, a production billing
 account, personal credential transfer or a different service plan require separate
 review. Handoff transfers responsibilities/access privately; it does not transfer
