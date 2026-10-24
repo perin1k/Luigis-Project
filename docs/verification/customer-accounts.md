@@ -45,6 +45,15 @@ orders and their existing cancellation/refund/privacy rules intact.
 
 ## Remaining gates
 
+Final native verification **passed** at
+`749c1f0a6e32ebca28846ffe44d7463926b1664e` in
+[40144515988](https://github.com/perin1k/Luigis-Project/actions/runs/40144515988):
+Windows 2022 Chromium/Firefox desktop/mobile and macOS 15 / Ubuntu 24.04
+Chromium/Firefox/WebKit desktop/mobile, including focused unit/storage/retention
+and all four account browser scenarios. This verifies the final theme fix as well
+as native forms without JavaScript. Required customer jobs all succeeded.
+Storage workflow `40143966845` also passed at the implementation commit.
+
 The first native run `40143966895` failed at browser launch because the workflow
 installed browsers in the default cache while configuration expected the repository
 cache. It is not a browser pass. The workflow now declares the same browser path
@@ -54,16 +63,18 @@ Corrected run `40144216041`: macOS/Linux Chromium/Firefox journeys passed (16
 each), and WebKit functional journeys passed, but its axe checks caught theme
 control contrast during color interpolation. The shared appearance buttons now
 switch colors without that transition; strict axe checks are retained. A new
-native run must verify the fix. Required Windows shared staff visual comparisons
+  native run above verifies the fix. Required Windows shared staff visual comparisons
 in `40143966836` also differ after the intentional new header links; these are
 unaccepted visual changes to review at the planned cleanup checkpoint, not green
 results or permission for automatic baseline replacement.
 
-The focused Windows/macOS/Linux workflow verifies the final commit and supported
-WebKit on macOS/Linux. No Windows WebKit/Safari support claim is made.
+The focused workflow verifies the recorded commit and supported WebKit on
+macOS/Linux. No Windows WebKit/Safari support claim is made.
 Visual reference review, grouped human keyboard/screen-reader/zoom checks,
 production-host migration/deployment, customer-account hosted acceptance and final
-mobile/desktop Lighthouse remain pending. Broader end-user branding/menu cleanup
+mobile/desktop Lighthouse remain pending. These feature acceptance checks belong
+to the linked QA-01/cleanup checkpoint before the customer card can move Done.
+Broader end-user branding/menu cleanup
 will affect shared navigation and references; TEST-04 retains final acceptance
 after all current-delivery work. Ready for Testing is not Done.
 
