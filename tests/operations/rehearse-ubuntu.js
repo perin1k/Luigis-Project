@@ -89,6 +89,16 @@ try{
   const intPid=Number(run('systemctl',['show','luigis.service','--property=MainPID','--value']).trim());
   const strStatus=readFileSync(`/proc/${intPid}/status`,'utf8');assert.match(strStatus,new RegExp(`Uid:\\s+${intUid}\\s`));
   assert.equal(BigInt('0x'+strStatus.match(/CapEff:\s+([a-f0-9]+)/i)[1]),1n<<10n);
+  strStage='supervised crash restart';
+  run('systemctl',['kill','--kill-whom=main','--signal=SIGKILL','luigis.service']);
+  let bRestarted=false;const intRestartDeadline=Date.now()+20000;
+  while(Date.now()<intRestartDeadline){
+    const intNextPid=Number(run('systemctl',['show','luigis.service','--property=MainPID','--value']).trim());
+    if(intNextPid>0&&intNextPid!==intPid){try{bRestarted=(await get('/health/ready')).intStatus===200;}catch{}}
+    if(bRestarted)break;await new Promise(fnResolve=>setTimeout(fnResolve,100));
+  }
+  assert.equal(bRestarted,true,'Only the disposable service must restart with a new ready process.');
+  console.log('PASS: systemd restarts the killed disposable application with a new ready process.');
   const objAssetA=await get('/css/order-bundle.css');assert.equal(objAssetA.intStatus,200);assert.match(objAssetA.objHeaders['cache-control'],/max-age=3600/);
   strStage='compatible release and rollback';
   stop();assert.match(check(strB,'ready'),/"intPending":0/);switchStopped(strB);await start();
