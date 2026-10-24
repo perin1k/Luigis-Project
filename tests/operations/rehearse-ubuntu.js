@@ -64,7 +64,7 @@ try{
   const strNpm=process.env.LUIGIS_NPM_CLI;if(!strNpm)throw new Error('Pinned npm CLI path required.');
   run(process.execPath,[strNpm,'ci','--omit=dev','--ignore-scripts'],{cwd:strA});
   node([join(strA,'scripts/release.js'),'manifest',strA,process.env.GITHUB_SHA]);
-  cpSync(strA,strB,{recursive:true});unlinkSync(join(strB,'release-manifest.json'));
+  cpSync(strA,strB,{recursive:true,verbatimSymlinks:true});unlinkSync(join(strB,'release-manifest.json'));
   writeFileSync(join(strB,'src/public/css/ordering.css'),readFileSync(join(strB,'src/public/css/ordering.css'),'utf8')+'\n/* OPS isolated release B */\n');
   node([join(strB,'scripts/release.js'),'manifest',strB,'b'.repeat(40)]);
   mkdirSync(strData);run('mount',['-t','tmpfs','-o','size=64m,mode=0700','luigis-ops-rehearsal',strData]);bMounted=true;
@@ -121,7 +121,7 @@ try{
   check(strA,'rollback');switchStopped(strA);await start();assert.equal((await get('/css/order-bundle.css')).strBody,objAssetA.strBody);stop();
   console.log('PASS: unprivileged direct HTTPS, exact bind capability, ready/private routes, release/restart and compatible rollback.');
   strStage='additive schema and refused incompatible rollback';
-  cpSync(strB,strC,{recursive:true});unlinkSync(join(strC,'release-manifest.json'));
+  cpSync(strB,strC,{recursive:true,verbatimSymlinks:true});unlinkSync(join(strC,'release-manifest.json'));
   const strMigrationFile=join(strC,'src/data/migrations.js');const strOriginal=readFileSync(strMigrationFile,'utf8');
   const strChanged=strOriginal.replace(/PRIVACY_ACTIONS_MIGRATION,\r?\n\]\)/,
     "PRIVACY_ACTIONS_MIGRATION,\n{intVersion:16,strName:'ops-rehearsal-only',strSql:'CREATE TABLE ops_rehearsal_only (id INTEGER PRIMARY KEY) STRICT'},\n])");
@@ -144,7 +144,7 @@ try{
   const objState=spawnSync('systemctl',['show','luigis.service','--property=Result,ExecMainCode,ExecMainStatus,ExecStartPre'],{encoding:'utf8'});
   console.error(objState.stdout);
   const objJournal=spawnSync('journalctl',['-u','luigis.service','--no-pager','--output=cat','-n','30'],{encoding:'utf8'});
-  for(const strLine of objJournal.stdout.split('\n'))if(/^(Release check failed:|Hosted runtime preflight failed;|Unable to start:|Unable to start the configured server\.)/.test(strLine))console.error(strLine);
+  for(const strLine of objJournal.stdout.split('\n'))if(/^(Release check failed:|Hosted runtime preflight failed;|Hosted layout check:|Unable to start:|Unable to start the configured server\.)/.test(strLine))console.error(strLine);
 }finally{
   spawnSync('systemctl',['stop','luigis.service']);
   if(bMounted)spawnSync('umount',[strData]);

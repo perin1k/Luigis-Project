@@ -40,5 +40,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   try{
     if(process.argv.length>3||(process.argv.length===3&&process.argv[2]!=='--host'))throw new Error('Unknown preflight option.');
     validateRuntime(process.env,{bHostedLayout:process.argv[2]==='--host'});console.log('Hosted runtime preflight passed.');}
-  catch{console.error('Hosted runtime preflight failed; review private configuration without logging its values.');process.exitCode=1;}
+  catch(objError){console.error('Hosted runtime preflight failed; review private configuration without logging its values.');
+    if(['service_identity','database','environment','payment_tls','source_roots','source_tree'].includes(objError.strHostCheck))
+      console.error('Hosted layout check: '+objError.strHostCheck);
+    process.exitCode=1;}
 }

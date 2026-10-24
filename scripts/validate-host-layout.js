@@ -14,9 +14,12 @@ function rootPath(strPath){let strNext=strPath;
 
 /** Ubuntu host policy only; never pretend POSIX checks establish Windows ACLs. */
 export function validateHostLayout(objEnvironment,strReleaseDirectory){
+  let strHostCheck='service_identity';
+  try{
   if(process.platform!=='linux'||process.getuid()===0)throw new Error('Unprivileged Ubuntu service required.');
   const intUid=process.getuid();const strRelease=realpathSync(strReleaseDirectory);
   if(!['hosted-demo','ci-demo'].includes(objEnvironment.LUIGIS_ENVIRONMENT))throw new Error('Explicit hosted environment required.');
+  strHostCheck='database';
   const strDatabase=realpathSync(objEnvironment.DATABASE_PATH);const strData=dirname(strDatabase);
   const objData=lstatSync(strData);
   if(!objData.isDirectory()||objData.uid!==intUid||(objData.mode&0o777)!==0o700)
@@ -25,15 +28,16 @@ export function validateHostLayout(objEnvironment,strReleaseDirectory){
   for(const strSuffix of ['-journal','-wal','-shm']){
     try{privateFile(strDatabase+strSuffix,intUid);}catch(objError){if(objError.code!=='ENOENT')throw objError;}
   }
-  rootPath(dirname(strData));rootPath(dirname(objEnvironment.DEMO_PAYMENT_KEYS_PATH));
+  strHostCheck='environment';rootPath(dirname(strData));rootPath(dirname(objEnvironment.DEMO_PAYMENT_KEYS_PATH));
   privateFile(join(dirname(objEnvironment.DEMO_PAYMENT_KEYS_PATH),'runtime.env'),0);
+  strHostCheck='payment_tls';
   for(const strKey of ['DEMO_PAYMENT_KEYS_PATH','TLS_KEY_PATH','TLS_CERT_PATH']){
     privateFile(objEnvironment[strKey],intUid);rootPath(dirname(dirname(objEnvironment[strKey])));
   }
   const objTlsDirectory=lstatSync(dirname(objEnvironment.TLS_KEY_PATH));
   if(!objTlsDirectory.isDirectory()||objTlsDirectory.uid!==intUid||(objTlsDirectory.mode&0o777)!==0o700)
     throw new Error('Private service-owned TLS directory required.');
-  rootPath(strRelease);rootPath('/opt/luigis/current');rootPath('/opt/luigis/runtime/bin/node');
+  strHostCheck='source_roots';rootPath(strRelease);rootPath('/opt/luigis/current');rootPath('/opt/luigis/runtime/bin/node');
   function inspect(strPath){const objStat=lstatSync(strPath);
     if(objStat.uid!==0||(!objStat.isSymbolicLink()&&(objStat.mode&0o022)!==0))throw new Error('Application identity must not modify release content.');
     if(objStat.isSymbolicLink()){
@@ -43,5 +47,6 @@ export function validateHostLayout(objEnvironment,strReleaseDirectory){
     }else if(objStat.isDirectory()){for(const strName of readdirSync(strPath))inspect(join(strPath,strName));}
     else if(!objStat.isFile())throw new Error('Regular release files required.');
   }
-  inspect(strRelease);return true;
+  strHostCheck='source_tree';inspect(strRelease);return true;
+  }catch{const objError=new Error('Hosted permission check failed.');objError.strHostCheck=strHostCheck;throw objError;}
 }
