@@ -223,7 +223,8 @@ key-loader code plus the linked primary documentation. Authorized execution on
 October 24, 2026 has since provisioned the approved Spot VM/network/retained disks,
 budget alerts and VM stop deadline, installed the pinned runtime and initialized
 fresh hosted data/keys. No service account is attached. IAP operator access works.
-The DuckDNS token was transferred with VM-specific encryption and stored root-only;
-DNS activation, public HTTPS and private Owner enrollment are still being verified.
+The DuckDNS token was transferred with VM-specific encryption and stored root-only.
+DNS activation and free certificate issuance/installation/renewal rehearsal passed.
+Private Owner enrollment and serving the public HTTPS app remain to be verified.
 Do not interpret resource creation or native CI passes as hosted acceptance.
 OPS-02 and OPS-03 remain In Progress pending their actual-host criteria.

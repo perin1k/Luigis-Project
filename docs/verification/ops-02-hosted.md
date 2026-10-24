@@ -40,6 +40,11 @@ the team's hosted QA acceptance or claim another developer's work.
   execute the installer from the resolved release directory, avoiding a Node
   symlink CLI-entry no-op. Actual installation passed: private TLS directory
   service `0700`, both pair files service `0600`. Certbot renewal timer enabled.
+- Certbot's non-interactive dry-run completed after its randomized scheduling
+  delay: all simulated renewals succeeded and the corrected deploy hook installed
+  the real certificate pair successfully. Application remained inactive as
+  intended. The containing diagnostic command returned nonzero only because its
+  final `systemctl is-active` check correctly reported that inactive state.
 
 ## Reused and new checks
 
@@ -53,7 +58,6 @@ changes. No source migration or customer-facing behavior changed.
 
 ## Still required before acceptance
 
-- Complete certificate renewal dry-run with corrected deploy hook.
 - Human-only initial Owner password/authenticator/recovery enrollment and actual
   HTTPS sign-in; confirm sponsor custody without recording credentials.
 - Actual application startup/health/public entry/access/robots verification and
