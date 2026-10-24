@@ -1,8 +1,5 @@
 # Luigi's Pizza
 
-Receiving team: start with the [handoff guide](docs/handoff.md) for setup,
-workflow documentation, operator responsibilities and remaining release gates.
-Deployment review: [provisional cost comparison and account-access prerequisites](docs/deployment-cost-review.md).
 Current integrated release verification: [QA-01 evidence and retained gates](docs/verification/qa-01-integrated-review.md).
 
 The internal staff sign-in orchestration lives in `src/auth/login-service.js`;
@@ -67,8 +64,7 @@ permissions must work; external services may use documented demonstration
 adapters. Live Stripe setup and actual charges are not required. Read
 [the integration boundary](docs/integrations.md) and
 [DECISION-07](https://trello.com/c/NKGL91hy) for current requirements, including
-encrypted full synthetic-number storage implemented by the demonstration payment
-service. This does not enable real card processing or establish hosted acceptance.
+encrypted full synthetic-number storage, which is not implemented yet.
 
 This is a three-person group project. Shared documentation describes the project,
 architecture, and contributor standards. Individual assignments and personal
@@ -811,11 +807,5 @@ Customer checkout: [current BE-02/BE-03 integration and reconciled FE-03 receipt
 QA-02: [consolidated payment/privacy evidence and remaining operator gates](docs/verification/qa-02-payment-privacy.md).
 
 QA-03: [approved targets, race/recovery evidence and hosted measurement procedure](docs/verification/qa-03-concurrency-recovery.md).
-
-OPS-01 preparation: [review-only systemd/environment templates and rollback checks](deploy/README.md).
-
-OPS-03 preparation: [secret custody, injection, rotation/revocation and secure handoff](docs/secrets-operations.md).
-
-OPS-07 preparation: [maintenance, update/release procedure and clean-checkout limits](docs/maintenance-procedure.md).
 
 TEST-02: [scheduling, persisted checkout and demonstration payment checkpoint](docs/verification/test-02-checkout-acceptance.md).

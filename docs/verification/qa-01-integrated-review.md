@@ -133,7 +133,7 @@ the integrated journeys above, this adds 12 successful executions to the earlier
 | Concurrency/recovery/performance | [QA-03](qa-03-concurrency-recovery.md); actual host load and ten-minute restart target remain unmeasured. |
 | Native/browser/manual/visual coverage | Accepted TEST-01–03 evidence is reusable after impact review. These focused scenarios do not update screenshot baselines or establish a fresh Firefox/Windows/Linux/full-matrix acceptance. New privacy-page/manual and applicable final review remain explicit SEC/QA gates. |
 | Lighthouse | Real trusted public HTTPS `/order` still needs required 100 scores. Retain approved SEO-only noindex exceptions for private pages; no other category is waived. |
-| Operations and handoff | OPS-01–07 real target configuration/lifecycle/deployment plus DOC-01 independent receiving-person rehearsal and acceptance remain unfinished. Hosting is on hold. [Handoff entry point](../handoff.md). |
+| Operations and handoff | OPS-01–07 real target configuration/lifecycle/deployment plus DOC-01 independent receiving-person rehearsal and acceptance remain unfinished. Hosting is on hold. The [historical handoff draft](https://github.com/perin1k/Luigis-Project/blob/4c20e0b/docs/handoff.md) was subsequently reverted at Brody's request; it is not a current deliverable. |
 
 No card may move to Done on this local record alone. A receiving human must
 accept actual scope and commit, and required hosting/quality evidence must exist.
