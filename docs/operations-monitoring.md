@@ -5,10 +5,11 @@ include a ten-minute operator restart target only when VM, disk and keys are
 intact. This is not a measured result, uptime SLA or authorization to activate
 hosting/alerts; the existing monitor notification thresholds remain separate.
 
-October 22, 2026. Card: https://trello.com/c/k5lYEttU. Full-card scope includes
-hosted monitoring/alerts, operational logs and incident exercises. This implements
-and verifies the local parts; actual host configuration remains on hold under the
-human's “instructions only; don't provision” direction. No card is marked Done.
+Original preparation: October 22, 2026. Card: https://trello.com/c/k5lYEttU.
+On October 24 Brody approved completing hosted monitoring, operational email
+notifications, bounded retention and a controlled failure/recovery drill. This
+supersedes the earlier instructions-only hold for this reviewed scope. Acceptance
+is recorded separately; configured resources alone do not close the card.
 
 ## Implemented files and contracts
 
@@ -153,7 +154,56 @@ individual preview backlog review distinct from sustained worker failure. A
 payment mismatch requires review of committed records, not a replacement payment
 or automatic financial action.
 
-## Unresolved full-card gates
+## Approved hosted implementation — October 24
+
+- `scripts/configure-monitoring.js` and `deploy/monitoring.json` configure only
+  project `capstone-510915`, host `luigispizzeria.duckdns.org`, two public HTTPS
+  probes, an email channel to the active GCP operator, and their alert policies.
+  OAuth credentials are captured only in process memory; no key is deployed to
+  the VM. Existing conflicting named resources are rejected, not overwritten.
+- `/health/previews` adds only ready/not_ready status for the actual internal
+  preview worker. No contact, count, exception, path, token or preview content is
+  exposed. Missing configuration/exception fails closed. Existing readiness still
+  covers authentication, vault, catalog and both worker monitors.
+- Checks run each minute in Oregon/Iowa/Virginia, require valid HTTPS and exact
+  ready content/status200. Alert on at least two failed locations sustained for
+  three minutes (readiness) or ten minutes (preview worker). These operational
+  windows implement the agreed thresholds with ordinary sampling/evaluation lag;
+  they are not an exact delivery-time guarantee. Healthy evaluations reset the
+  condition; open and closed incidents notify the operator. There are no automatic
+  payment actions, VM upgrades or data/key resets. If samples disappear entirely,
+  that is not proof of recovery; investigate monitoring before trusting a closure.
+- Brody receives alerts and may inspect/restart the approved app/Spot VM, verify
+  mount/DNS/TLS, stop unsafe writes and restore a schema-compatible release under
+  the runbooks. New infrastructure, destructive recovery, live payment actions
+  and MFA master-key changes require their separate authorization.
+- The dedicated preview VM's journald drop-in `deploy/journald-luigis.conf` sets
+  seven-day retention, 64MiB persistent limit, 16MiB runtime limit, hourly rotation,
+  compression and no console/syslog forwarding. Active-file allocation and vacuum
+  timing mean these are journal-management limits, not byte/deletion-time SLAs.
+  `prune-certbot-logs.sh`/the retention service and daily timer expire only rotated
+  Certbot logs older than seven days in its verified root-private directory;
+  cleanup is daily and excludes active log, accounts, certificates and keys.
+- Two checks x three regions x 31 days x 1440 = 267,840 scheduled monthly
+  executions, below Google's one-million project free allowance if no other usage
+  consumes it. The installer checks current project inventory conservatively.
+  No cloud log agent/export, custom metric ingestion or attached VM service-account
+  credential is added. Billable egress/other project costs remain under the existing
+  reviewed budget, not a hard cap. Recheck pricing before extending the preview.
+
+Provider webhook backlog is not invented: this demo has no active merchant webhook
+integration. For an ambiguous demo payment, preserve its existing attempt/order
+identifiers and use the result/reconciliation flow; consult committed payment and
+order states before any retry/refund. Staff review/notification-preview queues
+remain internal operational screens, not proof an external message was sent.
+Any confirmed-payment/order mismatch is escalated immediately to Brody with safe
+IDs/times only; preserve protected state and hold affected actions for review.
+
+References: [uptime and alert pricing](https://cloud.google.com/products/observability/pricing),
+[uptime check configuration](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.uptimeCheckConfigs),
+[alert strategies](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.alertPolicies).
+
+## Historical unresolved gates (superseded as verified below)
 
 The actual alert contact/channel, failure/reset semantics and permitted incident
 response actions still need configuration review before implementation. The

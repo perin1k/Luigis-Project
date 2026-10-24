@@ -16,6 +16,18 @@ test('public health probes separate liveness/readiness, fail closed and never di
     const objHead=await fetch(`${strOrigin}/health/ready`,{method:'HEAD'});assert.equal(objHead.status,200);assert.equal(await objHead.text(),'');assert.equal((await fetch(`${strOrigin}/health/ready`,{method:'POST'})).status,404);
   }finally{await new Promise((fnResolve)=>objServer.close(fnResolve));}
 });
+
+test('preview health reports only a private-data-free boolean outcome independent of overall readiness',async()=>{
+  let bHealthy=true;const objServer=createServer(createApp({fnReadiness:()=>false,fnPreviewReadiness:()=>{if(!bHealthy)throw new Error('PRIVATE preview detail');return true;}}));
+  await new Promise(fnResolve=>objServer.listen(0,'127.0.0.1',fnResolve));
+  try{
+    const strOrigin=`http://127.0.0.1:${objServer.address().port}`;
+    for(const bNext of [true,false,true]){bHealthy=bNext;const objResponse=await fetch(strOrigin+'/health/previews');
+      assert.equal(objResponse.status,bNext?200:503);assert.equal(objResponse.headers.get('cache-control'),'no-store');
+      assert.deepEqual(await objResponse.json(),{strStatus:bNext?'ready':'not_ready'});}
+    assert.equal((await fetch(strOrigin+'/health/ready')).status,503);
+  }finally{await new Promise(fnResolve=>objServer.close(fnResolve));}
+});
 test('request telemetry correlates safe outcomes and page errors without accepting spoofed IDs or private payloads',async()=>{
   const arrLines=[];let bFail=true;const objApp=createApp({fnWriteOperational:(strLine)=>arrLines.push(strLine),objOrderService:{submitOrder(){if(bFail)throw new Error('PRIVATE contact/token/key');return {strState:'unpaid',bReplayed:false};}}});objApp.locals.fnGetAvailability=async()=>{throw new Error('PRIVATE stack/path');};
   const objServer=createServer(objApp);await new Promise((fnResolve)=>objServer.listen(0,'127.0.0.1',fnResolve));const strOrigin=`http://127.0.0.1:${objServer.address().port}`;

@@ -17,7 +17,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objPrivacyService, objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnWriteOperational } = {}) {
+export function createApp({ objPrivacyService, objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnPreviewReadiness, fnWriteOperational } = {}) {
 const objApp = express();
 const objOperational=createOperationalRecorder({fnWrite:fnWriteOperational});
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
@@ -100,7 +100,7 @@ objApp.get('/', (objRequest, objResponse, fnNext) => {
 });
 objApp.use(createAnonymousLimits());
 objApp.use(objOperational.requests);
-objApp.use(createHealthRouter(fnReadiness));
+objApp.use(createHealthRouter(fnReadiness,fnPreviewReadiness));
 if (objCatalogService) objApp.use('/api/pricing', createPricingRouter(objCatalogService));
 if (objPaymentService) objApp.use('/api/demo-payments', createDemoPaymentRouter(objPaymentService));
 if (objSchedulingService) objApp.use('/api/pickup-times', createSchedulingRouter(objSchedulingService));
