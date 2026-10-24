@@ -73,7 +73,13 @@ elif [[ "$strMode" == release ]]; then
     [[ "$(readlink -f /opt/luigis/current)" == "$strRelease" ]] || { echo 'Release switch needs stopped compatibility review.' >&2; exit 1; }
   else ln -s "$strRelease" /opt/luigis/current; fi
   install -o root -g root -m 0644 "$strRelease/deploy/luigis.service" /etc/systemd/system/luigis.service
+  install -o root -g root -m 0644 "$strRelease/deploy/luigis-dns.service" /etc/systemd/system/luigis-dns.service
+  install -o root -g root -m 0644 "$strRelease/deploy/luigis-dns.timer" /etc/systemd/system/luigis-dns.timer
+  install -d -o root -g root -m 0755 /etc/letsencrypt/renewal-hooks/deploy
+  install -o root -g root -m 0755 "$strRelease/deploy/certbot-deploy-hook.sh" /etc/letsencrypt/renewal-hooks/deploy/luigis-tls
+  install -o root -g root -m 0755 "$strRelease/deploy/owner-setup.sh" /usr/local/sbin/luigis-owner-setup
   systemd-analyze verify /etc/systemd/system/luigis.service
+  systemd-analyze verify /etc/systemd/system/luigis-dns.service /etc/systemd/system/luigis-dns.timer
   systemctl daemon-reload
   echo 'Release installed; application remains stopped for TLS and private Owner enrollment.'
 else echo 'Expected system or release.' >&2; exit 1; fi
