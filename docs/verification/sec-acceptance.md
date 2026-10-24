@@ -1,8 +1,41 @@
 # SEC-02 / SEC-01 application acceptance
 
-October 23, 2026. In progress; native comparisons, manual privacy-page review and
-the new-page audit remain pending. Cards: [SEC-02](https://trello.com/c/ehrcmOun),
+October 23, 2026. Native candidate review completed; strict comparison pending.
+The original pending manual/audit statements are superseded by the evidence below.
+Cards: [SEC-02](https://trello.com/c/ehrcmOun),
 [SEC-01](https://trello.com/c/3fVC3XbV).
+
+## Native candidate review and existing human acceptance
+
+The team's successful [native collection run 40018269023](https://github.com/perin1k/Luigis-Project/actions/runs/40018269023)
+at `12ff600082e6ba058a32110fa02692b449aaa89a` produced 64 synthetic privacy
+images: 24 macOS, 24 Linux and 16 Windows. All three jobs succeeded. Windows
+uses its approved Chromium/Firefox desktop/mobile matrix; macOS/Linux include
+WebKit as well. This collection is not a strict comparison pass.
+
+Downloaded archives matched their displayed SHA-256 digests:
+
+- macOS: `dea1644a84ac38db1ced265530d28fc21ce8b46de2deceee9661dd703b0c7c7f`
+- Linux: `86b9dd15915b16d574abf6f4178f54ae841fd6cbd85b636daad8e815ef80c865`
+- Windows: `e8b05b55482632cc10bd54f5656f675e0bd6b874efa761f8428f647ea0b6154f`
+
+Reviewed all 64 in platform contact sheets plus full-size representative desktop
+and mobile images. Light/dark form and limited-copy states retain readable labels,
+wrapped instructions, visible focus/controls, contained copy fields and responsive
+footers without observed overlap or horizontal clipping. Native font differences
+are retained. References are added to the existing `security-ci` path with their
+OS/browser/viewport names; no existing image, tolerance or assertion is overwritten.
+Candidates contain fixture-only synthetic data, not real contacts or credentials.
+
+Brody's October 23 SEC-02 card update records the completed human grouped
+Chrome/Narrator/keyboard/200–400% light/dark review and new-page audit; this is
+reused human/team evidence, not a new screen-reader review performed in this chat.
+The current [privacy Lighthouse report](qa-01-privacy-lighthouse.json) independently
+records Performance/Accessibility/Best Practices 100. The human explicitly approved
+privacy-page SEO-only noindex applicability. [Current QA evidence](qa-01-integrated-review.md)
+also records 12 passing current local privacy behavior checks, the parser patch's
+82 focused checks and fresh zero-advisory runtime/full audits in the linked
+security review. Strict current native comparison is still required before closure.
 
 ## Scope and provenance
 
