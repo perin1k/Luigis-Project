@@ -15,6 +15,7 @@ const strWorkspace=process.cwd();const strRoot='/opt/luigis';const strData='/var
 const strConfig='/etc/luigis';const strUnit='/etc/systemd/system/luigis.service';
 for(const strPath of [strRoot,strData,strConfig,strUnit])if(existsSync(strPath))throw new Error('Refusing an existing installation.');
 const strScratch=mkdtempSync(join(tmpdir(),'luigis-ops-'));let bMounted=false;let bUser=false;
+const objOptBefore=lstatSync('/opt');
 let strStage='isolated host preparation';
 const strDatabase=join(strData,'luigis-demo.sqlite');const strNode=join(strRoot,'runtime/bin/node');
 function run(strCommand,arrArgs,objOptions={}){
@@ -52,6 +53,13 @@ async function start(){
     await new Promise(fnResolve=>setTimeout(fnResolve,100));}
   throw new Error('Disposable service did not become ready.');}
 function stop(){run('systemctl',['stop','luigis.service']);stopped();}
+function expectPreflightBlock(){
+  const objReset=spawnSync('systemctl',['reset-failed','luigis.service'],{encoding:'utf8'});
+  if(objReset.status!==0&&!/not loaded/.test(objReset.stderr))throw new Error('Unable to reset disposable failure state.');
+  assert.throws(()=>run('systemctl',['start','luigis.service']));
+  assert.equal(run('systemctl',['show','luigis.service','--property=Result','--value']).trim(),'exit-code');
+  stop();
+}
 const strA=join(strRoot,'releases',process.env.GITHUB_SHA);const strB=join(strRoot,'releases','b'.repeat(40));
 const strC=join(strRoot,'releases','c'.repeat(40));
 try{
@@ -78,6 +86,11 @@ try{
     '-out',join(strConfig,'tls/fullchain.pem'),'-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost','-days','1']);
   const strPayment=join(strConfig,'payment-keys.json');
   for(const strPath of [strPayment,join(strConfig,'tls/privkey.pem'),join(strConfig,'tls/fullchain.pem')]){chmodSync(strPath,0o600);chownSync(strPath,intUid,intGid);}
+  console.log(JSON.stringify({strStage:'disposable_parent_policy',intOriginalOptUid:objOptBefore.uid,intOriginalOptMode:objOptBefore.mode&0o777}));
+  // Hosted runners may make /opt writable for tool installs; emulate the reviewed
+  // root-owned host boundary only for this rehearsal and restore it in finally.
+  chownSync('/opt',0,0);chmodSync('/opt',0o755);
+  for(const strDirectory of [strRoot,join(strRoot,'runtime'),dirname(strNode),join(strRoot,'releases')])chmodSync(strDirectory,0o755);
   protect(join(strRoot,'releases'));symlinkSync(strA,join(strRoot,'current'));cpSync(join(strA,'deploy/luigis.service'),strUnit);
   strStage='unit validation and first HTTPS startup';
   try{run('systemd-analyze',['verify',strUnit]);}
@@ -100,10 +113,10 @@ try{
   stop();strStage='permission and missing-key rejection';
   for(const [strPath,intUnsafeMode,intPrivateMode] of [[strDatabase,0o644,0o600],[strData,0o755,0o700],
     [join(strConfig,'runtime.env'),0o644,0o600],[join(strA,'src/server.js'),0o666,0o644]]){
-    chmodSync(strPath,intUnsafeMode);assert.throws(()=>run('systemctl',['start','luigis.service']));stop();chmodSync(strPath,intPrivateMode);
+    chmodSync(strPath,intUnsafeMode);expectPreflightBlock();chmodSync(strPath,intPrivateMode);
   }
-  chownSync(strPayment,0,0);assert.throws(()=>run('systemctl',['start','luigis.service']));stop();chownSync(strPayment,intUid,intGid);
-  renameSync(strPayment,join(strConfig,'held-payment.json'));assert.throws(()=>run('systemctl',['start','luigis.service']));stop();
+  chownSync(strPayment,0,0);expectPreflightBlock();chownSync(strPayment,intUid,intGid);
+  renameSync(strPayment,join(strConfig,'held-payment.json'));expectPreflightBlock();
   renameSync(join(strConfig,'held-payment.json'),strPayment);
   console.log('PASS: unsafe database/directory/environment/source permissions, wrong key owner and missing key refuse startup.');
   strStage='private payment-key rotation and service reload';
@@ -150,5 +163,6 @@ try{
   if(bMounted)spawnSync('umount',[strData]);
   // Only paths proven absent before this explicit disposable-host opt-in.
   for(const strPath of [strUnit,strRoot,strConfig,strData,strScratch])rmSync(strPath,{recursive:true,force:true});
+  chownSync('/opt',objOptBefore.uid,objOptBefore.gid);chmodSync('/opt',objOptBefore.mode&0o777);
   spawnSync('systemctl',['daemon-reload']);if(bUser)spawnSync('userdel',['luigis']);
 }
