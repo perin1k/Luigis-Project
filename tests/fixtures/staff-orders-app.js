@@ -1,4 +1,5 @@
 import {createPrivacyService} from '../../src/staff/privacy-service.js';
+import {createCustomerService} from '../../src/customer/customer-service.js';
 import {randomBytes} from 'node:crypto';
 import {createSchedulingService} from '../../src/ordering/scheduling-service.js';
 import {createOrderService} from '../../src/ordering/order-service.js';
@@ -29,9 +30,10 @@ export function createOrdersFixture(strOrigin,{bCustomerCheckout=false}={}){
     fnFailPreviews=()=>createNotificationService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnNow,fnRender(){throw new Error('fixture render failure');}}).processPending();
     const objCatalogService=createCatalogService(objDatabase);
     const objSchedulingService=bCustomerCheckout?createSchedulingService(objDatabase,{fnNow:()=>fnNow().toISOString()}):undefined;
-    const objOrderService=bCustomerCheckout?createOrderService(objDatabase,objCatalogService,objSchedulingService):undefined;
+    const objCustomerService=bCustomerCheckout?createCustomerService(objDatabase,{fnNow}):undefined;
+    const objOrderService=bCustomerCheckout?createOrderService(objDatabase,objCatalogService,objSchedulingService,{objCustomerService}):undefined;
     const objPaymentService=bCustomerCheckout?createDemoPaymentService(objDatabase,{objTrackingService,objCatalogService,objSchedulingService,objVault:createSyntheticVault({strActiveKeyId:'integrated-fixture',mapKeys:{'integrated-fixture':randomBytes(32).toString('hex')}})}):undefined;
-    return createApp({...objOptions,objSchedulingService,objOrderService,objPaymentService,objPrivacyService:createPrivacyService(objDatabase,objOptions.objAuthRuntime.objSessionService),objCatalogService,objMenuService:createMenuService(objDatabase,objOptions.objAuthRuntime.objSessionService),objAnalyticsService:createAnalyticsService(objDatabase,objOptions.objAuthRuntime.objSessionService),objNotificationService:objNotices,objDemoRefundService:createDemoRefundService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnProcess:()=>bRefundApproved}),objTrackingService,objOrderExceptionService:createOrderExceptionService(objDatabase,objOptions.objAuthRuntime.objSessionService),objOrderProgressService:createOrderProgressService(objDatabase,objOptions.objAuthRuntime.objSessionService),objStaffOrdersService:createStaffOrdersService(objDatabase,objOptions.objAuthRuntime.objSessionService)});
+    return createApp({...objOptions,objCustomerService,objSchedulingService,objOrderService,objPaymentService,objPrivacyService:createPrivacyService(objDatabase,objOptions.objAuthRuntime.objSessionService),objCatalogService,objMenuService:createMenuService(objDatabase,objOptions.objAuthRuntime.objSessionService),objAnalyticsService:createAnalyticsService(objDatabase,objOptions.objAuthRuntime.objSessionService),objNotificationService:objNotices,objDemoRefundService:createDemoRefundService(objDatabase,objOptions.objAuthRuntime.objSessionService,{fnProcess:()=>bRefundApproved}),objTrackingService,objOrderExceptionService:createOrderExceptionService(objDatabase,objOptions.objAuthRuntime.objSessionService),objOrderProgressService:createOrderProgressService(objDatabase,objOptions.objAuthRuntime.objSessionService),objStaffOrdersService:createStaffOrdersService(objDatabase,objOptions.objAuthRuntime.objSessionService)});
   }});
   return {...objFixture,arrOrders,arrTrackingPaths,
     seedPendingRefund() {

@@ -1,4 +1,6 @@
 import {createPrivacyRouter} from './staff/privacy-router.js';
+import {createCustomerRouter} from './customer/customer-router.js';
+import {CUSTOMER_COOKIES,readCustomerCookies} from './customer/customer-transport.js';
 import {createOperationalRecorder} from './operations/telemetry.js';
 import {randomUUID} from 'node:crypto';
 import {createHealthRouter} from './operations/health-router.js';
@@ -17,7 +19,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objPrivacyService, objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnPreviewReadiness, fnWriteOperational } = {}) {
+export function createApp({ objCustomerService, strCustomerOrigin, objPrivacyService, objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnPreviewReadiness, fnWriteOperational } = {}) {
 const objApp = express();
 const objOperational=createOperationalRecorder({fnWrite:fnWriteOperational});
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
@@ -100,12 +102,15 @@ objApp.get('/', (objRequest, objResponse, fnNext) => {
 });
 objApp.use(createAnonymousLimits());
 objApp.use(objOperational.requests);
+if(objCustomerService)objApp.use(createCustomerRouter({objCustomerService,strOrigin:strCustomerOrigin??objAuthRuntime?.strOrigin,fnRender:renderPage}));
 objApp.use(createHealthRouter(fnReadiness,fnPreviewReadiness));
 if (objCatalogService) objApp.use('/api/pricing', createPricingRouter(objCatalogService));
 if (objPaymentService) objApp.use('/api/demo-payments', createDemoPaymentRouter(objPaymentService));
 if (objSchedulingService) objApp.use('/api/pickup-times', createSchedulingRouter(objSchedulingService));
-if (objOrderService) objApp.use('/api/orders', createOrderRouter(objOrderService));
+if (objOrderService) objApp.use('/api/orders', createOrderRouter(objOrderService,{objCustomerService}));
 objApp.get('/order', async (objRequest, objResponse, fnNext) => {
+  let objCustomerProfile=null;
+  if(objCustomerService&&objRequest.socket.encrypted){try{objCustomerProfile=objCustomerService.readProfile(readCustomerCookies(objRequest.headers.cookie)[CUSTOMER_COOKIES.strSession]).objProfile;}catch{/* Submission explicitly handles expired customer sign-in. */}}
   const objCatalog = objCatalogService?.readCatalog() ?? null;
   const objAvailability = objCatalog ? { bKnown: true,
     arrUnavailableToppings: objCatalog.arrToppings.filter((objItem) => !objItem.bAvailable).map((objItem) => objItem.strCode),
@@ -117,7 +122,7 @@ objApp.get('/order', async (objRequest, objResponse, fnNext) => {
   renderPage(objRequest, objResponse, fnNext, 'pages/order', {
     strTitle: "Order Online | Luigi's Pizza",
     strDescription: "Build your Luigi's pizza, choose drinks, and review your dine-in or carry-out order.",
-    objSizes, objToppings: objCatalog ? Object.fromEntries(objCatalog.arrToppings.map((objItem) => [objItem.strCode, objItem.strLabel])) : TOPPINGS,
+    objCustomerProfile, objSizes, objToppings: objCatalog ? Object.fromEntries(objCatalog.arrToppings.map((objItem) => [objItem.strCode, objItem.strLabel])) : TOPPINGS,
     arrDrinks: objCatalog ? objCatalog.arrBeverages.map((objItem) => objItem.strLabel) : DRINKS, objAvailability, objCatalog, bOrderSubmission: Boolean(objOrderService), bScheduling: Boolean(objSchedulingService), bDemoPayments: Boolean(objPaymentService),
   });
 });

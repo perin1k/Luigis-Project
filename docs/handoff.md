@@ -19,6 +19,8 @@ that is not offered. After the cutoff, the next open day is offered.
 ## Choose the help you need
 
 - Ordering or following an order: continue below.
+- Creating a customer account, saving contact details or recovering its password:
+  [Your customer account](customer-account-help.md). Guest checkout stays available.
 - Signing in, setting up your phone’s security code or recovering access:
   [Staff sign-in help](account-help.md).
 - Correcting customer details or handling a request for an information copy:

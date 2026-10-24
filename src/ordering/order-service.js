@@ -24,8 +24,8 @@ export function validateContact(objContact, strService) {
 }
 
 /** Persist an unpaid accepted snapshot and, when configured, its atomic capacity hold. */
-export function createOrderService(objDatabase, objCatalogService, objSchedulingService) {
-  function submitOrder(objInput) {
+export function createOrderService(objDatabase, objCatalogService, objSchedulingService,{objCustomerService}={}) {
+  function submitOrder(objInput,strCustomerToken=null) {
     if (!exact(objInput, ['strRequestId', 'strService', 'objContact', 'objPricing', ...(objSchedulingService ? ['objPickup'] : [])])
       || typeof objInput.strRequestId !== 'string' || !UUID_PATTERN.test(objInput.strRequestId)) invalid('Use a valid order request identifier.');
     const objContact = validateContact(objInput.objContact, objInput.strService);
@@ -33,8 +33,12 @@ export function createOrderService(objDatabase, objCatalogService, objScheduling
     const strOrderId = objInput.strRequestId;
     const strQuoteId = createHash('sha256').update(JSON.stringify([strOrderId, objInput.strService, objContact, objInput.objPricing, ...(objSchedulingService ? [objInput.objPickup] : [])])).digest('hex');
     return runTransaction(objDatabase, () => {
+      const objCustomer=strCustomerToken&&objCustomerService?objCustomerService.resolveInsideTransaction(strCustomerToken):null;
+      if(strCustomerToken&&!objCustomer)throw new PricingError('customer_session_expired','Your customer sign-in expired. Sign in again or sign out before continuing as a guest.',401);
       const objExisting = objDatabase.prepare('SELECT public_reference, accepted_quote_id FROM orders WHERE id=?').get(strOrderId);
       if (objExisting) {
+        if(objCustomerService){const objOwner=objDatabase.prepare('SELECT customer_id FROM customer_order_links WHERE order_id=?').get(strOrderId);
+          if(objOwner&&objOwner.customer_id!==objCustomer?.id)throw new PricingError('request_conflict','This order belongs to another sign-in. Return to the original checkout.',409);}
         if (objExisting.accepted_quote_id !== strQuoteId) throw new PricingError('request_conflict', 'This request already saved a different order. Review your changes and try again.', 409);
         return result(objExisting.public_reference, true, strOrderId);
       }
@@ -45,6 +49,7 @@ export function createOrderService(objDatabase, objCatalogService, objScheduling
       const dtExpires = new Date(Date.parse(dtNow) + 30 * 60 * 1000).toISOString();
       objDatabase.prepare('INSERT INTO orders (id, public_reference, service_type, catalog_version_id, created_at) VALUES (?,?,?,?,?)')
         .run(strOrderId, strReference, objInput.strService, strVersion, dtNow);
+      if(objCustomer)objDatabase.prepare('INSERT INTO customer_order_links VALUES (?,?)').run(strOrderId,objCustomer.id);
       objDatabase.prepare('INSERT INTO order_contacts (order_id,customer_name,phone,email) VALUES (?,?,?,?)')
         .run(strOrderId, objContact.strName, objContact.strPhone || null, objContact.strEmail || null);
       function catalogOption(strTable, strCode) {

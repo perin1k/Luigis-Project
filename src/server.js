@@ -1,4 +1,5 @@
 import {createWorkerMonitor} from './operations/worker-monitor.js';
+import {createCustomerService} from './customer/customer-service.js';
 import {createPrivacyService} from './staff/privacy-service.js';
 import {createMenuService} from './staff/menu-service.js';
 import {createAnalyticsService} from './staff/analytics-service.js';
@@ -34,6 +35,7 @@ let bClosed = false;
 let intNotificationTimer;
 let intRetentionTimer;
 function application(objAuthRuntime) {
+  const objCustomerService=objAuthRuntime?createCustomerService(objDatabase):undefined;
   const objRetentionService=createRetentionService(objDatabase);
   const objRetentionMonitor=createWorkerMonitor('retention',()=>objRetentionService.cleanup());
   const fnCleanup=()=>objRetentionMonitor.run();
@@ -47,11 +49,11 @@ function application(objAuthRuntime) {
   const objPreviewMonitor=createWorkerMonitor('previews',()=>objNotificationService.processPending());
   const fnProcessPreviews=()=>objPreviewMonitor.run();
   fnProcessPreviews();intNotificationTimer=setInterval(fnProcessPreviews,1000);intNotificationTimer.unref();
-  return createApp({objPrivacyService:objAuthRuntime?createPrivacyService(objDatabase,objAuthRuntime.objSessionService):undefined, fnReadiness:()=>Boolean(objAuthRuntime&&objVault&&objRetentionMonitor.isHealthy()&&objPreviewMonitor.isHealthy()&&objCatalogService.readCatalog().strFingerprint), objMenuService:objAuthRuntime?createMenuService(objDatabase,objAuthRuntime.objSessionService):undefined, objAnalyticsService:objAuthRuntime?createAnalyticsService(objDatabase,objAuthRuntime.objSessionService):undefined, objNotificationService:objAuthRuntime?objNotificationService:undefined, objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
+  return createApp({objCustomerService, objPrivacyService:objAuthRuntime?createPrivacyService(objDatabase,objAuthRuntime.objSessionService):undefined, fnReadiness:()=>Boolean(objAuthRuntime&&objVault&&objRetentionMonitor.isHealthy()&&objPreviewMonitor.isHealthy()&&objCatalogService.readCatalog().strFingerprint), objMenuService:objAuthRuntime?createMenuService(objDatabase,objAuthRuntime.objSessionService):undefined, objAnalyticsService:objAuthRuntime?createAnalyticsService(objDatabase,objAuthRuntime.objSessionService):undefined, objNotificationService:objAuthRuntime?objNotificationService:undefined, objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
     objOrderProgressService: objAuthRuntime ? createOrderProgressService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objStaffOrdersService: objAuthRuntime ? createStaffOrdersService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     fnPreviewReadiness:()=>objPreviewMonitor.isHealthy(),
-    objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService) });
+    objOrderService: createOrderService(objDatabase, objCatalogService, objSchedulingService,{objCustomerService}) });
 }
 function closeResources() {
   if (bClosed) return;

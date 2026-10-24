@@ -8,6 +8,7 @@ knowledge is needed.
 | I need to… | Read |
 | --- | --- |
 | Place/track an order, prepare orders, manage the menu or view sales | [Using your website](handoff.md) |
+| Create or recover a customer account and find my orders | [Your customer account](customer-account-help.md) |
 | Sign in, accept an invitation, set up phone codes or recover access | [Staff sign-in help](account-help.md) |
 | Correct customer details or handle an information request | [Customer information requests](customer-information-help.md) |
 | Demonstrate the website or review the instructions | [Demonstration guide](review-access-plan.md) |

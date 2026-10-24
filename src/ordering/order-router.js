@@ -1,6 +1,7 @@
 import express from 'express';
 import { PricingError } from './catalog-service.js';
-export function createOrderRouter(objOrderService) {
+import {CUSTOMER_COOKIES,readCustomerCookies} from '../customer/customer-transport.js';
+export function createOrderRouter(objOrderService,{objCustomerService}={}) {
   const objRouter = express.Router();
   objRouter.use((objRequest, objResponse, fnNext) => {
     objResponse.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', 'Referrer-Policy': 'no-referrer' });
@@ -14,7 +15,9 @@ export function createOrderRouter(objOrderService) {
   });
   objRouter.use(express.json({ limit: '8kb', strict: true, inflate: false }));
   objRouter.post('/', (objRequest, objResponse) => {
-    const objResult = objOrderService.submitOrder(objRequest.body);
+    let strCustomerToken=null;
+    if(objCustomerService){try{strCustomerToken=readCustomerCookies(objRequest.headers.cookie)[CUSTOMER_COOKIES.strSession]??null;}catch{return objResponse.status(400).json({strMessage:'Customer cookies could not be read. Sign in again before ordering.'});}}
+    const objResult = objOrderService.submitOrder(objRequest.body,strCustomerToken);
     objResponse.status(objResult.bReplayed ? 200 : 201).json(objResult);
   });
   objRouter.use((objError, objRequest, objResponse, fnNext) => {

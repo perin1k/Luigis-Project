@@ -1,0 +1,42 @@
+name: Customer account verification
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'src/customer/**'
+      - 'src/data/migrations/016-customer-accounts.sql'
+      - 'src/ordering/order-service.js'
+      - 'src/ordering/order-router.js'
+      - 'src/data/retention-service.js'
+      - 'src/views/pages/customer.ejs'
+      - 'src/public/js/customer.js'
+      - 'tests/customer-e2e/**'
+      - 'tests/unit/customer-accounts.test.js'
+      - 'playwright.customer.config.js'
+      - '.github/workflows/customer-verification.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  customer:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - run: npm ci --ignore-scripts
+      - run: node --test --test-concurrency=1 tests/unit/customer-accounts.test.js tests/unit/order-submission.test.js tests/unit/database.test.js tests/unit/order-storage.test.js tests/unit/retention-service.test.js
+      - run: npx --no-install playwright install --with-deps chromium firefox
+      - run: node node_modules/@playwright/test/cli.js test -c playwright.customer.config.js --project=chromium-desktop --project=chromium-mobile --project=firefox-desktop --project=firefox-mobile
+      - if: runner.os != 'Windows'
+        run: npx --no-install playwright install --with-deps webkit
+      - if: runner.os != 'Windows'
+        run: node node_modules/@playwright/test/cli.js test -c playwright.customer.config.js --project=webkit-desktop --project=webkit-mobile

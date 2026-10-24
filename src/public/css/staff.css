@@ -16,6 +16,7 @@
 .staff-secondary { display: inline-flex; align-items: center; margin-top: 1rem; }
 .staff-notice { border: 1px solid var(--color-control-border); border-left: .3rem solid var(--color-accent); padding: 1rem; background: var(--color-panel); border-radius: .35rem; }
 .staff-records { list-style: none; padding: 0; }
+.customer-page h3, .customer-page p { overflow-wrap: anywhere; }
 .staff-records li { border-block-start: 1px solid var(--color-line); padding-block: 1rem; overflow-wrap: anywhere; }
 .staff-records button { margin-top: .5rem; display: block; }
 .staff-pagination { display: flex; flex-wrap: wrap; gap: .5rem; }

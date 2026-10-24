@@ -13,6 +13,7 @@ export function createRetentionService(objDatabase,{fnNow=()=>new Date()}={}){
       objResult.intContacts+=objDatabase.prepare('UPDATE order_contacts SET customer_name=NULL,phone=NULL,email=NULL,redacted_at=? WHERE order_id=? AND redacted_at IS NULL').run(dtNow,objOrder.id).changes;
       objResult.intTrackingGrants+=objDatabase.prepare('DELETE FROM tracking_grants WHERE order_id=?').run(objOrder.id).changes;
       objResult.intNotifications+=objDatabase.prepare('DELETE FROM notification_outbox WHERE order_id=?').run(objOrder.id).changes;
+      objDatabase.prepare('DELETE FROM customer_order_links WHERE order_id=?').run(objOrder.id);
       audit(objOrder.id,dtNow);objResult.intOrders++;
     }
     // Ciphertext has its separately approved seven-days-after-attempt lifecycle.
