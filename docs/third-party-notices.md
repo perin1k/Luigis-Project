@@ -67,6 +67,11 @@ custody, stop deadline, costs and support exclusions. No live merchant/Wallet or
 customer email/SMS sending service is integrated. Their future terms, accounts,
 costs and security acceptance remain separate work.
 
-Receiving review remains open: confirm project-source distribution permission,
-the actual deliverable's retained upstream notices, and any modified third-party
-files/source obligations. Do not record this preparation as client acceptance.
+October 25 deliverable clarification: Brody confirmed zipped source submission
+to the professor and a class presentation. This does not add a public source
+license or authorize unrelated commercial redistribution. The tracked-source
+inventory includes the SecLists license and package lockfile, with no installed
+dependencies, local reports, `.env` or SQLite files tracked. The source-only ZIP
+keeps those tracked notices; npm dependencies and separately installed binaries
+are not bundled. See [submission instructions](submission.md). Actual ZIP content/
+hash review and final QA acceptance remain required before final delivery.

@@ -1,5 +1,20 @@
 # QA-03 concurrency, recovery and measurement plan
 
+## October 25 actual-host completion
+
+The approved hosted six-checkout/four-staff burst passed: 20 queue reads p95
+113.6161 ms, six order writes p95 113.9162 ms, six payment writes p95 123.3499 ms,
+zero unexpected HTTP responses. Customer account history/recovery/revocation and
+all labeled-order/temporary-access cleanup also passed. Brody privately ran the
+checker and supplied the sanitized result for run `0e6401dc60fb`. The separate
+actual-host restart plus protected account read passed in 10,208.4314 ms, with
+retained custody checks and temporary-account deletion. Details and limitations:
+[final completion record](final-completion.md). Earlier pending paragraphs below
+are historical and are superseded only by these measured checks. Existing native
+race/recovery and OPS-01/02/08 compatible recovery evidence is reused for unchanged
+behavior; no data-loss/backup capability is invented. Final integrated QA and
+TEST-04 retain their separate criteria.
+
 October 23, 2026. Card: https://trello.com/c/DMMb899F.
 Status: In Progress. Local correctness evidence is distinct from required actual
 hosted measurement. Hosting remains preparation-only/on hold.

@@ -170,4 +170,6 @@ account recovery and help during an outage. Tell the team which step is unclear 
 which screen does not match. You do not need to run commands or change the website.
 Brody may perform this reader walkthrough; no extra teammate is required just
 because the writing was prepared with an assistant. Record only checks actually
-performed. The reader walkthrough and final project acceptance are still pending.
+performed. Brody completed the receiving-reader review on October 25, 2026 and
+reported the listed tasks and instructions passed. Final project acceptance is
+recorded separately after QA and the final checkpoint.

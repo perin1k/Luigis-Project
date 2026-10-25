@@ -2,7 +2,7 @@
 
 For customers using Luigi’s Pizza. You can still order as a guest without creating
 an account. Customer accounts do not provide staff or manager access.
-This feature is being prepared for release; use it only when available on your site.
+Choose **My account** on the website to begin.
 
 ## Create an account
 

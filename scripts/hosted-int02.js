@@ -140,7 +140,7 @@ export async function runHostedInt02({objBrowser,strOrigin,strUsername,strPasswo
     await expect(objOwner.locator('.analytics-table--items')).toContainText('pizza');passed();
     // An explicitly approved completion check can reuse these authenticated
     // browser contexts. It must resolve its own labeled data before returning.
-    if(fnAdditionalAcceptance)await fnAdditionalAcceptance({objOwner,arrStaff:[objOwner,objEmployee,objAdmin],fnActor:actor,fnPost:post,strRunId,strOrigin});
+    if(fnAdditionalAcceptance)await fnAdditionalAcceptance({objOwner,objCustomer,objReceipt,arrStaff:[objOwner,objEmployee,objAdmin],fnActor:actor,fnPost:post,strRunId,strOrigin});
   }catch{strFailureStage=strStage;}
   finally{
     if(objOwner){

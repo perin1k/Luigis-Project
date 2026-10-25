@@ -64,6 +64,9 @@ security codes, private tracking links or customer details. Reading a restart
 instruction does not mean a restart was performed. Reading this checklist does not
 mean the review is complete.
 
-Current status: reader walkthrough and final client acceptance remain pending.
+October 25 reader review: Brody reported the listed guide tasks and instructions
+passed. Course delivery is the zipped repository plus class presentation, rather
+than a business ownership transfer; see [submission guide](submission.md). Final
+QA and the final application checkpoint remain separate from this reader review.
 Technical test evidence and developer tasks are tracked separately; reviewers do
 not need those engineering records to follow the end-user guides.

@@ -1,5 +1,37 @@
 # Customer accounts implementation checkpoint
 
+## October 25 completion follow-up
+
+The approved cleanup's 1,296 reviewed native references resolve shared-navigation
+visual reconciliation. The hosted application includes migration 016 and customer
+accounts; current source is `0e931d6e4f866beecbe6094e3a561fc20a176dc8` (later
+repository commits add verification tooling/docs only). See
+[deployment evidence](cleanup-deployment.md) for preserved data/MFA/settings,
+protected HTTPS smoke and mobile/desktop public-page Lighthouse 100s.
+
+Brody reported the grouped Chrome/Windows Narrator registration, sign-in,
+saved-contact, recovery/deletion-screen keyboard, both-theme and 200%/400% zoom
+review passed. He also reported the live home/menu/ordering/account touch review
+in portrait/landscape passed; device/browser details were not supplied, so this
+is not a named-device/Safari certification. Reader help review also passed.
+
+The bounded private hosted completion checker now covers registration/profile,
+owned order history, staff/guest isolation, recovery/revocation and deletion.
+Its local rehearsal and native Windows/macOS/Linux tooling run
+[40176248275](https://github.com/perin1k/Luigis-Project/actions/runs/40176248275)
+passed, with cleanup. Brody's hosted completion run `0e6401dc60fb` passed account
+registration/profile, associated order history, guest/staff isolation, recovery/
+revocation, deletion and cleanup. Initial current-customer run 40176498305 failed
+the obsolete purple-theme RGB wait. The isolated reproduction showed expected
+`rgb(53, 35, 61)` versus actual approved `rgb(48, 37, 31)`. Only expected palette
+values changed at `47a3392`; strict axe/cookie/CSRF/reflow checks remain. Local
+Chromium/Firefox passed, and corrected native run
+[40176777086](https://github.com/perin1k/Luigis-Project/actions/runs/40176777086)
+passed all three OS jobs with required engines/viewports and four scenarios.
+Customer feature acceptance is satisfied; final protected-page audits and
+whole-release QA/TEST-04 remain separate. Historical
+pending statements below describe their original checkpoint, not current hosting.
+
 October 24, 2026. [Source card](https://trello.com/c/1Z0lWQvP).
 Brody approved the account/cleanup plan and separately confirmed profile retention,
 password-confirmed deletion and existing order privacy deadlines. This implements

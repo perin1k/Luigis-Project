@@ -18,10 +18,14 @@ is required. Email/SMS are internal previews, not sent messages. Stripe/native
 Apple Pay and rewards/student deals remain future scope, not delivered integrations.
 
 The observed hosted application source is
-`a87b662fa7ac473eb7f0b455a6aad9d716c64090` on Ubuntu 24.04, Node 24.22.1/npm
+`0e931d6e4f866beecbe6094e3a561fc20a176dc8` on Ubuntu 24.04, Node 24.22.1/npm
 11.19.1. Documentation and acceptance tooling have later commits on `dev`.
 Record both the delivered repository commit and actual deployed release in the
 receiving record; do not assume a documentation push deploys application code.
+The October 25 release includes the accepted cleanup, versioned public JavaScript
+and bundled public CSS; Nginx negotiates HTTP/2. See
+[deployment evidence](verification/cleanup-deployment.md). For the approved course
+deliverable (source ZIP plus class presentation), see [submission guide](submission.md).
 
 Public HTTPS now passes through Nginx to authenticated loopback Node TLS, with
 customer migration 016 applied. Same-release direct HTTPS recovery, renewal and

@@ -31,6 +31,8 @@ are an owner arranging technical support, give your support person the links bel
 - [Nginx operator guide](nginx-proxy.md): current public HTTPS, private application
   connection, renewal, status-only logs and same-release recovery.
 - [Third-party inventory](third-party-notices.md): developer notice/license review.
+- [Course submission](submission.md): source ZIP contents, safe presentation and
+  the distinction between a source package and hosted configuration.
 - Other design, policy, data, security and integration records in this directory
   explain implementation decisions. Their staff-facing instructions are summarized
   in the guides above. Files under `verification/` are engineering evidence/history,

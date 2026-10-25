@@ -7,6 +7,9 @@ on:
       - 'scripts/verify-hosted-int02.js'
       - 'scripts/hosted-completion*.js'
       - 'scripts/verify-hosted-completion.js'
+      - 'scripts/hosted-audits.js'
+      - 'scripts/verify-hosted-audits.js'
+      - 'tests/unit/hosted-audits.test.js'
       - 'tests/unit/hosted-completion-policy.test.js'
       - 'tests/operations/hosted-completion-rehearsal.js'
       - 'tests/unit/hosted-int02-policy.test.js'
@@ -37,4 +40,5 @@ jobs:
       - run: node --test tests/unit/hosted-int02-policy.test.js
       - run: node tests/operations/hosted-int02-rehearsal.js
       - run: node --test tests/unit/hosted-completion-policy.test.js
+      - run: node --test tests/unit/hosted-audits.test.js
       - run: node tests/operations/hosted-completion-rehearsal.js
