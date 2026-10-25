@@ -72,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: cleanup-regression-${{ matrix.os }}-${{ matrix.suite }}
-          path: tests/${{ matrix.suite == 'public' && 'e2e' || matrix.suite == 'pricing' && 'pricing-e2e' || matrix.suite == 'scheduling' && 'scheduling-e2e' || matrix.suite == 'payments' && 'payments-e2e' || matrix.suite == 'staff' && 'staff-e2e' || 'staff-orders-e2e' }}/*-snapshots/cleanup-regression/**/*.png
+          path: tests/${{ matrix.suite == 'public' && 'e2e' || matrix.suite == 'pricing' && 'pricing-e2e' || matrix.suite == 'scheduling' && 'scheduling-e2e' || matrix.suite == 'payments' && 'payments-e2e' || matrix.suite == 'staff' && 'staff-e2e' || 'staff-orders-e2e' }}/*-snapshots/cleanup-regression/**/*-${{ runner.os == 'Windows' && 'win32' || runner.os == 'macOS' && 'darwin' || 'linux' }}.png
           if-no-files-found: error
           retention-days: 2
       - name: Internal comparison differences

@@ -179,3 +179,50 @@ scroll before capturing, without altering application behavior or comparison
 tolerance. Targeted collection `40173106446` on `41a55b1` covers only that case;
 its review and subsequent strict comparison remain required. The original failed
 comparison is not recorded as a pass.
+
+The targeted availability collection passed all three OS jobs. Only its 32
+recollected images were reviewed and updated in `fc08c05`; other images retained
+their original provenance. Artifact review filters the native platform as well as
+the selected screen, because a checkout already contains references for the other
+platforms. The workflow upload path is correspondingly limited by fixture group
+and native platform. Strict retry `40173396792` targets the corrected case only.
+
+The 96 accepted focused cleanup images were also reused byte-for-byte (source
+hashes checked) under the shared reference path, with their original collection
+and passing comparison runs recorded in the manifest. This closes the ordinary
+default-config path gap without generating or silently accepting new images.
+Focused cleanup configurations now inherit the same path as ordinary tests. The
+manifest contains 1,296 current references; historical files remain preserved.
+
+## Accepted cleanup checkpoint
+
+The targeted strict availability retry
+[40173396792](https://github.com/perin1k/Luigis-Project/actions/runs/40173396792)
+passed Windows, macOS and Linux on `fc08c05`. The separate operations/privacy
+strict run
+[40172796013](https://github.com/perin1k/Luigis-Project/actions/runs/40172796013)
+also passed all three jobs on `ee43349`. Combined with the 14 passing jobs and
+137 unaffected passing cases from the first strict run, this resolves the
+historical screen reconciliation gap. Neither failed original run is relabeled
+as successful. The original focused cleanup comparison and human review are
+reused for unchanged behavior; their 96 copied images retain identical hashes.
+
+Verification uses Node 24.22.1, locked Playwright 1.64.1 and axe integration 4.14.0
+on Windows Server 2022, macOS 15 and Ubuntu 24.04 runners. The locked browser
+builds are Chromium/Chrome for Testing 156.0.8078.4, Firefox 157.0 and WebKit 27.2.
+Windows execution covers Chromium/Firefox; macOS/Linux execution additionally
+covers WebKit. Native desktop/mobile references remain separate. This does not
+claim real Safari or physical-device coverage.
+
+All 1,296 manifest paths are unique and their current PNG hashes were checked.
+No comparison tolerance or functional/security assertion was weakened. Application
+source, package manifests/lockfile and migrations are unchanged from the initial
+reconciliation source `6cc6c72`; changes here are tests, fixture locals,
+configuration, reviewed images and documentation. Content/diff review and syntax
+checks passed. No extra unrelated application suite was run for documentation.
+
+The approved cleanup feature checkpoint is accepted with Brody's human review,
+focused local Lighthouse 100s and the scoped native evidence above. This resolves
+the cleanup card, not whole-application release acceptance. Deployment, hosted
+HTTPS mobile/desktop Lighthouse, remaining integrated QA and TEST-04 still need
+their own completion evidence; no commercial-readiness claim is made here.
