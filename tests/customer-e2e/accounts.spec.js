@@ -47,7 +47,9 @@ test('native forms, CSRF, cookies, accessibility and narrow-screen themes',async
   for(const strTheme of ['light','dark']){
     await objPage.locator(`label[for="appearance-${strTheme}"]`).click();
     await expect(objPage.locator('html')).toHaveAttribute('data-bs-theme',strTheme);
-    await expect(objPage.getByRole('button',{name:'Sign out',exact:true})).toHaveCSS('color',strTheme==='dark'?'rgb(245, 235, 217)':'rgb(53, 35, 61)');
+    // Wait for the approved brick/cream palette before auditing contrast. These
+    // exact colors replace the superseded purple palette, not the axe assertions.
+    await expect(objPage.getByRole('button',{name:'Sign out',exact:true})).toHaveCSS('color',strTheme==='dark'?'rgb(248, 236, 216)':'rgb(48, 37, 31)');
     const objResults=await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();expect(objResults.violations).toEqual([]);
     await objPage.setViewportSize({width:320,height:800});expect(await objPage.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
   }
