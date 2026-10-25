@@ -12,13 +12,18 @@ manual and hosted final acceptance. No production deployment is part of this pus
   collapsed. Counts remain visible; Remove this drink clears only that beverage
   and returns focus. Six approved beverages now also appear in the unconfigured
   presentation. Zero, invalid and aggregate quantity checks remain authoritative.
-- `/menu` and home share `partials/menu.ejs` and `ordering/public-menu.js`. A
+- `/menu` uses `partials/menu.ejs` and `ordering/public-menu.js`. A
   configured app reads the current catalog on each request rather than duplicating
   prices. Prices, availability and pre-tax/optional-tip wording remain explicit.
 - Original project-authored SVG oven/pizza-peel identity, pepperoni favicon,
-  decorative ingredient drawings and staggered brick texture. Local assets, system
+  clear ingredient-name tiles and staggered brick texture. Local assets, system
   fonts and semantic cream/brick/red theme tokens introduce no library or external
   image service. Removed the superseded CSS pizza illustration rules.
+  Brody's review requested clearer toppings, a less cartoon-like oven and a
+  welcome-only home. Ingredient icons were removed, oven linework/colors refined,
+  and menu listings now appear only on /menu. Home links to menu/order/account.
+  His next review requested more distinctive buttons; action controls now have
+  bordered surfaces, stronger labels, a restrained raised edge and focus states.
 - Visible customer/staff links retain real server authorization. Inline refund
   review errors focus the required checkbox; refresh clears its approval and stale
   warning. Processing, success and uncertain-result recovery remain distinct.
@@ -61,3 +66,12 @@ invalidates affected historical visual references. Do not blindly update them,
 disable their comparisons, claim all existing suites pass, or call the application
 commercial-ready. Final actual hosted desktop/mobile Lighthouse 100s, integrated
 QA, customer-account acceptance and TEST-04 remain required on their own cards.
+
+Native collection `40167748317` passed Windows, macOS and Linux on `08b5f90`.
+That collected design was superseded by the subsequent human-requested artwork,
+home/menu and button changes; do not treat its images as the final references.
+Cancellation was attempted to avoid duplicate work but GitHub returned 409 because
+the run had already finished. Its unchanged domain/workflow results remain useful
+within their scope. Final revised native collection/comparison is still pending.
+The new direct uncertain-payment regression passed Chromium and Firefox: top and
+bottom actions retry the same request ID, keep editing locked and yield one payment.

@@ -32,14 +32,16 @@ test('menu edits reach a separate customer session without discarding its draft'
     await objOwner.getByRole('button', { name: 'Mark Pepperoni unavailable', exact: true }).click();
     await expect(objOwner.locator('#menu-status')).toContainText('Saved.');
 
-    // The public menu and home must follow the published catalog, not stale
-    // hard-coded prices or a separate availability list.
+    // The dedicated menu follows published prices; home stays a welcome page.
     const objMenuPage = await objCustomerContext.newPage();
-    for (const strPath of ['/menu', '/']) {
+    for (const strPath of ['/menu']) {
       await objMenuPage.goto(strPath);
       await expect(objMenuPage.getByRole('table', {name:'Pizza sizes and prices'})).toContainText('$8.25');
       await expect(objMenuPage.getByRole('list', {name:'Pizza toppings'}).getByRole('listitem').filter({hasText:'Pepperoni'})).toContainText('Currently unavailable');
     }
+    await objMenuPage.goto('/');
+    await expect(objMenuPage.getByRole('table')).toHaveCount(0);
+    await expect(objMenuPage.getByRole('link', {name:'Explore the full menu',exact:true})).toHaveAttribute('href','/menu');
     await objMenuPage.close();
 
     await objCustomer.getByRole('button', { name: 'Continue to payment', exact: true }).click();

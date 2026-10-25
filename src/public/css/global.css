@@ -39,12 +39,14 @@ h1 { font-size: clamp(3.2rem, 6vw, 5.5rem); margin-bottom: 1.5rem; }
 h2 { font-size: clamp(2.2rem, 4vw, 3.4rem); margin-bottom: 1rem; }
 h3 { font-size: 1.15rem; margin-bottom: .65rem; }
 .hero-description { max-width: 29rem; color: var(--color-muted); font-size: 1.05rem; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 1.5rem; min-height: 48px; padding: .8rem 1.3rem; font-weight: 650; font-size: .9rem; border-radius: .35rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 1.2rem; min-height: 48px; padding: .8rem 1.3rem; font-weight: 700; font-size: .9rem; border-radius: .4rem; box-shadow: 0 2px 0 var(--color-line); }
+.btn:active { box-shadow: none; }
 .btn-primary { --bs-btn-color: var(--color-on-accent); --bs-btn-bg: var(--color-accent); --bs-btn-border-color: var(--color-accent); --bs-btn-hover-color: var(--color-on-accent); --bs-btn-hover-bg: var(--color-accent-hover); --bs-btn-hover-border-color: var(--color-accent-hover); --bs-btn-active-color: var(--color-on-accent); --bs-btn-active-bg: var(--color-accent-hover); --bs-btn-active-border-color: var(--color-accent-hover); --bs-btn-disabled-color: var(--color-on-accent); --bs-btn-disabled-bg: var(--color-accent); --bs-btn-disabled-border-color: var(--color-accent); }
 .btn-outline-primary { --bs-btn-color: var(--color-ink); --bs-btn-border-color: var(--color-ink); --bs-btn-hover-color: var(--color-paper); --bs-btn-hover-bg: var(--color-ink); --bs-btn-hover-border-color: var(--color-ink); --bs-btn-active-color: var(--color-paper); --bs-btn-active-bg: var(--color-ink); --bs-btn-active-border-color: var(--color-ink); }
 .btn:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; box-shadow: none; }
 .hero .btn { margin-top: .7rem; }
-.menu-link { display: inline-block; padding: .8rem; margin-left: .5rem; font-size: .9rem; }
+.menu-link { display: inline-flex; align-items: center; min-height: 48px; padding: .8rem 1rem; margin-left: .5rem; font-size: .9rem; font-weight: 700; border: 1px solid var(--color-accent); color: var(--color-accent); border-radius: .4rem; background: var(--color-surface); box-shadow: 0 2px 0 var(--color-line); text-decoration: none; }
+.menu-link:hover { background: var(--color-selected); }
 .hero-note { margin: 1.2rem 0 0; font-size: .8rem; }
 .service-strip { padding: 1rem 0; border-block: 1px solid var(--color-gold); background: var(--color-banner); color: var(--color-banner-text); text-align: center; font-size: .85rem; letter-spacing: .04em; }
 .section { padding-block: 4.5rem; }
@@ -66,12 +68,17 @@ tbody th span { display: inline-block; margin-left: .5rem; font: .8rem var(--fon
 .menu-intro { max-width: 42rem; }
 .menu-policy { color: var(--color-muted); font-size: .9rem; }
 .menu-more { display: inline-flex; padding-block: 1rem; margin-top: 1rem; font-weight: 650; }
+.welcome-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 2rem; margin-top: 2rem; }
+.welcome-grid > div { border-top: 2px solid var(--color-accent); padding-top: 1.25rem; }
+.welcome-grid h3 { font: 1.65rem/1.2 var(--font-display); }
+.welcome-grid p { color: var(--color-muted); }
+.welcome-grid a { display: inline-flex; align-items: center; gap: .5rem; padding: .6rem .85rem; min-height: 44px; font-weight: 700; color: var(--color-accent); border: 1px solid var(--color-accent); border-radius: .4rem; background: var(--color-surface); box-shadow: 0 2px 0 var(--color-line); text-decoration: none; }
+.welcome-grid a:hover { background: var(--color-selected); }
 .menu-closing { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: center; padding: 1.5rem; border-block: 1px solid var(--color-line); }
 .menu-closing p { margin: 0; font: 1.5rem var(--font-display); }
 .availability-label { display: block; font: 600 .8rem/1.5 var(--font-body); margin-top: .25rem; }
 .ingredient-list { list-style: none; padding-left: 0; }
-.ingredient-list li { display: flex; align-items: center; gap: .6rem; }
-.ingredient-art { width: 42px; height: 42px; flex-shrink: 0; color: var(--color-accent); }
+.ingredient-list li { display: flex; align-items: center; min-height: 48px; padding: .65rem .85rem; border: 1px solid var(--color-line); border-radius: .35rem; background: var(--color-paper); font-weight: 600; }
 .beverage-list { padding-left: 1.25rem; }
 .beverage-list li { margin-block: .4rem; }
 .menu-card .eyebrow { color: var(--color-accent); font-size: .73rem; margin-bottom: .65rem; }
@@ -104,6 +111,7 @@ tbody th span { display: inline-block; margin-left: .5rem; font: .8rem var(--fon
   .brand { font-size: 2rem; }
   .brand-mark { width: 60px; height: 56px; }
   .section { padding-block: 3rem; }
+  .welcome-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .section-heading { display: block; }
   .menu-card, .hours { padding: 1.25rem; }
   .footer-inner { flex-direction: column; align-items: flex-start; }

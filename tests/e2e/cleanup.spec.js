@@ -50,6 +50,7 @@ test('dedicated menu exposes approved choices, original identity and account nav
     await expect(objPage.getByRole('heading', {name:'The Luigi’s menu', exact:true})).toBeVisible();
     await expect(objPage.getByRole('table', {name:'Pizza sizes and prices'})).toContainText('$5.00');
     await expect(objPage.getByRole('list', {name:'Fountain drink choices'}).getByRole('listitem')).toHaveCount(6);
+    await expect(objPage.getByRole('list', {name:'Pizza toppings'}).locator('svg')).toHaveCount(0);
     await expect(objPage.locator('.brand-mark')).toBeVisible();
     await expect(objPage.getByRole('link', {name:'My account', exact:true})).toHaveAttribute('href','/account');
     await expect(objPage.getByRole('link', {name:'Staff sign-in', exact:true})).toHaveAttribute('href','/staff/sign-in');

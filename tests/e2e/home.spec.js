@@ -7,6 +7,10 @@ test('homepage presents the approved menu and operating information', async ({ p
   await expect(objPage).toHaveTitle("Luigi's Pizza | Dine-in & Carry-out");
   await expect(objPage.getByRole('heading', { level: 1 })).toHaveText(/Good pizza\.\s*Great company\./);
   await expect(objPage.getByRole('main')).toContainText('10:00 AM–11:00 PM');
+  await expect(objPage.getByRole('table')).toHaveCount(0);
+  await expect(objPage.getByRole('heading', {name:'Come hungry. Feel at home.',exact:true})).toBeVisible();
+  await objPage.getByRole('link', { name: 'Explore the menu' }).click();
+  await expect(objPage).toHaveURL(/\/menu$/);
   await expect(objPage.getByRole('table')).toContainText('$5.00');
   await expect(objPage.getByRole('table')).toContainText('$7.00');
   await expect(objPage.getByRole('table')).toContainText('$9.00');
@@ -14,8 +18,6 @@ test('homepage presents the approved menu and operating information', async ({ p
   await expect(objPage.getByRole('list', { name: 'Pizza toppings' })).toContainText('Jalapeños');
   await expect(objPage.getByRole('region', { name: 'Something to sip' })).toContainText('Medium');
   await expect(objPage.getByRole('region', { name: 'Something to sip' })).toContainText('$2.00');
-  await objPage.getByRole('link', { name: 'Explore the menu' }).click();
-  await expect(objPage).toHaveURL(/\/menu$/);
   await expect(objPage.getByRole('heading', { name: 'Your pizza, your way.' })).toBeInViewport();
   await expect(objPage.getByRole('main')).not.toContainText('coming soon');
   await objPage.getByRole('link', { name: 'Start your order' }).first().click();
@@ -33,7 +35,9 @@ test('keyboard users can skip directly to the main content', async ({ page: objP
 test('refined customer menu and builder reflow on a narrow phone', async ({ page: objPage }) => {
   await objPage.setViewportSize({ width: 320, height: 800 });
   await objPage.goto('/');
-  await expect(objPage.getByRole('list', { name: 'Pizza toppings' })).toBeVisible();
+  await expect(objPage.getByRole('heading', {name:'Come hungry. Feel at home.',exact:true})).toBeVisible();
+  await objPage.getByRole('link', {name:'Explore the menu',exact:true}).click();
+  await expect(objPage.getByRole('list', {name:'Pizza toppings'})).toBeVisible();
   expect(await objPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await objPage.getByRole('link', { name: 'Start your order' }).first().click();
   await objPage.getByRole('button', { name: 'Continue', exact: true }).click();

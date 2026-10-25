@@ -20,10 +20,12 @@
 <div class="menu-details row g-4">
   <div class="col-md-7"><section class="menu-card" aria-labelledby="toppings-title">
     <p class="eyebrow">The finishing touches</p><h3 id="toppings-title">Make it yours</h3>
-    <p>Mix your favorites. Each topping is priced by pizza size above.</p>
+    <p>Mix your favorites. Per topping:
+      <% for (const [intIndex,objSize] of objMenu.arrSizes.entries()) { %><%= intIndex ? ' · ' : '' %><%= objSize.strLabel %> $<%= (objSize.centsTopping/100).toFixed(2) %><% } %>.
+    </p>
     <ul class="topping-list ingredient-list" aria-label="Pizza toppings">
       <% for (const objTopping of objMenu.arrToppings) { %>
-      <li><%- include('ingredient-art', {strCode:objTopping.strCode}) %><span><%= objTopping.strLabel %><% if (!objTopping.bAvailable) { %><small class="availability-label">Currently unavailable</small><% } %></span></li>
+      <li><span><%= objTopping.strLabel %><% if (!objTopping.bAvailable) { %><small class="availability-label">Currently unavailable</small><% } %></span></li>
       <% } %>
     </ul>
   </section></div>

@@ -105,7 +105,6 @@ export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigi
     renderPage(objRequest, objResponse, fnNext, 'pages/home', {
       strTitle: "Luigi's Pizza | Dine-in & Carry-out",
       strDescription: "Explore Luigi's Pizza: 12, 14, and 18-inch pizzas, your choice of toppings, and fountain drinks. Dine-in and carry-out, daily 10 AM to 11 PM.",
-      objMenu:publicMenu(objCatalogService),
     });
   });
   objApp.get('/menu', (objRequest, objResponse, fnNext) => {
