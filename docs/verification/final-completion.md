@@ -106,7 +106,28 @@ deployment. Staff/customer templates now reference the existing Bootstrap+staff
 bundle in one response. The new request-count test failed first (2 versus 1);
 six focused HTTP/auth/audit tests then passed, including exact CSS bytes/cascade.
 No dependency, schema, permission, visual design or audit-scoring change occurred.
-Deployment and the protected audit retry remain pending; 99 is not waived.
+The approved release `da2a2bdbe3ef0beb06f0e96dd0e07d64ef60140a` is now live.
+Candidate/fallback had zero pending migrations; retained database identity,
+account/MFA/schema digests and private settings matched. Prior `0e931d6` remains
+the compatible release fallback. All three strict native staff visual jobs in
+run40177926406 and all required staff jobs in40177854653 passed. The approved
+optional Windows WebKit diagnostic failed and is not counted as a pass.
+
+The first post-deployment recovery audit measured mobile97 (Speed Index4.6s),
+desktop100, with Accessibility/Best Practices100 and noindex SEO63. Its cause is
+not proven and it remains a failed observation. A predefined isolated three-run
+standard mobile investigation then produced 100/100/100, SEO63 on every run,
+FCP/LCP/Speed Index1056–1067ms, zero blocking time/layout shift. All samples are
+retained in reports/cleanup/recovery-variance.json, not selected until green.
+The complete protected audit retry is still required; no score is waived.
+
+The corrected auditor explicitly clears the default audit context's HTTP cache
+before every profile while retaining native authentication cookies. It preserves
+the private tracking fragment in memory and requires a successful actual tracking
+API response, rather than auditing an empty shell. The disposable localhost
+tracking rehearsal passed both profiles and deleted its temporary account; its
+self-signed certificate allowance exists only in that fixture, never the hosted
+CLI. Partial diagnostic scopes cannot produce overall whole-audit acceptance.
 
 - Customer palette regression is resolved: old run 40176498305 is retained as a
   failure; test-only correction `47a3392` and native run 40176777086 passed all

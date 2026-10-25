@@ -12,6 +12,7 @@ on:
       - 'tests/unit/hosted-audits.test.js'
       - 'tests/unit/hosted-completion-policy.test.js'
       - 'tests/operations/hosted-completion-rehearsal.js'
+      - 'tests/operations/hosted-audit-rehearsal.js'
       - 'tests/unit/hosted-int02-policy.test.js'
       - 'tests/operations/hosted-int02-rehearsal.js'
       - '.github/workflows/hosted-int02-verification.yml'
@@ -42,3 +43,4 @@ jobs:
       - run: node --test tests/unit/hosted-completion-policy.test.js
       - run: node --test tests/unit/hosted-audits.test.js
       - run: node tests/operations/hosted-completion-rehearsal.js
+      - run: node tests/operations/hosted-audit-rehearsal.js
