@@ -57,6 +57,39 @@ not been verified on Windows/Linux here.
 
 ## Hosted procedure — prepared, not executed
 
+### October 25 completion tooling
+
+Brody approved the grouped completion pass, temporary hosted practice accounts/
+orders and a brief restart if valid prior evidence is insufficient. The bounded
+`scripts/verify-hosted-completion.js` private CLI reuses the authenticated INT-02
+journey, then measures six checkouts with four distinct staff sessions. It performs
+20 queue reads, six order writes and six demo-payment writes; reports complete-body
+nearest-rank p95 with all HTTP failures retained. Offered slots are spread across
+the actual menu/schedule; capacity is never bypassed. It is a small demonstration
+observation, not a sustained-load guarantee.
+
+It also checks hosted customer registration/profile prefill, associated order
+history, guest/staff isolation, recovery/session revocation and deletion. Cleanup
+cancels/refunds only newly captured practice receipts, deletes its customer and
+disables its temporary staff; protected order history remains. Cleanup failure
+prevents overall acceptance. No recordings, credentials, private links or codes
+are emitted. Never rerun a failed hosted attempt before reviewing its stage and
+any unresolved run-created records.
+
+The disposable local rehearsal initially rejected valid `201 Created` payment
+responses; the verifier was corrected, not the application. The corrected run and
+its customer recovery/revocation extension passed with cleanup. This is still
+local tooling evidence; actual hosted results must be recorded separately.
+
+Run from a private interactive terminal using the declared Node runtime:
+
+```sh
+node scripts/verify-hosted-completion.js
+```
+
+Enter Owner credentials/current authenticator code only at the hidden local
+prompts. Share only the sanitized summary. This does not rerun final TEST-04.
+
 After separate activation, verify exact release/host, mounted disk, external keys,
 HTTPS and four individual staff identities. Obtain authorization for the disposable
 synthetic dataset and any fault injection. Never enable test routes publicly.

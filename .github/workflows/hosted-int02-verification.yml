@@ -5,6 +5,10 @@ on:
     paths:
       - 'scripts/hosted-int02*.js'
       - 'scripts/verify-hosted-int02.js'
+      - 'scripts/hosted-completion*.js'
+      - 'scripts/verify-hosted-completion.js'
+      - 'tests/unit/hosted-completion-policy.test.js'
+      - 'tests/operations/hosted-completion-rehearsal.js'
       - 'tests/unit/hosted-int02-policy.test.js'
       - 'tests/operations/hosted-int02-rehearsal.js'
       - '.github/workflows/hosted-int02-verification.yml'
@@ -32,3 +36,5 @@ jobs:
       - run: npx --no-install playwright install --with-deps chromium
       - run: node --test tests/unit/hosted-int02-policy.test.js
       - run: node tests/operations/hosted-int02-rehearsal.js
+      - run: node --test tests/unit/hosted-completion-policy.test.js
+      - run: node tests/operations/hosted-completion-rehearsal.js

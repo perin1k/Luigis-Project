@@ -7,7 +7,7 @@ import {randomBytes} from 'node:crypto';
 import {verificationOrigin,temporaryUsername,cleanupTemporaryStaff,sanitizedHostedResult} from './hosted-int02-policy.js';
 
 /** Browser-only acceptance: real routes, separate cookies, no database access. */
-export async function runHostedInt02({objBrowser,strOrigin,strUsername,strPassword,fnOwnerCode,fnAdminCode,fnProgress=()=>{}}){
+export async function runHostedInt02({objBrowser,strOrigin,strUsername,strPassword,fnOwnerCode,fnAdminCode,fnProgress=()=>{},fnAdditionalAcceptance}){
   const {bFixture}=verificationOrigin(strOrigin);
   const {expect}=await import('@playwright/test');
   const strRunId=randomBytes(6).toString('hex');
@@ -138,6 +138,9 @@ export async function runHostedInt02({objBrowser,strOrigin,strUsername,strPasswo
     const objReport=await objOwner.request.get(strReport);expect(objReport.status()).toBe(200);
     const objReportBody=await objReport.json();expect(objReportBody.objPeriod.centsRefunds).toBeGreaterThanOrEqual(objReceipt.objTotals.centsTotal);
     await expect(objOwner.locator('.analytics-table--items')).toContainText('pizza');passed();
+    // An explicitly approved completion check can reuse these authenticated
+    // browser contexts. It must resolve its own labeled data before returning.
+    if(fnAdditionalAcceptance)await fnAdditionalAcceptance({objOwner,arrStaff:[objOwner,objEmployee,objAdmin],fnActor:actor,fnPost:post,strRunId,strOrigin});
   }catch{strFailureStage=strStage;}
   finally{
     if(objOwner){
