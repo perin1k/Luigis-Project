@@ -8,7 +8,6 @@ export default defineConfig({
   grep: /visual/,
   reporter: [['list']],
   outputDir: './test-results/staff-native-visual',
-  snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/ci/{arg}-{projectName}-{platform}{ext}',
   updateSnapshots: 'none',
   globalTimeout: 7 * 60 * 1000,
 });

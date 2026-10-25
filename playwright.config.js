@@ -9,6 +9,8 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   workers: 2,
+  // Reviewed redesign references are native to each OS, engine and viewport.
+  snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/cleanup-regression/{arg}-{projectName}-{platform}{ext}',
   reporter: [['list'], ['html', { open: 'never' }]],
   use: { baseURL: 'http://127.0.0.1:3000', colorScheme: 'light', trace: 'retain-on-failure' },
   projects: ['chromium', 'firefox', 'webkit'].flatMap((strBrowserName) =>

@@ -4,6 +4,7 @@ process.env.PLAYWRIGHT_BROWSERS_PATH ??= fileURLToPath(new URL('./node_modules/.
 export default defineConfig({
   testDir: './tests/staff-e2e', outputDir: './test-results/staff', workers: 1, fullyParallel: false, timeout: 60000, updateSnapshots: 'none',
   reporter: [['list'], ['html', { outputFolder: 'playwright-report/staff', open: 'never' }]],
+  snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/cleanup-regression/{arg}-{projectName}-{platform}{ext}',
   use: { baseURL: 'https://localhost:3443', ignoreHTTPSErrors: true, trace: 'off', screenshot: 'off', video: 'off' },
   // Self-signed certificates and synthetic secrets exist only in this isolated test fixture.
   projects: ['chromium', 'firefox', 'webkit'].flatMap((strBrowserName) => ['desktop', 'mobile'].map((strSize) => ({
