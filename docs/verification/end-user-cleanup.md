@@ -163,3 +163,19 @@ configurations and TEST/SEC derivatives now share these reference paths; old
 images remain historical evidence, not current comparison targets. Strict run
 `40172225012` compares these five groups without updates. Its result and the
 remaining operations/privacy group are pending at this entry.
+
+Operations collection subsequently passed on all three OS targets. Its remaining
+512 images were inspected before acceptance in `ee43349`, bringing the redesigned
+reference manifest to 1,200 images. Strict operations comparison `40172796013`
+selects all 16 screenshot-producing cases per browser/viewport, reusing the full
+43-case operations collection's functional results rather than repeating unrelated
+cases.
+
+The five-group strict run passed 14 jobs but failed one macOS public case (137
+other cases passed in that job). Internal inspection of the actual/diff PNGs
+isolated the difference to lingering hover on Edit pizza 1. Availability capture
+now uses the existing ordering-test pattern of a neutral pointer and consistent
+scroll before capturing, without altering application behavior or comparison
+tolerance. Targeted collection `40173106446` on `41a55b1` covers only that case;
+its review and subsequent strict comparison remain required. The original failed
+comparison is not recorded as a pass.

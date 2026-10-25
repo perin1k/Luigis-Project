@@ -104,7 +104,7 @@ fixture using `CLEANUP_SUITE`. The matching workflow collects synthetic candidat
 or performs strict comparisons. Ordinary public/staff configurations and their
 TEST/SEC derivatives share the redesign's `cleanup-regression` reference paths;
 historical references remain available for their original revisions. The focused
-cleanup configurations keep their separately reviewed `cleanup-ci` references.
+cleanup configurations now inherit that same path, reusing their accepted images.
 See [cleanup verification](verification/end-user-cleanup.md) for source runs,
 reviewed image manifests and the distinction between collection and acceptance.
 
