@@ -45,7 +45,9 @@ const objServer=createServer((objRequest,objResponse)=>{
     objResponse.setHeader('Cache-Control', 'no-store');
     objResponse.setHeader('Content-Type', 'text/html; charset=utf-8');
     try {
-      return objResponse.end(ejs.render(strStatusGallery, { arrStatusExamples,
+      // Direct EJS rendering bypasses Express, so supply the same shared locals
+      // (including the current stylesheet fingerprint) as ordinary app pages.
+      return objResponse.end(ejs.render(strStatusGallery, { ...objApp.locals, arrStatusExamples,
         strTitle: 'Scheduled order status | Luigi’s Pizza', strDescription: 'Isolated scheduling status examples.' },
         { filename: fileURLToPath(import.meta.url) }));
     } catch { objResponse.statusCode = 500; return objResponse.end('Status fixture could not be rendered.'); }

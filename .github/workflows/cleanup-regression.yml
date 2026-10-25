@@ -1,8 +1,5 @@
 name: Cleanup affected-screen comparison
 on:
-  push:
-    branches: [dev]
-    paths: ['.github/workflows/cleanup-regression.yml']
   workflow_dispatch:
     inputs:
       phase:
@@ -11,6 +8,11 @@ on:
         default: compare
         type: choice
         options: [collect, compare]
+      suites:
+        description: 'JSON array of affected groups; narrow retries to changed or failed groups'
+        required: true
+        default: '["public","pricing","scheduling","payments","staff","operations"]'
+        type: string
 permissions:
   contents: read
 jobs:
@@ -19,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022, macos-15, ubuntu-24.04]
-        suite: [public, pricing, scheduling, payments, staff, operations]
+        suite: ${{ fromJSON(inputs.suites) }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 35
     env:

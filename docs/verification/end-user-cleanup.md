@@ -128,3 +128,21 @@ Affected historical screenshot reconciliation and final hosted HTTPS acceptance
 remain linked to integrated QA and TEST-04. The focused pass is not a claim that
 all historical Playwright suites pass or that the application is commercial-ready.
 These changes have not been deployed to the public VM.
+
+## Affected historical screen reconciliation
+
+Brody approved a grouped reconciliation after the focused checkpoint. The
+`playwright.cleanup-regression.config.js` adapter selects existing public,
+pricing, scheduling, payment, staff and operations/privacy fixtures and tests.
+It keeps their functional/accessibility assertions and uses an isolated
+`cleanup-regression` reference directory. Pricing/scheduling select their visual
+and associated reflow cases; staff selects its visual account/authentication
+cases. Existing focused/domain evidence is reused for unchanged behavior.
+
+The `cleanup-regression.yml` workflow runs those groups separately on Windows,
+macOS and Linux with the approved engine/viewport coverage. Its collect phase
+writes synthetic candidates in CI and retains them for two days for internal
+review. Its compare phase disables updates. Neither collection nor a new
+directory establishes acceptance: references must be reviewed, connected to the
+ordinary checkpoint configuration and pass strict comparison before this
+remaining gap is closed. No live deployment is included.
