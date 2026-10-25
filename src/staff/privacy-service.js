@@ -1,3 +1,8 @@
+/**
+ * Protected customer-contact correction and limited data-copy workflow. Verification is
+ * required; corrections do not change purchased prices, retained history or retention
+ * deadlines.
+ */
 import {randomUUID} from 'node:crypto';
 import {orderRetentionDeadline} from '../data/order-retention.js';
 import {validateContact} from '../ordering/order-service.js';

@@ -1,3 +1,8 @@
+/**
+ * Private-link HTTP adapter. The fragment token is posted in a body rather than placed
+ * in server-visible URLs; missing, revoked and expired grants receive the same safe
+ * response.
+ */
 import express from 'express';
 import {StaffOrderError} from '../staff/orders-service.js';
 export function createTrackingRouter(objTrackingService,fnRender){

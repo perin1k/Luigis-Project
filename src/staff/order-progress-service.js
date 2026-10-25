@@ -1,3 +1,8 @@
+/**
+ * Revision-checked kitchen transitions preserve workflow ordering, capacity and
+ * cancellation safeguards. Progress writes and their audit/events share the authorized
+ * transaction.
+ */
 import {queueInternalNotification} from '../notifications/outbox.js';
 import {randomUUID} from 'node:crypto';
 import {StaffOrderError} from './orders-service.js';

@@ -33,6 +33,15 @@ All 11 before/after normalized parsed structures match, including literal values
 syntax checks pass. The 28 focused existing pricing, scheduling, payment and refund
 tests pass. No browser/UI change or hosted redeployment is claimed by this batch.
 
+## Staff, tracking and internal-preview batch
+
+Reviewed nine staff modules, two tracking modules and two notification modules.
+Explained queue projections versus state changes, revision checks, cancellation
+versus refund approval, reporting cohorts, privacy verification, bearer-link
+digests/replacement and bounded internal-preview processing. Dense operational
+statements are expanded. All 13 normalized parsed structures and syntax checks
+pass; 34 focused analytics/progress/privacy/tracking/notification tests pass.
+
 The broader application/readability card remains In Progress. The separately
 approved Nginx architecture/configuration change must use its own commits and
 verification rather than be hidden inside a formatting diff.

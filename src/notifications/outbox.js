@@ -1,3 +1,7 @@
+/**
+ * Queues internal email/SMS previews from committed application events. The caller owns
+ * the surrounding state-change transaction; this is not external sending.
+ */
 import {randomUUID} from 'node:crypto';
 // Caller owns the state-change transaction. No external delivery occurs here.
 export function queueInternalNotification(objDatabase,strOrderId,strEventId,strTemplate,dtNow){

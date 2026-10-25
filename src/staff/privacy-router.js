@@ -1,3 +1,8 @@
+/**
+ * Admin/Owner privacy HTTP boundary: combines transport checks with explicit review
+ * confirmation, then returns no-store responses without exposing a public customer
+ * lookup.
+ */
 import express from 'express';
 import {randomBytes} from 'node:crypto';
 import {AUTH_COOKIES,COOKIE_OPTIONS,createCsrfProtection,readAuthCookies} from '../auth/auth-transport.js';

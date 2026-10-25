@@ -1,3 +1,7 @@
+/**
+ * Authorized staff queue/detail projections combine persisted order, booking, review and
+ * refund state. Reading a warning does not itself resolve it or advance preparation.
+ */
 import { chicagoDate } from '../ordering/scheduling-service.js';
 import {orderRetentionDeadline} from '../data/order-retention.js';
 const ACTIVE_STATES=['Received','Preparing','Baking','Ready'];
