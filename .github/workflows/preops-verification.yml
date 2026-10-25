@@ -99,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: preops-candidates-${{ matrix.os }}
-          path: tests/payments-e2e/customer-journey.spec.js-snapshots/preops-ci/*-${{ matrix.platform }}.png
+          path: tests/payments-e2e/customer-journey.spec.js-snapshots/cleanup-regression/preops-ci/*-${{ matrix.platform }}.png
           if-no-files-found: error
           retention-days: 2
       - name: Bounded synthetic comparison differences

@@ -97,6 +97,16 @@ references are preserved. Temporary generation/upload steps and their flag have
 been removed. The final workflow compares those references with explicit
 `--update-snapshots=none`; generation is never counted as a comparison pass.
 
+### Reference location after the approved redesign
+
+The paths above describe the original acceptance evidence. The October 25
+end-user cleanup introduced a shared `*-snapshots/cleanup-regression/` directory
+for newly reviewed native references, inherited by the ordinary staff, TEST and
+SEC configurations. Old images remain historical; they are not the current
+comparison targets. See [cleanup verification](verification/end-user-cleanup.md)
+for source runs, image hashes and the latest strict-comparison status. Do not
+count candidate collection as a passing comparison.
+
 ## Cookie enforcement investigation
 
 The existing browser-cookie assertion still requires `SameSite=Strict`. The

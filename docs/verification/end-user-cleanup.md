@@ -146,3 +146,20 @@ review. Its compare phase disables updates. Neither collection nor a new
 directory establishes acceptance: references must be reviewed, connected to the
 ordinary checkpoint configuration and pass strict comparison before this
 remaining gap is closed. No live deployment is included.
+
+The first native collection, run `40171499644` on `6cc6c72`, exposed a scheduling
+gallery fixture error: direct EJS rendering did not receive Express application
+locals after stylesheet fingerprinting was added. Supplying `objApp.locals`
+restored the fixture without changing application behavior or assertions. The
+targeted local keyboard/visual case passed; isolated native scheduling collection
+`40171766095` on `12077a2` passed all three OS jobs. The original failed scheduling
+jobs remain failures and their partial images are not accepted.
+
+Public, pricing, payment and staff collection passed all three OS jobs in the
+first run. Together with corrected scheduling, 688 native images were reviewed
+internally, then committed in `a2d0db6` with hashes and source-run attribution in
+`cleanup-regression-reference-manifest.json`. The ordinary public/staff base
+configurations and TEST/SEC derivatives now share these reference paths; old
+images remain historical evidence, not current comparison targets. Strict run
+`40172225012` compares these five groups without updates. Its result and the
+remaining operations/privacy group are pending at this entry.

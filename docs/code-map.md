@@ -99,6 +99,15 @@ choose fixtures, viewports and supported engines. Reuse those helpers and real
 assertions rather than copying implementation logic into a new test. Visual
 references are specific to their browser/platform and need actual review.
 
+`playwright.cleanup-regression.config.js` groups affected existing screen tests by
+fixture using `CLEANUP_SUITE`. The matching workflow collects synthetic candidates
+or performs strict comparisons. Ordinary public/staff configurations and their
+TEST/SEC derivatives share the redesign's `cleanup-regression` reference paths;
+historical references remain available for their original revisions. The focused
+cleanup configurations keep their separately reviewed `cleanup-ci` references.
+See [cleanup verification](verification/end-user-cleanup.md) for source runs,
+reviewed image manifests and the distinction between collection and acceptance.
+
 See [readability verification](verification/readability.md) for the exact
 behavior-preservation checks. Final hosted/browser/accessibility/Lighthouse release
 acceptance remains on its existing QA cards and TEST-04.

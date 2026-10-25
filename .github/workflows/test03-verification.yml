@@ -97,7 +97,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: test03-candidates-${{ matrix.os }}
-          path: tests/staff-orders-e2e/*-snapshots/test03-ci/*-${{ matrix.platform }}.png
+          path: tests/staff-orders-e2e/*-snapshots/cleanup-regression/*-${{ matrix.platform }}.png
           if-no-files-found: error
           retention-days: 2
       - name: Retain bounded synthetic comparison differences

@@ -15,7 +15,10 @@ const mapSuites = {
   payments: {objConfig: objPaymentsConfig, arrFiles: ['payments.spec.js', 'customer-journey.spec.js']},
   staff: {objConfig: objStaffConfig, arrFiles: ['staff.spec.js', 'roles.spec.js'], objGrep: /visual/},
   operations: {objConfig: objOperationsConfig,
-    arrFiles: ['orders.spec.js', 'menu.spec.js', 'menu-customer.spec.js', 'analytics.spec.js', 'notifications.spec.js', 'privacy.spec.js']},
+    arrFiles: ['orders.spec.js', 'menu.spec.js', 'menu-customer.spec.js', 'analytics.spec.js', 'notifications.spec.js', 'privacy.spec.js'],
+    // The initial collection ran the full files. Reuse those functional results
+    // and compare every screenshot-producing case without repeating unrelated cases.
+    objGrep: /visual|menu owner publishes|menu edits reach|private tracking explains|lost refund response/},
 };
 const strSuite = process.env.CLEANUP_SUITE;
 if (!Object.hasOwn(mapSuites, strSuite ?? '')) {

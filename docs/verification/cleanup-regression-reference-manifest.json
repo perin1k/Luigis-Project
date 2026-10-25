@@ -4816,6 +4816,3590 @@
       "strOs": "ubuntu-24.04",
       "intSourceRun": 40171499644,
       "strSha256": "c23afd8fc2aab7d74cc9da3ba02f389718e39658cedba09084668f4b875b10b3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "99af57f8e807bce55285c53a69ef381acd253f7548710ff789de94e308022f0d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "f95ec9eda33d46c5d46d2856c196a45cac50cdb0e9ad9bcfb049dac98dc7caf5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "60e6f7415e9a2a88f0fdfd0915bdc36bbefc8cd7722491ce679a280043e50e44"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "75d962fa3039feaf517d119708a7c5a8be05dce6606963f750e0035368cb0dcf"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c58a76dffea3b9b47aa437fa71b8053022fbad6335397e0bbf596630a1309c57"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c091346a8a1fc97f6013b64b068583d6463bb4ac3dde64e8249f09ef86bc0bbd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e335bb0e53aeae1d119dfc2e5da8b52f4722ca8a84a0fa8559119088bbb87060"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "7618eb741579ff3afe970eab08c6d26e6af87d4dd2148a6e7078c414977afeb8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "2f9e1423c184eaec8dee0c419558552505ae8e29cc43772553d1073582cce059"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "0ed3678daea682dc7007c815b4c8d331f99cad6d3d495e5429544fea1deefb89"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1e6bd792035f8c35e0206d487ff17ea405566a79c7a5ff37503a886a673692e5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c7a9ec439c685e8e302ae558ae0458f552c779e90aadaa9e9af21d7d69b59229"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "ba00baaa5ab0ef94ce6fa956677bb0bfe4ebd0348cb94b98db64acccf23d99c6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4463c1c79435acd208f17cae0d86c7f74b8bc28c919826b7d9ebcb3c7e86f28b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "befb357be54897088f3c8eda95141d3278c6b2c0b756a2237f1770c669f1fecb"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "2bbacefb1a1b1b037e5940ad5236272fb2f7c82efb9ee20a92363fcf51b11855"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f9b5ed2c93d468239446ff92de7df52db4354e35a6b9bf6c61d2e22d6c7dd670"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "bee95bc4d321f3b76e21fd4a0a2ebec6f46611e3b0a325769cbf9d8cc1bb8f98"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "5eab7db5618cf27d8aabb2576913275434b78a6a8bb719ae68e3277bbb369a7a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "05a4ed3ff1c5bb3fbd0f823ef785fc27046d22f1528e06e047803ae11a1e8bf0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "be5565396cd6c1d51df7d16af765d23f1e0faffcda2e14580a333f10aed22869"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "7dad2117f11639c2a90a7c9fd570b00c8b2bedc92b7bde0e64f30449207d92be"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "0dffe95014430cdfde5291c22fd7f2ab278a7cddc3c71eb3d6ba68b933a4d9c3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4458ab7cc4e8d9f1aab42551db14b669be90df37cfc32aa303f1b91aa9378180"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "6eb6a33350554795a5c5877f76bda80805f12bd0abfc72e99bb1a56f0f804f7b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "22c353401ba906eaa6693f82eb91ab0c88072e8589b2cf4687abb54596ef355c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "9a23a2b31634e377f2c7cfd8f9e7e2d1375e7cdb30ccb7b68f681bc1ba88a64f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "e0330465758a972440f0ceaf1ab527b1ecd886f73d4355cd8e6f758322a3a13f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "fefdbbb29f437fc539ce4ebf8011b6bf794f3425afd814567c505e6887fa7563"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "67a52d359bca35f6411fad852b587e23f0821186991927e37017ab6ede08e487"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "49fe601c8331e553623bc736dfb616fe21de1360a4fa67fcc18052a8a50448c9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-empty-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "7da9d2799c51494ea5fe1cf592906bc7749629ae613c926b6e9138ded65e39c1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "6d1809143cff52d73e6e2f21ae1c6776c9f7517049c0149f8a18bfd7f8b77706"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "9bc7d69f7726c5793d05deaccfc13f30edb3d2ce43777d59b1d42c3a8bb5183c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "607ea93477215c9346b0da74d0f97399d2ab92a5c01667766236917721dec2d0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "800aa14e1e33d7be4e3d3782df5efb044d6eacb0e60e6f37393d106144868f07"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "0fd860eb57a84d118ca76a7ace46770e21afaed2c016fd314f68a2f830055bb4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "7fdf292e438ae9b6cd35042e5ff928d155e87f8d4ebff6216a297fd38b468582"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "285772d6698664c6ab71a55d6dc01fe7ba959b231c0aab2f94350f69fe0e3b79"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d52a4ee7dac8cc05d61ac62c68e5cb13dedf7723976a9e9437b85ce6717ba290"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "265984f7438a7ce02c269ac01f075c2465c611b23e8745528cb4b6605aacdbcd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "7a0105d8a990df8b2c6d7d2f79d4d35ed008f75d15e2e5c0e3f835517cf5ba71"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "099a9fb53afbc3329d17748328af0ddb06ef14f29c84fefe875b303dce337902"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "a96bf4ccbb3470136c12fe9dc2428c8896b31e669806d08e961538f2833059ec"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "4aa4fdc222ad4f859c790c826eae465632c217bf8d1c82ae55fb726db0ec9c24"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "2881827e134f43be438e173af84cea9859a5a1096983f4571da4c197046de34a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "b06be148577432a51f9aeb7fbb49d5956352040eeec581bb4c6f947d456473c5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c9e04acb58f99b2b461e73cd53163b9a2c59d9ccb5cc9c773f6e997ba8af54b2"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5741395c108ce2b9671fcf284fc03e2004f21962f27492b42088a9a51e80b07e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "efa9ed18ba0a62fdb73c01b08d78840c2d04adcd547373a1275b4abff6a8b848"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "8107a8b1bab2b3dfb03972584f017c87f4fb7c4bb6cb2d243d24ccb33503bdbe"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "a3f6ff67ec22d7f4f1fa995386db4224d700d769722934b27c806ed99b3fb481"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "519cfdb0a20256f14759dfe16a49a339df3dd5c5dc92bdf6240eae9928f1ec9b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c603d3c363f62eafb0b7e2f8f89d26533555dcea91f7d894de7b979dd9f8e840"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "43651a5d6836943fd87d880c825bda162b0016344a45a6f07db3af541ac4a2b1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d55f4e62bac9e4e2cf4fe0db1d51fc3fea155d72249f5a7507e1f260efad9ecc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "92e8d02aa7ea5bba217b528d08f8f2c656454d69f0d5724ed018d7578cb7f04f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "49e1563b206b3c32e0e73f49059384d98715dce8c01677f528844068634e2777"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "897b09f69c0555b6cfda32d48a157a2669564e62f5fee7c31b6d9f39cd901f9e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "99a4e18c3819e711233d01edb0e222b5541f535c222744dcac8252a2d174b8a1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "b7c4d6920ad50dbcafaf07b09456aaafaf6107a415ec961584cd20bccec3cd98"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "8a79c05aa81a54b97e2cb8bb0ef3ed2d57b94661ab858840cac93439620aeb53"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "3c288ed2523890d839a67d45f732c0955abe6899875d824aef5e89d140def93a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/analytics.spec.js-snapshots/cleanup-regression/analytics-populated-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4f7dd420145a35368fa7a3562d37ca3f9e30e4c31bf517ef66ea77bb49fef316"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "186a6efc58aa97828245d57f2ec19d0ee39c360914ed4374100640e7a3a030ae"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "dcebe82f4efe72e5d19192976bf036cd3b37ac2023467d4439a3a5c8c9e3cd6a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "761cb2e324d93b138529c65444dabd67027b88476fe4d21cf07d61da53046b00"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f2790efa60622819a025506b70071d767b4ad4893d227f439975eaa362333874"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "3d0b286298d1d352494b31745647742f8b4ed99317671a09c28a09380493e1b8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "b7263976cbaf7bff3c41a52f03865b843a10758f2a0305c47cc897eb7000db25"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "43e22517dd5335e32c0013a1a5676d012c3544abf9a18503cbc5bd56a15a5b0b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "52f74187e4554edadbe15ff87160bcd76c18fe9a63a9214c1b823fd4b8683f6d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c8852b2a300e352ab4e591895efe1861ce5e7e662fdb9ab1eca4bbae00bc34f3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "a6b51bd788719bd9629c872e4270350f581aa9e948e840c64e7b57bf80e6d106"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "95ee667c7867073e5bd0a1b426e7df4bdfdf1853644d7838ed2dee49fb9bed73"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "406f0208660bb4891cb102107f1ea7784770a813129d6b5025f6cafa5bfb39f3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "3243089e5a51dbdcd1ed1c6b3eaa9bc4709b0151986a59b50b42a54ec6daabe4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1e26781c402f6c2b52e29e41c036f7ab7a51536b78b703215ea807f665121945"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "81755a4bf85c3d4b1a3f5fd1ac7543cde1d6947ca69d02259cc56ed4f2e85fc7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1714c742a3c6543fbe376b5ed2b240097f20c84e23948ef97f9bed5e39dba6f8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "fdbf3a1ca9226efa733c4ab8ecf9f37fe12c72663035d7aec17c872adb65d750"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "e072b8eff91544d222884b9912f0609e72b9f80e40909d9b9bcf135c86d65656"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c850cad5588788323c26e4104b063123051a426808c23c4b92f16709f8903892"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "7475a9d574fa1f3d64e13699521bed34f48d2d8fd84c5ddbeee12444c228e928"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "541ad61446612ec863eb6e7a34a6eb3fa6d28d70b17c3c2344df9bc9aab666d9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "7b552d4f438d0be374f5cce60d4510f146827b3d53e575dfd68f1308d63e3089"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "bdd52477d39d0a1a6639e144532da228b2f0e358054c3b93dea6cb5a00c230ef"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "ba4487e6e80c62dd2d2ee8d068ed9d796c2203408c326d4c153734ab28eba65f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "67e82833dcbea00795fefc0e194bd7f2162044408cb5df7ebc5ab3abd2cf390e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "af8e9f7dd1852dadc1376c85d864d3eb752286a0bb35d6b80023c97aa388dae9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "70a747abff2008d828b452b3ea4fea76c930c8d7439e58c734b3b8086de3fd1d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "90e43b57d2118c9790729b6114ae8d81c666b8d8ad129e50369211826960d577"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "44e70ff214dad6dcc661f78a3dfb328ef3da575ee318368bd4a61b0b2b360eb5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "766f929db392b20c398ba48c671e9cf5a93b1c04c709cb3bb05335d5a72bfd63"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "57b5ebcc22e907e5f5f057c297bef6f9f234bad78597f7d0c9bed90e80dbf04e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-regression/menu-customer-review-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "095921bc34ec652803d39db3548bc604e01ad333cf94baacc92152a745d23bff"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "9bd744dc44a271d9ff04394b4dadacbce2886ff4f8555940f91a9ccae32c9f05"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4b7e3121066167b6e9a0ba145b1ba3650cdaa57cf1be54da59930014c9ce7c94"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "476172a6bc80b21059569a2de2cff2ebb6c9917bc99f20d59da1af288dfd3a50"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f383da59a23f63c1ea9fcce68f97dd8d90856433783f6c3fa2c2f7c3d0a92b4a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "9bce88a7a67ccc876505f20dec98b796c3b9d49abddded0430274be7987d794c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "40742c5a01dd13a4181aec59a97b23d75da0c0c8ca8fc9185694ab55930cbab0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "2f0f5baa0b14766fc39aa7aebc72c12267e1309b36904b1568cb047a4b26df0e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d71708efc561a729b42417c7c7286416259259a7c207fabbefdf21d7e8be5392"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "b0a699fd527efe16b6cf495ea5d33e24a10e667ff082f32cb90fadf8112d6c68"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f0c071aad1b070e59754661eca94ce0beb26ec691b2dce8770f2623b17ea3d42"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "70aa07cbab8388600ce5ae76805d92dac1a83b2021966711aa3bab36617e86fc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "91cdc28964f277997ced953c6020821d3abdbe2adb2ab860897d864c294fed1d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "921198254fdc61fd9cbee302a1074a4c731d0121d529f61ae028f2a5facbb083"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "359d51f77d35cda0eb5c1fc492188872a40028e105cc641416836eea64c4330d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "1837fc5650dead17067fa2259b2696faa61bc8a3ef200962481bd96b7254c9a4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "70177bcb8b576a1cfc7f9f36d346ed40d1d8f132c93fd589d3c0b7b1d3c6e4db"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "05eec332def7c32c5a59aa1ca66ebd6743839f5cae3c215ef09d17382abcc0b2"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d8d29f1d0eb44a6b7b62be3a153007125a46450d27486d484dfcbc325ab60dc2"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "58cd8bbf6b500d7370333bace869cf8f3929d13353757f4b5e0105d707903601"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "611befcbea5be0a4da9e5a6388ac536b6ae3a773ca35849409296259b2ce8a7e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "9fcbafb967d0a2406aa8360844743cad9d47c29e2cbcb93cb123536b14702c5f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "a30d7c3cd8afb56ddbfa3ed9d2b6f3ec2fde2ae233743c47fb5cd7dbd9749493"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "a773398b2b5a67730784fe1f5c9ab4ba4720403d4cf2fd636e9e0e82ca5705af"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "53fd9459ba8b070b12a4f242533bc4dd6e090ef06dd1ad3d4127952c2ced0e34"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "52e6fe829c2977d6d7c8267c85f74e0ae1a658e6f0727c22c5e11a57208f800b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "6f072ec3efe13970b6de01fd32548518ca7a3a0e83abe326f4655b6164430610"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "3bb42aba1894d1cc30a842a940f1fc5b8cd3210066337139d6df89d2c35ca8c3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "e7f50c24ae9b3cbd6fb513d3814e37da41f6a669b3a84a97bad1cd86e5722563"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "372124882ede0032ce13d23512cc3e50db5fb559ffbe7c243fa2618ddf5f8ec4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "85b698a3d18fb85e6200fc2da666455899169d22e8e77f8c35d812f15a28e223"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "37a4484c0b11975c7b1fba8e993437111b8d8d2d67fd999b1cc6a79c16d46d59"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/menu.spec.js-snapshots/cleanup-regression/menu-owner-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "2de4c1789a154aa58b27268e8bdabb8bfa037e127cfa73c5775abd8a9b99cb99"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "2e46450ffc8a39a825123d49ba9a26eaefc984f3d090ec60a93404ef61e991d0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "eabb70426e2b3814a1ec37e0fc2614a4469bcf3860c890e274004a9ce7925bca"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "dc2317f808985a581e97b2763b80dd427e2e9be5f9938440e4ab26701cb34a48"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "72806c2668499b7e70bf265184bedc77eec3d0cdeab18a4c08ad6176c6cc380c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "638f2ad2b1a4569dbefbfa79742da94a45e72153f7e5f05f8fb62e67d3fc54b7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "403df40ace5e37b3038a73e4479993821e8a683c7ad7a033b1885e3d38db1808"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e1fb028f4feedcb635176853233f18069f176a1a51dabac96cd63f1174191770"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4327760d9c1bfd5e1f571f246a7efaadb70ca37b19352b11390c57a6a795300c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "693f5fb4ab87e172fcc9e3236a75af0fe8ba026a2b5d0e7f944a6e3302811298"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e2ec5004da2064ac7f96bdda7b50bf75883fdd6c8e0194b6489b53472352cdd6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "8e9b10a83e655da3144cf2e5a0e6d7a62ccc0ed38a71e35b790f0a037da7934f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "3a7ba50cd9e7ca0ccfb65e0a40ed1eaad2c905dc147e1c695f88822b752dbc12"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "cfbaa02ca3dca5cfbdfb98aee35423baff816de253a23c16e332952bf0d5f2cc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "424d9b31d41ad8a6abf9ab80246a8cee430d1165bd58ea07432d8126478a2e39"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8eaff22bea48b1b9cf9d37ca8f46aa4c1597580a16dd9c898bdc7742c47f85cb"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "412d513eae11c9849aa95063e2c71c2661810b00ab643fe7714ce716aafde389"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "2b06e83e58c7cd7e32b71133a34fd826e976733bbf9ed989ef1282dfbc8a7ee9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "2d19bd7043314cf732e9d1f094d669019b4c6bf5dc80d030bca8992ea80fbff4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "d02bf671440295184b37d0b8a14c0d49faf9f88af97516e8e99b1ff4db51961f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "b53ecc1ff09b573726b4aaaa643d7e7dc423c8307c62b2d81125659acf7518e0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "84279660b756f150cdb3f46f72426ca6a42a0c719e5d57b2299b8036c2510846"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "46bbc5f51009966d3ba22abfa8a26ab32da0e6b2ec14ff5405060451b74c8de1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e432d9f0c17e6b4ba684374b560174415afb9132e0a208acc784e266b9b98730"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "fc81956830c6b32f0b248fd4ac4ccc4c555dbc0c44dbdd0f86de1f6c236d4615"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "5259fee7fd69300f85cc8d63a4798f9e7acac881a400c05b289d031fb84e39b0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5281b0854674ff3a5770f1338a180d1d7b0adcd0bddf59beb75790ca0717f275"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "dd86271094f651eef5fddec2c6eb1869847f323196d172894b700565a9924da9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "ccdf458afe6758a5c8b222f04298bfc19a2d912aba988d2d2258b8069603eee4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "3ae843a6b373078c30c7fb28ffa51eecbd9c09b849edcc1fdd048be426c010ae"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "64d069b4fce30881a5070a41461e6d86fba590832496d5144f48479c10912dcd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "0e705fc8a1b911bc054a8eaaaac86ad232328dda53d2442df7f1647f9ffd79dd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-failed-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4792cbb90b9fe7bf5db1ed3c08b16dfbd809ba673fc919ca469933f2c88ddec4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d6bfb921a4ef033b7e4cb18a9e4de205523e1ef138bb7727622637accf781cf8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "841743c64ee28bf74cfaafa8d19bc1a0ec2dbd5fb77fed00794c68bc010bfdd4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "26567dfa8a8de299c51d74f92e41aaf21d0a21a2e72736d3d81116ca2004d20a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "25ed7111703af31e84fca9aec8d81b04aea497e95a6a1e39852a7909a4787bb3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "df2183280f12670e5ca46a34e05a1d0498090bd128dd48f2eca7c654d3eac307"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "81add2fc5ef0b35a76dd1be29c7d6f4a87b10ad98cd263dba7a2ec385fada476"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "21ae5ce022da08232e2ac6f08469bf6b51f0c84acbd324aba41bae111ca8e2e5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "931ea14ce84ef0e4565d4b3623cb21e802a96a6e5935a9ad3fca09ddd04f8c12"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "62d421ab3a34129e4b65ebb1b90d3f5db0d7563967f747e83704626a0bad2691"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "841692c4a01090e3df8a39080ed895be267336ff92fde328c2e2ae39963106a9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "eb5ec99add63f1fa4f2892da6fa3e4313850a03ee5c3763a981165fab60cde92"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "8770cac2dad99a3f616758e3b81d24d687b283e0e66ab5fa994fcf1c2b6269d7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5cd0e82d336aa0b500824a53594b5f5a60e07f2065105de533cf5370d2c0b7ee"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "fb9c4ae87a3844a9df73883d970573a7f00ba26748b46f40383de656bcb7d5a7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5e5a7afa9b5e002641116172fb61ce8aa72045ab58ce1745c6e1ce02e83f462e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "a2cbf350343a0337dd2f7063a08cf9295f133b8fbb7630e177be28f9905e1fa5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "2a90ba6c3f4b82e85ddd178a7aece5ff41c42575a9d9d495ec54841930f02c2a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "29113f9a01c6c04b74915e641912316eb2ec27b88712586d1e7573362dcdda48"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "bff9a4ad39bd9022fbf94838ae293c2de5b582151087d6b5152af2467270c230"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "9932151de1faa356446ad8f027cb97b586094323bc24be1be1e0f3b8f1bc7788"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1ce3ccb1b1d1b47e4028496b00b5f0c862b859de393ff37d93b1e920ed1693fd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "e041c23ad2abafd8b48a82e96f839128d5385518116b17970d4dbad08a26dab0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "db15b6a9faed2b33c379929e043130df7a64b475732efe028ed7b34654a81743"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "093c567a334470626fc6997fc4419a6918d35c2931fefd0e19a30fc2dc9b7af8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "46cc25eb99f807503e3369fb74cb027b87834d00da36e8b136382d0ea7e4a30d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f2bf63aa7db9c4cc970ebbcb86501de26b7b187e3451723d1b646980b5c8efda"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "e9087e12ffe89fd44219b82029045a070ecf7352ca45273f5d5307608ce44a86"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "be194e64eb463b08b8436ecd9d07bf93e884d05be489eaf3618dfd2c5445639c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "7186c8b7d6999763fa92f12a328d9d188cbc72c61095956138ca9056673197d7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "12c1a13d5392b32f120ba442cafe89ceea96a11371dbd59fe4adca16b89ef45b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "9950a1616b4265f5350115e68097c49905101f47c94d43c57929cc4703088df6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/notifications.spec.js-snapshots/cleanup-regression/notifications-previewed-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1c298719c38616649d24c4007b4c3c39a4e29b09953951a4d6c943e6267e3339"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d630f458de37b05d96397201ed894f3c5ec79e921c1cb755f34bee1b0496a35d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "796e63c5a1a9f50c0eafc57d0339d1f9ffa8b70afad794f077c16fb08d599e0e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "efdda22bcf6a97911cdd8996fec66107c498d5ca259fed824cc449d8059ee876"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d847bee4eea9b5374c4630181bb73797b540ff977a6813b92764f6fb903ba339"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "3382540b5085de0c82b1d1754637ba62a8e8d81774bb7c34a3448c9a4935eb24"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "96b2c4f6d988e8f436bd81495c91c12a2fb5e7bc7f576a58c755fc33d8f8de57"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "12cf195e898122882aaa85fdcd2701b687e5b097576df9dbd4c91cf64e00f405"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "08ba05a804284545f7ae9f0fc976748488b1ea0081eb5ac8573a4caea623ee20"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "9c66ddbf989223e122b330a2938b866ab061ebc5b8071e933bbad7f0a1bd4140"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "3f85a2c01b937624a91f3bdc3c9a68a685c8184671fe6851ef6f2156ecdfff5d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "30f5c3887b4b247503a403e8288ec9309d34e5280b1de841817145929624eaae"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "926c09229c3674f0de5169d17e79b7f7110c06bd4d953c9a6e1c4295856e4b58"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "447a45ce1f9e562fa8504ceae6b1e8c46b886f87a9919e5de51bb0d737448a80"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "ed7010de8bc6970accd72241d25a441d3f7b57132261485e4bd23ea7c492db5d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "2e72b7cc0a220078af76a64c4fe4293978b5b140b13f55d7a7dfc6431dfa6383"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "223854ff1fa74e8d103aab819189f824bc62a984d572139a55322d57ef65d9e8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "a09da5e8887b0a3f1b3577a7e3112e2bd2a4072ad902f2512e66db3f6d86afec"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "0bb4b2a4edb7be9b25beae32bfea12f49202aaf5d4f9e5ceabfe885393948996"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "0fe46a2c9c03ee876dbf631c31686cff4560b77e8b49aef1be8ba64a88987df4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "7c8a50acdaedd766914e0a7518fec092aeeec933e958b7c22ee154fae4613154"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "f6262b6e5bb85a84b21560373dc5493a575567d8811d94c3fe3b231fbcb15157"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "ea66a7a2c059752dd4a84739960a5aa9b9b5a5383ed879eef490578ced96ba43"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "67dc30622e3e08ee4ff41a7021ef7c229a10ebe2d5e25209a4623fd34011990e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "8f9103e758ed98958b75ca74b742e524e0c2f76489beff034caa001e9927f73c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "403a0e32af2081dc2a139e4c863379216f1c05f1ef2a5a64acdb0a321c67073f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "a8a6b52f030352e599a4f681b597e48bc6a34145c9d8e1371a2fda3aab7fafc7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "0c584a3239cc5dfad19031decf215609de4a1db565cf7f04a2fcf657a0f8f8b0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "2a7198fb647cda5293f9a08be9a192e5fae135fae1fbb79f35598baf025d3b4d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "460e7aef239a53ae8787222a2d097adec39cff2bd36d8166d0e553e23fc989cf"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "842deb68bf0018dfd0994051338332a5f792405209cc1be61c975ab344b06927"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "bd2a7880fa05ecdc2b84159e35dff399e4ebc3baf0123aef8f38344f166937ad"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/admin-notifications-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "04550a4290bc73023a7d9eb2f45d2e2783db91b5aace7dd533746fa7ac716b21"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "6278b2051cc1dc009ef729eebf363f3790e44301649ef1c2e37fe8bb58de8b90"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "8c8128966b1ba6f4acca742f3118c9149e74b1f19660b365428c74f8ae6d5e27"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "04104d625461055299e0742cf6f2ea32618209dee8a8dd1c2116f138cfcb8a75"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8a35cd89c99898f2a20436ad86cc88b89644352e1f29d2ffe8b69e05e3ee72ff"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c2b52ed34a6fd00c01b1a2337f379319721b42b4c3cf096a3cae54efadbb1a2c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c117c5ba66c7a0cf1894d7efc7e2da02215ee12095ae9e8ee6c74bddb4759aab"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "ea48aa63603db1461b2ec6327c3993fe2287efe7ed27dc1fe0d57f24e1d7fb07"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "f82d49c8e0bb1452f93d2396137719f4d0e01a35e37fc7cc78222074b8222d70"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "0717070594a99772907d77d51a0b5bf699a5896e41ad491deaec72c761cc282a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "02f33263793d63becdcd487285fefa5c66aca57aa45c091224a2da1af3d347bc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "7105e8d942791c96084e20884dc2057fe324a014be48cd2e2df72206766a3f42"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "4e9fefb9bdd14b3b0b8889dd562d0f4999b120b1803707eaca076465cdec8ec2"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "c5eed80ef12a69a4abd750b88b88885425a990e6472350f628a0e00f7e022e5d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1b79214a60a4e32117f2d22af8efdcc1573d2351f0a8ce817d36d2ee4dbe6ab4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f25e3761d9430b0be9c85a032a26f665e2bd12e48d32120e89fe96fb09adbfc4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "cb6f044bc26e79e8d94e5d5a4dca0b88eda1a67c1fa61a90530ca35c4e8122d6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8bb8adbce1a5ce9031cd0b8c6e57236f104b86842f09a42fda445043afb3c3d4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "50b9e3731191d065d9a4098e62fe04412be1de0c983e9d07c5b25374aa93c6cf"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "a925a920b3adf89ecf304247a7ea26a051cd3ab7eaf376ec9c81b217be1f299e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "3de8dfa7f4aa3aebe2e1fe6ea86e515957da044cac8a7b64eaec15df79169fe9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "cdfec8b1ace281f284ca01d64bda317e6b272ea9db203762c3125dd270392938"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "8cfbad196899aba85dd5e96a8521b25fa87915de56eb859490f04fb2628f1e4e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5111b70f11d55a686fc4a7e47ee84066db36cac707c83f8ab06916a5662003e4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "3e546b73f6abf03cc4157008d7247a17aac1c1c5705bb7ace4b1a661205c982a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c3707c68d3da5bcc6e087330d62ab888a0e579360656821b1a970b3a90f3b0d3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e7acc4a434836f65354022696011522e8e875278bc13d2feb2a550e53a9c3c43"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "24d8d3651c594aa63eaab019075ea7e7a054847554b0665b08c91855bb3394fd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "ef958d76fd560ab19c36916cf79ad642b1e5ecad79cb3da4a0e9fe92d15d81c2"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "ec3cc5fbf9a001dc94535d6a53b68828220d5959cda293a628d7cf1238a722b0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "87bc5553636847f268f984e7025132fb6f9fbd0dd20167cfb0e797c932c7390b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8357b9e0d017436ed810d99d24641fa0b43d6b45dec7cfb5bcb53a6c40a4cfb4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/detail-notifications-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "390e1628212f6e9ddd92d61e6987faf1c503d210dac40e70bb72e3b20b15de40"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "2a3af06403f2ea2c2f410d0902a97b6bd865b98cb9c94dd212eb558ba0eed133"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "baf063b5f1977e7047fb630946f0aabafe2f25afbbd8125f6e2d8aa61a0c2f75"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "0612c375da24472fa525f175494b2f14f7029c967fd0dfd716d10b48a018ff5a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "c652121a4575912caa88b370b02562f85b99411c0d58e615f9e4d1199b45c99d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "6eb6adf94fc4a99cfb38bd47a2fda5c575f88ce83a5aa5eb55d4d191c705258e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "9d3c8af1c6128a3a0d35fb75d022afdb8bde61a1d7b11131830290ea334a9b8c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8067e53225cb404735de60f8c4c63582d2914e6754402c2432bd98066f637e7f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "37ab755a3485dc5e1bb7fecb93f33718dd40aacec3feb7676cd32885444a9325"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c755ac24af1654b0cbb5d3a8162b67535d88841ea6f8047167d816e43abb86df"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f39aa78bf3478d5b8af04e38c14e2c40b858b4d9862503f598ef4a5b090f7b8d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "deeaf39fbf65d108f366d704b77ea8ceacf77f30cbd69c56b42f1abacd9c98d1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "8a1c15c0e98268a246663bd4b5240963edec83f210080add5a7c24ad7d989e6c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d43df3d1474fbd7ce2668c0ae3d523e1df9add03d7f51ac103f23f512166ec57"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "413d91a2ce42638f4bf6e8ef24501f527e6fae931dc24a18b9c0a053ebd0454a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f40200a4da71e70a8ed998f01fa8a3b7fec652bc82cf080ab821c287990ba00f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "0a5fdf6127dcf30117f1d1964805a0e697558d32b744d88cc7f869b5a21d912f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "76c9463c8ebeab2355717f5651121d41c615490b677fc615c6733a12317151de"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c239e24506660baf5d32864b6bdb2546577273b6cd0b81bc0e843838761b73ff"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "48c442435b1d4e24e4c0dd56335d29feca1fbae655e7fe89f52560d7d7f73e62"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5e66e4b42b1377cb115b13a5b6cbb4d47d7fb0804c8d703c569b9040cf7047fc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "21e5846481bb4ed797d81f1dab0c79287f159e476d5724347dce2c2995cfb968"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "6568ebd4ed5a21169f7754e800765a70e053fcd3cec51b8d8413f6a19cb97cfe"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "85874a699169c5c2c700e25f1f5516d0c6d2deb67e14c5d9bd067d981b1e4553"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "26c63a39fceeb96ee35da6ef701b4b58caf632f2562d974292dca0f32151d322"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "faa5fb5885a787cb3508eed1f1654da6a1a428f2c712f36f3277a289ced1dd38"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f986514d96fb2e215dbb5c73be47ece6b079f43e668a9a36a4b18441a0205431"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4c79d7dd4608641a48721d33e88047ce2ff52cc7043368ace2cad35336c9cabe"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "0e56cc81d442c6527dae8a1c6e788f047ae048c154d1b60a499d6fcc5fe4d9db"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "88333b83cf5a8de6f68c6be8278c07ba1b2518d576861e8eae51a021433ef22c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c334b3706d4d68aec03a1af2e1e20bc70c97639fc4180debe4311c3cd7e919d3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "09848b27a8e2e20806809746a23815c61a3d1e8ede348a382c9c84002468a38b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/queue-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "110b6983eeacc013a7228decb225829bd7c63ee3af8c5a89f51e2a372245d9ad"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "624d43edcf6b8a191da8cc1f657b7d4227af35857673dc8950bca4735020c5c6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "7bc22cc062bcc5665d9cb15f1c8926cf513aaaed4bdcaaf45e0e7c96c584cc89"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "31d81aa4a58384824c11d84b321d55115b4fbc845f0a95178a659e9149bfee3e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5defa77edaff59435cad4873fff6e75ec687e5c6bc17823814af77ce6bc54a33"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "bdffde03d6b51c9a7c6c7a8302417ab69473f92a901688ebf57a2421c1c977c4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "08d03759a0853eef966c5c980cdd42761787d0dcdbc072743d90888829d2fbd5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "71b8164560881c9069869beab548bfc0aeccbeea0501cc3b334b00b0f4f91ce0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "32d8d070bdb8da646a7f5df07dec164ed60c6418ef0381faa48e8df15a272656"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "1b3254ea625f8942429f8dcd49999da71e2eeb8d74f59820f0dc646111798d05"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "b399166c7dc2ebbb359e1cda9ff5a854a5ee38291bdfdbd63a43b8d6b657a8c7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "cf040a7bff7c5798b234dd1ef7a9df783ac8d5c1b8881e476d7a8341df9899b5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "ffecad1f6554e5a9b1766b809d3d630d6d54049cef608f031a2c25dd21a6ea50"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5678952752b221f9b7fffe8358052123380256a53579acebb6200d33c067b934"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "b1e650b9f5b9c629a3a00afd801ef1a41c1f56261213935df11381739c9d7f78"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e6c03a2d73560e3ecd53491215c0d2e3feeb6855c9543520b625431f72c90372"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "feae70d773ae6fe7260ebadd7be8cd50db8c0672170a304705b94da2f3b9b555"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "9ccc7e491b973a11228166ed701e9666e8a48a51fceb75d786b4b3c130979620"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "34a00267cd612c04acd7d9868f49a6f6a5279998336a7e144cb6e5e428d1f4b6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "aadb69852ed6b329c1f2b0749bba96ec6c5a458037acf82d4d7a83f43942710a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "3bc80a120cd9d5b986e1f4e70c3600a21ba9bb3e64f3c6b722490fb2e7279159"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "5c2c592415f9e1111ebdbaea0c8a21e54f06bce83cc46680b73ae1f273962fac"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "e9f8681939165b4470907fbede234aa29576a5c9dbf941e21aa86ddda48dc354"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "1691fa2282c6106b64b52009a033bfd436dcbb95e58f91214608faa1c3338c2a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "2742a717352121b30c27dce9d6dcf4bc4c5a083324c280ded6cd5f0ffc30d3d0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "7603b80ed29888672c286f0eb8dfbcde3beadddfc11ffa031f2ff082d9dfe32d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "67fffeefa3e15146d203b2573c2204508becb5e0501f7932fa79b938b57a2b1a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "7327bf36bb03cde90439df842071fe488f88c600662f806f40a7546a12ddd8db"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "a68aa2e74887d91abef5e4b34435f54f93e9f236c2b9867e28f2c63c9cc34ebe"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "883804220a112f6fd1b893072c4f21ba6b437625e7261b24dd21128ec257a324"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d3242578fc0e9ac4eb2b03793f93f60d1972152d22ca43bc96e8617131af9259"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "586b263988999cced8e28d043a3833b796e09c9414ee28efbc22752f3f3d0b58"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-failed-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "0e276e5a796e9e0f783eec2fee22407b28b8a6689252ae47edc015ea9e169c94"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5ea701fb7ff0b518870a5dd4bd33c7641491aa89292c023132278c12bb5b4e35"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c71714d022e5e982c0cc46dfcf6da215975c9a7d114dd966f0204dc4873f7637"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "827dd6c18e262b7ca0facdbb52f49025bade06118c1081acdd18f86e4a320606"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "958d31ab4cd4ca898dcc9ad1ccb0f38888ad3ad73dbba65d4e6f770001b7b26a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "b09fe0813650e80da6e7200be8602fe6a4b00650e08542d62846ec462ad53e14"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "520eac5ed3f13b7e1bbef2af70c129916ae12b8d49424e7facd430fafc40cce6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "4383f6728867aad8895381b3b54e19d7f8169c4f995f7c4492f824a78f7da724"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "360ae3ddc3b61e142c826a028e13b554873ff24746d2722f12ddc8169c42d28e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "8be69190af40c1353eb963550640f6625cf7e07d50e9ad79ca32120dfae20fc6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d602c823d0d9d0f78d7207f51d40de3d22710cb5eb29190ab689b9562cb80601"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "eba4865b3e4457313bc8cd3f48236816c76378a1193e2433958322279a792c6c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "8a7d8d4c176f97abbf9bcf2aba14c144b174f8e22a171bc6850bb0c2c584f214"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f177c06fac8c3b9044f93e814ad7ea33c089036795374cfdb7533794d3e861c0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4ca826b83499d6a9986780c4f64d750027b62ce2ef1b02c283d0bc571e99b074"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "0cdf8b7fd1757a1985ee8b609d32a9d8c2af0507dc48f2fb818c76a48a3b6979"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d344bc5d2375696aa10ab4f0a4e1d4f504ee12c773e106bb5781d3172e13fefc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "65c75ecff1cca3d6a958cbe8b19f0bae3145642968af80f4bce34faf28552b9a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "fb99ac72ff697ca58c5797a2f1801227c9bd16ce9f02c9a7dbe1acfdb2fb63df"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "9a6f2315f0125b77575102108c60e114bb737f2ec9d1592f073a6ea614272258"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "18aaa8f7949ce29c859a6d4aeb2b42b05374b7dacb262111fd4bc1b94c2a7316"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "7e24b318337fa8b05980fa6d46923b1927db53785dec87984ef86d5d462e28f6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "e9746f61fd7a67f696a5fea9b5757e12554370690b710de77e2305a260f8ce6f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "12ee630017230d188c28603432a4f15b0fdbc95bbf82034bd511f61dd2792f91"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "ce0a89aa80bf11668f58c81433eb2ca373e33773a1c1286890dfdc6c8d98601c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "a418a68ba65cb75244f6332b00f3299a3700a2b5117197e60fb5a23d6da03ed4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "965dfb5d0f460ce5b21edaa0c8c2900c2bc120b54d5ce7bd94b0b20697378b63"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "a6c901835418a5bf96a8d08d2247cb031a88349513053da167cec29da4579fb1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "69a2168dd2286fcb0c44a952508c78456869ef41418427e7e8d46938282fa347"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d8dc1dbba4d2b84c2ad7142817d4b3e59a867b37962572978c2006365e0d5d2d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "62b8d3cd79b3fc09713900c980b9dfc6e293e50a8cff4eccfe3efda9a57095b1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "2cd8c3ea64e956d1c0eddc3ab3d530006f569cb98de4da6cefca49303bf49483"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/refund-notifications-succeeded-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4fd51aed204bf0f26412900a7edad2f866639a7b648ee19ba5548090e4c35f9b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "991cdc002f533e49863ee1aea1261ae6228fcc534f8086e64195b3a73b4b6a58"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d36b5e5b7ced434a1aae154dd70b678dc9b67d035301e59b33da1eaccbadc352"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "0238b183984d06184c94375453a2b9b49fb8f2cd5d15dab24db532b9e10b70c6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "b1d3745a311b8914b87191d5967cde26a1ce91e43871ad3dacc7dc8a00003e43"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c66a7b56fe36a8f5062516a7e237da2221621fe524b703472569198271ea1e60"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "62e6f167e799ce8e22158abe4571c2403c7bf6191ba74f81ac53e1e1b92e402a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "41b539ac64d02c9f92e0c9ae0a5754196f0cd21aeabb3313a9969a28fb100db9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "7fe76f9dae44922a5a04151dcb4545f73cc8a7fab506e6efe265b353af266cd1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "86d26069358f5f19791195f0d57d38e87e6b5bb4f05c2a5300a22f19e742146a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "25da64dc59b828876701d15ebbb1dbf4de0c917269e86b2e0ff67f1c205606d8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "cd1d0f932f2296520f89aabe1c5057025bd0be685a2085288d8b3daac1148efa"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "8ddac494d0cb3ccc503ff9c9a2de1c06d1f55ed54583efe06d8967ba55e0def8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "31ad16e16dd442b3489380ace79a67fb70a6ef7f0002ed97f74cc3d46140e6ef"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "11dc32b0f708c719b02a024396985e036dd126784c3e8785a0f5228fd73a7b88"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "92adc9eaf88933307339efdec0fb193a357dc1408683a934e2e391f8b07e6a39"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c56d80fd3868fd7cbc6da567bfb93164d03a4223b6366ce0f7ef088019cb5e98"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8b112ad90ab792c6595d3f5b8defc4866bbd616b7d508446a1f620335e14667e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "61fcbf8ba2d50dbe27f6179679ef349826231cc8bd21611d4098d8eb87c06650"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "ef14e3b1870c6ccb4842f799a401e1934094ad1253555c2d012c092b71ef9037"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "ee15c2fc76b3d67497707e442fca04566a76986b1f6b1c0e313c83d86c99cc50"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "58b5946530e24a7649808a4485457121ea024264094a1d4ecd574017f8fe51db"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "9a31a193f1dd679c5bb256f1ccb3cc037d7df001584b1388a5ed2a08eae2d851"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "cfaab3b2b60ab6c87619017bc1593e682a7b03e2736e575ab1bf991e3ca22d3c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "212ed1cf7d4ca4ed771a603047829076f29700b4db9bfacc10f5506e6f96df7e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "41db48f299a8bcb596f8b618d69f7dd3ca37336daed2f41c04a075f5615a23bb"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "4fde4d446fc22515c7633b3da7abc3838aee14bbc02207d342ea48ce9c63eaaa"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "8e44f690c7e991ce0800f2e43195f70edad2098579d8a15d67dd313baee63e3b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "677d10739f5076003811fd2e58711e00c31d57d4ce293867997dfcafabff0ca7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "064c2348643ca7725214466cc24518ba3f71d1af2c961a565874285c25d098dc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "eb060e9399a9c2877c68166b6ad19c3a3e651f74ac33c93497c5448ba2e5e4d6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "0a8fb6eb821df02061465329ba323e299aa6a83eed290ad61681eb67e707ee51"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "29a54543f4bae09cfb84f643f3ede5698b8b28aed567b496f04d59a2a2e708d7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "184e5efe11e248adaccec01feb498d469c4df79dd670bdde2f0c62cebe2e1e1c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "e19f55ebff3e19cfa7700816168ecdd9971212dcfae75da64ca57358183bb9c9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "438c7a51a5293a44e6923a3213bdf14a552c4ff2dd75a0ab12b1b2f90e361c55"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "9f6b2ccc08c25fab3142158dce17a396bfc686bb62cdba76967adf242663d77f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "eb4c1527583e3f17926663d195306d36e8d6806605a0259aa93fe1d735b06938"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "729d888b1c2d58b29e37785b4a096bf6b30a6569b426f8fd3f0b39e1286f4f71"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "714b7873f6956fab16b60a977c2d509d1a44153e0d6be86ae2c7552a02eb7daa"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "57fed8a83cb6a4e8d9e9ed8b45accadbb29a864c040d3ecff6ed1a4f136627fa"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "62568ae89e47c213eca841cf9995778be96b43d6f2196cc2cab818b95c3dfdf3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "aaab98ee42285d918b9c98a38f08a127fa5b28895d18ab98404eee9cf3710619"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "be05ce96ff81cf31314dbd41c6dcd801a942749e895cb38f418f5c977d7f73c7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "5a46f3d293338fa44826335b00e7b7dd1bff6d65e5c54221d8b92503963f3f25"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "dbe1f097cb3eded0bb4c0c14c23148a54d11cd949d7e7a99a1b83bcc53f4e0f1"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "ff88fc987c1f4f40906340bc03017f89b67074ca893a96cfc5f468454937d91e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "2ff7f31de10f3a7f1d4727b3c6006a1a682035dd95674e2ccec4b6ee97417696"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e807078d9ed8c7b8cde8fb2db76298f93064a443b33da6d2026572deb9e28f7b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "43022439c285be48f9d2246ed4be3200caf250933d48cb284d7d1f2155642a9a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "ed9c2843b36987afe5481c7135f1b2008b0a0e7e802b48590838f5e85ad226d0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "ca8608e336df1cf8681bf73f1c984e54b75b212e303cc80879c5d8881055f518"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "f438c06d8b78d50c1c663f5122bbe477fcbddefd89c6e65631a748bccaab18d7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "233aaa44b736ebeda43acffc7e83bf0e6a0c4dd990be4bc9c519d265459d9785"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "41084cbc22e828245f66d9ecd80e3b949408ba6dc88f70ee57db71c9e5b8aaab"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "b259fb05c04fe56f6988915b01b9afb50fcb998d5e1ca3f738be977932ccf8e3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "94b5f933ea20258e9cf1d2ede4c79323ba3aadda6acbc3de3e6dab704652d256"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "cf8cff7e2d598f576ceb38f894bea864e0704a6c73d53f3c5b2204c15c372515"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "439c3676a361a650a1fd5c24eeaf19734f1d594bee1261f95645e0e02aa2acd3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "353648a1d945aacdf17d3f521399ad529ff8a624650761ba16699959f104a3d8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "f9c2454db369cd9326a45779e01eff5e857dfba4df12c4114079b07520c76aff"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8d65c34238d30150e823f4f4290c6ac65347373ed9a326bca13db69358bde7c6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "eb85989a876bad1dcf4e20d8fbcee3bfe74e6906c7aa014d868e5bbd2dc2fbfa"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5232bfce610ad0bf6eecd83121417786be6d6c28f37292caadd023b1f4ac17fe"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-cancellation-refund-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1117901998393bf939d95398ced78f03a884e8bdbefc464076cbb49840140ad6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "346f01b0920ef426c6cff018372ac8d30951b1e95ff0e729dfa393ab2a396e4d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "2bbdc300885431e370a930850e8617417ae6a476bc082106ad3fed3ea6b3fa86"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "9283214907542fe9b261d49e18c25a9e6ff4aa99d507cfea267ba5bf1bf5fe22"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "f50498edf1eafe3d95dc6e06560cac1159525dba3e3e5e4edab4c6fc423aed1d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "2f7cdc379829fec13ecbddf20e8e435e25a3fe7638c7388143e3c90b961d95df"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "ff9f6d97f9264ed7165b079e01247bc5a9e2c103bdbce139c7284343a272c3c5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "1028ca61b681b8d4809141fce8f3f20531dd741e709234c31cb1693636a077d9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "bc916da1e8678623a46a072e5388702184a4f715c64ef8724261b720d0ed2956"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "eb7ff220e2512b1681333ca5828fcba0d71e60dc2bdb617fe0b5c9a1fed7e549"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "029304287cd1cd6a8d07a6a01e1d001735d4917b1a2fb5f7f5b7cdb62a04fa6f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "a16758a7d635a63eb33f2ffe301336e3ad7faf63cdf158f7c34cf0edf3d0ceb0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "6b27c3562d7c8ef880ef6d1b8e89d3bc675a48d8fc317ceb70ef2f2a6a78d056"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e2902de052a769dcbf4a2ece135e0c46626022f29650ca2900408eb237ed2c8d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c1ca1253b28df850e244e1a6c44223918d7e66350d1dd8ec1c98b19bd22300ca"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "a7f3283624a12fffefa622f387b06bde1fe4629ff6e1f1e5e5b439ea861ebf25"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "5010b2b50c58768f40bec45f96fbce6f92f37e3e54a182293d38b7a937f6c17a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c378d07b5ac2b703f7dc38111bf43615e3ca38b9ee5cc4e7e7ccd7faf3c3d1bd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "d1791f986b5d41f7025096014842cf2b338a71876697aa6635823687dd6f23b7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "e51bda45ffea29f69162cacb8ae453b06708af975245f175a1537699f8995ab8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1e66f5e62f446a1d67a144adc4900120d432b01565fb4cb3191dffa24ef748cc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "335452bf09690af1cc8f33681b5d270f942327c472df3743765e7669333d4693"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "5725d130306f9af798ad135616409e1a8b51517feca9b92406a0d3df7676d954"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "916742d186a512ed562141f6426a08ff0a0dd440d61a474063eca7654117ddb6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "0f517e3581b2e96ac02bce4df0aa267de9d96b5b550d8ded4ee79bff5033802e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "eeb4eed9b72e7d5a6d5693f463639d842fbc18298c15bf1e4c1970bce178e21f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8728495a1cd658028579aaecc9c30716e7f26fa39129ee708871b5efc6e24596"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "dd6b294ae622337f7ce1cfc22d2d0803f685faa549ee7cd9f1e718a04ffbfb07"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "72719106a0bcc37f207c5944b005c89f28e4bdd7535511347b815cdb549db035"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "c23784da9f6a7ddc66478532bf42a8557dfaac369ae2a00a118b400a0a49a4fd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "01b2872f9cd430ed52f102b0af31516a3d3086b911595999d4a9f476c90d553a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "9bd4aa02d09f9bb99d51e38bab2af5f22713a72ce43e60adc7b8ad8052273b3a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/orders.spec.js-snapshots/cleanup-regression/tracking-inventory-review-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "0f253ecd1bb6f486bbae8275c48e8ffe10884423609f5f619ba56f7f8d76f09d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d963a706c4c7252a14982bb8da6d73f893646ae030414823dc4a687693a269bf"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "a3cc21aa53bb09e9cbdac592256967dc907953455e2ad21087016d4a938596fc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "d84d70a341faab3aa364153d9e16651596d5e503a52926509e90ad36ff8b014f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "fbd0966afabbe15fbcc82d815aedac84348c828406106a5b6d853675fccd9a4a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1d28fbae7c24d572b57bd96149cbbbb56b37417b722188399b5fb22c11feb213"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "6d3949b1a104b10424f3cd2a2fb269d0c59d00b3846c5f1f6da622838eee13f2"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "eea9f398a180a2919e7d472d0e64f26a2fab03d465244eebe7dd09eb9d8ccdc8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d7055451abfb55dbbdda6096fa5cc2b7aed133f268f65354411e30cdd9a106f5"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "e26bc68804f3f0dd5d347d94365d3a56555f237140a0acb1955d50f7afd185b7"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "1388221bd8e20b3a0641c99ba38cdc8c8da9eb9e3a6faf4c2b4083e9f5125a61"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "c10d83fde79bd0f624e7c84395d449e693b5cc56524138e84fc596e1e23d600d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "7eb316a154f6b49e5b806acda4f884040ea40f41e62e44aea96cd70a0a6060db"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "3c2aa3e52754d344168d87d494c118173499c2b583a44a8a216161977f1130c2"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "9708cf0a92c9ef239dbce7135d2b5ea8341e501fb20adba91a82da9f4d3a5ddd"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "cbd020aaaba576c9af0f768546d5f1e007a556a465e587b6c570cf6ae41341d0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "b79136111abd7258bd3c29c42b704cfcfc00269f1df8db995812422c54ecd02c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "1927744234ac8d8bcddee4cc8bfd545c02797deb435d0a374e7a06d13bfdc551"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "f88990ad1e7c6dfec6ee44c7284f9bdb41dbfebfb7a97b84575c55a6ea9fd77f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c772301372aa6a4c5d1d7ebe8e61797f6f860455d81264be6157c46e7f5ee71a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "96e6428d94509df3546935bc17eaf2d7f5f6260c30a96ffef06b4ea0ce19daca"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "79c026213218d1e97fdc0c4c47d553680833382e42f2d9a6958da0da31a50474"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "8707109bcd093bf67301b138045301ebde14d2be676d1f3b3938e70d77bc1308"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d43272246d25d633dacc845bd58fcc13fb4d51820529b3aea8fbc3670c49b19f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d17626594b1a40b84be0f924790c9242ec7e4a446a91508ed13521fb261791f3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "62d55b67a73746e2e5e2d514dd55e00cb9beec6c59e7e4088981aec39c20e192"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "b4db5603354c6dd47819227690d677353e25403935df51b11ffdfeaed8ab9978"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "5cd44ce29de81fc5e89d5195fcf5de1cfc0c0cb61b000916d68f075d08b51ec6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "e82631bef41c4b4f773b48d8ebaf596c09bf495629474da9a0763b20f3e5f1e3"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "b5316c5fcb67a4560f4812d912d4e9a075b23b0abf73ce6ab890ddb2bd223039"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "e0e349272e75ebe588983d5fb503f85a6737482e9966c1ca3954c4d327c7bec8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "3eda6c9a53fae23873f3017279eb4c48ce50b3ea0a7b41351689ceddf84ce2e6"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-copy-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "ab1a6edd777cf6a10b52616310d1e3d42541cbb334981a2e1f45b58bddb5e913"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8ba2b1bef093d1656b820664df6023c5a96771b9f056f3137731454152090444"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "bde7fd745c732fc46a82880a30ab7b5d76c12bb862859fcd8fb6ef97d952826d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "d2ec174e19047b8544fcb056e5ff297cceb90816ac7a56d0dd33dfb6fa4a657a"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "d298e4d27cce771f414bd92c60992a7e086414ff17cb47b7d295021ca0e0e745"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "4f3033ffe5725927e2ad2fe1313834051517f69db79e762a279ae7b35eb5c6e4"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "124d14809e8074128c308d2bf73a4827c8e46ab9660db72fc47ba5d7159cbfc2"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "1bed0fbfa46865637d4d6108ff31b0dc8e918b3380262e6d40f8ffe0d7b9443c"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "15b4205976a3146572bac78312447534a6f59b63371899b03a242ebbc136277b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "fc8bf42ad1a301befb23c60210326769c29097f856410761c476e2b1a11fee81"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "6670ce530bc28550e224cab60fcfba16b3a536a470e48804400360227c0149e9"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "1ce36cf05c9259c464f304c24de443ee1bf92b21c19140c73a699a615055de3d"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "c0b68152ad8dc70d869957d59448bd6986c55d45733dac3baec50f4ef1816be0"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "351dd1c3b84fe6f48b17470bcfdaedcbd7b4f67dc742a5ceef0b7f0a458d5987"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "dc72fa02def1fb0e8edc73f6633417a82a9ce3bb57b0a359998cae45496c4abc"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "61c36ece730cc831d3bf2afd44699faf7df11c1e0a25e0625d4b64cd58d8451b"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Dark-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "d031bd60962bfc078c55f403f71ea00fce6cbc2768ffcbe600911795dd91e624"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-chromium-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "45f70d83be95c68be2aec93ef450fd66368c326e71c01a7a85408b0448271492"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-chromium-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "566d1fdcbdb3881b2267593e311f98988e644ae9080ffc2521da90e9e382ba20"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-chromium-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "e22e3bfb25538e570b4bd6d5d4d434306ef269025be4f68a374db810ac110136"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-chromium-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "7bf688a8a6ab6d863f2a7f0dc8390afecb8c31ec1bf868293793d45a452dd229"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-chromium-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "35ce205d0f22e93a9967b0203bfeb6cebc03f50b84c9ce4ddf20ea06a22edd2e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-chromium-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "f0ebb9233158780c1b261101ae80ec9ddaab8436cb41f53ab89bb6f2f553555f"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-firefox-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "50c2fff1afc0c66d0b966769a8b3f717e7d52e747eff90b0d8246e5a50810371"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-firefox-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "abe5009768bdd71b1c6eeac0f9eea4a0e0739ff2a7c815d1db2ad5e33f828545"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-firefox-desktop-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "ca80c6fdecc910f4c1c7a9889dcf02ae7087b7922ee8b59a4591fb09976f387e"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-firefox-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "92489c78fd099b841d4407a2ded4b22295a29193c44dfd1e01a8480fced9d927"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-firefox-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "3110cc8cd1ca148abdb487c34cc7ed8538528fd7f189a3d8101f7dce76f73419"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-firefox-mobile-win32.png",
+      "strSuite": "operations",
+      "strOs": "windows-2022",
+      "intSourceRun": 40171499644,
+      "strSha256": "1f7e6df5b51a06d04dc5091307904ca4d7744ab549ebfba407f3900be9ba7dd8"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-webkit-desktop-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "bea95989cc3e1568a30abf878f8dd614566887d1741262739c9cae69a21e5238"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-webkit-desktop-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "f34b3c89a79900bd026585afc512d0df3de4afff4b5187a0572f09eac6080553"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-webkit-mobile-darwin.png",
+      "strSuite": "operations",
+      "strOs": "macos-15",
+      "intSourceRun": 40171499644,
+      "strSha256": "8ea996e889a266362238b4ad46a0fa080fc7ddbe5a9cb1b0d8dfca7e546a1040"
+    },
+    {
+      "strPath": "tests/staff-orders-e2e/privacy.spec.js-snapshots/cleanup-regression/privacy-form-Light-webkit-mobile-linux.png",
+      "strSuite": "operations",
+      "strOs": "ubuntu-24.04",
+      "intSourceRun": 40171499644,
+      "strSha256": "67f188957e659374ab4e4b1c4e65622af8325dada09ce641d9bb4d600cc79aa1"
     }
   ]
 }
