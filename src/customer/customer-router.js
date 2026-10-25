@@ -3,6 +3,7 @@
  * Transport guards, CSRF, bounded attempts and hashing limits run before account mutations.
  */
 import express from 'express';
+import {clientAddress} from '../security/proxy-boundary.js';
 import { randomBytes, createHmac } from 'node:crypto';
 import { createCsrfProtection, COOKIE_OPTIONS } from '../auth/auth-transport.js';
 import { CustomerError } from './customer-service.js';
@@ -97,7 +98,7 @@ export function createCustomerRouter({ objCustomerService, strOrigin, fnRender }
       // Bound password hashing and peer/account attempts without retaining raw addresses.
       const numNow = Date.now();
       for (const [strKey, objEntry] of mapLimits) if (objEntry.numExpires <= numNow) mapLimits.delete(strKey);
-      for (const strValue of[`peer:${objRequest.socket.remoteAddress }`, ...(typeof objBody.strUsername === 'string' ? [`name:${objBody.strUsername.toLowerCase() }`]: [])]) {
+      for (const strValue of[`peer:${clientAddress(objRequest) }`, ...(typeof objBody.strUsername === 'string' ? [`name:${objBody.strUsername.toLowerCase() }`]: [])]) {
         const strKey = createHmac('sha256', objLimitKey).update(strValue).digest('hex');
         let objEntry = mapLimits.get(strKey);
         if (!objEntry) {

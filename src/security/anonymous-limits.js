@@ -1,8 +1,9 @@
 import {createHmac,randomBytes} from 'node:crypto';
+import {clientAddress} from './proxy-boundary.js';
 
 const WINDOW_MS=60000;
 const MAX_BUCKETS=10000;
-/** Single-process demo protection; socket peers only, no persisted address data. */
+/** Raw peers or authenticated proxy identity, never arbitrary forwarded headers. */
 export function createAnonymousLimits({fnNow=Date.now,intMaxBuckets=MAX_BUCKETS}={}){
   const objKey=randomBytes(32);const mapBuckets=new Map();
   return function limitAnonymous(objRequest,objResponse,fnNext){
@@ -16,7 +17,7 @@ export function createAnonymousLimits({fnNow=Date.now,intMaxBuckets=MAX_BUCKETS}
     const numNow=fnNow();
     // Bounded memory even if many peers arrive; expired entries are not durable identifiers.
     for(const [strKey,objBucket] of mapBuckets)if(objBucket.numExpires<=numNow)mapBuckets.delete(strKey);
-    const strPeer=objRequest.socket.remoteAddress??'unknown';
+    const strPeer=clientAddress(objRequest);
     const strKey=createHmac('sha256',objKey).update(`${strGroup}\0${strPeer}`).digest('hex');
     let objBucket=mapBuckets.get(strKey);
     function reject(intSeconds){return objResponse.status(429).set('Retry-After',String(intSeconds)).json({strCode:'request_limit',strMessage:'Too many requests. Wait a minute, then retry with your current selections.'});}

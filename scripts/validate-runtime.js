@@ -5,14 +5,16 @@ import {X509Certificate,createPrivateKey} from 'node:crypto';
 import {createSecureContext} from 'node:tls';
 import {loadPaymentVault} from '../src/payments/payment-config.js';
 import {validateHostLayout} from './validate-host-layout.js';
+import {proxyConfiguration} from '../src/security/proxy-boundary.js';
 
 /** Validate the hosted configuration without listening or issuing staff access. */
 export function validateRuntime(objEnvironment=process.env,{bHostedLayout=false}={}){
   if(objEnvironment.NODE_ENV!=='production'||!objEnvironment.HOST||
     !/^[a-f0-9]{64}$/.test(objEnvironment.MFA_ENCRYPTION_KEY_HEX??''))throw new Error('Complete hosted configuration required.');
   const intPort=Number(objEnvironment.PORT);const objOrigin=new URL(objEnvironment.AUTH_ORIGIN);
+  const objProxyConfig=proxyConfiguration(objEnvironment);
   if(!Number.isInteger(intPort)||intPort<1||intPort>65535||objOrigin.protocol!=='https:'||
-    objOrigin.origin!==objEnvironment.AUTH_ORIGIN||Number(objOrigin.port||443)!==intPort)throw new Error('HTTPS origin/port mismatch.');
+    objOrigin.origin!==objEnvironment.AUTH_ORIGIN||(!objProxyConfig&&Number(objOrigin.port||443)!==intPort))throw new Error('HTTPS origin/port mismatch.');
   const strDatabase=realpathSync(objEnvironment.DATABASE_PATH);
   const strRelease=realpathSync(process.cwd());
   for(const strKey of ['TLS_KEY_PATH','TLS_CERT_PATH','DEMO_PAYMENT_KEYS_PATH']){

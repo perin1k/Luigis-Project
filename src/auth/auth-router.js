@@ -1,4 +1,5 @@
 import express from 'express';
+import {clientAddress} from '../security/proxy-boundary.js';
 import { randomBytes } from 'node:crypto';
 import { AUTH_COOKIES, COOKIE_OPTIONS, createCsrfProtection, readAuthCookies } from './auth-transport.js';
 import { validPage } from './staff-account-service.js';
@@ -37,7 +38,8 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   objRouter.use((objRequest, objResponse, fnNext) => {
     objResponse.set({ 'Cache-Control': 'no-store', 'Pragma': 'no-cache', 'X-Robots-Tag': 'noindex',
       'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'Vary': 'Cookie, Origin' });
-    // Do not trust Express trust-proxy settings or X-Forwarded-* for this boundary.
+    // Require actual TLS, including the encrypted local hop behind Nginx.
+    // Only proxy-boundary.js may authenticate forwarding and resolve client identity.
     if (!objRequest.socket.encrypted || objRequest.headers.host !== objOrigin.host) return reject(objResponse, 403);
     if (objRequest.headers.origin !== undefined && objRequest.headers.origin !== strOrigin) return reject(objResponse, 403);
     if (objRequest.headers['sec-fetch-site'] && !['same-origin', 'none'].includes(objRequest.headers['sec-fetch-site'])) return reject(objResponse, 403);
@@ -81,7 +83,7 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   });
   objRouter.post('/login', async (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strUsername', 'strPassword'])) return reject(objResponse, 400);
-    const objResult = await objLoginService.beginSignIn(objRequest.body.strUsername, objRequest.body.strPassword, objRequest.socket.remoteAddress);
+    const objResult = await objLoginService.beginSignIn(objRequest.body.strUsername, objRequest.body.strPassword, clientAddress(objRequest));
     if (!objResult) return reject(objResponse, 401);
     if (objResult.strSessionToken) return finishSession(objRequest, objResponse, objResult);
     objLoginService.revokeChallenge(objResponse.locals.objAuthCookies[AUTH_COOKIES.strChallenge]);
@@ -92,7 +94,7 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   objRouter.post('/mfa', (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strCode'])) return reject(objResponse, 400);
     const objResult = objLoginService.completeMfa(objResponse.locals.objAuthCookies[AUTH_COOKIES.strChallenge],
-      objRequest.body.strCode, objRequest.socket.remoteAddress);
+      objRequest.body.strCode, clientAddress(objRequest));
     if (!objResult) return reject(objResponse, 401);
     return finishSession(objRequest, objResponse, objResult);
   });
@@ -129,14 +131,14 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   objRouter.post('/recovery/codes', async (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strPassword', 'strCode'])) return reject(objResponse, 400);
     const objResult = await objRecoveryService.regenerateCodes(objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession],
-      objRequest.body.strPassword, objRequest.body.strCode, objRequest.socket.remoteAddress);
+      objRequest.body.strPassword, objRequest.body.strCode, clientAddress(objRequest));
     if (!objResult) return reject(objResponse, 403);
     return objResponse.json(objResult);
   });
   objRouter.post('/recovery/start', async (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strUsername', 'strPassword', 'strRecoveryCode'])) return reject(objResponse, 400);
     const objResult = await objRecoveryService.beginRecovery(objRequest.body.strUsername, objRequest.body.strPassword,
-      objRequest.body.strRecoveryCode, objRequest.socket.remoteAddress);
+      objRequest.body.strRecoveryCode, clientAddress(objRequest));
     if (!objResult) return reject(objResponse, 403);
     clearCookie(objResponse, AUTH_COOKIES.strSession); clearCookie(objResponse, AUTH_COOKIES.strChallenge);
     objResponse.cookie(AUTH_COOKIES.strRecovery, objResult.strRecoveryToken, { ...COOKIE_OPTIONS, maxAge: 600000 });
@@ -146,7 +148,7 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   });
   objRouter.post('/promotion/start', async (objRequest,objResponse)=>{
     if(!validBody(objRequest.body,['strUsername','strPassword']))return reject(objResponse,400);
-    const objResult=await objRecoveryService.beginPromotionEnrollment(objRequest.body.strUsername,objRequest.body.strPassword,objRequest.socket.remoteAddress);
+    const objResult=await objRecoveryService.beginPromotionEnrollment(objRequest.body.strUsername,objRequest.body.strPassword,clientAddress(objRequest));
     if(!objResult)return reject(objResponse,403);
     clearCookie(objResponse,AUTH_COOKIES.strSession);clearCookie(objResponse,AUTH_COOKIES.strChallenge);
     objResponse.cookie(AUTH_COOKIES.strRecovery,objResult.strRecoveryToken,{...COOKIE_OPTIONS,maxAge:600000});freshCsrf(objResponse);
@@ -164,7 +166,7 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
     if (!validBody(objRequest.body, ['strCurrentPassword', 'strNewPassword', 'strCode'])) return reject(objResponse, 400);
     const objResult = await objStaffAccountService.changeOwnPassword(
       objResponse.locals.objAuthCookies[AUTH_COOKIES.strSession], objRequest.body.strCurrentPassword,
-      objRequest.body.strNewPassword, objRequest.body.strCode, objRequest.socket.remoteAddress);
+      objRequest.body.strNewPassword, objRequest.body.strCode, clientAddress(objRequest));
     if (!objResult) return reject(objResponse, 403);
     for (const strName of Object.values(AUTH_COOKIES)) clearCookie(objResponse, strName);
     return objResponse.json(objResult);
@@ -186,7 +188,7 @@ export function createAuthRouter({ objLoginService, objSessionService, objStaffA
   objRouter.post('/employees/enroll', async (objRequest, objResponse) => {
     if (!validBody(objRequest.body, ['strInvitationToken', 'strPassword'])) return reject(objResponse, 400);
     const objResult = await objStaffEnrollmentService.acceptInvitation(
-      objRequest.body.strInvitationToken, objRequest.body.strPassword, objRequest.socket.remoteAddress);
+      objRequest.body.strInvitationToken, objRequest.body.strPassword, clientAddress(objRequest));
     if (!objResult) return reject(objResponse, 403);
     return objResponse.status(201).json(objResult);
   });

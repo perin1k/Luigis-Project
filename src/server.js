@@ -1,4 +1,5 @@
 import {createWorkerMonitor} from './operations/worker-monitor.js';
+import {proxyConfiguration} from './security/proxy-boundary.js';
 import {createCustomerService} from './customer/customer-service.js';
 import {createPrivacyService} from './staff/privacy-service.js';
 import {createMenuService} from './staff/menu-service.js';
@@ -25,6 +26,7 @@ import { createAuthRuntime } from './auth/auth-runtime.js';
 
 const intPort = Number(process.env.PORT ?? 3000);
 const strHost = process.env.HOST ?? '127.0.0.1';
+let objProxyConfig;
 if (!Number.isInteger(intPort) || intPort < 1 || intPort > 65535) throw new Error('Invalid PORT.');
 const arrAuthSettings = ['AUTH_ORIGIN', 'TLS_KEY_PATH', 'TLS_CERT_PATH', 'DATABASE_PATH', 'MFA_ENCRYPTION_KEY_HEX'];
 const bAuthEnabled = arrAuthSettings.filter((strName) => strName !== 'DATABASE_PATH').some((strName) => process.env[strName] !== undefined);
@@ -49,7 +51,7 @@ function application(objAuthRuntime) {
   const objPreviewMonitor=createWorkerMonitor('previews',()=>objNotificationService.processPending());
   const fnProcessPreviews=()=>objPreviewMonitor.run();
   fnProcessPreviews();intNotificationTimer=setInterval(fnProcessPreviews,1000);intNotificationTimer.unref();
-  return createApp({objCustomerService, objPrivacyService:objAuthRuntime?createPrivacyService(objDatabase,objAuthRuntime.objSessionService):undefined, fnReadiness:()=>Boolean(objAuthRuntime&&objVault&&objRetentionMonitor.isHealthy()&&objPreviewMonitor.isHealthy()&&objCatalogService.readCatalog().strFingerprint), objMenuService:objAuthRuntime?createMenuService(objDatabase,objAuthRuntime.objSessionService):undefined, objAnalyticsService:objAuthRuntime?createAnalyticsService(objDatabase,objAuthRuntime.objSessionService):undefined, objNotificationService:objAuthRuntime?objNotificationService:undefined, objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
+  return createApp({objProxyConfig,objCustomerService, objPrivacyService:objAuthRuntime?createPrivacyService(objDatabase,objAuthRuntime.objSessionService):undefined, fnReadiness:()=>Boolean(objAuthRuntime&&objVault&&objRetentionMonitor.isHealthy()&&objPreviewMonitor.isHealthy()&&objCatalogService.readCatalog().strFingerprint), objMenuService:objAuthRuntime?createMenuService(objDatabase,objAuthRuntime.objSessionService):undefined, objAnalyticsService:objAuthRuntime?createAnalyticsService(objDatabase,objAuthRuntime.objSessionService):undefined, objNotificationService:objAuthRuntime?objNotificationService:undefined, objDemoRefundService:objAuthRuntime?createDemoRefundService(objDatabase,objAuthRuntime.objSessionService):undefined, objOrderExceptionService:objAuthRuntime?createOrderExceptionService(objDatabase,objAuthRuntime.objSessionService):undefined, objTrackingService, objAuthRuntime, objCatalogService, objSchedulingService, objPaymentService,
     objOrderProgressService: objAuthRuntime ? createOrderProgressService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     objStaffOrdersService: objAuthRuntime ? createStaffOrdersService(objDatabase, objAuthRuntime.objSessionService) : undefined,
     fnPreviewReadiness:()=>objPreviewMonitor.isHealthy(),
@@ -60,11 +62,12 @@ function closeResources() {
   bClosed = true; clearInterval(intRetentionTimer); clearInterval(intNotificationTimer); objRuntime?.destroy(); objDatabase?.close();
 }
 try {
+  objProxyConfig=proxyConfiguration(process.env);
   if (bAuthEnabled) {
     if (!arrAuthSettings.every((strName) => process.env[strName])) throw new Error('Complete HTTPS authentication configuration is required.');
     const objOrigin = new URL(process.env.AUTH_ORIGIN);
     if (objOrigin.protocol !== 'https:' || objOrigin.origin !== process.env.AUTH_ORIGIN
-      || Number(objOrigin.port || 443) !== intPort) throw new Error('AUTH_ORIGIN must match the HTTPS listening port.');
+      || (!objProxyConfig&&Number(objOrigin.port || 443) !== intPort)) throw new Error('AUTH_ORIGIN must match the HTTPS listening port.');
     if (!existsSync(process.env.DATABASE_PATH)) throw new Error('An existing database is required.');
     const objTls = { key: readFileSync(process.env.TLS_KEY_PATH), cert: readFileSync(process.env.TLS_CERT_PATH), minVersion: 'TLSv1.2' };
     objDatabase = openDatabase(process.env.DATABASE_PATH);

@@ -1,4 +1,5 @@
 import {createPrivacyRouter} from './staff/privacy-router.js';
+import {createProxyBoundary} from './security/proxy-boundary.js';
 import {createCustomerRouter} from './customer/customer-router.js';
 import {CUSTOMER_COOKIES,readCustomerCookies} from './customer/customer-transport.js';
 import {createOperationalRecorder} from './operations/telemetry.js';
@@ -19,8 +20,9 @@ import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
 
-export function createApp({ objCustomerService, strCustomerOrigin, objPrivacyService, objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnPreviewReadiness, fnWriteOperational } = {}) {
+export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigin, objPrivacyService, objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnPreviewReadiness, fnWriteOperational } = {}) {
 const objApp = express();
+if(objProxyConfig)objApp.use(createProxyBoundary(objProxyConfig));
 const objOperational=createOperationalRecorder({fnWrite:fnWriteOperational});
 // Integration seam: BE supplies current ingredient flags. No inventory is invented here.
 objApp.locals.fnGetAvailability = async () => null;

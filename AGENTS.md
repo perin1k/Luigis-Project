@@ -22,7 +22,9 @@ Bootstrap 5.3, custom CSS, and browser JavaScript for the frontend. Do not intro
 TypeScript, React, or another application framework without explicit approval.
 SQLite through Node's built-in `node:sqlite` is the current database foundation.
 Use the repository's reviewed migrations, transaction helpers and menu seed.
-Public hosting through GCP and DuckDNS is the approved direction; exact resources,
+Public hosting through GCP and DuckDNS is the approved direction. Approved Nginx
+mode uses public HTTPS and an authenticated loopback TLS hop to Node; retain
+direct TLS as reviewed same-release recovery. Exact resources,
 HTTPS configuration, costs and deployment still require reviewed plans. Stripe
 is a future integration target, not a delivery prerequisite. See
 `docs/integrations.md` and DECISION-07: https://trello.com/c/NKGL91hy.
