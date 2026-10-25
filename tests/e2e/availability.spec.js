@@ -13,6 +13,17 @@ async function checkAccessible(objPage) {
   expect(await objPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 }
 
+async function expectVisual(objPage, strFilename) {
+  // Editing moves focus and scroll. Neutralize only pointer/scroll position so
+  // a lingering hover does not select different screenshot states across runs.
+  await objPage.mouse.move(0, 0);
+  await objPage.evaluate(() => new Promise((fnResolve) => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    requestAnimationFrame(() => requestAnimationFrame(fnResolve));
+  }));
+  await expect(objPage).toHaveScreenshot(strFilename, { fullPage: true, animations: 'disabled' });
+}
+
 test('unavailable topping is explained and other pizzas remain editable', async ({ page: objPage, context: objContext }) => {
   await chooseScenario(objContext, 'topping');
   await objPage.goto('/order');
@@ -24,10 +35,10 @@ test('unavailable topping is explained and other pizzas remain editable', async 
   await objPage.getByRole('button', { name: 'Edit pizza 1' }).click();
   await expect(objPage.getByLabel('Onion', { exact: true })).toBeChecked();
   await checkAccessible(objPage);
-  await expect(objPage).toHaveScreenshot('unavailable-topping.png', { fullPage: true, animations: 'disabled' });
+  await expectVisual(objPage, 'unavailable-topping.png');
   await objPage.getByRole('group', { name: 'Appearance', exact: true }).getByText('Dark', { exact: true }).click();
   await checkAccessible(objPage);
-  await expect(objPage).toHaveScreenshot('unavailable-topping-dark.png', { fullPage: true, animations: 'disabled' });
+  await expectVisual(objPage, 'unavailable-topping-dark.png');
 });
 
 test('required base blocks adding pizzas without losing draft choices', async ({ page: objPage, context: objContext }) => {

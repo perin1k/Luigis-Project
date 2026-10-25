@@ -13,6 +13,10 @@ on:
         required: true
         default: '["public","pricing","scheduling","payments","staff","operations"]'
         type: string
+      grep:
+        description: 'Optional existing test title pattern for a bounded defect retry'
+        required: false
+        type: string
 permissions:
   contents: read
 jobs:
@@ -27,6 +31,7 @@ jobs:
     env:
       PLAYWRIGHT_BROWSERS_PATH: node_modules/.cache/ms-playwright
       CLEANUP_SUITE: ${{ matrix.suite }}
+      CLEANUP_GREP: ${{ inputs.grep }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -56,6 +61,7 @@ jobs:
           $arrArguments = @('node_modules/@playwright/test/cli.js', 'test', '-c', 'playwright.cleanup-regression.config.js')
           $strUpdate = if ('${{ github.event_name }}' -eq 'push' -or '${{ inputs.phase }}' -eq 'collect') { 'all' } else { 'none' }
           $arrArguments += "--update-snapshots=$strUpdate"
+          if ($env:CLEANUP_GREP) { $arrArguments += @('--grep', $env:CLEANUP_GREP) }
           if ('${{ runner.os }}' -eq 'Windows') {
             $arrArguments += @('--project=chromium-desktop', '--project=chromium-mobile', '--project=firefox-desktop', '--project=firefox-mobile')
           }
@@ -66,7 +72,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: cleanup-regression-${{ matrix.os }}-${{ matrix.suite }}
-          path: tests/**/*-snapshots/cleanup-regression/**/*.png
+          path: tests/${{ matrix.suite == 'public' && 'e2e' || matrix.suite == 'pricing' && 'pricing-e2e' || matrix.suite == 'scheduling' && 'scheduling-e2e' || matrix.suite == 'payments' && 'payments-e2e' || matrix.suite == 'staff' && 'staff-e2e' || 'staff-orders-e2e' }}/*-snapshots/cleanup-regression/**/*.png
           if-no-files-found: error
           retention-days: 2
       - name: Internal comparison differences
