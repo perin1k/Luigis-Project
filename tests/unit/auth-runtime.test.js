@@ -33,6 +33,8 @@ test('mounted staff pages are private, escaped and require a real persisted sess
       assert.equal(objResponse.objHeaders['referrer-policy'], 'no-referrer'); assert.equal(objResponse.objHeaders['x-robots-tag'], 'noindex');
       assert.match(objResponse.strBody, /method="post" action="\/auth\/unavailable"/);
       assert.doesNotMatch(objResponse.strBody, /Synthetic staff browser passphrase/);
+      assert.equal((objResponse.strBody.match(/rel="stylesheet"/g) ?? []).length, 1);
+      assert.match(objResponse.strBody, /href="\/css\/tracking-bundle.css\?v=[a-f0-9]{12}"/);
     }
     const objStyles = await get('/css/staff-bundle.css', 'localhost', { Range: 'bytes=0-9' });
     assert.equal(objStyles.intStatus, 200); assert.match(objStyles.objHeaders['content-type'], /text\/css/);

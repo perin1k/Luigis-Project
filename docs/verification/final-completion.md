@@ -82,6 +82,32 @@ sustained-load/SLA guarantee. Purchased/refunded history remains in the system.
 
 ## Still open
 
+### First protected-audit run and approved follow-up
+
+Brody supplied run `8a70389261b2`, finished `2026-10-25T08:38:10.934Z`. The shared
+journey/order and temporary staff/customer cleanup passed. Twelve guest-account/
+staff entry audits completed: all required categories were 100 except mobile
+customer recovery Performance **99**. SEO was 63 on intentional noindex pages
+under the already approved exception. The run stopped at customer-account before
+recording its audit; remaining protected pages were not tested. Overall result
+was false and remains recorded as such.
+
+A subsequent disposable-customer investigation reached the actual signed-in page
+with both Cookie headers and native browser cookies; it did not reproduce the
+earlier full-sequence stop. Both isolated mobile measurements scored 100/100/100
+with noindex SEO63, and the account was deleted. This is authentication/tooling
+diagnostic evidence, not a replacement pass for the failed full run. The checker
+now uses native default-context cookies and fixed failure-phase/status diagnostics
+without raw URLs/cookies. Future failures must not be labeled app-authentication
+defects without evidence.
+
+Brody explicitly approved a narrow private stylesheet consolidation and controlled
+deployment. Staff/customer templates now reference the existing Bootstrap+staff
+bundle in one response. The new request-count test failed first (2 versus 1);
+six focused HTTP/auth/audit tests then passed, including exact CSS bytes/cascade.
+No dependency, schema, permission, visual design or audit-scoring change occurred.
+Deployment and the protected audit retry remain pending; 99 is not waived.
+
 - Customer palette regression is resolved: old run 40176498305 is retained as a
   failure; test-only correction `47a3392` and native run 40176777086 passed all
   required customer jobs. Shared visual references and accessibility gates were

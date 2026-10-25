@@ -186,3 +186,6 @@ startup, then serves the same compressed/cached responses as other bundles. Sour
 styles stay separate. The shared head discovers styles before running the theme
 script synchronously, so the saved theme still applies before body rendering.
 See `docs/nginx-proxy.md` for the reviewed HTTP/2 listener and recovery procedure.
+Account/staff pages likewise reuse the existing `/css/tracking-bundle.css`, which
+contains Bootstrap followed by tokens/global/staff rules in their original order.
+The filename predates this shared use; it grants no tracking access or new data.

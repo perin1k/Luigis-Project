@@ -4,14 +4,17 @@
 import {randomBytes} from 'node:crypto';
 export function auditSummary(objLhr,strPage,strProfile,bNoindex) {
   const objScores=Object.fromEntries(['performance','accessibility','best-practices','seo'].map(strKey=>[strKey,(objLhr.categories[strKey]?.score??0)*100]));
-  return {strPage,strProfile,strLighthouse:objLhr.lighthouseVersion,objScores,bNoindex,
+  const objTimings=Object.fromEntries(['first-contentful-paint','largest-contentful-paint','speed-index','total-blocking-time','cumulative-layout-shift']
+    .map(strKey=>[strKey,objLhr.audits?.[strKey]?.numericValue??null]));
+  return {strPage,strProfile,strLighthouse:objLhr.lighthouseVersion,objScores,objTimings,bNoindex,
     bPassed:!objLhr.runtimeError&&['performance','accessibility','best-practices',...(!bNoindex?['seo']:[])].every(strKey=>objScores[strKey]===100)};
 }
-export async function runHostedAudits({objOwner,objCustomer,objReceipt,fnActor,strOrigin}) {
+export async function runHostedAudits({objOwner,objCustomer,objReceipt,fnActor,strOrigin,arrPageLabels}) {
   const {expect}=await import('@playwright/test');
   const {default:lighthouse}=await import('lighthouse');
   const {default:objDesktop}=await import('lighthouse/core/config/desktop-config.js');
   const arrResults=[];let bCreated=false;let bDeleted=false;let strFailureStage='customer-audit-enrollment';
+  let strFailurePhase='enrollment';let intPreflightStatus=null;
   const objAccount=await fnActor();const strUsername='audit.customer.'+randomBytes(6).toString('hex');let strPassword=randomBytes(30).toString('base64url');
   try {
     await objAccount.goto('/account/register');await objAccount.getByLabel('Username',{exact:true}).fill(strUsername);await objAccount.getByLabel('Password',{exact:true}).fill(strPassword);
@@ -26,25 +29,38 @@ export async function runHostedAudits({objOwner,objCustomer,objReceipt,fnActor,s
         ['owner-menu','/staff/menu'],['owner-analytics','/staff/analytics'],['staff-privacy',`/staff/privacy/${strReference}`]].map(([strLabel,strPath])=>({strLabel,strPath,objPage:objOwner})),
       {strLabel:'private-tracking',strPath:new URL(objCustomer.url()).pathname,objPage:objCustomer}
     ];
-    for(const objTarget of arrTargets) {
+    const arrSelected=arrPageLabels?arrTargets.filter(objTarget=>arrPageLabels.includes(objTarget.strLabel)):arrTargets;
+    if(arrPageLabels&&arrSelected.length!==arrPageLabels.length)throw new Error('Known fixed page labels required.');
+    const objCdp=await objOwner.context().browser().newBrowserCDPSession();
+    for(const objTarget of arrSelected) {
       strFailureStage=objTarget.strLabel;
-      const objCheck=await objTarget.objPage.request.get(objTarget.strPath);expect(objCheck.status()).toBe(200);
+      strFailurePhase='preflight';
+      const objCheck=await objTarget.objPage.request.get(objTarget.strPath);intPreflightStatus=objCheck.status();expect(intPreflightStatus).toBe(200);
       // Existing private-page SEO exception applies only with actual noindex.
       const bNoindex=/noindex/i.test(objCheck.headers()['x-robots-tag']??'')||/<meta[^>]+name="robots"[^>]+noindex/i.test(await objCheck.text());
-      expect(bNoindex).toBe(true);
-      const strCookie=(await objTarget.objPage.context().cookies(strOrigin)).map(objCookie=>`${objCookie.name}=${objCookie.value}`).join('; ');
+      strFailurePhase='noindex';expect(bNoindex).toBe(true);
+      const arrCookies=await objTarget.objPage.context().cookies(strOrigin);
       for(const strProfile of ['mobile','desktop']) {
+        // Seed only Lighthouse's default cookie store, not the isolated actor's
+        // context. Native browser cookies preserve host-only/SameSite semantics;
+        // no secret-bearing extraHeaders are needed or written into reports.
+        strFailurePhase='cookie-store';
+        await objCdp.send('Storage.clearCookies');
+        await objCdp.send('Storage.setCookies',{cookies:arrCookies.map(objCookie=>({name:objCookie.name,value:objCookie.value,url:strOrigin,
+          path:objCookie.path,secure:objCookie.secure,httpOnly:objCookie.httpOnly,sameSite:objCookie.sameSite,
+          ...(objCookie.expires>0?{expires:objCookie.expires}:{})}))});
         // Authentication needs storage preserved. Standard device/throttling/
         // scoring remain unchanged; no raw LHR or headers are written to disk.
-        const objAudit=await lighthouse(strOrigin+objTarget.strPath,{port:9239,logLevel:'silent',output:'json',disableStorageReset:true,
-          extraHeaders:strCookie?{Cookie:strCookie}:{}},strProfile==='desktop'?objDesktop:undefined);
+        strFailurePhase='lighthouse';
+        const objAudit=await lighthouse(strOrigin+objTarget.strPath,{port:9239,logLevel:'silent',output:'json',disableStorageReset:true},strProfile==='desktop'?objDesktop:undefined);
         const objLhr=objAudit.lhr;
+        strFailurePhase='audit-target';
         expect(new URL(objLhr.finalDisplayedUrl??objLhr.finalUrl).pathname).toBe(objTarget.strPath);
         arrResults.push(auditSummary(objLhr,objTarget.strLabel,strProfile,bNoindex));
         process.stdout.write(`Audited: ${objTarget.strLabel} ${strProfile}\n`);
       }
     }
-    strFailureStage=null;
+    strFailureStage=null;strFailurePhase=null;
   }catch{/* Only the fixed stage label is returned; raw errors can include URLs or cookies. */}
   finally {
     if(bCreated)try{await objAccount.goto('/account');await objAccount.getByLabel('Current password to confirm deletion').fill(strPassword);
@@ -52,6 +68,6 @@ export async function runHostedAudits({objOwner,objCustomer,objReceipt,fnActor,s
     }catch{/* Failed cleanup prevents acceptance. */}
     strPassword='';
   }
-  return {strTask:'Hosted private-page audits',strFailureStage,arrResults,bTemporaryAccountDeleted:bDeleted,
+  return {strTask:'Hosted private-page audits',strFailureStage,strFailurePhase,intPreflightStatus,arrResults,bTemporaryAccountDeleted:bDeleted,
     bPassed:strFailureStage===null&&arrResults.length===28&&arrResults.every(objResult=>objResult.bPassed)&&bDeleted};
 }

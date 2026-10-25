@@ -10,6 +10,13 @@ import {createCatalogService} from '../../src/ordering/catalog-service.js';
 
 let objServer;
 let intPort;
+test('shared private bundle preserves Bootstrap, tokens, global and staff cascade exactly', async () => {
+  const arrParts=[];
+  for(const strPath of ['/vendor/bootstrap.min.css','/css/tokens.css','/css/global.css','/css/staff.css']) {
+    arrParts.push((await requestText(strPath,'identity')).objBody,Buffer.from('\n'));
+  }
+  assert.deepEqual((await requestText('/css/tracking-bundle.css','identity')).objBody,Buffer.concat(arrParts));
+});
 test('public pages share one stylesheet preserving the exact Bootstrap-first cascade', async () => {
   const arrParts = [];
   for (const strPath of ['/vendor/bootstrap.min.css', '/css/tokens.css', '/css/global.css']) {
