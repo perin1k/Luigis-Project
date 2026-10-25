@@ -13,6 +13,14 @@ provision resources; the approved executed hosting scope is recorded there.
 
 ## People, application accounts and operating-system identities
 
+Current OPS-08 adds a separate random proxy proof in root-private runtime and
+Nginx configuration under `/etc/luigis/proxy` (directory 0700, files 0600). This is
+not an account password or authenticator secret. Rotate it only through coordinated
+reviewed Nginx/application configuration replacement. Never print the configuration
+or use `nginx -T`; application `luigis` receives its environment through systemd,
+and unprivileged proxy workers must not read these root files. See the
+[proxy guide](nginx-proxy.md) and [execution evidence](verification/ops-08-proxy.md).
+
 These are separate permission boundaries:
 
 - The authorized operator controls GCP/IAP access, deployment, root-owned release

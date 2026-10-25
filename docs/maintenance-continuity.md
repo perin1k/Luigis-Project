@@ -6,6 +6,13 @@
 
 ## Supported baseline and people
 
+Current hosted transport is public Nginx HTTPS to authenticated loopback Node TLS.
+Use [the proxy operator guide](nginx-proxy.md) and
+[OPS-08 evidence](verification/ops-08-proxy.md) alongside this guide. Preserve both
+services, private proxy configuration and the capability-removal drop-in during
+maintenance. Current source includes customer migration 016; fallback source must
+support that schema. The original direct-HTTPS source is not a compatible fallback.
+
 The reviewed patched baseline is Node.js 24.22.1 with bundled npm 11.19.1 and the
 committed lockfile, on the existing Windows/macOS/Linux development targets.
 `package.json`, `.node-version`, `.nvmrc`, active CI and Ubuntu bootstrap agree.
@@ -82,6 +89,10 @@ Its data-device safeguards and no-overwrite key setup remain intact.
 - Certbot owns the free Let's Encrypt registration/renewal; its timer and matching
   private-pair deploy hook were exercised under OPS-02. Brody checks renewal timer,
   expiry and actual hostname after maintenance; never paste key material into logs.
+  OPS-08 also exercised `renew --dry-run --run-deploy-hooks`: the installed hook
+  updates Node's private TLS pair and checks/reloads active Nginx. An ordinary
+  renewal must preserve that dual-service behavior. The proxy's status-only journal
+  has the same retention bounds; use its process query from the proxy guide.
 - DuckDNS ownership/token remains with Brody. Its separate private updater refreshes
   the ephemeral IPv4 at boot/every five minutes. After VM interruption, check the
   mounted data disk, key access, DNS result, certificate and all minimal probes.

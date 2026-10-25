@@ -18,10 +18,18 @@ is required. Email/SMS are internal previews, not sent messages. Stripe/native
 Apple Pay and rewards/student deals remain future scope, not delivered integrations.
 
 The observed hosted application source is
-`8ad900a2bbda07570c0df4fb7d1ebd6258986f2a` on Ubuntu 24.04, Node 24.22.1/npm
+`a87b662fa7ac473eb7f0b455a6aad9d716c64090` on Ubuntu 24.04, Node 24.22.1/npm
 11.19.1. Documentation and acceptance tooling have later commits on `dev`.
 Record both the delivered repository commit and actual deployed release in the
 receiving record; do not assume a documentation push deploys application code.
+
+Public HTTPS now passes through Nginx to authenticated loopback Node TLS, with
+customer migration 016 applied. Same-release direct HTTPS recovery, renewal and
+Owner sign-in were exercised. Read the [proxy operator guide](nginx-proxy.md) and
+[current execution record](verification/ops-08-proxy.md) before maintenance; do not
+restore the older application against the newer schema. Restaurant users still
+use the same public/customer/staff links and contact designated website support
+for outages; they do not need proxy commands or additional account setup.
 
 Read [publication evidence](verification/ops-06-publication.md),
 [hosted integration acceptance](verification/int-02-hosted.md) and

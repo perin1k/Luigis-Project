@@ -1,6 +1,6 @@
 # GCP/DuckDNS deployment runbook
 
-Current October 24 architecture: public Nginx HTTPS with authenticated loopback TLS
+Current October 25 architecture: public Nginx HTTPS with authenticated loopback TLS
 to Node; same-release direct HTTPS is the exercised recovery mode. See
 [OPS-08 checkpoint](verification/ops-08-proxy.md) and [proxy guide](nginx-proxy.md)
 before using historical direct-listener commands below.
@@ -32,7 +32,7 @@ is authoritative; do not replace its choices with another architecture.
 | VM | `e2-small` Spot, `us-central1-a`, Ubuntu 24.04 LTS amd64; resolve the approved image family to an exact image before installation |
 | Interruption | STOP, not DELETE; sponsor restarts when Spot capacity permits; no automatic standard-VM fallback |
 | Storage | 20 GB balanced boot disk and separate 10 GB balanced data disk; auto-delete disabled on both |
-| Process | One unprivileged Node process managed by systemd, direct TLS on 443; no reverse proxy or cluster |
+| Process | Public Nginx HTTPS on 443; one unprivileged Node process on loopback TLS port 3443, managed by systemd; no cluster |
 | Network | Dedicated custom VPC/subnet, targeted public TCP 443 and ACME-only TCP 80; SSH only through IAP/OS Login, TCP 22 from `35.235.240.0/20` |
 | Address / DNS | Ephemeral external IPv4; DuckDNS update at boot and every five minutes |
 | Budget | Approved $25/month project alerts-only budget: actual 50/90/100%, forecast 100%; billing owner monitors costs |
@@ -166,6 +166,12 @@ updated credentials into a running service's paths. No renewal timer is created.
 
 ## 4. Service supervision and first launch
 
+The initial direct-HTTPS setup below is historical/bootstrap guidance. The live
+service now also uses the reviewed Nginx and capability-removal drop-ins described
+in [the proxy guide](nginx-proxy.md). Node has no privileged-port capability in
+proxy mode. Use same-release direct HTTPS only through the reviewed recovery
+procedure, not by removing security controls or rolling back migration 016.
+
 Prepare and review a systemd service with a dedicated identity, fixed working
 release directory, protected environment input and explicit data-mount dependency.
 It must require the actual data mount, restart on application failure with backoff,
@@ -176,9 +182,10 @@ Use the reviewed unit in `deploy/luigis.service`. Its disposable Ubuntu CI
 rehearsal is recorded under OPS-01; it is not installed on GCP. Validate the actual
 host's unit, disk identity and permissions before enabling it there.
 
-Keep Node's direct-TLS/pinned-host checks and socket-peer throttling. A proxy or
-TLS-terminating load balancer would require a new reviewed trust/address design.
-Do not enable `trust proxy` or accept arbitrary forwarded addresses as a shortcut.
+Keep Node's TLS/pinned-host checks. The approved Nginx mode authenticates the local
+proxy before using its overwritten client address for throttling; direct mode
+uses the socket peer. Other proxies need a separately reviewed trust/address design.
+Do not enable blanket `trust proxy` or accept arbitrary forwarding headers.
 Use [IAP's restricted SSH guidance](https://docs.cloud.google.com/iap/docs/using-tcp-forwarding)
 for operator access; do not grant broad cloud API roles to the Node process.
 

@@ -1,4 +1,40 @@
-# OPS-08 checkpoint — paused at Brody's request
+# OPS-08 execution and acceptance record
+
+## October 25 completion
+
+The remaining bounded hosted checks passed: root proxy directory 0700/private
+files with no group/other access, matching runtime/Nginx proof, backend bound only
+to 127.0.0.1:3443, and real public readiness 200. Node still runs as luigis with
+NoNewPrivileges=yes, ProtectSystem=strict and empty capability sets. Both luigis
+and nginx are active and enabled. The original deployed source remains
+`a87b662fa7ac473eb7f0b455a6aad9d716c64090`; later tooling/docs commits do not change it.
+
+Actual Nginx telemetry was located by `_COMM=nginx`, not SYSLOG_IDENTIFIER: this
+host retains hostname/tag in MESSAGE. All 1,826 inspected proxy messages matched
+the status/timing-only format, with no visitor address, URL, headers or body. A
+bounded October 24 onward luigis/nginx service-journal scan found no current proxy
+proof, MFA encryption key or TLS private-key content. These scoped observations
+are not an exhaustive security guarantee. No telemetry configuration change was
+needed. One diagnostic JSON query exceeded its default output buffer; the final
+bounded text query completed and emitted sanitized booleans/counts only.
+
+The task-created root-private duplicate Certbot dry-run log was removed after
+checking its exact resolved path, file type/owner and link count. Existing
+canonical Certbot logging and seven-day pruning remain. The operator/deployment,
+maintenance/custody and developer handoff references now describe the current
+architecture and route everyday users to the plain-language guides.
+
+Together with the executed cutover/recovery/renewal, actual CI and private Owner
+confirmation below, this satisfies OPS-08's scoped acceptance. Customer-account
+visual/manual acceptance, remaining usability/readability work and final product
+QA/TEST-04 remain separate and are not claimed passed by this operations record.
+
+Separately, Brody approved permanent removal of the earlier disposable refunded
+test order; the [one-time cleanup record](disposable-order-cleanup.md) supersedes
+the earlier cancellation-only checkpoint for that order. It is not general
+permission to delete history or reset the database.
+
+## Historical October 24 pause checkpoint
 
 October 24, 2026, America/Chicago. The approved existing-VM Nginx cutover and
 customer-account deployment are live. This is a resumable checkpoint, not final
@@ -63,7 +99,7 @@ product acceptance or full OPS-08 completion.
   Protected records remain; no hard deletion or duplicate refund occurred. No
   personal details or private tracking paths are recorded here.
 
-## Resume next
+## Tasks pending at the pause (status updated above)
 
 1. Finish bounded private proxy/runtime-file permission and journal/proof leakage
    review; emit sanitized results only. Never print runtime.env or nginx config,

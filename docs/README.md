@@ -26,6 +26,8 @@ are an owner arranging technical support, give your support person the links bel
   configuration, accounts, deployment, recovery and costs.
 - [Deployment runbook](deployment-runbook.md), [maintenance](maintenance-continuity.md),
   [monitoring](operations-monitoring.md) and [private key custody](secret-custody.md).
+- [Nginx operator guide](nginx-proxy.md): current public HTTPS, private application
+  connection, renewal, status-only logs and same-release recovery.
 - [Third-party inventory](third-party-notices.md): developer notice/license review.
 - Other design, policy, data, security and integration records in this directory
   explain implementation decisions. Their staff-facing instructions are summarized

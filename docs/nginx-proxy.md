@@ -35,6 +35,9 @@ There is no invented extra payment retry at the edge.
   remain intact. `REVERSE_PROXY_MODE=nginx-tls`, loopback HOST/unprivileged PORT and
   generated `PROXY_SHARED_SECRET` enable the boundary; AUTH_ORIGIN stays public.
   Existing database/MFA/payment/TLS paths and keys remain unchanged.
+  Run from the reviewed release directory using the relative script path; the
+  original CLI entry guard does not follow an absolute `/opt/luigis/current`
+  symlink invocation. Do not alter files inside an immutable release to fix that.
 - `deploy/nginx-service.conf` selects that private configuration, with root master
   and www-data workers. `deploy/luigis-proxy.conf` removes Node's bind capability.
 - `deploy/nginx-cutover.sh activate` switches reviewed transport settings/drop-ins,
@@ -67,6 +70,11 @@ status/upstream/timing only, no URLs, addresses, headers, cookies or bodies. Raw
 request-bearing error contexts are disabled; diagnose through status telemetry,
 service state and monitored readiness. This privacy/diagnostic trade-off retains
 existing journal bounds/retention and adds no cloud log exporter or access-log file.
+On this Ubuntu host journald retains the syslog hostname/tag inside MESSAGE rather
+than populating SYSLOG_IDENTIFIER for these Nginx entries. Query by process instead:
+`sudo journalctl _COMM=nginx --grep 'luigis_proxy: ' --since '1 hour ago'`.
+The hostname prefix is host metadata, not the visitor's address. Do not mistake
+an empty `journalctl -t luigis_proxy` result for missing telemetry.
 
 Proof rotation requires coordinated reviewed configuration/runtime replacement.
 VM stop retains disks, keys and costs. Existing hosting/support/data-loss boundaries
@@ -79,5 +87,14 @@ Focused local boundary/auth/customer/release/TLS checks passed (40 tests).
 spoof overwrite, backend denial, customer native forms/cookies/deletion and the
 genuine cross-role order/refund/reporting journey with disposable data.
 `.github/workflows/proxy-verification.yml` runs that Ubuntu rehearsal.
-Actual native Nginx and hosted cutover outcomes remain pending. Prepared code is
-not a deployment pass. Existing visual/manual/final product QA gates stay open.
+Actual Ubuntu Nginx CI [40146790846](https://github.com/perin1k/Luigis-Project/actions/runs/40146790846)
+passed. The existing-VM cutover, same-release direct recovery/forward reactivation,
+backend restart, actual Certbot renewal rehearsal and private human Owner sign-in
+also passed. October 25 final checks confirmed private root proxy files, matching
+proof, loopback-only backend, empty Node capabilities, active/enabled services and
+1,826 status-only proxy messages without request details. A bounded service-journal
+scan found no current proxy proof, MFA encryption key or TLS private-key content;
+this is not an exhaustive security/compliance certification. The redundant private
+Certbot rehearsal output was removed; canonical certificate logs remain subject
+to the existing retention policy. See [OPS-08 execution evidence](verification/ops-08-proxy.md).
+Existing visual/manual/final product QA gates stay open.
