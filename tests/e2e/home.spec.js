@@ -58,6 +58,8 @@ test('content remains available without browser JavaScript', async ({ browser: o
   const objContext = await objBrowser.newContext({ javaScriptEnabled: false });
   const objPage = await objContext.newPage();
   await objPage.goto('http://127.0.0.1:3000');
+  await expect(objPage.getByRole('heading', {name:'Come hungry. Feel at home.',exact:true})).toBeVisible();
+  await objPage.getByRole('link', {name:'Explore the menu',exact:true}).click();
   await expect(objPage.getByRole('heading', { name: 'Your pizza, your way.' })).toBeVisible();
   await objPage.goto('http://127.0.0.1:3000/order');
   await expect(objPage.getByText('Please enable JavaScript to customize your order.', { exact: false })).toBeVisible();

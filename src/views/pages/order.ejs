@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <%- include('../partials/head', { bPricingPage: Boolean(objCatalog) }) %>
-  <% if (!objCatalog) { %><link rel="stylesheet" href="/css/ordering.css"><% } %>
+  <% if (!objCatalog) { %><link rel="stylesheet" href="/css/ordering.css?v=<%= strAssetVersion %>"><% } %>
   <script type="module" src="/js/ordering/order-wizard.js"></script>
 </head>
 <body>
   <%- include('../partials/header') %>
   <main id="main-content" class="container order-page" tabindex="-1">
     <div class="order-intro"><p class="eyebrow">A little more you. A little more Luigi’s.</p><h1>Your next favorite pizza.</h1><p>Choose dine-in or carry-out, build your pizza, then review your order.</p></div>
-    <p id="order-fallback" class="notice">Please enable JavaScript to customize your order. You can still <a href="/#menu">explore our menu</a>.</p>
+    <p id="order-fallback" class="notice">Please enable JavaScript to customize your order. You can still <a class="btn btn-outline-primary" href="/menu">explore our menu</a>.</p>
     <div id="order-app" data-demo-payments="<%= bDemoPayments %>" data-scheduling="<%= bScheduling %>" data-order-submission="<%= bOrderSubmission %>" data-catalog="<%= JSON.stringify(objCatalog) %>" hidden>
       <nav class="order-progress" aria-label="Order progress"><ol>
         <% for (const [intIndex, strStep] of ['Service', 'Pizza', 'Drinks', 'Details', 'Review', 'Payment'].entries()) { %>

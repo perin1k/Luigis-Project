@@ -115,7 +115,7 @@ function getServiceLabel() {
 }
 
 function createEditButton(strLabel, fnAction) {
-  const elButton = createElement('button', strLabel, 'text-button');
+  const elButton = createElement('button', strLabel, 'btn btn-outline-primary text-button');
   elButton.type = 'button';
   elButton.addEventListener('click', fnAction);
   return elButton;

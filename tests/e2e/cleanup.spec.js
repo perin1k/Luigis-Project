@@ -73,6 +73,26 @@ test('leaving an active order warns before discarding it without saving contact 
   expect(await objPage.evaluate(() => Object.keys(sessionStorage))).toEqual([]);
 });
 
+test('home actions and pizza editing have bordered button surfaces rather than underlined text', async ({page:objPage}) => {
+  await objPage.goto('/');
+  for(const strName of ['Explore the full menu','Visit My account']) {
+    const elAction=objPage.getByRole('link',{name:new RegExp(strName)});
+    await expect(elAction).toHaveClass(/\bbtn\b/);
+    const objStyle=await elAction.evaluate(el=>({strDecoration:getComputedStyle(el).textDecorationLine,strBorder:getComputedStyle(el).borderTopStyle,numHeight:el.getBoundingClientRect().height}));
+    expect(objStyle.strDecoration).toBe('none');
+    expect(objStyle.strBorder).toBe('solid');
+    expect(objStyle.numHeight).toBeGreaterThanOrEqual(44);
+    await elAction.hover();
+    expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
+  }
+  await objPage.goto('/order');
+  await objPage.locator('#next-button-top').click();
+  await objPage.getByRole('button',{name:'Add pizza',exact:true}).click();
+  const elEdit=objPage.getByRole('button',{name:'Edit pizza 1',exact:true});
+  await expect(elEdit).toHaveClass(/\bbtn\b/);
+  expect(await elEdit.evaluate(el=>getComputedStyle(el).textDecorationLine)).toBe('none');
+});
+
 test('cleanup visual home, menu and compact drink states in both themes', async ({page: objPage}) => {
   for (const strTheme of ['Light','Dark']) {
     await objPage.goto('/');

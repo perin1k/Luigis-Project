@@ -8,7 +8,7 @@ import { createProxyBoundary } from './security/proxy-boundary.js';
 import { createCustomerRouter } from './customer/customer-router.js';
 import { CUSTOMER_COOKIES, readCustomerCookies } from './customer/customer-transport.js';
 import { createOperationalRecorder } from './operations/telemetry.js';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { createHealthRouter } from './operations/health-router.js';
 import { createMenuRouter } from './staff/menu-router.js';
 import { createAnonymousLimits } from './security/anonymous-limits.js';
@@ -66,6 +66,11 @@ export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigi
   mapTextAssets.set('/css/tracking-bundle.css', prepareText(Buffer.concat([
   mapTextAssets.get('/vendor/bootstrap.min.css').objBody, Buffer.from('\n'),
   mapTextAssets.get('/css/staff-bundle.css').objBody]), 'css'));
+  // A new stylesheet body gets a new URL, so cached styles cannot disguise a
+  // newly deployed design. This contains only public asset bytes, never secrets.
+  const objStyleHash = createHash('sha256');
+  for (const [strPath,objAsset] of mapTextAssets) if (strPath.endsWith('.css')) objStyleHash.update(objAsset.objBody);
+  objApp.locals.strAssetVersion = objStyleHash.digest('hex').slice(0,12);
   function sendText(objRequest, objResponse, objText) {
     objResponse.vary('Accept-Encoding');
     const strEncoding = objRequest.acceptsEncodings(...(objText.objBrotli ? ['br', 'gzip', 'identity']: ['gzip', 'identity']));

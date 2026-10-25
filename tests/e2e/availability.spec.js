@@ -90,6 +90,6 @@ for (const intStatus of [404, 500]) {
     await objPage.keyboard.press('Enter');
     await expect(objPage.locator('main')).toBeFocused();
     await objPage.getByRole('link', { name: 'Explore the menu' }).click();
-    await expect(objPage).toHaveURL('/#menu');
+    await expect(objPage).toHaveURL('/menu');
   });
 }

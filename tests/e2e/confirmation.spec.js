@@ -11,5 +11,5 @@ test('visual confirmation preview is accessible and unmistakably sample content'
   expect(objResults.violations).toEqual([]);
   await expect(objPage).toHaveScreenshot('confirmation-preview.png', { fullPage: true });
   await objPage.getByRole('link', { name: 'Back to the menu' }).click();
-  await expect(objPage).toHaveURL(/\/#menu$/);
+  await expect(objPage).toHaveURL(/\/menu$/);
 });

@@ -15,7 +15,7 @@
     <div class="staff-intro"><p class="eyebrow">Behind the counter</p><h1><%= objOrder ? 'Order details.' : 'Ready for the rush.' %></h1><p>Confirmed-payment orders, organized by ready time. All times are Central.</p></div>
     <p id="orders-status" role="status" aria-live="polite"><%= objQueue ? `${objQueue.arrOrders.length} orders on this page.` : 'Order loaded.' %></p>
     <p id="orders-error" role="alert" class="staff-notice" hidden></p>
-    <a id="orders-signin" href="/staff/sign-in" hidden>Sign in again</a>
+    <a id="orders-signin" class="btn btn-primary" href="/staff/sign-in" hidden>Sign in again</a>
     <section class="staff-card" aria-labelledby="orders-heading">
       <h2 id="orders-heading"><%= objOrder ? 'Preparation details' : 'Order queue' %></h2>
       <% if (objQueue) { %>

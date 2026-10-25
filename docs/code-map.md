@@ -14,6 +14,10 @@ remain authoritative. A comment is not evidence that an unrun test passed.
 2. `src/views/pages/order.ejs` includes the ordering fragments in
    `src/views/partials/ordering/`. EJS executes on the server; the customer receives
    HTML. Escaped output handles dynamic text; trusted includes use unescaped EJS.
+   The welcome-only home links to `pages/menu.ejs`; its shared menu fragment reads
+   `ordering/public-menu.js`, using the current catalog instead of copied prices.
+   Project stylesheets use a public-content fingerprint in their URL to load new
+   styles after a release; this is separate from private session or key versioning.
 3. `src/public/js/ordering/order-wizard.js` manages selections, accessible
    navigation, editing, server price/slot refresh and payment reconciliation.
    `order-model.js` supplies display helpers. Browser prices are previews.

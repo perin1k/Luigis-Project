@@ -24,6 +24,12 @@ manual and hosted final acceptance. No production deployment is part of this pus
   and menu listings now appear only on /menu. Home links to menu/order/account.
   His next review requested more distinctive buttons; action controls now have
   bordered surfaces, stronger labels, a restrained raised edge and focus states.
+  A follow-up made home/menu/account actions actual solid/outlined button
+  components, extended bordered staff/customer recovery/navigation actions and
+  redirected menu recovery links to /menu. Hover checks caught a low-contrast
+  color-fade midpoint; instant state changes now pass without waiting out a fade.
+  Public stylesheet URLs carry a content-derived fingerprint so cached CSS cannot
+  disguise a released style update; gzip/HEAD/cache and single-bundle checks pass.
 - Visible customer/staff links retain real server authorization. Inline refund
   review errors focus the required checkbox; refresh clears its approval and stale
   warning. Processing, success and uncertain-result recovery remain distinct.
@@ -75,3 +81,17 @@ the run had already finished. Its unchanged domain/workflow results remain usefu
 within their scope. Final revised native collection/comparison is still pending.
 The new direct uncertain-payment regression passed Chromium and Firefox: top and
 bottom actions retry the same request ID, keep editing locked and yield one payment.
+
+Local Lighthouse 13.5.0 audited home, menu and ordering with standard mobile and
+desktop profiles on the refreshed disposable preview: all six combinations scored
+100 for Performance, Accessibility, Best Practices and SEO, with no runtime error
+or label-content-name mismatch. This observation preceded the final button-surface
+and stylesheet-fingerprint follow-up; affected final auditing remains explicit.
+An earlier preview audit overlapped removal of an obsolete cached template asset
+and yielded invalid page results; those are not accepted evidence. The corrected
+logo uses native visible text rather than a mismatching aria-label.
+
+The source-only no-JavaScript home test originally still expected the menu heading
+on home; it now verifies the welcome heading and follows the menu link without
+JavaScript. Its corrected check passes. Further visual reference reconciliation
+and final current-source verification are recorded separately as they complete.

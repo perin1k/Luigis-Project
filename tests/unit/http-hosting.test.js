@@ -30,7 +30,7 @@ test('configured ordering uses one blocking stylesheet with unchanged Bootstrap 
     await new Promise((fnResolve, fnReject) => { objConfigured.once('listening', fnResolve); objConfigured.once('error', fnReject); });
     const strHtml = await (await fetch(`http://127.0.0.1:${objConfigured.address().port}/order`)).text();
     assert.equal((strHtml.match(/rel="stylesheet"/g) ?? []).length, 1);
-    assert.match(strHtml, /href="\/css\/order-bundle.css"/);
+    assert.match(strHtml, /href="\/css\/order-bundle.css\?v=[a-f0-9]{12}"/);
     assert.ok(strHtml.indexOf('/css/order-bundle.css') < strHtml.indexOf('/js/theme.js'));
     assert.equal((strHtml.match(/src="\/js\/theme.js"/g) ?? []).length, 1);
     const arrParts = [];
