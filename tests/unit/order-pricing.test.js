@@ -25,7 +25,7 @@ test('pizza previews use size-specific base and topping prices in integer cents'
 test('subtotal combines multiple pizzas and individual drink quantities', () => {
   assert.equal(calculateSubtotal({
     arrPizzas: [{ strSize: 'small', arrToppings: [], intQuantity: 2 }],
-    arrDrinks: [{ strSize: 'large', strName: 'Iced tea', intQuantity: 2 }],
+    arrDrinks: [{ strSize: 'large', strName: 'Sweet iced tea', intQuantity: 2 }],
   }), 1600);
 });
 

@@ -13,60 +13,20 @@
           <h1 id="hero-title">Good pizza.<br>Great company.</h1>
           <p class="hero-description">Marinara, cheese, and all your favorites. Build your kind of pizza, then pull up a chair or take it to go.</p>
           <a class="btn btn-primary" href="/order">Start your order <span aria-hidden="true">↗</span></a>
-          <a class="menu-link" href="#menu">Explore the menu</a>
+          <a class="menu-link" href="/menu">Explore the menu</a>
           <p class="hero-note">Dine-in &amp; carry-out · Open every day</p>
         </div>
-        <div class="col-lg-6"><div class="pizza-scene" aria-hidden="true">
-          <div class="pizza-label">LUIGI’S · LA BUONA PIZZA</div>
-          <div class="pizza-stamp">BUON<br>APPETITO</div>
-          <div class="pizza"><div class="pizza-cheese"></div><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <span class="scene-caption">Your favorites, from the first slice.</span>
-        </div></div>
+        <div class="col-lg-6"><figure class="oven-scene">
+          <div class="oven-plaque"><span>Luigi’s Pizza</span><small>Gather around the good stuff.</small></div>
+          <img src="/images/oven-emblem.svg" width="440" height="400" alt="" class="hero-oven">
+          <figcaption>Good food. Familiar faces. Your kind of place.</figcaption>
+        </figure></div>
       </div></div>
     </section>
     <div class="service-strip"><div class="container">Two crusts. Nine toppings. One delicious decision.</div></div>
     <section id="menu" class="section container" aria-labelledby="menu-title">
-      <div class="section-heading">
-        <div><p class="eyebrow">Start with the classics</p><h2 id="menu-title">Your pizza, your way.</h2></div>
-        <p>Every base includes marinara and cheese.<br>Choose regular or New York-style crust.</p>
-      </div>
-      <div class="table-wrap">
-        <table class="table align-middle">
-          <caption>Pizza sizes and prices</caption>
-          <thead><tr><th scope="col">Size</th><th scope="col">Base pizza</th><th scope="col">Each topping</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Small <span>12 inch</span></th><td>$5.00</td><td>$1.00</td></tr>
-            <tr><th scope="row">Medium <span>14 inch</span></th><td>$7.00</td><td>$2.00</td></tr>
-            <tr><th scope="row">Large <span>18 inch</span></th><td>$9.00</td><td>$3.00</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="menu-details row g-4">
-        <div class="col-md-7">
-          <section class="menu-card" aria-labelledby="toppings-title">
-            <p class="eyebrow">The finishing touches</p>
-            <h3 id="toppings-title">Make it yours</h3>
-            <p>Mix your favorites. Toppings are priced by pizza size above.</p>
-            <ul class="topping-list" aria-label="Available toppings">
-              <li>Pepperoni</li><li>Sausage</li><li>Beef crumbles</li>
-              <li>Green peppers</li><li>Jalapeños</li><li>Pineapple</li>
-              <li>Onion</li><li>Black olives</li><li>Diced tomatoes</li>
-            </ul>
-          </section>
-        </div>
-        <div class="col-md-5">
-          <section class="menu-card" aria-labelledby="drinks-menu-title">
-            <p class="eyebrow">A fountain favorite</p>
-            <h3 id="drinks-menu-title">Something to sip</h3>
-            <p>Choices include Coca-Cola products, iced tea, and Dr Pepper.</p>
-            <dl class="drink-prices">
-              <div><dt>Small</dt><dd>$1.00</dd></div>
-              <div><dt>Medium</dt><dd>$2.00</dd></div>
-              <div><dt>Large</dt><dd>$3.00</dd></div>
-            </dl>
-          </section>
-        </div>
-      </div>
+      <%- include('../partials/menu') %>
+      <a class="menu-more" href="/menu">Explore the full menu <span aria-hidden="true">→</span></a>
     </section>
     <section id="visit" class="visit-section" aria-labelledby="visit-title">
       <div class="container"><div class="row g-4 visit-grid">

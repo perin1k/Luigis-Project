@@ -101,6 +101,8 @@ function renderDetail(objOrder) {
     elRefundButton.disabled = !objRefund.bCanApprove;
     elRefundButton.textContent = 'Approve demo refund';
     document.querySelector('#refund-reviewed').checked = false;
+    document.querySelector('#refund-reviewed').removeAttribute('aria-invalid');
+    document.querySelector('#refund-error').hidden = true;
     document.querySelector('#refund-status').textContent = '';
     strRefundRequestId = undefined;
   }
@@ -278,16 +280,28 @@ function clearPrivate() {
 function money(centsValue) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(centsValue / 100);
 }
+document.querySelector('#refund-reviewed')?.addEventListener('change', () => {
+  document.querySelector('#refund-error').hidden = true;
+  document.querySelector('#refund-reviewed').removeAttribute('aria-invalid');
+});
 if (elRefundButton) elRefundButton.addEventListener('click', async() => {
   if (!document.querySelector('#refund-reviewed').checked) {
-    elError.hidden = false;
-    elError.textContent = 'Review and approve the full refund first.';
+    elError.hidden = true;
+    const elReview = document.querySelector('#refund-reviewed');
+    const elRefundError = document.querySelector('#refund-error');
+    elRefundError.hidden = false;
+    elRefundError.textContent = 'Review and approve the full refund first.';
+    elReview.setAttribute('aria-invalid', 'true');
+    elReview.focus();
     return;
   }
+  document.querySelector('#refund-error').hidden = true;
+  document.querySelector('#refund-reviewed').removeAttribute('aria-invalid');
   strRefundRequestId ??= crypto.randomUUID();
   elRefundButton.disabled = true;
   elRefresh.disabled = true;
   elError.hidden = true;
+  document.querySelector('#refund-status').textContent = 'Processing demonstration refund…';
   const objAbort = new AbortController();
   const intTimer = setTimeout(() => objAbort.abort(), 10000);
   let bUncertain = true;
@@ -320,8 +334,17 @@ if (elRefundButton) elRefundButton.addEventListener('click', async() => {
     document.querySelector('#refund-status').textContent = objResult.strMessage;
     strRefundRequestId = undefined;
   } catch (objError) {
-    elError.hidden = false;
-    elError.textContent = objError.name === 'AbortError' || objError instanceof TypeError ? 'Refund result could not be confirmed. Check the same request before starting another.': objError.message;
+    const elRefundError = document.querySelector('#refund-error');
+    if (elRefundError) {
+      elRefundError.hidden = false;
+      elRefundError.textContent = objError.name === 'AbortError' || objError instanceof TypeError ? 'Refund result could not be confirmed. Check the same request before starting another.': objError.message;
+      document.querySelector('#refund-status').textContent = '';
+    } else {
+      // Expiry clears the private panel. Keep only a safe sign-in recovery
+      // message in the surviving public alert, never rebuild private details.
+      elError.hidden = false;
+      elError.textContent = objError.message;
+    }
   }
   finally {
     clearTimeout(intTimer);

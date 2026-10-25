@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import { SIZES, TOPPINGS, DRINKS, normalizeAvailability } from './public/js/ordering/order-model.js';
+import {publicMenu} from './ordering/public-menu.js';
 
 export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigin, objPrivacyService, objAuthRuntime, objCatalogService, objOrderService, objSchedulingService, objPaymentService, objStaffOrdersService, objOrderProgressService, objTrackingService, objOrderExceptionService, objDemoRefundService, objNotificationService, objAnalyticsService, objMenuService, fnReadiness, fnPreviewReadiness, fnWriteOperational } = {}) {
   const objApp = express();
@@ -104,6 +105,15 @@ export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigi
     renderPage(objRequest, objResponse, fnNext, 'pages/home', {
       strTitle: "Luigi's Pizza | Dine-in & Carry-out",
       strDescription: "Explore Luigi's Pizza: 12, 14, and 18-inch pizzas, your choice of toppings, and fountain drinks. Dine-in and carry-out, daily 10 AM to 11 PM.",
+      objMenu:publicMenu(objCatalogService),
+    });
+  });
+  objApp.get('/menu', (objRequest, objResponse, fnNext) => {
+    objResponse.set('Cache-Control', 'no-store');
+    renderPage(objRequest, objResponse, fnNext, 'pages/menu', {
+      strTitle:"Menu | Luigi's Pizza",
+      strDescription:'Explore pizza sizes, crusts, toppings, fountain drinks and current prices at Luigi’s Pizza.',
+      objMenu:publicMenu(objCatalogService),
     });
   });
   objApp.use(createAnonymousLimits());

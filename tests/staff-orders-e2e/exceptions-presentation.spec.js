@@ -29,6 +29,8 @@ test('refund submission requires explicit approval and states the full no-fee po
   await expect(objPage.locator('#refund-panel')).toContainText('Refunds include items, tax and tip, without a fee deduction.');
   await objPage.getByRole('button', { name: 'Approve demo refund', exact: true }).click();
   await expect(objPage.getByRole('alert')).toContainText('Review and approve the full refund first.');
+  await expect(objPage.locator('#refund-reviewed')).toBeFocused();
+  await expect(objPage.locator('#refund-error')).toBeVisible();
   expect(intSubmissions).toBe(0);
   await expect(objPage.locator('#refund-reviewed')).not.toBeChecked();
   await expect(objPage.locator('#refund-status')).toBeEmpty();

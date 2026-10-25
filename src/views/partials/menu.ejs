@@ -1,0 +1,35 @@
+<%# Shared current-menu view: home and /menu receive the same catalog projection. %>
+<div class="section-heading">
+  <div><p class="eyebrow">Start with the classics</p><h2 id="menu-title">Your pizza, your way.</h2></div>
+  <p>Every base includes marinara and cheese.<br>Choose your crust, size and favorite toppings.</p>
+</div>
+<div class="table-wrap">
+  <table class="table align-middle">
+    <caption>Pizza sizes and prices</caption>
+    <thead><tr><th scope="col">Size</th><th scope="col">Base pizza</th><th scope="col">Each topping</th></tr></thead>
+    <tbody>
+      <% for (const objSize of objMenu.arrSizes) { %>
+      <tr><th scope="row"><%= objSize.strLabel %><span><%= objSize.intDiameter %> inch</span><% if (!objSize.bAvailable) { %><small class="availability-label">Currently unavailable</small><% } %></th><td>$<%= (objSize.centsBase/100).toFixed(2) %></td><td>$<%= (objSize.centsTopping/100).toFixed(2) %></td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+<p class="menu-policy">Prices shown are before tax and optional tip. Availability and your final total are checked before checkout.</p>
+<p><strong>Crusts:</strong> <% for (const [intIndex,objCrust] of objMenu.arrCrusts.entries()) { %><%= intIndex ? ' · ' : '' %><%= objCrust.strLabel %><%= objCrust.bAvailable ? '' : ' (currently unavailable)' %><% } %></p>
+<% if (objMenu.arrUnavailableBases.some(strCode => ['marinara','cheese'].includes(strCode))) { %><p class="availability-notice">Pizzas are currently unavailable because a required base ingredient is unavailable.</p><% } %>
+<div class="menu-details row g-4">
+  <div class="col-md-7"><section class="menu-card" aria-labelledby="toppings-title">
+    <p class="eyebrow">The finishing touches</p><h3 id="toppings-title">Make it yours</h3>
+    <p>Mix your favorites. Each topping is priced by pizza size above.</p>
+    <ul class="topping-list ingredient-list" aria-label="Pizza toppings">
+      <% for (const objTopping of objMenu.arrToppings) { %>
+      <li><%- include('ingredient-art', {strCode:objTopping.strCode}) %><span><%= objTopping.strLabel %><% if (!objTopping.bAvailable) { %><small class="availability-label">Currently unavailable</small><% } %></span></li>
+      <% } %>
+    </ul>
+  </section></div>
+  <div class="col-md-5"><section class="menu-card" aria-labelledby="drinks-menu-title">
+    <p class="eyebrow">A fountain favorite</p><h3 id="drinks-menu-title">Something to sip</h3>
+    <ul class="beverage-list" aria-label="Fountain drink choices"><% for (const objDrink of objMenu.arrBeverages) { %><li><%= objDrink.strLabel %><%= objDrink.bAvailable ? '' : ' · Currently unavailable' %></li><% } %></ul>
+    <dl class="drink-prices"><% for (const objSize of objMenu.arrDrinkSizes) { %><div><dt><%= objSize.strLabel %><%= objSize.bAvailable ? '' : ' · Unavailable' %></dt><dd>$<%= (objSize.centsPrice/100).toFixed(2) %></dd></div><% } %></dl>
+  </section></div>
+</div>

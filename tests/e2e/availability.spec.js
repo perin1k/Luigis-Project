@@ -66,8 +66,8 @@ test('unknown availability preserves order but blocks checkout', async ({ page: 
   await objPage.getByLabel('Your name').fill('Test Guest');
   await objPage.getByLabel('Phone number').fill('9315550100');
   await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
-  await objPage.getByRole('button', { name: 'Continue to payment' }).click();
-  await objPage.getByRole('button', { name: 'Continue to secure payment' }).click();
+  await objPage.getByRole('button', { name: 'Continue to payment', exact: true }).click();
+  await objPage.getByRole('button', { name: 'Continue to secure payment', exact: true }).click();
   await expect(objPage.getByRole('alert')).toContainText('confirm ingredient availability');
   await expect(objPage.getByLabel('Order summary')).toContainText('$7.00');
   await checkAccessible(objPage);

@@ -59,7 +59,9 @@
         <h3 id="refund-heading">Demonstration refund</h3>
         <p id="refund-summary">State: <%= objRefund?.strState ?? 'unavailable' %> · Full amount: <%= new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((objRefund?.centsTotal ?? 0)/100) %> · Recorded net: <%= new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((objRefund?.centsNetRecorded ?? 0)/100) %></p>
         <p>No real money is transferred. Refunds include items, tax and tip, without a fee deduction.</p>
-        <div class="form-check staff-order-approval"><input id="refund-reviewed" type="checkbox" class="form-check-input"><label class="form-check-label" for="refund-reviewed">I approve the full demonstration refund.</label></div>
+        <div class="form-check staff-order-approval"><input id="refund-reviewed" type="checkbox" class="form-check-input" aria-describedby="refund-review-help refund-error"><label class="form-check-label" for="refund-reviewed">I approve the full demonstration refund.</label></div>
+        <p id="refund-review-help">After refreshing this order, review and check this approval again.</p>
+        <p id="refund-error" class="form-error" role="alert" hidden></p>
         <button id="refund-submit" type="button" tabindex="0" class="btn btn-primary mt-2" <%= objRefund?.bCanApprove ? '' : 'disabled' %>>Approve demo refund</button>
         <p id="refund-status" role="status" aria-live="polite"></p>
       </section>

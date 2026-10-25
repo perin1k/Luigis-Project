@@ -1,11 +1,14 @@
 <%# Beverage/size quantity controls derive from server menu data. Keep input data-drink/data-size contracts aligned with the wizard. %><section data-step="2" aria-labelledby="drinks-title" hidden>
   <h2 id="drinks-title" tabindex="-1">Something to sip?</h2>
-  <p class="step-description">Choose a quantity for each drink size, or leave them at zero to skip drinks.</p>
+  <p class="step-description">Choose a drink to see its sizes. Mix sizes and drinks, up to ten total, or continue without a drink.</p>
   <% for (const [intIndex, strDrink] of arrDrinks.entries()) { %>
-    <fieldset class="drink-group"><legend><%= strDrink %><%= objCatalog && !objCatalog.arrBeverages.find((objItem) => objItem.strLabel === strDrink)?.bAvailable ? ' · Currently unavailable' : '' %></legend><div class="size-grid">
+    <details class="drink-group">
+      <summary><span><%= strDrink %><%= objCatalog && !objCatalog.arrBeverages.find((objItem) => objItem.strLabel === strDrink)?.bAvailable ? ' · Currently unavailable' : '' %></span><span class="drink-selection" aria-live="polite"></span></summary>
+      <fieldset><legend class="visually-hidden"><%= strDrink %> sizes and quantities</legend><div class="size-grid">
       <% for (const [strSize, objSize] of Object.entries(objSizes)) { %>
         <div class="field"><label for="drink-<%= intIndex %>-<%= strSize %>"><%= strSize[0].toUpperCase() + strSize.slice(1) %><span class="visually-hidden"> <%= strDrink.toLowerCase() %> quantity</span></label><span class="field-hint">$<%= (objSize.centsDrink / 100).toFixed(2) %> each</span><input id="drink-<%= intIndex %>-<%= strSize %>" type="number" class="form-control" data-drink="<%= strDrink %>" data-size="<%= strSize %>" min="0" max="10" step="1" value="0" inputmode="numeric" <%= objCatalog && (!objCatalog.arrBeverages.find((objItem) => objItem.strLabel === strDrink)?.bAvailable || !objCatalog.arrDrinkSizes.find((objItem) => objItem.strCode === strSize)?.bAvailable) ? 'disabled' : '' %> required></div>
       <% } %>
-    </div></fieldset>
+      </div><button type="button" class="text-button" data-clear-drink aria-label="Remove <%= strDrink %> from order">Remove this drink</button></fieldset>
+    </details>
   <% } %>
 </section>

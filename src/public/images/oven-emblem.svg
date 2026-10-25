@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 400">
+  <!-- Original Luigi's brick-oven and pizza-peel drawing, authored for this project. -->
+  <g stroke="#552b24" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M57 313V185C57 98 126 43 214 43s164 56 164 142v128z" fill="#a94e38"/>
+    <path d="M62 184h311M71 143h294M94 104h247M132 69h166M58 226h319M58 269h320M105 145v40M151 106v38M205 69v37M257 105v40M316 143v42M113 185v41M170 145v38M229 106v39M283 185v41M343 226v43M88 227v41M138 270v42M303 270v42" fill="none" stroke="#e7ae83" stroke-width="4"/>
+    <path d="M105 310V197c0-60 47-106 109-106s116 46 116 106v113z" fill="#e5be8a"/>
+    <path d="M126 311V199c0-47 38-85 88-85s94 38 94 85v112z" fill="#402a25"/>
+    <path d="M128 257c30-36 60-47 89-34 31-14 61-5 89 35v53H128z" fill="#a85632" stroke="none"/>
+    <path d="M156 281c-15-27 19-40 10-65 24 16 10 31 25 38 12-22 6-38 26-52-3 24 25 36 21 57 18-8 16-22 26-32 18 26 31 35 20 60z" fill="#e1a657" stroke="none"/>
+    <path d="M103 179l-20-7M119 137l-17-13M153 104l-10-19M195 93l-3-24M236 94l5-23M277 111l13-18M311 144l18-13M329 181l22-5" fill="none"/>
+    <path d="M42 311h350v23H42z" fill="#d0aa7a"/>
+    <path d="M62 335h310v27H62z" fill="#8b4231"/>
+    <path d="M281 310l116 62 10-15-116-64z" fill="#ae7c49"/>
+    <ellipse cx="256" cy="298" rx="79" ry="24" fill="#d6ab70"/>
+    <ellipse cx="254" cy="291" rx="68" ry="22" fill="#d5944b"/>
+    <ellipse cx="254" cy="288" rx="60" ry="17" fill="#efd496" stroke-width="2"/>
+    <g fill="#9d3e2e" stroke-width="1.5"><ellipse cx="224" cy="286" rx="9" ry="5"/><ellipse cx="252" cy="279" rx="9" ry="5"/><ellipse cx="282" cy="289" rx="9" ry="5"/><ellipse cx="249" cy="297" rx="9" ry="4"/></g>
+    <path d="M206 289l7 3M270 279l6 3M269 298l7-3M233 277l5 2" fill="none" stroke="#6b7346" stroke-width="3"/>
+    <path d="M78 350h48M157 350h49M304 350h43" stroke="#d99169" fill="none"/>
+  </g>
+</svg>

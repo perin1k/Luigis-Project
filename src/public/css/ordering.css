@@ -46,6 +46,7 @@ legend { font-weight: 700; margin-bottom: .8rem; padding: 0; }
 .pizza-price strong { display: block; font-size: 1.4rem; }
 .wizard-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid var(--color-line); }
 .wizard-actions .btn:last-child { margin-left: auto; }
+.wizard-actions-top { margin-top: 0; margin-bottom: 1.5rem; padding-top: 0; padding-bottom: 1rem; border-top: 0; border-bottom: 1px solid var(--color-line); }
 .text-button { background: none; border: 0; color: var(--color-accent); padding: .6rem .3rem; min-height: 44px; text-decoration: underline; text-underline-offset: .2em; font-size: .85rem; font-weight: 650; }
 .pizza-list { margin-top: 2rem; }
 .pizza-item { border-top: 1px solid var(--color-line); padding-top: 1rem; }
@@ -54,6 +55,10 @@ legend { font-weight: 700; margin-bottom: .8rem; padding: 0; }
 .drink-group { border-bottom: 1px solid var(--color-line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
 .drink-group .field label { font-size: .8rem; }
 .drink-group .field-hint { margin: 0; }
+.drink-group summary { cursor: pointer; min-height: 44px; padding: .75rem .25rem; font-weight: 650; }
+.drink-group summary::marker { color: var(--color-accent); }
+.drink-group[open] summary { margin-bottom: 1rem; }
+.drink-selection { margin-inline-start: .75rem; font-size: .85rem; color: var(--color-muted); }
 .order-summary { background: var(--color-panel); border: 1px solid var(--color-line); border-radius: .75rem; padding: 1.5rem; position: sticky; top: 1rem; line-height: 1.5rem; }
 .order-summary h2 { font-size: 2rem; line-height: 2.25rem; margin-bottom: .75rem; }
 #summary-service { font-size: .85rem; }

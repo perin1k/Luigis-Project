@@ -32,6 +32,16 @@ test('menu edits reach a separate customer session without discarding its draft'
     await objOwner.getByRole('button', { name: 'Mark Pepperoni unavailable', exact: true }).click();
     await expect(objOwner.locator('#menu-status')).toContainText('Saved.');
 
+    // The public menu and home must follow the published catalog, not stale
+    // hard-coded prices or a separate availability list.
+    const objMenuPage = await objCustomerContext.newPage();
+    for (const strPath of ['/menu', '/']) {
+      await objMenuPage.goto(strPath);
+      await expect(objMenuPage.getByRole('table', {name:'Pizza sizes and prices'})).toContainText('$8.25');
+      await expect(objMenuPage.getByRole('list', {name:'Pizza toppings'}).getByRole('listitem').filter({hasText:'Pepperoni'})).toContainText('Currently unavailable');
+    }
+    await objMenuPage.close();
+
     await objCustomer.getByRole('button', { name: 'Continue to payment', exact: true }).click();
     await expect(objCustomer.getByRole('alert')).toContainText('menu changed');
     await expect(objCustomer.locator('#server-totals')).toBeHidden();
@@ -51,6 +61,7 @@ test('menu edits reach a separate customer session without discarding its draft'
       expect((await new AxeBuilder({ page: objCustomer }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()).violations).toEqual([]);
       await expect(objCustomer).toHaveScreenshot(`menu-customer-review-${strTheme}.png`, { fullPage: true });
     }
+    objCustomer.once('dialog', objDialog => objDialog.accept()); // Explicitly discard this completed review draft.
     await objCustomer.goto('/order');
     await objCustomer.getByRole('button', { name: 'Continue', exact: true }).click();
     await expect(objCustomer.getByRole('checkbox', { name: /Pepperoni Currently unavailable/ })).toBeDisabled();

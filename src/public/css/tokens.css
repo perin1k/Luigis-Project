@@ -2,25 +2,25 @@
 :root,
 [data-bs-theme="light"] {
   color-scheme: light;
-  --color-paper: #f5efdf;
-  --color-surface: #fffbf2;
-  --color-ink: #35233d;
-  --color-muted: #69586a;
-  --color-accent: #873e27;
-  --color-accent-hover: #642c1c;
+  --color-paper: #f7f0e3;
+  --color-surface: #fffaf0;
+  --color-ink: #30251f;
+  --color-muted: #675448;
+  --color-accent: #8f3229;
+  --color-accent-hover: #6e241f;
   --color-on-accent: #fffaf0;
-  --color-line: #a79b9e;
-  --color-control-border: #87727e;
-  --color-panel: #e8dbcc;
-  --color-selected: #eadedc;
-  --color-banner: #35233d;
-  --color-banner-text: #f8ecd8;
-  --color-gold: #bf8c38;
+  --color-line: #aa9380;
+  --color-control-border: #896b59;
+  --color-panel: #ecdfca;
+  --color-selected: #ead3bc;
+  --color-banner: #742b24;
+  --color-banner-text: #fff1d7;
+  --color-gold: #956d2d;
   --color-error: #7e2028;
   --color-error-bg: #f9e6df;
-  --color-focus: #873e27;
-  --color-hero: #e9d5bd;
-  --color-art-ink: #35233d;
+  --color-focus: #8f3229;
+  --color-hero: #e7ceb1;
+  --color-art-ink: #552b24;
   --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-display: Georgia, "Times New Roman", serif;
   --content-width: 74rem;
@@ -28,24 +28,24 @@
 
 [data-bs-theme="dark"] {
   color-scheme: dark;
-  --color-paper: #1c1722;
-  --color-surface: #28212f;
-  --color-ink: #f5ebd9;
-  --color-muted: #c7b6c6;
-  --color-accent: #e6ab83;
-  --color-accent-hover: #f4c6a5;
-  --color-on-accent: #241a22;
-  --color-line: #8f7b91;
-  --color-control-border: #a18aa1;
-  --color-panel: #332938;
-  --color-selected: #443141;
-  --color-banner: #e0ad71;
-  --color-banner-text: #281c2d;
+  --color-paper: #211a17;
+  --color-surface: #2c211c;
+  --color-ink: #f8ecd8;
+  --color-muted: #d0bda9;
+  --color-accent: #edb388;
+  --color-accent-hover: #f7ca9f;
+  --color-on-accent: #2b1b16;
+  --color-line: #987b67;
+  --color-control-border: #af8d72;
+  --color-panel: #382820;
+  --color-selected: #513526;
+  --color-banner: #e7b879;
+  --color-banner-text: #2c1b14;
   --color-gold: #dbb366;
   --color-error: #ffc4be;
-  --color-error-bg: #472933;
-  --color-focus: #efbc76;
-  --color-hero: #40303b;
+  --color-error-bg: #482925;
+  --color-focus: #f2c584;
+  --color-hero: #3c2921;
   --color-art-ink: #f4d5a5;
 }
 

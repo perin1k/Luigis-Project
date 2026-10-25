@@ -8,6 +8,7 @@ async function review(objPage) {
   await objPage.getByRole('checkbox', { name: 'Sausage', exact: true }).check();
   await objPage.getByRole('button', { name: 'Add pizza', exact: true }).click();
   await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
+  await objPage.locator('.drink-group').filter({hasText:'Coca-Cola'}).locator('summary').click();
   await objPage.getByLabel('Medium Coca-Cola quantity', { exact: false }).fill('1');
   await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
   await objPage.getByLabel('Your name').fill('Synthetic Guest'); await objPage.getByLabel('Phone number').fill('9315550100');
@@ -173,6 +174,7 @@ test('network failures retain the basket, retry recovers, and six/ten aggregate 
   await expect(objPage.locator('#server-totals')).toContainText('$18.66');
   await objPage.getByRole('button', { name: 'Edit drinks', exact: true }).click();
   await objPage.getByLabel('Medium Coca-Cola quantity', { exact: false }).fill('6');
+  await objPage.locator('.drink-group').filter({hasText:'Sprite'}).locator('summary').click();
   await objPage.getByLabel('Small Sprite quantity', { exact: false }).fill('6');
   await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
   await expect(objPage.locator('#form-error')).toContainText('ten drinks');

@@ -31,9 +31,12 @@ that is not offered. After the cutoff, the next open day is offered.
 ## Place an order
 
 1. Open the website and begin an order. Choose carry-out or dine-in, then select
-   **Continue** to move through the steps.
+   **Continue** to move through the steps. Back and Continue controls appear at
+   both the top and bottom of each step; either set works the same way.
 2. Choose your pizza size, crust and toppings, then select **Add pizza**. Add drinks
-   if wanted. Unavailable ingredients cannot be selected.
+   if wanted. Unavailable ingredients cannot be selected. Select a drink name to
+   open its sizes, then enter quantities. Closing a drink keeps its quantities;
+   **Remove this drink** clears that beverage without removing your pizzas.
 3. Review your items and prices. Use the on-screen editing controls to correct an
    item before paying. Follow any message asking you to review a changed price.
 4. Enter your name and contact details. Carry-out needs a phone number. Dine-in
@@ -48,6 +51,12 @@ that is not offered. After the cutoff, the next open day is offered.
 The website currently allows up to six pizzas and ten drinks per order. If it cannot
 offer your preferred time or ingredients, choose another offered option. Do not
 split orders to bypass the limit.
+
+Select **Our menu** to read prices and choices without starting an order. **My
+account** opens customer sign-in; **Staff sign-in** opens the separate staff entry.
+While an order is in progress, your browser may warn before you leave or refresh.
+Choose to stay if you want to keep editing. Leaving can discard an unpaid draft;
+this warning does not save contact details or make a confirmed order disappear.
 
 ## Follow or cancel an order
 
@@ -96,6 +105,8 @@ actually reviewed.
 Cancellation and refund are separate steps. If a cancelled order needs a refund,
 refresh its details, check **I approve the full demonstration refund**, then select
 **Approve demo refund**. Check the result before telling the customer it is complete.
+Refreshing clears the approval checkbox, so review and check it again afterward.
+If you missed it, the message beside the controls points you back to that checkbox.
 Practice refunds return the full practice payment, including tax and tip; no real
 money moves. An order already prepared but not collected does not receive an
 automatic refund.

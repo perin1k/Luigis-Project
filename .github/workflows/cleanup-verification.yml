@@ -1,0 +1,74 @@
+name: End-user cleanup verification
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: 'Collect synthetic candidates for review, or compare reviewed references'
+        required: true
+        default: compare
+        type: choice
+        options: [collect, compare]
+permissions:
+  contents: read
+jobs:
+  cleanup:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            projects: --project=chromium-desktop --project=chromium-mobile --project=firefox-desktop --project=firefox-mobile
+          - os: macos-15
+            projects: ''
+          - os: ubuntu-24.04
+            projects: ''
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: node_modules/.cache/ms-playwright
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - run: npm ci --ignore-scripts
+      - name: Locate existing Windows OpenSSL
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $strGitRoot = Split-Path (Split-Path (Get-Command git).Source)
+          foreach ($strRelative in @('mingw64/bin', 'usr/bin')) {
+            $strDirectory = Join-Path $strGitRoot $strRelative
+            if (Test-Path -LiteralPath $strDirectory) { Add-Content -LiteralPath $env:GITHUB_PATH -Value $strDirectory }
+          }
+      - if: runner.os == 'Linux'
+        run: npx --no-install playwright install --with-deps chromium firefox webkit
+      - if: runner.os != 'Linux'
+        run: npx --no-install playwright install chromium firefox webkit
+      - name: Enable native macOS WebKit keyboard navigation
+        if: runner.os == 'macOS'
+        run: defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
+      - name: Focused domain, transport and privacy checks
+        run: node --test tests/unit/order-pricing.test.js tests/unit/public-menu.test.js tests/unit/scheduling-service.test.js tests/unit/payment-retry.test.js tests/unit/http-hosting.test.js
+      - name: Collect reviewed-scope candidates
+        if: inputs.phase == 'collect'
+        run: |
+          node node_modules/@playwright/test/cli.js test -c playwright.cleanup.config.js --update-snapshots=all ${{ matrix.projects }}
+          node node_modules/@playwright/test/cli.js test -c playwright.cleanup-staff.config.js --update-snapshots=all ${{ matrix.projects }}
+      - name: Compare accepted references
+        if: inputs.phase == 'compare'
+        run: |
+          node node_modules/@playwright/test/cli.js test -c playwright.cleanup.config.js --update-snapshots=none ${{ matrix.projects }}
+          node node_modules/@playwright/test/cli.js test -c playwright.cleanup-staff.config.js --update-snapshots=none ${{ matrix.projects }}
+      - name: Bounded synthetic internal visual review
+        if: always() && inputs.phase == 'collect'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cleanup-candidates-${{ matrix.os }}
+          path: |
+            tests/e2e/cleanup.spec.js-snapshots/cleanup-ci/*.png
+            tests/staff-orders-e2e/menu-customer.spec.js-snapshots/cleanup-ci/*.png
+          if-no-files-found: error
+          retention-days: 2

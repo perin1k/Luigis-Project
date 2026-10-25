@@ -21,6 +21,8 @@ const bScheduling = document.querySelector('#order-app').dataset.scheduling === 
 const elForm = document.querySelector('#order-form');
 const elNext = document.querySelector('#next-button');
 const elBack = document.querySelector('#back-button');
+const elNextTop = document.querySelector('#next-button-top');
+const elBackTop = document.querySelector('#back-button-top');
 const elError = document.querySelector('#form-error');
 const elAdd = document.querySelector('#add-pizza');
 const elCancel = document.querySelector('#cancel-edit');
@@ -42,6 +44,16 @@ const objAvailability = {
 let intStep = 0;
 let intEditingIndex = null;
 let bOpeningPayment = false;
+let bOrderComplete = false;
+
+// Warn about accidental navigation without persisting names, contacts or private
+// checkout state in browser storage. The browser supplies the warning wording.
+window.addEventListener('beforeunload', objEvent => {
+  if (!bOrderComplete && (objOrder.arrPizzas.length || objOrder.arrDrinks.some(objDrink => objDrink.intQuantity > 0))) {
+    objEvent.preventDefault();
+    objEvent.returnValue = '';
+  }
+});
 
 function createElement(strTag, strText, strClass = '') {
   const elElement = document.createElement(strTag);
@@ -257,6 +269,25 @@ function updateNextButton() {
   elNext.textContent = intStep === 5 && bDemoPayments ?(bPaymentUnknown ? 'Check demo payment result': elForm.elements.payment.value === 'apple-pay' ? 'Confirm demo Apple Pay': 'Confirm demo payment'): intStep === 5
   ?(elForm.elements.payment.value === 'apple-pay' ? 'Continue with Apple Pay': 'Continue to secure payment')
   : intStep === 4 ? 'Continue to payment': 'Continue';
+  syncNavigationControls();
+}
+
+// Both rows use the same submit/back handlers and authoritative busy state.
+function syncNavigationControls() {
+  elNextTop.textContent = elNext.textContent;
+  elNextTop.setAttribute('aria-label', `${elNext.textContent} (top)`);
+  elNextTop.disabled = elNext.disabled;
+  elBackTop.hidden = elBack.hidden;
+  elBackTop.disabled = elBack.disabled;
+}
+
+function updateDrinkSummaries() {
+  for (const elDrink of document.querySelectorAll('.drink-group')) {
+    const arrQuantities = [...elDrink.querySelectorAll('[data-drink]')].map(elInput => Number(elInput.value));
+    const bValid = arrQuantities.every(intQuantity => Number.isSafeInteger(intQuantity) && intQuantity >= 0);
+    const intSelected = arrQuantities.reduce((intSum, intQuantity) => intSum + intQuantity, 0);
+    elDrink.querySelector('.drink-selection').textContent = !bValid ? 'Check quantities' : intSelected ? `${intSelected} selected` : '';
+  }
 }
 // Step changes coordinate visibility, progress and keyboard focus rather than replacing the page.
 
@@ -313,6 +344,7 @@ function validateCurrentStep() {
   if (intStep === 2) {
     for (const elInput of arrSections[2].querySelectorAll('input')) {
       if (!elInput.validity.valid || !Number.isSafeInteger(Number(elInput.value))) {
+        elInput.closest('details').open = true;
         showError('Enter a whole-number drink quantity of zero or more.', elInput);
         return false;
       }
@@ -397,6 +429,19 @@ elCancel.addEventListener('click',() => {
 elBack.addEventListener('click',() => {
   if (!bOpeningPayment && !bCheckingPrice) showStep(intStep - 1);
 });
+elBackTop.addEventListener('click', () => elBack.click());
+elNextTop.addEventListener('click', () => elForm.requestSubmit(elNext));
+for (const elClear of document.querySelectorAll('[data-clear-drink]')) {
+  elClear.addEventListener('click', () => {
+    const elDrink = elClear.closest('details');
+    for (const elInput of elDrink.querySelectorAll('[data-drink]')) elInput.value = '0';
+    // One normal input event rebuilds the same validated preview state.
+    elDrink.querySelector('[data-drink]').dispatchEvent(new Event('input', {bubbles:true}));
+    elDrink.open = false;
+    elDrink.querySelector('summary').focus();
+    document.querySelector('#cart-status').textContent = 'Drink removed. Your other selections are unchanged.';
+  });
+}
 document.querySelector('#edit-payment-review').addEventListener('click',() => {
   if (!bOpeningPayment && !bCheckingPrice && !bPaymentUnknown) showStep(4);
 });
@@ -422,6 +467,7 @@ elForm.addEventListener('input',(objEvent) => {
       intQuantity: Number(elInput.value),
     }));
     objOrder.arrDrinks = arrDrinks;
+    updateDrinkSummaries();
     try {
       calculateSubtotal(objOrder);
       renderSummary();
@@ -477,6 +523,7 @@ async function startPayment() {
   bOpeningPayment = true;
   elNext.disabled = true;
   elBack.disabled = true;
+  syncNavigationControls();
   elForm.setAttribute('aria-busy', 'true');
   document.querySelector('#edit-payment-review').disabled = true;
   document.querySelector('#payment-status').textContent = bDemoPayments ? 'Processing demonstration payment…': 'Opening secure checkout…';
@@ -524,6 +571,7 @@ async function startPayment() {
 }
 
 function showDemoReceipt(objReceipt) {
+  bOrderComplete = true;
   const elReceipt = document.querySelector('#demo-receipt');
   const elDetails = document.querySelector('#receipt-details');
   elDetails.replaceChildren();
@@ -636,11 +684,12 @@ async function checkPrice() {
   }
   const strInput = JSON.stringify(objInput);
   const intStartedStep = intStep;
-  const elFocusedControl = [elNext, elBack].includes(document.activeElement) ? document.activeElement: null;
+  const elFocusedControl = [elNext, elBack, elNextTop, elBackTop].includes(document.activeElement) ? document.activeElement: null;
   if (intStep === 5) clearPaymentPrices();
   bCheckingPrice = true;
   elNext.disabled = true;
   elBack.disabled = true;
+  syncNavigationControls();
   elForm.setAttribute('aria-busy', 'true');
   document.querySelector('#pricing-status').textContent = 'Checking current prices and availability…';
   const objAbort = new AbortController();
@@ -689,6 +738,7 @@ async function checkPrice() {
     bCheckingPrice = false;
     elNext.disabled = false;
     elBack.disabled = false;
+    syncNavigationControls();
     elForm.removeAttribute('aria-busy');
     if (elFocusedControl && intStep === intStartedStep && document.activeElement === document.body) elFocusedControl.focus();
   }

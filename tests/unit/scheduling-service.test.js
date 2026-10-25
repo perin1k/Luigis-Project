@@ -35,6 +35,18 @@ test('off-grid ASAP and rolling half-open capacity reject bucket-boundary overbo
   objOrders.submitOrder(input(4,'2026-10-21T16:39:00.000Z','ASAP'));
   assert.equal(objScheduling.listOptions(6).arrOptions.some((objItem) => objItem.dtPromisedAt==='2026-10-21T16:40:00.000Z'),false);
 }));
+test('forged past-day, past-time and arbitrary future-day bookings cannot create an order', () => fixture(({objDatabase,objOrders,input}) => {
+  for (const objPickup of [
+    {...input().objPickup,strServiceDate:'2026-10-20',dtPromisedAt:'2026-10-20T16:00:00.000Z'},
+    {...input().objPickup,dtPromisedAt:'2026-10-21T14:40:00.000Z'},
+    {...input().objPickup,strServiceDate:'2026-10-22',dtPromisedAt:'2026-10-22T16:00:00.000Z'},
+    {...input().objPickup,strServiceDate:'2026-11-01',dtPromisedAt:'2026-11-01T16:00:00.000Z'},
+  ]) assert.throws(() => objOrders.submitOrder({...input(),objPickup}), /no longer available/);
+  for (const strTable of ['orders','order_quotes','order_contacts','fulfillment_bookings','capacity_holds']) {
+    assert.equal(objDatabase.prepare(`SELECT count(*) AS n FROM ${strTable}`).get().n,0);
+  }
+}));
+
 test('atomic hold expiry, replay and conflict behavior preserves original pickup without renewing', () => fixture(({ objDatabase, objScheduling, objOrders, input, setNow }) => {
   const objInput = input(6); const objSaved = objOrders.submitOrder(objInput);
   assert.equal(objSaved.objPickup.dtExpiresAt,'2026-10-21T15:30:00.000Z');

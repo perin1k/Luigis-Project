@@ -14,7 +14,7 @@ export const TOPPINGS = {
   peppers: 'Green peppers', jalapenos: 'Jalapeños', pineapple: 'Pineapple',
   onion: 'Onion', olives: 'Black olives', tomatoes: 'Diced tomatoes',
 };
-export const DRINKS = ['Coca-Cola fountain drink', 'Iced tea', 'Dr Pepper'];
+export const DRINKS = ['Coca-Cola', 'Diet Coke', 'Sprite', 'Dr Pepper', 'Sweet iced tea', 'Unsweet iced tea'];
 
 // Presentation contract only. Unknown/malformed data never means "in stock".
 export function normalizeAvailability(objAvailability) {
