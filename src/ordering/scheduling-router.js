@@ -1,3 +1,6 @@
+/**
+ * Exposes currently offered ready times; selecting an option here does not itself reserve capacity. Submission rechecks availability atomically.
+ */
 import express from 'express';
 import { PricingError } from './catalog-service.js';
 export function createSchedulingRouter(objSchedulingService) {

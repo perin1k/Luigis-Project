@@ -1,3 +1,6 @@
+/**
+ * Authenticated encryption for generated synthetic payment numbers. Record-specific associated data prevents ciphertext being reassigned to a different payment/order/quote.
+ */
 import { createCipheriv, createDecipheriv, randomBytes, randomInt } from 'node:crypto';
 
 /** Server-generated test identifiers, never externally supplied card numbers. */

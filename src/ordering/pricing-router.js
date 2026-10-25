@@ -1,3 +1,6 @@
+/**
+ * Read-only catalog/price HTTP boundary. Service validation remains authoritative; this route does not accept payment or reserve kitchen capacity.
+ */
 import express from 'express';
 import { PricingError } from './catalog-service.js';
 export function createPricingRouter(objCatalogService) {

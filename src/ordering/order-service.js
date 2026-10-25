@@ -1,3 +1,6 @@
+/**
+ * Saves an unpaid, accepted order snapshot and optional capacity reservation in one synchronous transaction. Customer association comes from the server session, not contact matching.
+ */
 import { createHash, randomUUID } from 'node:crypto';
 import { runTransaction } from '../data/database.js';
 import { PricingError } from './catalog-service.js';
@@ -25,6 +28,7 @@ export function validateContact(objContact, strService) {
 
 /** Persist an unpaid accepted snapshot and, when configured, its atomic capacity hold. */
 export function createOrderService(objDatabase, objCatalogService, objSchedulingService,{objCustomerService}={}) {
+  // Reusing a request ID is safe only when both its quote and signed-in owner match.
   function submitOrder(objInput,strCustomerToken=null) {
     if (!exact(objInput, ['strRequestId', 'strService', 'objContact', 'objPricing', ...(objSchedulingService ? ['objPickup'] : [])])
       || typeof objInput.strRequestId !== 'string' || !UUID_PATTERN.test(objInput.strRequestId)) invalid('Use a valid order request identifier.');

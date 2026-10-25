@@ -1,3 +1,6 @@
+/**
+ * Same-origin demonstration checkout endpoint. A successful response follows a committed service result, never a browser-only redirect or real processor event.
+ */
 import express from 'express';
 import { PricingError } from '../ordering/catalog-service.js';
 export function createDemoPaymentRouter(objPaymentService){

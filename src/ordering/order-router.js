@@ -1,3 +1,6 @@
+/**
+ * HTTP boundary for saving orders: checks origin, content type and optional customer cookie before calling the authoritative order service. Errors expose safe messages only.
+ */
 import express from 'express';
 import { PricingError } from './catalog-service.js';
 import {CUSTOMER_COOKIES,readCustomerCookies} from '../customer/customer-transport.js';

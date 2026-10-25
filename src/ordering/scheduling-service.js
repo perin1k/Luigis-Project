@@ -1,3 +1,6 @@
+/**
+ * Chicago service-day and rolling-capacity rules. Stored instants are ISO UTC strings; customer-facing dates and cutoff decisions use America/Chicago.
+ */
 import { randomUUID } from 'node:crypto';
 import { PricingError } from './catalog-service.js';
 const WINDOW_MS = 20 * 60 * 1000;
@@ -77,6 +80,7 @@ export function createSchedulingService(objDatabase, { fnNow = () => new Date().
     }
     throw new PricingError('schedule_unavailable', 'Pickup times are unavailable. Please try again later.', 503);
   }
+  // Called within the order transaction: recheck the offered choice before writing its hold.
   function reserve(strOrderId, objSelection, intPizzas, dtNow) {
     // Called only under the order service's BEGIN IMMEDIATE write lock.
     if (!objSelection || Object.keys(objSelection).length !== 4 || !['strServiceDate','intRevision','strSelectionType','dtPromisedAt'].every((strKey) => Object.hasOwn(objSelection, strKey))

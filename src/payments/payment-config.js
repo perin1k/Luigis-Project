@@ -1,3 +1,6 @@
+/**
+ * Loads the private versioned synthetic-payment key ring. Keys stay outside source/database; this configuration does not enable real payment processing.
+ */
 import { openSync,readFileSync,fstatSync,closeSync,constants } from 'node:fs';
 import { createSyntheticVault } from './synthetic-vault.js';
 /** Explicit private file only. Never silently create or replace a runtime encryption key. */

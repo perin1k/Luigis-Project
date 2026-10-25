@@ -21,6 +21,18 @@ parsed structures after excluding source-position metadata; literal values remai
 part of the comparison. All four files compare equal. Syntax and diff review
 also apply; this does not claim a new browser/platform/host acceptance run.
 
+## Ordering and payment batch
+
+Reviewed all six ordering modules and five payment modules. Added explanations
+of server-authoritative cents, Chicago date/instant boundaries, request replay,
+session-based order ownership, atomic holds, committed hold release on rejection,
+synthetic encryption context and signed refund allocations. Expanded dense payment
+and refund statements; readable modules retain their established formatting.
+
+All 11 before/after normalized parsed structures match, including literal values;
+syntax checks pass. The 28 focused existing pricing, scheduling, payment and refund
+tests pass. No browser/UI change or hosted redeployment is claimed by this batch.
+
 The broader application/readability card remains In Progress. The separately
 approved Nginx architecture/configuration change must use its own commits and
 verification rather than be hidden inside a formatting diff.

@@ -1,3 +1,6 @@
+/**
+ * Authoritative menu pricing: validates supported choices and calculates integer-cent totals. Browser previews are never accepted as prices.
+ */
 import { createHash } from 'node:crypto';
 
 export class PricingError extends Error {
@@ -12,6 +15,7 @@ function validateCatalogCents(centsAmount) {
   if (!Number.isSafeInteger(centsAmount) || centsAmount < 0) throw new Error('Invalid catalog money.');
   return centsAmount;
 }
+/** Invoice ratios use BigInt half-up rounding before returning validated cents. */
 function roundedRatio(centsAmount, intNumerator, intDenominator) {
   const centsResult = Number((BigInt(centsAmount) * BigInt(intNumerator) * 2n + BigInt(intDenominator)) / (2n * BigInt(intDenominator)));
   if (!Number.isSafeInteger(centsResult)) fail('The amount is too large.');
