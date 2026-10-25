@@ -38,12 +38,12 @@ http {
   ssl_certificate ${strCertificatePath};
   ssl_certificate_key ${strKeyPath};
   server {
-    listen ${strListen} ssl default_server;
+    listen ${strListen} ssl http2 default_server;
     server_name _;
     return 444;
   }
   server {
-    listen ${strListen} ssl;
+    listen ${strListen} ssl http2;
     server_name ${strHostname};
     add_header Strict-Transport-Security "max-age=86400" always;
     location / {

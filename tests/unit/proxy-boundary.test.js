@@ -34,6 +34,8 @@ test('direct-mode spoofed headers cannot reset limits; verified clients have sep
 test('Nginx overwrites forwarding, verifies local TLS and never logs URLs/addresses/bodies',()=>{
   const objInput={strHostname:'luigispizzeria.duckdns.org',strSecret:SECRET,strCertificatePath:'/private/fullchain.pem',strKeyPath:'/private/privkey.pem'};
   const strConfig=renderNginxConfig(objInput);
+  assert.equal((strConfig.match(/listen 443 ssl http2(?: default_server)?;/g) ?? []).length, 2);
+  assert.match(strConfig, /proxy_http_version 1\.1;/);
   assert.match(strConfig,/proxy_ssl_verify on/);assert.match(strConfig,/X-Forwarded-For \$remote_addr/);assert.match(strConfig,/proxy_request_buffering off/);assert.match(strConfig,/proxy_buffering off/);
   const strLog=strConfig.split('\n').find(strLine=>strLine.includes('log_format'));
   assert.ok(!/\$request(?:[ ;']|_uri|_body)|\$http_|\$remote_addr/.test(strLog));

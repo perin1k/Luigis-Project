@@ -59,6 +59,11 @@ export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigi
   // Expose only the intended Bootstrap stylesheet, never node_modules itself.
   mapTextAssets.set('/vendor/bootstrap.min.css', prepareText(
   readFileSync(fileURLToPath(new URL('../node_modules/bootstrap/dist/css/bootstrap.min.css', import.meta.url))), 'css'));
+  // Keep the existing public cascade byte-for-byte while removing two blocking
+  // requests. Source styles remain separate for readable maintenance.
+  mapTextAssets.set('/css/public-bundle.css', prepareText(Buffer.concat(
+  ['/vendor/bootstrap.min.css', '/css/tokens.css', '/css/global.css'].flatMap((strPath) =>
+  [mapTextAssets.get(strPath).objBody, Buffer.from('\n')])), 'css'));
   // Ordering keeps the exact Bootstrap-first cascade in one blocking response.
   mapTextAssets.set('/css/order-bundle.css', prepareText(Buffer.concat([
   mapTextAssets.get('/vendor/bootstrap.min.css').objBody, Buffer.from('\n'),
@@ -110,7 +115,7 @@ export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigi
     if (!objText || !['GET', 'HEAD'].includes(objRequest.method)) return fnNext();
     objResponse.vary('Accept-Encoding');
     // Let Express retain byte-range semantics for the original public files.
-    if (objRequest.headers.range && !['/vendor/bootstrap.min.css', '/css/staff-bundle.css', '/css/order-bundle.css', '/css/tracking-bundle.css'].includes(objRequest.path)) return fnNext();
+    if (objRequest.headers.range && !['/vendor/bootstrap.min.css', '/css/public-bundle.css', '/css/staff-bundle.css', '/css/order-bundle.css', '/css/tracking-bundle.css'].includes(objRequest.path)) return fnNext();
     objResponse.set('Cache-Control', 'public, max-age=3600');
     sendText(objRequest, objResponse, objText);
   });

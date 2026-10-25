@@ -14,6 +14,13 @@ encrypted sockets for existing origin/CSRF/session guards. Node binds only to
 loopback and loses its privileged-port capability. The backend port is not opened
 publicly. Port 80 remains ACME-only for existing Certbot standalone renewal.
 
+The reviewed Nginx 1.24 configuration enables public HTTP/2 on both TLS listeners
+using `listen ... ssl http2`; the verified loopback upstream stays HTTP/1.1 over
+TLS. The installed binary must include `--with-http_v2_module`. Validate a private
+candidate with `nginx -t` before replacing/reloading the active configuration;
+retain its previous root-private copy for recovery. Never print the configuration.
+Newer Nginx versions require a separately reviewed syntax/compatibility check.
+
 Nginx overwrites Host/forwarding headers, verifies the upstream certificate/hostname/
 CA and supplies a private random proof. Before assets or application work,
 `src/security/proxy-boundary.js` requires loopback TLS, that proof, canonical

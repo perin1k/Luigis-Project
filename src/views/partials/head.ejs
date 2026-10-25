@@ -4,21 +4,20 @@
 <meta name="theme-color" content="#f7f0e3">
 <title><%= strTitle %></title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<% if (typeof bPricingPage === 'undefined' || !bPricingPage) { %><script src="<%= strScriptBase %>/js/theme.js"></script><% } %>
 <% if (typeof bTrackingPage !== 'undefined' && bTrackingPage) { %>
 <link rel="stylesheet" href="/css/tracking-bundle.css?v=<%= strAssetVersion %>">
 <% } else if (typeof bPricingPage !== 'undefined' && bPricingPage) { %>
 <link rel="stylesheet" href="/css/order-bundle.css?v=<%= strAssetVersion %>">
 <link rel="modulepreload" href="<%= strScriptBase %>/js/ordering/order-model.js">
 <link rel="modulepreload" href="<%= strScriptBase %>/js/checkout/payment.js">
-<script src="<%= strScriptBase %>/js/theme.js"></script>
 <% } else { %>
-<link rel="stylesheet" href="/vendor/bootstrap.min.css">
 <% if (typeof bStaffPage !== 'undefined' && bStaffPage) { %>
+<link rel="stylesheet" href="/vendor/bootstrap.min.css">
 <link rel="stylesheet" href="/css/staff-bundle.css?v=<%= strAssetVersion %>">
 <% } else { %>
-<link rel="stylesheet" href="/css/tokens.css?v=<%= strAssetVersion %>">
-<link rel="stylesheet" href="/css/global.css?v=<%= strAssetVersion %>">
+<link rel="stylesheet" href="/css/public-bundle.css?v=<%= strAssetVersion %>">
 <% } %>
 
 <% } %>
+<%# Discover CSS before the synchronous theme script; theme still runs before body paint. %>
+<script src="<%= strScriptBase %>/js/theme.js"></script>

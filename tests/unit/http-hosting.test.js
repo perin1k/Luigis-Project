@@ -10,6 +10,24 @@ import {createCatalogService} from '../../src/ordering/catalog-service.js';
 
 let objServer;
 let intPort;
+test('public pages share one stylesheet preserving the exact Bootstrap-first cascade', async () => {
+  const arrParts = [];
+  for (const strPath of ['/vendor/bootstrap.min.css', '/css/tokens.css', '/css/global.css']) {
+    arrParts.push((await requestText(strPath, 'identity')).objBody, Buffer.from('\n'));
+  }
+  for (const strPath of ['/', '/menu']) {
+    const strHtml = (await requestText(strPath, 'identity')).objBody.toString();
+    assert.equal((strHtml.match(/rel="stylesheet"/g) ?? []).length, 1);
+    assert.match(strHtml, /href="\/css\/public-bundle.css\?v=[a-f0-9]{12}"/);
+    assert.ok(strHtml.indexOf('/css/public-bundle.css') < strHtml.indexOf('/js/theme.js'));
+  }
+  const objBundle = await requestText('/css/public-bundle.css', 'br');
+  assert.equal(objBundle.intStatus, 200);
+  assert.deepEqual(brotliDecompressSync(objBundle.objBody), Buffer.concat(arrParts));
+  assert.equal((await requestText('/css/public-bundle.css', 'identity', {
+    objHeaders: {'If-None-Match': (await requestText('/css/public-bundle.css', 'identity')).objHeaders.etag}
+  })).intStatus, 304);
+});
 test('script URLs version the complete module graph and reject unknown versions', async () => {
   const objPage = await requestText('/order', 'identity');
   const strHtml = objPage.objBody.toString();
