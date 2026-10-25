@@ -177,7 +177,8 @@ and [execution environment](https://www.freedesktop.org/software/systemd/man/lat
 documentation. Actual Ubuntu runtime validation is required; newer documentation
 alone does not establish support for every directive on the deployed version.
 Current outcomes and remaining gates: [OPS-01 evidence](../docs/verification/ops-01-runtime.md).
-# Public asset delivery
+
+## Public asset delivery
 
 Public pages use `/css/public-bundle.css` with a content fingerprint. Express
 assembles the unchanged Bootstrap, tokens and global CSS bytes in that order at
@@ -185,4 +186,3 @@ startup, then serves the same compressed/cached responses as other bundles. Sour
 styles stay separate. The shared head discovers styles before running the theme
 script synchronously, so the saved theme still applies before body rendering.
 See `docs/nginx-proxy.md` for the reviewed HTTP/2 listener and recovery procedure.
-
