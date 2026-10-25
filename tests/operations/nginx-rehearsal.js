@@ -34,11 +34,13 @@ try{
   objRequest=await request.newContext({ignoreHTTPSErrors:true});
   let bReady=false;
   for(let intAttempt=0;intAttempt<30;intAttempt++){
-    try{const objResult=await objRequest.get(strOrigin+'/health/ready');if(objResult.status()===200){bReady=true;break;}}catch{}
+    // This fixture does not run production health workers. Probe an actual account
+    // route rather than interpreting its intentionally unavailable readiness check.
+    try{const objResult=await objRequest.get(strOrigin+'/account/register');if(objResult.status()===200){bReady=true;break;}}catch{}
     await new Promise(fnDone=>setTimeout(fnDone,100));
   }
   assert.equal(bReady,true,'Nginx readiness');
-  const objSpoof=await objRequest.get(strOrigin+'/health/ready',{headers:{'X-Forwarded-For':'1.2.3.4, 9.8.7.6','X-Forwarded-Proto':'http','X-Forwarded-Host':'outside.example','X-Luigis-Proxy-Token':'0'.repeat(64)}});
+  const objSpoof=await objRequest.get(strOrigin+'/account/register',{headers:{'X-Forwarded-For':'1.2.3.4, 9.8.7.6','X-Forwarded-Proto':'http','X-Forwarded-Host':'outside.example','X-Luigis-Proxy-Token':'0'.repeat(64)}});
   assert.equal(objSpoof.status(),200,'Edge overwrites caller forwarding/proof');
   const objDirect=await objRequest.get(`https://localhost:${intBackendPort}/health/ready`,{headers:{Host:`localhost:${intPublicPort}`}});
   assert.equal(objDirect.status(),403,'Unidentified direct backend access');
