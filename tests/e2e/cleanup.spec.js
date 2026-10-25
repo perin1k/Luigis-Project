@@ -1,5 +1,12 @@
 import {test, expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import {release} from 'node:os';
+
+test.beforeAll(async ({browser:objBrowser}, objInfo) => {
+  console.log(JSON.stringify({strEvidence:'cleanup-native-runtime',strPlatform:process.platform,
+    strOsRelease:release(),strNode:process.version,strProject:objInfo.project.name,
+    strBrowserVersion:objBrowser.version()}));
+});
 
 test('top navigation shares validation, focus and back behavior with bottom controls', async ({page: objPage}) => {
   await objPage.goto('/order');
