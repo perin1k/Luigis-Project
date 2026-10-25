@@ -120,8 +120,10 @@ It records source `34fed800868a92da95a595764423fa464c0b07ca` and matching
 stylesheet fingerprint `8017a2e195aa`, after the last button changes. No application
 source changed in the reference-only commit.
 
-Manual keyboard/Narrator/zoom/refund confirmation remains pending: the human's
-design feedback does not establish a passing grouped accessibility review.
+Brody approved the revised buttons/artwork and explicitly confirmed the earlier
+keyboard/Windows Narrator, 200%–400% zoom in both themes and refund-feedback
+checks passed on October 25, 2026. This is the human-reported review, separate
+from the automated results above.
 Affected historical screenshot reconciliation and final hosted HTTPS acceptance
 remain linked to integrated QA and TEST-04. The focused pass is not a claim that
 all historical Playwright suites pass or that the application is commercial-ready.
