@@ -1,4 +1,4 @@
-<section data-step="2" aria-labelledby="drinks-title" hidden>
+<%# Beverage/size quantity controls derive from server menu data. Keep input data-drink/data-size contracts aligned with the wizard. %><section data-step="2" aria-labelledby="drinks-title" hidden>
   <h2 id="drinks-title" tabindex="-1">Something to sip?</h2>
   <p class="step-description">Choose a quantity for each drink size, or leave them at zero to skip drinks.</p>
   <% for (const [intIndex, strDrink] of arrDrinks.entries()) { %>

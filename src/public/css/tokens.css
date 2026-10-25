@@ -1,3 +1,4 @@
+/* Semantic light/dark theme tokens. Shared components consume these variables; changing values requires contrast review in both themes. */
 :root,
 [data-bs-theme="light"] {
   color-scheme: light;

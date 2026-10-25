@@ -1,3 +1,4 @@
+/* Shared site layout, navigation, typography and interaction styles. Preserve focus visibility, responsive reflow and reduced-motion behavior. */
 html { background: var(--color-paper); }
 body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); line-height: 1.6; }
 a { color: inherit; text-underline-offset: .25em; }

@@ -24,6 +24,8 @@ are an owner arranging technical support, give your support person the links bel
 
 - [Developer and hosting handoff](developer-handoff.md): setup, architecture,
   configuration, accounts, deployment, recovery and costs.
+- [Developer code map](code-map.md): trace an order, locate each layer and understand
+  transaction, identity, browser and reusable-test responsibilities.
 - [Deployment runbook](deployment-runbook.md), [maintenance](maintenance-continuity.md),
   [monitoring](operations-monitoring.md) and [private key custody](secret-custody.md).
 - [Nginx operator guide](nginx-proxy.md): current public HTTPS, private application

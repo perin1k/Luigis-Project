@@ -55,6 +55,46 @@ All 28 parsed structures and syntax checks pass. The 38 selected existing
 session/MFA/enrollment/retention/proxy checks pass; this is focused regression
 evidence, not a new all-platform browser or hosted release acceptance.
 
-The broader application/readability card remains In Progress. The separately
-approved Nginx architecture/configuration change must use its own commits and
-verification rather than be hidden inside a formatting diff.
+## Browser, tooling and presentation review
+
+Reviewed the ten remaining browser modules and 29 operator/verification scripts.
+The earlier customer batch and the already extensively documented one-time cleanup
+complete project-owned JavaScript coverage. Purpose comments explain uncertain
+payment reconciliation, private response generations, text-only DOM rendering,
+theme-only storage, explicit operator effects and private provisioning/rotation.
+The wizard also has focused navigation/validation/payment/catalog explanations.
+
+All 39 before/after parsed structures and syntax checks pass. Three focused
+Chromium desktop ordering/editing/storage-disabled-theme scenarios pass. The
+selected release/GCP/monitoring checks passed; operations/TLS initially lacked
+local listener permission/OpenSSL PATH, then passed with the existing tool path
+and approved disposable listener access. No new library was installed. There were
+14 distinct tooling/operations tests, all passing in the final applicable runs.
+
+All 22 EJS templates now have server-only purpose comments. Comparing compiled
+client-function parsed structures with compileDebug disabled proves that these
+annotations do not add response text/whitespace or change template instructions.
+All four CSS files have scope notes prepended; the original rule bytes remain
+unchanged after that exact comment prefix. Neither templates nor styles were
+redesigned/reformatted. No snapshot replacement or hosted redeployment is claimed.
+
+[The developer code map](../code-map.md) explains integration points, trust and
+transaction boundaries, private tools, template/browser contracts and reusable
+tests. Existing tests/configuration, deployment shell procedures and already
+readable helpers retain their useful organization; this pass does not churn
+vendor/generated code, applied SQL, blocklists or lockfiles. Original contributors
+retain implementation authorship. Functional fixes and the approved visual/UX
+cleanup remain separate work.
+
+Final acceptance of this readability task uses parsed-code equivalence, syntax,
+compiled-template equivalence, unchanged CSS rules, diff/link review and focused
+checks. This does not claim a new native-platform/visual/Lighthouse release pass;
+the existing final QA/TEST-04 requirements remain intact.
+
+Final combined comparison against `16317b3` passed for **96 JavaScript files**,
+**22 EJS templates** and **four stylesheets**, with 20 local guide links checked.
+The EJS comparison first restores the pre-comment checkout text, accommodating
+Git LF versus existing checkout CRLF without rewriting any file, and then compares
+compiled structure at that same encoding. The original per-template before/after
+checks also pass. No applied migration, blocklist, dependency manifest/lockfile or
+deployment configuration changed in this readability increment.

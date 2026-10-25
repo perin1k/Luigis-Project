@@ -1,3 +1,4 @@
+/* Staff operations, authentication, privacy and reporting presentation. Controls must stay readable and reachable at zoom in both themes. */
 .staff-page { padding-block: clamp(2rem, 6vw, 5rem); max-width: 68rem; }
 .staff-intro { margin-bottom: 2rem; max-width: 44rem; }
 .staff-intro h1 { font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 4rem); }

@@ -1,4 +1,4 @@
-<section data-step="1" aria-labelledby="pizza-title" hidden>
+<%# Pizza choices and availability presentation use the supplied menu. Client totals are previews and disabled options are revalidated server-side. %><section data-step="1" aria-labelledby="pizza-title" hidden>
   <h2 id="pizza-title" tabindex="-1">Build something delicious.</h2>
   <p class="step-description">Every pizza starts with marinara and cheese. The rest is up to you.</p>
   <% const bBaseUnavailable = objAvailability.arrUnavailableBases.some((strId) => ['marinara', 'cheese'].includes(strId)); %>

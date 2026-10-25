@@ -1,3 +1,4 @@
+/* Wizard, pizza/drink editor, review and checkout layout. Keep hidden-step behavior and narrow-screen action reachability aligned with the browser controller. */
 [hidden] { display: none !important; }
 button { cursor: pointer; }
 button:focus-visible, input:focus-visible, h2:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }
