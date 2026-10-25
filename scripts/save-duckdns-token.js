@@ -1,3 +1,8 @@
+/**
+ * Private local token-entry helper saves outside Git with platform-appropriate
+ * protection. The terminal prompt must not echo the token or place it in command
+ * history.
+ */
 // Human's local private terminal only. Never supply a token as an argument/env.
 import {createInterface} from 'node:readline/promises';
 import {Writable} from 'node:stream';

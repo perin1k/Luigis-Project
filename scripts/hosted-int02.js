@@ -1,3 +1,8 @@
+/**
+ * Executes the bounded real hosted cross-role journey with synthetic data. Temporary
+ * accounts are cleaned up and results are sanitized; this is not a substitute for every
+ * final QA gate.
+ */
 import {randomBytes} from 'node:crypto';
 import {verificationOrigin,temporaryUsername,cleanupTemporaryStaff,sanitizedHostedResult} from './hosted-int02-policy.js';
 

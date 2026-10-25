@@ -1,3 +1,7 @@
+/**
+ * Runs the selected storage/payment/notification consistency tests with explicit paths.
+ * Disposable test databases do not authorize resetting a live database.
+ */
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { release } from 'node:os';

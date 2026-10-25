@@ -1,3 +1,8 @@
+/**
+ * Runs the selected security/privacy regression files with explicit paths and bounded
+ * concurrency. A passing suite is scoped evidence, not legal or exhaustive security
+ * certification.
+ */
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {release} from 'node:os';

@@ -1,3 +1,8 @@
+/**
+ * Release manifest, source integrity and schema compatibility helpers. A prepared
+ * archive is distinct from an activated, healthy release; migration history remains
+ * checksum-protected.
+ */
 import {createHash} from 'node:crypto';
 import {readFileSync,writeFileSync,readdirSync,lstatSync,realpathSync} from 'node:fs';
 import {join,resolve,isAbsolute,relative,sep} from 'node:path';

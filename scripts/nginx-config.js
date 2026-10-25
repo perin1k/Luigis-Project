@@ -1,3 +1,8 @@
+/**
+ * Renders the approved Nginx TLS boundary from validated settings. The returned text
+ * contains a private proxy proof and must never be logged or committed as actual host
+ * configuration.
+ */
 /** Root-only deployment uses the returned text; never print it (it contains a private proxy proof). */
 export function renderNginxConfig({strHostname,intPublicPort=443,intBackendPort=3443,strSecret,bLoopbackOnly=false,
   strCertificatePath,strKeyPath,strTrustedCaPath='/etc/ssl/certs/ca-certificates.crt',

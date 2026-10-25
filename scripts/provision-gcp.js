@@ -1,3 +1,8 @@
+/**
+ * Builds the fixed approved preview resource plan and reconciles resources through
+ * argument-based gcloud calls. Running the tool requires the applicable
+ * infrastructure/spending authorization.
+ */
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';

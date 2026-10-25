@@ -1,3 +1,7 @@
+/**
+ * Explicit baseline-menu seed CLI. Target the intended database and never use seeding to
+ * overwrite an existing hosted restaurant catalog.
+ */
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { openDatabase } from '../src/data/database.js';

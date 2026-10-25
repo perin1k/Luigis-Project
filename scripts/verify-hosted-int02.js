@@ -1,3 +1,7 @@
+/**
+ * Interactive entry point for the bounded hosted integration rehearsal. Prompted
+ * credentials stay private; only the sanitized final summary should be shared.
+ */
 import {createInterface} from 'node:readline/promises';
 import {Writable} from 'node:stream';
 import {resolve} from 'node:path';

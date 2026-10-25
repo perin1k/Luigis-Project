@@ -1,3 +1,8 @@
+/**
+ * Checks private file ownership, permissions, link/path boundaries and release/data
+ * layout. Validation reads existing state; it does not provision or repair secrets by
+ * weakening permissions.
+ */
 import {lstatSync,readdirSync,realpathSync} from 'node:fs';
 import {dirname,join,relative,isAbsolute,sep} from 'node:path';
 

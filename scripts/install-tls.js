@@ -1,3 +1,8 @@
+/**
+ * Installs a validated matching hostname certificate/private-key generation with
+ * protected ownership, then switches its pointer. Neither certificate printing nor
+ * partial key-pair replacement is safe.
+ */
 import {X509Certificate,createPrivateKey,randomUUID} from 'node:crypto';
 import {readFileSync,writeFileSync,mkdirSync,chownSync,lstatSync,realpathSync,symlinkSync,renameSync,existsSync} from 'node:fs';
 import {join,resolve,relative,isAbsolute} from 'node:path';

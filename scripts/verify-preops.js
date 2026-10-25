@@ -1,3 +1,7 @@
+/**
+ * Runs the declared pre-operations regression checkpoint with explicit tool/environment
+ * reporting. Results apply only to the executed scope and commit.
+ */
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {release} from 'node:os';

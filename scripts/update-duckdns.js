@@ -1,3 +1,7 @@
+/**
+ * Approved-host DNS updater reads the private token and reconciles the current external
+ * address. Errors must not reveal the credential-bearing provider request.
+ */
 import {readFileSync,lstatSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';

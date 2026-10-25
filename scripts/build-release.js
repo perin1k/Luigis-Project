@@ -1,3 +1,7 @@
+/**
+ * Builds a canonical source archive from the exact reviewed Git commit. Dirty worktrees
+ * and overwrites are refused; generated release artifacts stay outside committed source.
+ */
 import {execFileSync} from 'node:child_process';
 import {readFileSync,writeFileSync,mkdirSync,realpathSync,existsSync} from 'node:fs';
 import {resolve,join} from 'node:path';

@@ -1,3 +1,8 @@
+/**
+ * Stages root-private direct-recovery and proxy candidates without changing the active
+ * service. Activation is a separately reviewed lifecycle step; configuration includes a
+ * secret and must not be printed.
+ */
 import {readFileSync,writeFileSync,mkdirSync,lstatSync,copyFileSync,constants} from 'node:fs';
 import {randomBytes} from 'node:crypto';
 import {pathToFileURL} from 'node:url';

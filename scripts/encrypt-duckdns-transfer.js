@@ -1,3 +1,8 @@
+/**
+ * Encrypts a short-lived DNS transfer for the VM public key. Reads secret input from a
+ * pipe, writes a new ciphertext file and clears temporary buffers; never pass tokens as
+ * command arguments.
+ */
 import {publicEncrypt,constants} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';
 let objInput;let objPayload;

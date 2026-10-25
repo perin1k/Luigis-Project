@@ -1,3 +1,8 @@
+/**
+ * Runs the selected staff authentication/role regressions using the current Node
+ * executable. Explicit argument paths preserve equivalent invocation across supported
+ * developer platforms.
+ */
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { release } from 'node:os';

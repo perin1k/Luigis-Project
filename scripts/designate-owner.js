@@ -1,3 +1,7 @@
+/**
+ * Private operator CLI for explicit Owner designation. This is separate from normal role
+ * management and must not be exposed as a public account action.
+ */
 import {createInterface} from 'node:readline/promises';
 import {Writable} from 'node:stream';
 import {existsSync} from 'node:fs';

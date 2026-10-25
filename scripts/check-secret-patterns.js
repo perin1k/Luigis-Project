@@ -1,3 +1,8 @@
+/**
+ * Scans reviewed text for forbidden secret patterns without treating a clean result as
+ * exhaustive security proof. Never print discovered credential values while extending
+ * this check.
+ */
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 

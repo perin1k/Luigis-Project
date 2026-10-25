@@ -1,3 +1,7 @@
+/**
+ * Root-only piped DNS-token receiver with protected-path checks and exclusive file
+ * creation. Do not use terminal-visible arguments or overwrite an existing credential.
+ */
 import {readFileSync,writeFileSync,lstatSync} from 'node:fs';
 
 let objInput;

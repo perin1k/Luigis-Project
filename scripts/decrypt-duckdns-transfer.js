@@ -1,3 +1,8 @@
+/**
+ * Root-only one-time DNS credential import on the approved Linux VM. Validates
+ * expiry/domain and private paths, refuses overwrite and removes the one-use transfer
+ * key after success.
+ */
 import {privateDecrypt,constants} from 'node:crypto';
 import {readFileSync,writeFileSync,lstatSync,unlinkSync} from 'node:fs';
 let objPayload;

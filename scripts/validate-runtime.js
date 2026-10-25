@@ -1,3 +1,8 @@
+/**
+ * Read-only hosted runtime preflight checks origin, TLS, private key configuration,
+ * schema and optional proxy boundary. Passing it does not issue sessions or prove every
+ * deployed journey.
+ */
 import {readFileSync,lstatSync,realpathSync} from 'node:fs';
 import {resolve,relative,isAbsolute,sep} from 'node:path';
 import {pathToFileURL} from 'node:url';

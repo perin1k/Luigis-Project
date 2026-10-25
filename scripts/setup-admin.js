@@ -1,3 +1,8 @@
+/**
+ * Private initial privileged-account setup with password validation and proved
+ * authenticator enrollment. Provisioning secrets/recovery codes are private one-time
+ * setup output.
+ */
 import { createInterface } from 'node:readline/promises';
 import { Writable } from 'node:stream';
 import { existsSync } from 'node:fs';

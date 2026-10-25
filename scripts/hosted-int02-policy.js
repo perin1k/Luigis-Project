@@ -1,3 +1,7 @@
+/**
+ * Fixed bounds and labels for the approved hosted integration rehearsal. Synthetic
+ * accounts/order activity must remain distinguishable and cleanup must be explicit.
+ */
 export const HOSTED_INT02_ORIGIN='https://luigispizzeria.duckdns.org';
 
 export function verificationOrigin(strOrigin){

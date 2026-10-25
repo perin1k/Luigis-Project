@@ -1,3 +1,7 @@
+/**
+ * Explicit database migration CLI. Applies reviewed checksum-verified additions; startup
+ * or a failed check must not silently rewrite earlier SQL or reset the database.
+ */
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { openDatabase } from '../src/data/database.js';

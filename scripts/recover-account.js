@@ -1,3 +1,8 @@
+/**
+ * Private operator account-recovery CLI. Keep credentials, provisioning secrets and
+ * replacement recovery codes inside the private terminal rather than chat, source or
+ * reports.
+ */
 import { createInterface } from 'node:readline/promises';
 import { Writable } from 'node:stream';
 import { existsSync } from 'node:fs';

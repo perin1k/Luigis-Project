@@ -1,3 +1,8 @@
+/**
+ * Read-only retained-state inspector emits counts/digests rather than account secrets or
+ * rows. Compare compatible checkpoints and distinguish ordinary MFA counter changes from
+ * credential replacement.
+ */
 /** Private operator check: emit counts/digests only, never credential or customer rows. */
 import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';

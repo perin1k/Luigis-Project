@@ -1,3 +1,8 @@
+/**
+ * Creates fresh private host configuration/key material and stages reviewed key
+ * rotation. Existing directories/keys are not silently overwritten; generation does not
+ * itself grant application access.
+ */
 import {randomBytes} from 'node:crypto';
 import {mkdirSync,writeFileSync,realpathSync,openSync,readFileSync,fstatSync,closeSync,
   constants,chownSync,chmodSync,lstatSync} from 'node:fs';
