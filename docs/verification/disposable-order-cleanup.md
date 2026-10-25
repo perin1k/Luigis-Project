@@ -22,7 +22,7 @@ authorize deleting other orders.
   compared before committing. Failure rolls back data and trigger changes together.
   Applied migrations/checksums remain untouched. This is deliberately exceptional
   handling of existing history guards, not a migration or ordinary business action.
-- `scripts/remove-disposable-order.sh` stops the application, invokes the fixed
+- `deploy/remove-disposable-order.sh` stops the application, invokes the fixed
   cleanup, and always attempts restart, including on failure. It waits for real
   public readiness. Existing Nginx stays running during the brief app interruption.
 

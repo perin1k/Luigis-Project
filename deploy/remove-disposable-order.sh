@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-time approved VM maintenance. Always restart the app, including on failure.
+# One-time approved Ubuntu VM maintenance. Always restart the app on failure too.
 set -euo pipefail
 if [[ "$EUID" -ne 0 ]]; then
   echo 'Run this reviewed maintenance wrapper as root.' >&2
