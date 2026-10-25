@@ -1,5 +1,37 @@
 # Final completion work — October 25, 2026
 
+## Acceptance completed before TEST-04
+
+Brody ran the corrected private hosted auditor and reported its **overall result
+true** on October 25. This is a human-reported sanitized checker result; the full
+raw report was not requested again to conserve usage. The committed CLI can only
+return overall true when its shared-role journey, resolved practice order,
+temporary staff/customer cleanup and all **28** required mobile/desktop profiles
+pass. Thus each protected/entry/tracking target passed Performance100,
+Accessibility100 and Best Practices100; actual noindex was verified before using
+the existing SEO-only exception. No private SEO100 or new exception is claimed.
+HTTP cache is cleared per profile; authentication is retained in native cookies.
+Private tracking must load its actual grant/API, not merely the empty page shell.
+
+Verifier revision: `bf64ba865abc72ff643fa429e134e74fbccc0fba`. Native verifier
+rehearsal [40179307556](https://github.com/perin1k/Luigis-Project/actions/runs/40179307556)
+passed. Active application remains `da2a2bdbe3ef0beb06f0e96dd0e07d64ef60140a`.
+Earlier failed/partial results below are retained historically; they are not
+relabeled as passes. Public home/menu/order mobile/desktop 100/100/100/100 evidence
+is reused for unchanged public branches/assets; the later release changed only
+private stylesheet delivery, with exact cascade/byte equality and native visuals.
+
+Customer feature acceptance, QA-03 actual load/recovery, QA-01 integrated review,
+DOC-01 course-source/reader/notices review and OPS-06 publication sign-off are
+satisfied for the approved demonstration. Eight handoff/submission guides passed
+77 local-link/fence checks. The source ZIP review included 3,416 tracked files,
+required guides/lockfile/SecLists notice, and no forbidden local data/settings/
+reports/dependencies. Final source ZIP is regenerated after TEST-04 at its exact
+accepted commit; no public source license or business account transfer is implied.
+
+TEST-04 is the remaining independent checkpoint. No final whole-application or
+commercial readiness verdict is claimed before that checkpoint completes.
+
 Brody approved finishing customer-account acceptance, QA-03, QA-01, DOC-01 and
 OPS-06, then TEST-04 after those prerequisites are accepted. Existing Perin QA
 assignment and John implementation are preserved. Evidence from unchanged work

@@ -5,7 +5,8 @@
 > [Find the right guide](README.md). This technical reference is not an everyday user manual.
 
 Prepared October 24, 2026 for [DOC-01](https://trello.com/c/9ldFFK0U).
-Status: receiving-team review package; independent rehearsal and final QA pending.
+Status: course reader/integrated QA review completed October 25; independent final
+TEST-04 remains. Exact acceptance evidence: [completion record](verification/final-completion.md).
 This guide does not transfer accounts, authorize spending or establish acceptance.
 
 ## Delivery and current environment

@@ -67,6 +67,6 @@ mean the review is complete.
 October 25 reader review: Brody reported the listed guide tasks and instructions
 passed. Course delivery is the zipped repository plus class presentation, rather
 than a business ownership transfer; see [submission guide](submission.md). Final
-QA and the final application checkpoint remain separate from this reader review.
+TEST-04 remains separate from this reader review and completed integrated QA.
 Technical test evidence and developer tasks are tracked separately; reviewers do
 not need those engineering records to follow the end-user guides.
