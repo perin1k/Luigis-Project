@@ -1,5 +1,10 @@
 # GCP/DuckDNS deployment runbook
 
+Current October 24 architecture: public Nginx HTTPS with authenticated loopback TLS
+to Node; same-release direct HTTPS is the exercised recovery mode. See
+[OPS-08 checkpoint](verification/ops-08-proxy.md) and [proxy guide](nginx-proxy.md)
+before using historical direct-listener commands below.
+
 > For developers and technical website support. Restaurant staff and owners using
 > the website should start with [Using your website](handoff.md) and
 > [Find the right guide](README.md). This technical reference is not an everyday user manual.
