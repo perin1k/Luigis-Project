@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <%- include('../partials/head',{bStaffPage:true}) %>
 <meta name="robots" content="noindex, nofollow">
-<script type="module" src="/js/customer.js"></script>
+<script type="module" src="<%= strScriptBase %>/js/customer.js"></script>
 </head><body><%- include('../partials/header') %>
 <main id="main-content" class="container staff-page customer-page" tabindex="-1">
   <h1><%= ({account:'Your customer account',register:'Create your customer account','sign-in':'Customer sign-in',recover:'Recover your customer account'})[strMode] %></h1>

@@ -3,7 +3,7 @@
 <head>
   <%- include('../partials/head', { bPricingPage: Boolean(objCatalog) }) %>
   <% if (!objCatalog) { %><link rel="stylesheet" href="/css/ordering.css?v=<%= strAssetVersion %>"><% } %>
-  <script type="module" src="/js/ordering/order-wizard.js"></script>
+  <script type="module" src="<%= strScriptBase %>/js/ordering/order-wizard.js"></script>
 </head>
 <body>
   <%- include('../partials/header') %>

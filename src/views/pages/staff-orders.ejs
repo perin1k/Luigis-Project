@@ -3,8 +3,8 @@
 <head>
   <%- include('../partials/head', { bStaffPage: true }) %>
   <meta name="robots" content="noindex, nofollow">
-  <script type="module" src="/js/staff-orders.js"></script>
-  <% if (objOrder) { %><script type="module" src="/js/staff-notifications.js"></script><% } %>
+  <script type="module" src="<%= strScriptBase %>/js/staff-orders.js"></script>
+  <% if (objOrder) { %><script type="module" src="<%= strScriptBase %>/js/staff-notifications.js"></script><% } %>
 </head>
 <body>
   <%- include('../partials/header') %>

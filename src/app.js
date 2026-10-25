@@ -44,7 +44,8 @@ export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigi
   const mapTextAssets = new Map();
   for (const strPath of['/css/tokens.css', '/css/global.css', '/css/ordering.css',
   '/js/theme.js', '/js/tracking.js', '/js/staff-orders.js', '/js/ordering/order-wizard.js', '/js/ordering/order-model.js',
-  '/js/checkout/payment.js', '/css/staff.css', '/js/staff.js']) {
+  '/js/checkout/payment.js', '/css/staff.css', '/js/staff.js', '/js/customer.js',
+  '/js/staff-menu.js', '/js/staff-notifications.js', '/js/staff-privacy.js']) {
     const objBody = readFileSync(fileURLToPath(new URL(`./public${strPath }`, import.meta.url)));
     mapTextAssets.set(strPath, prepareText(objBody, strPath.endsWith('.css') ? 'css': 'js'));
   }
@@ -71,6 +72,14 @@ export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigi
   const objStyleHash = createHash('sha256');
   for (const [strPath,objAsset] of mapTextAssets) if (strPath.endsWith('.css')) objStyleHash.update(objAsset.objBody);
   objApp.locals.strAssetVersion = objStyleHash.digest('hex').slice(0,12);
+  // Version the directory, not just the entry script: relative module imports
+  // then resolve within the same release's complete public JavaScript graph.
+  const arrScripts = [...mapTextAssets].filter(([strPath]) => strPath.startsWith('/js/'));
+  const objScriptHash = createHash('sha256');
+  for (const [strPath, objAsset] of arrScripts) objScriptHash.update(strPath).update(objAsset.objBody);
+  const strScriptBase = `/assets/${objScriptHash.digest('hex').slice(0,16)}`;
+  objApp.locals.strScriptBase = strScriptBase;
+  for (const [strPath, objAsset] of arrScripts) mapTextAssets.set(strScriptBase + strPath, objAsset);
   function sendText(objRequest, objResponse, objText) {
     objResponse.vary('Accept-Encoding');
     const strEncoding = objRequest.acceptsEncodings(...(objText.objBrotli ? ['br', 'gzip', 'identity']: ['gzip', 'identity']));
@@ -105,6 +114,9 @@ export function createApp({ objProxyConfig, objCustomerService, strCustomerOrigi
     objResponse.set('Cache-Control', 'public, max-age=3600');
     sendText(objRequest, objResponse, objText);
   });
+  // Range/HEAD fallback exposes only the existing public JS directory under the
+  // current version. Unknown versions and server source never match this mount.
+  objApp.use(`${strScriptBase}/js`, express.static(fileURLToPath(new URL('./public/js/', import.meta.url))));
   objApp.use(express.static(fileURLToPath(new URL('./public/', import.meta.url))));
   objApp.get('/',(objRequest, objResponse, fnNext) => {
     renderPage(objRequest, objResponse, fnNext, 'pages/home', {

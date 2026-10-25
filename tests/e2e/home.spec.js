@@ -1,6 +1,30 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+test('versioned JavaScript loads its module graph without legacy cache URLs', async ({page: objPage}) => {
+  const arrLegacyRequests = [];
+  const arrErrors = [];
+  objPage.on('pageerror', objError => arrErrors.push(objError.message));
+  await objPage.route('**/js/**', objRoute => {
+    if (new URL(objRoute.request().url()).pathname.startsWith('/js/')) {
+      arrLegacyRequests.push(objRoute.request().url());
+      return objRoute.abort();
+    }
+    return objRoute.continue();
+  });
+  await objPage.goto('/order');
+  const strScriptUrl = await objPage.locator('script[type="module"]').getAttribute('src');
+  expect(strScriptUrl).toMatch(/^\/assets\/[a-f0-9]{16}\/js\/ordering\/order-wizard\.js$/);
+  await objPage.getByRole('button', {name: 'Continue (top)', exact: true}).click();
+  await expect(objPage.getByRole('button', {name: 'Add pizza', exact: true})).toBeVisible();
+  await objPage.getByRole('button', {name: 'Add pizza', exact: true}).click();
+  await objPage.getByRole('button', {name: 'Continue (top)', exact: true}).click();
+  await objPage.locator('summary').filter({hasText: /^Coca-Cola/}).click();
+  await expect(objPage.getByLabel('Small coca-cola quantity', {exact: true})).toBeVisible();
+  expect(arrLegacyRequests).toEqual([]);
+  expect(arrErrors).toEqual([]);
+});
+
 test('homepage presents the approved menu and operating information', async ({ page: objPage }) => {
   const objResponse = await objPage.goto('/');
   expect(objResponse.status()).toBe(200);

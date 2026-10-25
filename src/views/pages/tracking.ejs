@@ -1,6 +1,6 @@
 <%# Private tracking shell; the browser reads the bearer fragment and requests only the permitted order projection. %><!doctype html>
 <html lang="en">
-<head><%- include('../partials/head', {bStaffPage:true,bTrackingPage:true}) %><meta name="robots" content="noindex, nofollow"><script type="module" src="/js/tracking.js"></script></head>
+<head><%- include('../partials/head', {bStaffPage:true,bTrackingPage:true}) %><meta name="robots" content="noindex, nofollow"><script type="module" src="<%= strScriptBase %>/js/tracking.js"></script></head>
 <body><%- include('../partials/header') %>
 <main id="main-content" tabindex="-1" class="container staff-page">
   <div class="staff-intro"><p class="eyebrow">From our kitchen</p><h1>Your order, step by step.</h1><p>Keep this private link for your order. Anyone with the link can view its progress.</p></div>

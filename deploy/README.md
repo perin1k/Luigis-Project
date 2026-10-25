@@ -118,10 +118,14 @@ request completes. VM preemption and restart capacity remain the hosting contrac
 is created. Editing those files in place does not refresh that cache; release
 switching must restart the process. EJS production view caching also resets at
 restart. The public text routes allow `max-age=3600`; private pages remain no-store.
-There are no content-hashed asset URLs today. For an incompatible HTML/JS/CSS
-contract, keep old/new assets compatible through that one-hour cache window or
-obtain a reviewed versioned-URL/cache-policy change before release. A hard refresh
-can help an operator's smoke test, but does not invalidate other visitors' caches.
+Project CSS URLs carry a content fingerprint. Public JavaScript entry points and
+module preloads use a content-derived `/assets/<version>/js/` directory; relative
+module imports stay within that version. New HTML therefore requests fresh script
+and stylesheet URLs after a release. Legacy URLs remain for compatibility, but
+current templates do not use them. Unknown script versions are rejected. Existing
+open pages still need a reload to adopt a release; a hard refresh is not a global
+cache-invalidation mechanism. Do not change browser/API contracts incompatibly
+without reviewing already-open pages and in-flight requests.
 Rollback resets server-prepared text, not an already cached browser response.
 
 ## Validation and source references

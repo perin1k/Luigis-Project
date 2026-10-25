@@ -10,6 +10,27 @@ import {createCatalogService} from '../../src/ordering/catalog-service.js';
 
 let objServer;
 let intPort;
+test('script URLs version the complete module graph and reject unknown versions', async () => {
+  const objPage = await requestText('/order', 'identity');
+  const strHtml = objPage.objBody.toString();
+  const strBase = strHtml.match(/src="(\/assets\/[a-f0-9]{16})\/js\/theme\.js"/)?.[1];
+  assert.ok(strBase, 'Rendered scripts require a content-versioned path');
+  assert.match(strHtml, new RegExp(`src="${strBase}/js/ordering/order-wizard\\.js"`));
+  for (const strPath of ['/js/theme.js', '/js/ordering/order-wizard.js', '/js/ordering/order-model.js',
+    '/js/checkout/payment.js', '/js/customer.js', '/js/staff.js', '/js/staff-orders.js',
+    '/js/staff-menu.js', '/js/staff-notifications.js', '/js/staff-privacy.js', '/js/tracking.js']) {
+    const objVersioned = await requestText(strBase + strPath, 'identity');
+    const objLegacy = await requestText(strPath, 'identity');
+    assert.equal(objVersioned.intStatus, 200, strPath);
+    assert.deepEqual(objVersioned.objBody, objLegacy.objBody, strPath);
+    assert.match(objVersioned.objHeaders['content-type'], /javascript/);
+  }
+  assert.equal((await requestText('/assets/unknown/js/theme.js', 'identity')).intStatus, 404);
+  assert.equal((await requestText(strBase + '/src/app.js', 'identity')).intStatus, 404);
+  const objRange = await requestText(strBase + '/js/theme.js', 'identity', {objHeaders: {Range: 'bytes=0-9'}});
+  assert.equal(objRange.intStatus, 206);
+  assert.equal(objRange.objBody.length, 10);
+});
 before(async () => {
   objServer = objApp.listen(0, '127.0.0.1');
   await new Promise((fnResolve, fnReject) => {
@@ -32,7 +53,7 @@ test('configured ordering uses one blocking stylesheet with unchanged Bootstrap 
     assert.equal((strHtml.match(/rel="stylesheet"/g) ?? []).length, 1);
     assert.match(strHtml, /href="\/css\/order-bundle.css\?v=[a-f0-9]{12}"/);
     assert.ok(strHtml.indexOf('/css/order-bundle.css') < strHtml.indexOf('/js/theme.js'));
-    assert.equal((strHtml.match(/src="\/js\/theme.js"/g) ?? []).length, 1);
+    assert.equal((strHtml.match(/src="\/assets\/[a-f0-9]{16}\/js\/theme.js"/g) ?? []).length, 1);
     const arrParts = [];
     for (const strPath of ['/vendor/bootstrap.min.css', '/css/tokens.css', '/css/global.css', '/css/ordering.css']) {
       arrParts.push((await requestText(strPath, 'identity')).objBody, Buffer.from('\n'));
