@@ -1,3 +1,8 @@
+/**
+ * Short-lived password-plus-recovery-code proofs for replacing a lost authenticator.
+ * Proofs are revalidated against live account/credential versions before privileged
+ * state changes.
+ */
 import { randomBytes, randomUUID } from 'node:crypto';
 import { openDatabase, runTransaction } from '../data/database.js';
 import { applyMigrations } from '../data/migrations.js';

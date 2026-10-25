@@ -1,3 +1,7 @@
+/**
+ * Minimal health responses expose readiness state without private dependency details.
+ * Monitoring failures are distinct from rate-limited requests.
+ */
 import express from 'express';
 /** Minimal dependency probe, never a diagnostic dump or full business-readiness claim. */
 export function createHealthRouter(fnReady=()=>false,fnPreviews=()=>false){

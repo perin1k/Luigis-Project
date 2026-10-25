@@ -1,3 +1,8 @@
+/**
+ * Staff sign-in, MFA, enrollment, recovery and account-management HTTP boundary. Native
+ * forms and JSON share service authorization; safe failures do not expose credential
+ * validity details.
+ */
 import express from 'express';
 import {clientAddress} from '../security/proxy-boundary.js';
 import { randomBytes } from 'node:crypto';

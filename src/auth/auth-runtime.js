@@ -1,3 +1,8 @@
+/**
+ * Composes staff authentication services against one database and explicit public
+ * origin. Owned MFA/recovery resources are destroyed on setup failure and process
+ * shutdown.
+ */
 import { createMfaService } from './mfa-service.js';
 import { createLoginService } from './login-service.js';
 import { createSessionService } from './session-service.js';

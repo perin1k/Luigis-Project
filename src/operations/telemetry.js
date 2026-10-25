@@ -1,3 +1,7 @@
+/**
+ * Sanitized operational measurements and fixed outcome labels. Do not add request
+ * bodies, customer details, passwords or private tracking URLs to telemetry.
+ */
 import {randomUUID} from 'node:crypto';
 const EVENTS=new Set(['retention_failed','retention_recovered','previews_failed','previews_recovered','order_request_succeeded','order_request_rejected','order_request_failed','payment_request_succeeded','payment_request_rejected','payment_request_failed','application_failed']);
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;

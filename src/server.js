@@ -1,3 +1,8 @@
+/**
+ * Production process lifecycle: loads reviewed private runtime configuration, starts one
+ * HTTP/TLS server and supervises bounded background jobs. Shutdown closes owned
+ * resources rather than abandoning active writes.
+ */
 import {createWorkerMonitor} from './operations/worker-monitor.js';
 import {proxyConfiguration} from './security/proxy-boundary.js';
 import {createCustomerService} from './customer/customer-service.js';

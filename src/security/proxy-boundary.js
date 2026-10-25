@@ -1,3 +1,8 @@
+/**
+ * Authenticates the approved loopback TLS proxy before routes or static assets. Only
+ * verified requests acquire a trusted client address; direct mode keeps the real socket
+ * peer.
+ */
 import {isIP} from 'node:net';
 import {timingSafeEqual} from 'node:crypto';
 

@@ -1,3 +1,8 @@
+/**
+ * Shared privacy-deadline calculation for tracking, previews and cleanup. Unresolved
+ * cancellation/refund cases postpone expiry; final records use the latest relevant
+ * resolution plus seven days.
+ */
 const FINAL_STATES=['Completed','Cancelled','Not collected'];
 export function hasPendingCase(objDatabase,strOrderId){
   return Boolean(objDatabase.prepare("SELECT id FROM cancellation_requests c WHERE c.order_id=? AND (c.state='pending' OR (c.state='approved' AND NOT EXISTS(SELECT 1 FROM refunds r WHERE r.cancellation_request_id=c.id AND r.state='succeeded') AND NOT EXISTS(SELECT 1 FROM demo_refund_attempts d WHERE d.cancellation_request_id=c.id AND d.state='succeeded')))").get(strOrderId)

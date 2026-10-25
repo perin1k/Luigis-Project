@@ -1,3 +1,7 @@
+/**
+ * SQLite connection and transaction boundary. Transactions are synchronous and roll back
+ * exceptions; asynchronous password work must finish outside a write transaction.
+ */
 import { DatabaseSync } from 'node:sqlite';
 import { types } from 'node:util';
 

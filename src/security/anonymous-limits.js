@@ -1,3 +1,8 @@
+/**
+ * Bounded anonymous-request and health-probe budgets. Address resolution honors only the
+ * authenticated proxy boundary; arbitrary forwarded headers cannot create fresh
+ * identities.
+ */
 import {createHmac,randomBytes} from 'node:crypto';
 import {clientAddress} from './proxy-boundary.js';
 

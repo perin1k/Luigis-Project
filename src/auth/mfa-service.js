@@ -1,3 +1,8 @@
+/**
+ * Encrypted authenticator enrollment and time-code verification. Pending factors must be
+ * proved before activation; stored counters prevent replaying an already accepted time
+ * step.
+ */
 import { createCipheriv, createDecipheriv, randomBytes, randomUUID } from 'node:crypto';
 import * as OTPAuth from 'otpauth';
 import { runTransaction } from '../data/database.js';

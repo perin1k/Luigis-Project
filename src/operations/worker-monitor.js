@@ -1,3 +1,7 @@
+/**
+ * Tracks synchronous worker success/failure for readiness and recovery notices.
+ * A live process alone does not prove that its background work succeeded.
+ */
 import {createOperationalRecorder} from './telemetry.js';
 import {types} from 'node:util';
 const WORKERS=new Set(['retention','previews']);

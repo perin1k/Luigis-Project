@@ -1,3 +1,8 @@
+/**
+ * Bounded password verification and staff session issuance. Rechecks credential/account
+ * versions after asynchronous hashing so changed or deactivated accounts cannot use
+ * stale proof.
+ */
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { verifyPassword } from './password-service.js';
 import { runTransaction } from '../data/database.js';

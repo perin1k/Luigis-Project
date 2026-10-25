@@ -1,3 +1,7 @@
+/**
+ * Generates authenticator enrollment QR data locally. Provisioning secrets never need an
+ * external image or QR service.
+ */
 import QRCode from 'qrcode';
 
 /** Sensitive provisioning data: return only through the existing no-store auth response. */

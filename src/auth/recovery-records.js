@@ -1,3 +1,7 @@
+/**
+ * Creates single-use recovery-code digests and sanitized recovery audit records. Plain
+ * codes are shown once; the database does not store recoverable code text.
+ */
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 
 /** Internal helpers: caller owns the synchronous transaction and authorization. */

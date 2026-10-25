@@ -1,3 +1,8 @@
+/**
+ * Staff invitations bind a requested role to the issuing account version and a one-use
+ * token digest. Expensive password hashing runs outside the transaction, followed by
+ * live invitation/issuer rechecks.
+ */
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { runTransaction } from '../data/database.js';
 import { createSessionService } from './session-service.js';
@@ -93,6 +98,7 @@ export function createStaffEnrollmentService(objDatabase, { fnNow = () => new Da
       if (!objBefore) return null;
       let strHash;
       intActiveEnrollments += 1;
+      // Do not hold a SQLite write lock while deriving the password hash.
       try { strHash = await hashPassword(strPassword); }
       finally { intActiveEnrollments -= 1; }
       return runTransaction(objDatabase, () => {

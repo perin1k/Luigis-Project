@@ -1,3 +1,7 @@
+/**
+ * Staff cookie, origin and token validation primitives. Cookie transport proves neither
+ * a role nor a permission until the server session has been resolved.
+ */
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 export const AUTH_COOKIES = Object.freeze({

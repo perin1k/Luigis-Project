@@ -1,3 +1,7 @@
+/**
+ * Explicit one-owner designation against existing staff records. Ownership is a separate
+ * persisted privilege and is never inferred from an Admin role.
+ */
 import {randomUUID} from 'node:crypto';
 import {createSessionService} from './session-service.js';
 

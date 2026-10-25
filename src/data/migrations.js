@@ -1,3 +1,8 @@
+/**
+ * Ordered, checksum-verified schema upgrades. Earlier applied SQL bytes are immutable;
+ * this runner records reviewed additions rather than rewriting existing database
+ * history.
+ */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { runTransaction } from './database.js';

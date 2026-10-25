@@ -1,3 +1,7 @@
+/**
+ * Central effective-role permission sets. Owner, Admin and Employee capabilities are
+ * explicit; unknown roles/actions fail closed rather than inheriting browser claims.
+ */
 const STAFF_ACTIONS = new Set(['orders.read', 'orders.prepare', 'availability.update', 'account.password.change']);
 const ADMIN_ACTIONS = new Set([
   ...STAFF_ACTIONS, 'employees.manage',

@@ -1,3 +1,7 @@
+/**
+ * Creates the approved baseline catalog through the existing schema. Seeding is explicit
+ * setup, not a fallback that overwrites a live restaurant menu.
+ */
 import { runTransaction } from './database.js';
 
 const CATALOG_ID = 'luigis:menu:v1';

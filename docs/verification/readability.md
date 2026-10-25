@@ -42,6 +42,19 @@ digests/replacement and bounded internal-preview processing. Dense operational
 statements are expanded. All 13 normalized parsed structures and syntax checks
 pass; 34 focused analytics/progress/privacy/tracking/notification tests pass.
 
+## Composition, data, security and staff-authentication batch
+
+Reviewed the application/server composition, five data modules, three operations
+modules, two security modules and all 16 staff-authentication modules. Added
+purpose and trust-boundary explanations while preserving existing detailed
+comments. Explained synchronous SQLite work versus asynchronous hashing, live
+identity rechecks, explicit Owner permissions, proof/counter replay protection,
+private key loading, redaction versus history and process/worker health.
+
+All 28 parsed structures and syntax checks pass. The 38 selected existing
+session/MFA/enrollment/retention/proxy checks pass; this is focused regression
+evidence, not a new all-platform browser or hosted release acceptance.
+
 The broader application/readability card remains In Progress. The separately
 approved Nginx architecture/configuration change must use its own commits and
 verification rather than be hidden inside a formatting diff.

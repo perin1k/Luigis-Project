@@ -1,3 +1,8 @@
+/**
+ * Private first-administrator creation boundary. Validated credentials and verified
+ * authenticator enrollment are required before an initial privileged account becomes
+ * usable.
+ */
 import { randomUUID } from 'node:crypto';
 import { openDatabase, runTransaction } from '../data/database.js';
 import { applyMigrations } from '../data/migrations.js';

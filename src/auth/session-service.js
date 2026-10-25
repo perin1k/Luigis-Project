@@ -1,3 +1,8 @@
+/**
+ * Server-side staff session authorization with idle and absolute expiry, active identity
+ * checks and MFA requirements. Authorized synchronous work shares a transaction with
+ * permission resolution.
+ */
 import { createHash, randomUUID } from 'node:crypto';
 import { types } from 'node:util';
 import { runTransaction } from '../data/database.js';

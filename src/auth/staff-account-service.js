@@ -1,3 +1,8 @@
+/**
+ * Owner/Admin staff management with role boundaries, revision checks and access
+ * revocation. Reactivation permits fresh sign-in; it never revives old sessions or
+ * pending proofs.
+ */
 import { createHash, randomUUID } from 'node:crypto';
 import { createSessionService } from './session-service.js';
 import { hashPassword, verifyPassword } from './password-service.js';

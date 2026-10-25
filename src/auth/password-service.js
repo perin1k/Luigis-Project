@@ -1,3 +1,8 @@
+/**
+ * Versioned scrypt password hashing and constant-time verification. Passwords are not
+ * recoverably encrypted; temporary buffers are cleared and expensive work runs
+ * asynchronously.
+ */
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 

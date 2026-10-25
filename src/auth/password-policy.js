@@ -1,3 +1,7 @@
+/**
+ * New-password validation and pinned common-password screening. The integrity-sensitive
+ * blocklist is data, not something to normalize during readability work.
+ */
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
