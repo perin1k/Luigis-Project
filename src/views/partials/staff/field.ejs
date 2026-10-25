@@ -1,0 +1,5 @@
+<%# Reusable labeled native staff input. ID, hint and autocomplete contracts support the forms and accessible error/focus handling. %><div class="mb-3">
+  <label class="form-label" for="<%= strId %>"><%= strLabel %></label>
+  <input class="form-control" id="<%= strId %>" name="<%= strId %>" type="<%= strType ?? 'text' %>" autocomplete="<%= strAutocomplete ?? 'off' %>" maxlength="<%= intMax ?? 1024 %>" required <%= strAutocomplete === 'one-time-code' ? 'inputmode=numeric pattern=[0-9]{6}' : '' %> <%= strHint ? `aria-describedby=${strId}-hint` : '' %>>
+  <% if (strHint) { %><p class="form-text" id="<%= strId %>-hint"><%= strHint %></p><% } %>
+</div>

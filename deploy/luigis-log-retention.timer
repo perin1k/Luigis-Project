@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily expiry of rotated private certificate logs
+
+[Timer]
+OnBootSec=5min
+OnCalendar=daily
+RandomizedDelaySec=10min
+Persistent=yes
+
+[Install]
+WantedBy=timers.target

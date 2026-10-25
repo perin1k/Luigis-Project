@@ -1,0 +1,2 @@
+# Archive-only compatibility: retain the established hosted migration bytes.
+src/data/migrations/*.sql text eol=crlf

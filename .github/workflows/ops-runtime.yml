@@ -1,0 +1,50 @@
+name: OPS release, custody and Ubuntu service rehearsal
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'Full portable checks or Ubuntu rehearsal follow-up only'
+        type: choice
+        options: [all, ubuntu]
+        default: all
+
+permissions:
+  contents: read
+
+jobs:
+  focused:
+    if: github.ref == 'refs/heads/dev'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ fromJSON(inputs.scope == 'ubuntu' && '["ubuntu-24.04"]' || '["windows-2022","macos-15","ubuntu-24.04"]') }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - run: npm ci
+      - name: Locate OpenSSL on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $strGitRoot = Split-Path (Split-Path (Get-Command git).Source)
+          foreach ($strRelative in @('mingw64/bin', 'usr/bin')) {
+            $strDirectory = Join-Path $strGitRoot $strRelative
+            if (Test-Path -LiteralPath $strDirectory) { Add-Content -LiteralPath $env:GITHUB_PATH -Value $strDirectory }
+          }
+      - name: Focused portable release and runtime checks
+        run: node --test tests/unit/release.test.js tests/unit/deployment-runtime.test.js tests/unit/host-secrets.test.js tests/unit/gcp-provision.test.js tests/unit/private-token-input.test.js tests/unit/tls-install.test.js tests/unit/duckdns.test.js
+      - name: Disposable Ubuntu systemd, release and schema rollback rehearsal
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          LUIGIS_OPS_REHEARSAL: disposable-runner
+        run: |
+          export LUIGIS_NPM_CLI="$(realpath "$(command -v npm)")"
+          sudo --preserve-env=GITHUB_ACTIONS,GITHUB_SHA,LUIGIS_OPS_REHEARSAL,LUIGIS_NPM_CLI,PATH "$(command -v node)" tests/operations/rehearse-ubuntu.js

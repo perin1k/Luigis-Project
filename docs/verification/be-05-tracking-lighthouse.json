@@ -1,0 +1,209 @@
+[
+  {
+    "strPath": "/staff/orders",
+    "strVersion": "13.5.0",
+    "strProfile": "Default mobile simulated throttling; production NODE_ENV; isolated HTTPS staff fixture; macOS arm64",
+    "objConfiguration": {
+      "strFormFactor": "mobile",
+      "strThrottlingMethod": "simulate",
+      "objScreenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "objThrottling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      }
+    },
+    "objScores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 60,
+      "agentic-browsing": 100
+    },
+    "arrAdvisories": [
+      {
+        "strId": "first-contentful-paint",
+        "strTitle": "First Contentful Paint",
+        "numScore": 0.96,
+        "strDisplayValue": "1.5\u00a0s"
+      },
+      {
+        "strId": "unused-css-rules",
+        "strTitle": "Reduce unused CSS",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 28\u00a0KiB"
+      },
+      {
+        "strId": "is-crawlable",
+        "strTitle": "Page is blocked from indexing",
+        "numScore": 0
+      },
+      {
+        "strId": "cache-insight",
+        "strTitle": "Use efficient cache lifetimes",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 31\u00a0KiB"
+      },
+      {
+        "strId": "network-dependency-tree-insight",
+        "strTitle": "Network dependency tree",
+        "numScore": 0
+      },
+      {
+        "strId": "render-blocking-insight",
+        "strTitle": "Render-blocking requests",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 600\u00a0ms"
+      }
+    ]
+  },
+  {
+    "strPath": "/staff/orders/:reference",
+    "strVersion": "13.5.0",
+    "strProfile": "Default mobile simulated throttling; production NODE_ENV; isolated HTTPS staff fixture; macOS arm64",
+    "objConfiguration": {
+      "strFormFactor": "mobile",
+      "strThrottlingMethod": "simulate",
+      "objScreenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "objThrottling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      }
+    },
+    "objScores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 60,
+      "agentic-browsing": 100
+    },
+    "arrAdvisories": [
+      {
+        "strId": "first-contentful-paint",
+        "strTitle": "First Contentful Paint",
+        "numScore": 0.96,
+        "strDisplayValue": "1.5\u00a0s"
+      },
+      {
+        "strId": "unused-css-rules",
+        "strTitle": "Reduce unused CSS",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 29\u00a0KiB"
+      },
+      {
+        "strId": "is-crawlable",
+        "strTitle": "Page is blocked from indexing",
+        "numScore": 0
+      },
+      {
+        "strId": "cache-insight",
+        "strTitle": "Use efficient cache lifetimes",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 31\u00a0KiB"
+      },
+      {
+        "strId": "network-dependency-tree-insight",
+        "strTitle": "Network dependency tree",
+        "numScore": 0
+      },
+      {
+        "strId": "render-blocking-insight",
+        "strTitle": "Render-blocking requests",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 600\u00a0ms"
+      }
+    ]
+  },
+  {
+    "strPath": "/track",
+    "strVersion": "13.5.0",
+    "strProfile": "Default mobile simulated throttling; production NODE_ENV; isolated HTTPS staff fixture; macOS arm64",
+    "objConfiguration": {
+      "strFormFactor": "mobile",
+      "strThrottlingMethod": "simulate",
+      "objScreenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "objThrottling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      }
+    },
+    "objScores": {
+      "performance": 99,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 60,
+      "agentic-browsing": 100
+    },
+    "arrAdvisories": [
+      {
+        "strId": "first-contentful-paint",
+        "strTitle": "First Contentful Paint",
+        "numScore": 0.96,
+        "strDisplayValue": "1.5\u00a0s"
+      },
+      {
+        "strId": "largest-contentful-paint",
+        "strTitle": "Largest Contentful Paint",
+        "numScore": 0.99,
+        "strDisplayValue": "1.7\u00a0s"
+      },
+      {
+        "strId": "unused-css-rules",
+        "strTitle": "Reduce unused CSS",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 29\u00a0KiB"
+      },
+      {
+        "strId": "is-crawlable",
+        "strTitle": "Page is blocked from indexing",
+        "numScore": 0
+      },
+      {
+        "strId": "cache-insight",
+        "strTitle": "Use efficient cache lifetimes",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 30\u00a0KiB"
+      },
+      {
+        "strId": "network-dependency-tree-insight",
+        "strTitle": "Network dependency tree",
+        "numScore": 0
+      },
+      {
+        "strId": "render-blocking-insight",
+        "strTitle": "Render-blocking requests",
+        "numScore": 0,
+        "strDisplayValue": "Est savings of 600\u00a0ms"
+      }
+    ]
+  }
+]

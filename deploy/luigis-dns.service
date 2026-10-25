@@ -1,0 +1,19 @@
+[Unit]
+Description=Luigi preview private DuckDNS update
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+DynamicUser=yes
+WorkingDirectory=/opt/luigis/current
+LoadCredential=duckdns-token:/etc/luigis/duckdns-token.txt
+ExecStart=/opt/luigis/runtime/bin/node scripts/update-duckdns.js
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+UMask=0077

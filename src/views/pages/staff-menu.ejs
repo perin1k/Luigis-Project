@@ -1,0 +1,35 @@
+<%# Menu/availability/hours controls bind to staff-menu.js and server revision checks. Purchased order snapshots must not be edited here. %><!doctype html>
+<html lang="en">
+<head><%- include('../partials/head',{bStaffPage:true}) %><meta name="robots" content="noindex, nofollow"><script type="module" src="<%= strScriptBase %>/js/staff-menu.js"></script></head>
+<body>
+<%- include('../partials/header') %>
+<main id="main-content" class="container staff-page menu-page" tabindex="-1">
+  <nav aria-label="Staff navigation"><a class="staff-secondary" href="/staff/orders">Order queue</a> · <a class="staff-secondary" href="/staff/account">Staff account</a></nav>
+  <div class="staff-intro"><p class="eyebrow">Behind the counter</p><h1>Keep the menu fresh.</h1><p>Update ingredient availability<%= objMenu.bAdmin ? ', prices and service hours' : '' %>. Purchased prices and existing ready times stay on record.</p></div>
+  <p id="menu-status" role="status" tabindex="-1" class="staff-notice" hidden></p>
+  <p><a href="/staff/menu">Refresh current records</a> before resolving another team member’s changes.</p>
+  <noscript><p>Enable JavaScript to save protected staff changes.</p></noscript>
+  <section class="staff-card" aria-labelledby="ingredients-heading"><h2 id="ingredients-heading">Ingredient availability</h2><p>Unavailable ingredients block affected recipes. Existing orders are flagged for admin review; restoring availability does not dismiss reviews.</p>
+    <ul class="staff-records menu-ingredients"><% for(const objIngredient of objMenu.arrIngredients) { %><li><form method="post" action="/auth/unavailable" data-menu-action="availability" data-id="<%= objIngredient.strId %>" data-revision="<%= objIngredient.intRevision %>" data-available="<%= Boolean(objIngredient.bAvailable) %>"><p><strong><%= objIngredient.strLabel %></strong> · <span data-availability-label><%= objIngredient.bAvailable ? 'Available' : 'Unavailable' %></span></p><button disabled class="btn btn-outline-primary" type="submit">Mark <%= objIngredient.strLabel %> <%= objIngredient.bAvailable ? 'unavailable' : 'available' %></button></form></li><% } %></ul>
+  </section>
+  <% if(objMenu.bAdmin) { %>
+  <section class="staff-card mt-4" aria-labelledby="prices-heading"><h2 id="prices-heading">Menu prices</h2><p>Amounts are in US dollars. Saving publishes a new menu version; unpaid checkouts must review current pricing.</p>
+    <form method="post" action="/auth/unavailable" class="menu-price-form" data-menu-action="prices" data-fingerprint="<%= objMenu.objCatalog.strFingerprint %>">
+      <% for(const objSize of objMenu.objCatalog.arrSizes) { %><fieldset class="mb-3" data-pizza-size="<%= objSize.strCode %>"><legend class="h3"><%= objSize.strLabel %> pizza</legend><label class="form-label" for="base-<%= objSize.strCode %>">Base price ($)</label><input class="form-control" id="base-<%= objSize.strCode %>" name="base-<%= objSize.strCode %>" value="<%= (objSize.centsBase/100).toFixed(2) %>" inputmode="decimal" pattern="[0-9]+([.][0-9]{1,2})?" required><label class="form-label mt-2" for="topping-<%= objSize.strCode %>">Price per topping ($)</label><input class="form-control" id="topping-<%= objSize.strCode %>" name="topping-<%= objSize.strCode %>" value="<%= (objSize.centsTopping/100).toFixed(2) %>" inputmode="decimal" pattern="[0-9]+([.][0-9]{1,2})?" required></fieldset><% } %>
+      <fieldset class="mb-3"><legend class="h3">Fountain drinks</legend><% for(const objSize of objMenu.objCatalog.arrDrinkSizes) { %><div data-drink-size="<%= objSize.strCode %>"><label class="form-label" for="drink-<%= objSize.strCode %>"><%= objSize.strLabel %> drink price ($)</label><input class="form-control mb-2" id="drink-<%= objSize.strCode %>" name="drink-<%= objSize.strCode %>" value="<%= (objSize.centsPrice/100).toFixed(2) %>" inputmode="decimal" pattern="[0-9]+([.][0-9]{1,2})?" required></div><% } %></fieldset>
+      <button disabled type="submit" class="btn btn-primary">Publish reviewed prices</button>
+    </form>
+  </section>
+  <section class="staff-card mt-4" aria-labelledby="hours-heading"><h2 id="hours-heading">Special service hours</h2><p>All times are Central. Use same-day whole hours from 4 AM through 11 PM. Cutoff is 30 minutes before closing; latest pickup is 10 minutes before closing. Affected existing orders require review and are never moved automatically.</p>
+    <form method="post" action="/auth/unavailable" data-menu-action="hours" data-revision="" data-loaded-date="">
+      <label class="form-label" for="service-date">Service date</label><input class="form-control" id="service-date" name="strDate" type="date" required><button disabled class="btn btn-outline-primary my-2" id="load-hours" type="button">Load current hours</button>
+      <div class="form-check my-2"><input class="form-check-input" type="checkbox" name="bClosed" id="day-closed"><label class="form-check-label" for="day-closed">Closed all day</label></div>
+      <label class="form-label" for="opens-hour">Opening hour (24-hour Central)</label><input class="form-control" id="opens-hour" name="intOpens" type="number" min="4" max="22" step="1" value="10" required>
+      <label class="form-label mt-2" for="closes-hour">Closing hour (24-hour Central)</label><input class="form-control" id="closes-hour" name="intCloses" type="number" min="5" max="23" step="1" value="23" required>
+      <button disabled class="btn btn-primary mt-3" type="submit">Save reviewed hours</button>
+    </form>
+  </section>
+  <% } %>
+</main>
+<%- include('../partials/footer') %>
+</body></html>

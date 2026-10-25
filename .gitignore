@@ -1,0 +1,37 @@
+# Installed dependencies and local package caches
+node_modules/
+.npm-cache/
+.cache/
+.npm/
+.pnpm-store/
+
+# Local environment and machine-specific overrides
+.env
+.env.*
+!.env.example
+*.local
+
+# Generated verification output (keep test sources and reference baselines)
+playwright-report/
+test-results/
+coverage/
+reports/
+
+# Logs and operating-system files
+# Local demo database files and SQLite journals
+/data/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.log
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Per-user editor settings; shared editor configuration remains trackable
+.vscode/*.local.json
+*.local.code-workspace
+*.swp
+*.swo
+*~

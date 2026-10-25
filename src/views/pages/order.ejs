@@ -1,0 +1,51 @@
+<%# Ordering shell supplies escaped catalog data and wizard sections. Browser navigation is presentation; authoritative pricing, scheduling and checkout remain server-side. %><!doctype html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { bPricingPage: Boolean(objCatalog) }) %>
+  <% if (!objCatalog) { %><link rel="stylesheet" href="/css/ordering.css?v=<%= strAssetVersion %>"><% } %>
+  <script type="module" src="<%= strScriptBase %>/js/ordering/order-wizard.js"></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" class="container order-page" tabindex="-1">
+    <div class="order-intro"><p class="eyebrow">A little more you. A little more Luigi’s.</p><h1>Your next favorite pizza.</h1><p>Choose dine-in or carry-out, build your pizza, then review your order.</p></div>
+    <p id="order-fallback" class="notice">Please enable JavaScript to customize your order. You can still <a class="btn btn-outline-primary" href="/menu">explore our menu</a>.</p>
+    <div id="order-app" data-demo-payments="<%= bDemoPayments %>" data-scheduling="<%= bScheduling %>" data-order-submission="<%= bOrderSubmission %>" data-catalog="<%= JSON.stringify(objCatalog) %>" hidden>
+      <nav class="order-progress" aria-label="Order progress"><ol>
+        <% for (const [intIndex, strStep] of ['Service', 'Pizza', 'Drinks', 'Details', 'Review', 'Payment'].entries()) { %>
+          <li><span data-progress="<%= intIndex %>" <%- intIndex === 0 ? 'aria-current="step"' : '' %>><b aria-hidden="true"><%= intIndex + 1 %></b><%= strStep %></span></li>
+        <% } %>
+      </ol></nav>
+      <div class="order-layout">
+        <div class="order-panel">
+          <p id="step-count" class="eyebrow">Step 1 of 6</p>
+          <form id="order-form" novalidate>
+            <% if (bOrderSubmission) { %><p class="notice">Class demonstration: use invented contact details only. No real orders or payments.</p><% } %>
+            <div id="form-error" class="form-error" role="alert" hidden></div>
+            <div class="wizard-actions wizard-actions-top" aria-label="Step controls at top">
+              <button type="button" id="back-button-top" class="btn btn-outline-primary" aria-label="Back (top)" hidden>Back</button>
+              <button type="button" id="next-button-top" class="btn btn-primary" aria-label="Continue (top)">Continue <span aria-hidden="true">→</span></button>
+            </div>
+            <%- include('../partials/ordering/service-type') %>
+            <%- include('../partials/ordering/pizza-builder') %>
+            <%- include('../partials/ordering/drinks') %>
+            <%- include('../partials/ordering/customer-details') %>
+            <%- include('../partials/ordering/order-review') %>
+            <%- include('../partials/ordering/payment') %>
+            <div class="wizard-actions"><button type="button" id="back-button" class="btn btn-outline-primary" hidden>Back</button><button type="submit" id="next-button" class="btn btn-primary">Continue <span aria-hidden="true">→</span></button></div>
+          </form>
+          <% if (bDemoPayments) { %><section id="demo-receipt" hidden tabindex="-1" aria-labelledby="receipt-title"><h2 id="receipt-title">Your demonstration order is confirmed.</h2><p id="receipt-status" role="status">Demonstration payment successful. No money was charged.</p><div id="receipt-details"></div><a class="btn btn-primary" href="/order">Start another order</a></section><% } %>
+        </div>
+        <aside class="order-summary" aria-label="Order summary">
+          <p class="eyebrow">Made your way</p><h2>Your order</h2><p id="summary-service">Carry-out</p>
+          <ul id="summary-items" class="summary-items"></ul>
+          <div class="subtotal"><span><%= objCatalog ? 'Item subtotal' : 'Subtotal' %></span><strong id="summary-total">$0.00</strong></div>
+          <p class="summary-note">Marinara, cheese, and a little Italian warmth in every pizza.</p>
+          <p id="cart-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+        </aside>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

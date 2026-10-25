@@ -1,0 +1,103 @@
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test('versioned JavaScript loads its module graph without legacy cache URLs', async ({page: objPage}) => {
+  const arrLegacyRequests = [];
+  const arrErrors = [];
+  objPage.on('pageerror', objError => arrErrors.push(objError.message));
+  await objPage.route('**/js/**', objRoute => {
+    if (new URL(objRoute.request().url()).pathname.startsWith('/js/')) {
+      arrLegacyRequests.push(objRoute.request().url());
+      return objRoute.abort();
+    }
+    return objRoute.continue();
+  });
+  await objPage.goto('/order');
+  const strScriptUrl = await objPage.locator('script[type="module"]').getAttribute('src');
+  expect(strScriptUrl).toMatch(/^\/assets\/[a-f0-9]{16}\/js\/ordering\/order-wizard\.js$/);
+  await objPage.getByRole('button', {name: 'Continue (top)', exact: true}).click();
+  await expect(objPage.getByRole('button', {name: 'Add pizza', exact: true})).toBeVisible();
+  await objPage.getByRole('button', {name: 'Add pizza', exact: true}).click();
+  await objPage.getByRole('button', {name: 'Continue (top)', exact: true}).click();
+  await objPage.locator('summary').filter({hasText: /^Coca-Cola/}).click();
+  await expect(objPage.getByLabel('Small coca-cola quantity', {exact: true})).toBeVisible();
+  expect(arrLegacyRequests).toEqual([]);
+  expect(arrErrors).toEqual([]);
+});
+
+test('homepage presents the approved menu and operating information', async ({ page: objPage }) => {
+  const objResponse = await objPage.goto('/');
+  expect(objResponse.status()).toBe(200);
+  await expect(objPage).toHaveTitle("Luigi's Pizza | Dine-in & Carry-out");
+  await expect(objPage.getByRole('heading', { level: 1 })).toHaveText(/Good pizza\.\s*Great company\./);
+  await expect(objPage.getByRole('main')).toContainText('10:00 AM–11:00 PM');
+  await expect(objPage.getByRole('table')).toHaveCount(0);
+  await expect(objPage.getByRole('heading', {name:'Come hungry. Feel at home.',exact:true})).toBeVisible();
+  await objPage.getByRole('link', { name: 'Explore the menu' }).click();
+  await expect(objPage).toHaveURL(/\/menu$/);
+  await expect(objPage.getByRole('table')).toContainText('$5.00');
+  await expect(objPage.getByRole('table')).toContainText('$7.00');
+  await expect(objPage.getByRole('table')).toContainText('$9.00');
+  await expect(objPage.getByRole('list', { name: 'Pizza toppings' }).getByRole('listitem')).toHaveCount(9);
+  await expect(objPage.getByRole('list', { name: 'Pizza toppings' })).toContainText('Jalapeños');
+  await expect(objPage.getByRole('region', { name: 'Something to sip' })).toContainText('Medium');
+  await expect(objPage.getByRole('region', { name: 'Something to sip' })).toContainText('$2.00');
+  await expect(objPage.getByRole('heading', { name: 'Your pizza, your way.' })).toBeInViewport();
+  await expect(objPage.getByRole('main')).not.toContainText('coming soon');
+  await objPage.getByRole('link', { name: 'Start your order' }).first().click();
+  await expect(objPage).toHaveURL(/\/order$/);
+});
+
+test('keyboard users can skip directly to the main content', async ({ page: objPage }) => {
+  await objPage.goto('/');
+  await objPage.keyboard.press('Tab');
+  await expect(objPage.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
+  await objPage.keyboard.press('Enter');
+  await expect(objPage.getByRole('main')).toBeFocused();
+});
+
+test('refined customer menu and builder reflow on a narrow phone', async ({ page: objPage }) => {
+  await objPage.setViewportSize({ width: 320, height: 800 });
+  await objPage.goto('/');
+  await expect(objPage.getByRole('heading', {name:'Come hungry. Feel at home.',exact:true})).toBeVisible();
+  await objPage.getByRole('link', {name:'Explore the menu',exact:true}).click();
+  await expect(objPage.getByRole('list', {name:'Pizza toppings'})).toBeVisible();
+  expect(await objPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await objPage.getByRole('link', { name: 'Start your order' }).first().click();
+  await objPage.getByRole('button', { name: 'Continue', exact: true }).click();
+  await expect(objPage.getByRole('heading', { name: 'Build something delicious.' })).toBeFocused();
+  await expect(objPage.getByRole('button', { name: 'Add pizza', exact: true })).toBeVisible();
+  expect(await objPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('homepage has no automated WCAG A/AA violations or horizontal overflow', async ({ page: objPage }) => {
+  await objPage.goto('/');
+  const objResults = await new AxeBuilder({ page: objPage })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
+  expect(objResults.violations).toEqual([]);
+  expect(await objPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test('content remains available without browser JavaScript', async ({ browser: objBrowser }) => {
+  const objContext = await objBrowser.newContext({ javaScriptEnabled: false });
+  const objPage = await objContext.newPage();
+  await objPage.goto('http://127.0.0.1:3000');
+  await expect(objPage.getByRole('heading', {name:'Come hungry. Feel at home.',exact:true})).toBeVisible();
+  await objPage.getByRole('link', {name:'Explore the menu',exact:true}).click();
+  await expect(objPage.getByRole('heading', { name: 'Your pizza, your way.' })).toBeVisible();
+  await objPage.goto('http://127.0.0.1:3000/order');
+  await expect(objPage.getByText('Please enable JavaScript to customize your order.', { exact: false })).toBeVisible();
+  await objContext.close();
+});
+
+test('server does not expose repository files', async ({ request: objRequest }) => {
+  for (const strPath of ['/AGENTS.md', '/src/app.js', '/.env', '/missing', '/node_modules/bootstrap/package.json']) {
+    const objResponse = await objRequest.get(strPath);
+    expect(objResponse.status()).toBe(404);
+  }
+});
+
+test('visual homepage baseline', async ({ page: objPage }) => {
+  await objPage.goto('/');
+  await expect(objPage).toHaveScreenshot('homepage.png', { fullPage: true, animations: 'disabled' });
+});

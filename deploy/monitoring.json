@@ -1,0 +1,12 @@
+{
+  "strProject": "capstone-510915",
+  "strHost": "luigispizzeria.duckdns.org",
+  "intPeriodSeconds": 60,
+  "arrRegions": ["USA_OREGON", "USA_IOWA", "USA_VIRGINIA"],
+  "arrChecks": [
+    {"strId": "readiness", "strPath": "/health/ready", "intFailureSeconds": 180},
+    {"strId": "previews", "strPath": "/health/previews", "intFailureSeconds": 600}
+  ],
+  "intMonthlyExecutionsAt31Days": 267840,
+  "intFreeMonthlyExecutions": 1000000
+}

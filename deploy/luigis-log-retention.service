@@ -1,0 +1,14 @@
+[Unit]
+Description=Prune only expired rotated Certbot debug logs
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/luigis-prune-certbot-logs
+User=root
+Group=root
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/log/letsencrypt
+UMask=0077

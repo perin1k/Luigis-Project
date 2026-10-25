@@ -1,0 +1,40 @@
+import {test,expect} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+async function signIn(objPage,objRequest,bAdmin=false){await objPage.goto('/staff/sign-in');await objPage.getByLabel('Username',{exact:true}).fill(bAdmin?'admin':'employee');await objPage.getByLabel('Password',{exact:true}).fill('Synthetic staff browser passphrase only');await objPage.getByRole('button',{name:'Sign in',exact:true}).click();if(bAdmin){await objPage.getByLabel('Authenticator code',{exact:true}).fill(await(await objRequest.get('/__test/code')).text());await objPage.getByRole('button',{name:'Verify and sign in',exact:true}).click();}await expect(objPage).toHaveURL(/\/staff\/account$/);await objPage.getByRole('link',{name:'Order queue',exact:true}).click();await objPage.getByRole('link',{name:/Synthetic Guest 2 ·/}).click();}
+test.beforeEach(async({request:objRequest})=>{await objRequest.get('/__test/reset');});
+async function openPreviews(objPage){await objPage.getByText('Internal notification previews',{exact:true}).click();await expect(objPage.locator('#notification-status')).toHaveText('Previews refreshed.');}
+
+test('collapsed notification controls finish theme changes and remain usable when opened',async({page:objPage,request:objRequest})=>{
+  await signIn(objPage,objRequest);
+  const elDetails=objPage.locator('.staff-notifications');
+  await expect(elDetails).not.toHaveAttribute('open','');
+  await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText('Dark',{exact:true}).click();
+  await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter(objAnimation=>objAnimation.playState==='running').length)).toBe(0);
+  await objPage.getByText('Internal notification previews',{exact:true}).focus();
+  await objPage.keyboard.press('Enter');
+  await expect(objPage.getByRole('button',{name:'Refresh previews',exact:true})).toBeVisible();
+  await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText('Light',{exact:true}).click();
+  await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter(objAnimation=>objAnimation.playState==='running').length)).toBe(0);
+  await objPage.getByRole('button',{name:'Refresh previews',exact:true}).click();
+  await expect(objPage.locator('#notification-status')).toHaveText('Previews refreshed.');
+});
+test('employees read actual internal previews and Ready generation without sending or admin retry controls',async({page:objPage,request:objRequest})=>{
+  await objRequest.get('/__test/preview-process');await signIn(objPage,objRequest);await objPage.getByText('Internal notification previews',{exact:true}).focus();await objPage.keyboard.press('Enter');await expect(objPage.locator('#notification-status')).toHaveText('Previews refreshed.');await objPage.keyboard.press('Tab');await expect(objPage.getByRole('button',{name:'Refresh previews',exact:true})).toBeFocused();await objPage.keyboard.press('Enter');await expect(objPage.locator('#notification-status')).toHaveText('Previews refreshed.');await expect(objPage.locator('#notification-list > li')).toHaveCount(2);await expect(objPage.locator('#notification-list')).toContainText('Nothing was sent or delivered.');await expect(objPage.locator('#notification-list')).not.toContainText('2025550100');
+  for(const strStatus of ['Preparing','Baking','Ready']){await objPage.getByRole('button',{name:`Mark ${strStatus}`,exact:true}).click();await expect(objPage.locator('#orders-status')).toContainText(`Saved: ${strStatus}`);await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();}
+  await objRequest.get('/__test/preview-process');await objPage.getByRole('button',{name:'Refresh previews',exact:true}).click();await expect(objPage.locator('#notification-list > li')).toHaveCount(4);await expect(objPage.locator('#notification-list')).toContainText('ready for dine-in service');await expect(objPage.getByRole('button',{name:/Retry .* preview/})).toHaveCount(0);
+});
+test('admin retries failed generation once and a repeated retry cannot duplicate previews',async({page:objPage,request:objRequest})=>{
+  await objRequest.get('/__test/preview-failure');await signIn(objPage,objRequest,true);await openPreviews(objPage);await expect(objPage.locator('#notification-list')).toContainText('Generation: failed');const strApi=new URL(objPage.url()).pathname.replace('/staff/','/api/staff/')+'/notifications/retry';
+  const pRetry=objPage.waitForRequest('**/notifications/retry');await objPage.getByRole('button',{name:'Retry email confirmation preview',exact:true}).click();const objInput=(await pRetry).postDataJSON();await expect(objPage.locator('#notification-status')).toContainText('generation: pending');await objRequest.get('/__test/preview-process');await objPage.getByRole('button',{name:'Refresh previews',exact:true}).click();await expect(objPage.locator('#notification-list')).toContainText('Attempts: 2');
+  const objCsrf=await(await objPage.request.get('/api/staff/orders/csrf')).json();expect((await objPage.request.post(strApi,{headers:{Origin:'https://localhost:3444','X-CSRF-Token':objCsrf.strCsrfToken},data:objInput})).status()).toBe(200);await objRequest.get('/__test/preview-process');await objPage.getByRole('button',{name:'Refresh previews',exact:true}).click();await expect(objPage.locator('#notification-list > li')).toHaveCount(2);
+});
+test('expired sessions clear both order and preview text; late preview bodies cannot restore it',async({page:objPage,request:objRequest})=>{
+  await objRequest.get('/__test/preview-process');await signIn(objPage,objRequest);await openPreviews(objPage);
+  await objPage.evaluate(()=>{const fnJson=Response.prototype.json;window.objPreviewControl={bWaiting:false,fnRelease:null};Response.prototype.json=async function(){const objValue=await fnJson.call(this);if(this.url.endsWith('/notifications')){window.objPreviewControl.bWaiting=true;await new Promise((fnResolve)=>{window.objPreviewControl.fnRelease=fnResolve;});}return objValue;};});
+  await objPage.getByRole('button',{name:'Refresh previews',exact:true}).click();await expect.poll(()=>objPage.evaluate(()=>window.objPreviewControl.bWaiting)).toBe(true);await objRequest.get('/__test/expire');await objPage.getByRole('button',{name:'Refresh order',exact:true}).click();await expect(objPage.locator('#orders-content')).toBeEmpty();await objPage.evaluate(()=>window.objPreviewControl.fnRelease());await objPage.evaluate(()=>new Promise((fnResolve)=>requestAnimationFrame(fnResolve)));await expect(objPage.locator('#notification-list')).toBeEmpty();await expect(objPage.locator('#notification-panel')).toBeHidden();
+});
+for(const strState of ['previewed','failed'])test(`notification ${strState} visual and accessibility in both themes`,async({page:objPage,request:objRequest})=>{
+  await objRequest.get(strState==='failed'?'/__test/preview-failure':'/__test/preview-process');await signIn(objPage,objRequest,true);await openPreviews(objPage);
+  for(const strTheme of ['Light','Dark']){await objPage.getByRole('group',{name:'Appearance',exact:true}).getByText(strTheme,{exact:true}).click();await expect.poll(()=>objPage.evaluate(()=>document.getAnimations().filter((objAnimation)=>objAnimation.playState==='running').length)).toBe(0);expect((await new AxeBuilder({page:objPage}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);await objPage.screenshot({path:test.info().outputPath(`notifications-${strState}-${strTheme}.png`),fullPage:true});await expect.soft(objPage).toHaveScreenshot(`notifications-${strState}-${strTheme}.png`,{fullPage:true,mask:[objPage.locator('.staff-order-reference'),objPage.locator('.notification-order-reference')]});}
+  await objPage.setViewportSize({width:320,height:900});expect(await objPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});

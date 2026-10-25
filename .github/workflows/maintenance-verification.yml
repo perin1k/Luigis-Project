@@ -1,0 +1,57 @@
+name: OPS maintenance clean checkout and patched runtime
+on:
+  push:
+    branches: [dev]
+    paths:
+      - '.node-version'
+      - '.nvmrc'
+      - 'package*.json'
+      - 'deploy/maintain-host.sh'
+      - 'deploy/gcp-bootstrap.sh'
+      - 'scripts/build-release.js'
+      - 'tests/unit/source-build.test.js'
+      - '.github/workflows/maintenance-verification.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  clean-checkout:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - run: npm ci --ignore-scripts
+      - name: Locate OpenSSL on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $strGitRoot = Split-Path (Split-Path (Get-Command git).Source)
+          foreach ($strRelative in @('mingw64/bin', 'usr/bin')) {
+            $strDirectory = Join-Path $strGitRoot $strRelative
+            if (Test-Path -LiteralPath $strDirectory) { Add-Content -LiteralPath $env:GITHUB_PATH -Value $strDirectory }
+          }
+      - name: Check patched tools and advisories
+        run: |
+          node --version
+          npm --version
+          npm audit --audit-level=low
+      - name: Verify runtime, security and retained storage contracts
+        run: npm run test:unit
+      - name: Build canonical source artifact from clean checkout
+        run: node scripts/build-release.js
+      - name: Upload source and public build metadata only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: maintenance-source-${{ runner.os }}
+          path: reports/source-release/
+          retention-days: 3
+          if-no-files-found: error

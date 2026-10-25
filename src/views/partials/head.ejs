@@ -1,0 +1,23 @@
+<%# Shared metadata, local pinned assets and early theme initialization. Dynamic text uses escaped EJS output; includes are trusted templates. %><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="<%= strDescription %>">
+<meta name="theme-color" content="#f7f0e3">
+<title><%= strTitle %></title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<% if (typeof bTrackingPage !== 'undefined' && bTrackingPage) { %>
+<link rel="stylesheet" href="/css/tracking-bundle.css?v=<%= strAssetVersion %>">
+<% } else if (typeof bPricingPage !== 'undefined' && bPricingPage) { %>
+<link rel="stylesheet" href="/css/order-bundle.css?v=<%= strAssetVersion %>">
+<link rel="modulepreload" href="<%= strScriptBase %>/js/ordering/order-model.js">
+<link rel="modulepreload" href="<%= strScriptBase %>/js/checkout/payment.js">
+<% } else { %>
+<% if (typeof bStaffPage !== 'undefined' && bStaffPage) { %>
+<%# This existing bundle contains Bootstrap then the exact shared staff cascade. %>
+<link rel="stylesheet" href="/css/tracking-bundle.css?v=<%= strAssetVersion %>">
+<% } else { %>
+<link rel="stylesheet" href="/css/public-bundle.css?v=<%= strAssetVersion %>">
+<% } %>
+
+<% } %>
+<%# Discover CSS before the synchronous theme script; theme still runs before body paint. %>
+<script src="<%= strScriptBase %>/js/theme.js"></script>

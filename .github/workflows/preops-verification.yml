@@ -1,0 +1,114 @@
+name: Pre-OPS integrated application checkpoint
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: 'Collect synthetic candidates for review, or compare reviewed references'
+        required: true
+        default: compare
+        type: choice
+        options: [collect, collect-error, compare]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preops-${{ github.ref }}-${{ inputs.phase || 'initial' }}
+  cancel-in-progress: true
+
+jobs:
+  checkpoint:
+    if: github.ref == 'refs/heads/dev'
+    name: Pre-OPS (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            platform: win32
+            projects: --project=chromium-desktop --project=chromium-mobile --project=firefox-desktop --project=firefox-mobile
+          - os: macos-15
+            platform: darwin
+            projects: ''
+          - os: ubuntu-24.04
+            platform: linux
+            projects: ''
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - run: npm ci
+      - name: Locate OpenSSL runtime on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $strGitRoot = Split-Path (Split-Path (Get-Command git).Source)
+          foreach ($strRelative in @('mingw64/bin', 'usr/bin')) {
+            $strDirectory = Join-Path $strGitRoot $strRelative
+            if (Test-Path -LiteralPath $strDirectory) { Add-Content -LiteralPath $env:GITHUB_PATH -Value $strDirectory }
+          }
+      - name: Use the main Ubuntu archive for browser prerequisites
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          bArchiveFound=false
+          for strSource in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
+            if [[ -f "$strSource" ]]; then
+              sudo sed -i 's|http://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|https://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g;s|mirror+file:/etc/apt/apt-mirrors\.txt|https://archive.ubuntu.com/ubuntu|g' "$strSource"
+              if grep -Eq '^(URIs:|deb ).*https://archive\.ubuntu\.com/ubuntu' "$strSource"; then bArchiveFound=true; fi
+            fi
+          done
+          if [[ "$bArchiveFound" != true ]]; then echo 'No active Ubuntu archive source selected.' >&2; exit 1; fi
+      - if: runner.os == 'Linux'
+        run: npx playwright install --with-deps chromium firefox webkit
+      - if: runner.os != 'Linux'
+        run: npx playwright install chromium firefox webkit
+      - name: Enable native macOS keyboard navigation for WebKit
+        if: runner.os == 'macOS'
+        run: |
+          defaults write org.webkit.Playwright AppleKeyboardUIMode -int 2
+          defaults read org.webkit.Playwright AppleKeyboardUIMode
+      - name: Focused file-backed privacy and race checks
+        if: inputs.phase == 'collect'
+        run: node scripts/verify-preops.js
+      - name: Customer connected journeys and new error-state candidates
+        if: inputs.phase == 'collect'
+        run: npx playwright test -c playwright.preops-customer.config.js --update-snapshots=all ${{ matrix.projects }}
+      - name: Shared records across customer and staff sessions
+        if: inputs.phase == 'collect'
+        run: npx playwright test -c playwright.preops-staff.config.js --update-snapshots=none ${{ matrix.projects }}
+      - name: Strict new error-state comparison
+        if: inputs.phase == 'compare'
+        run: npx playwright test -c playwright.preops-customer.config.js --grep 'ambiguous server failure|manual-review fixture ambiguity' --update-snapshots=none ${{ matrix.projects }}
+      - name: Collect corrected error-state candidates only
+        if: inputs.phase == 'collect-error'
+        run: npx playwright test -c playwright.preops-customer.config.js --grep 'ambiguous server failure|manual-review fixture ambiguity' --update-snapshots=all ${{ matrix.projects }}
+      - name: Complete shared-record cases skipped after initial reflow failures
+        if: inputs.phase == 'collect-error' && runner.os != 'Linux'
+        run: npx playwright test -c playwright.preops-staff.config.js --update-snapshots=none ${{ matrix.projects }}
+      - name: Bounded internal synthetic visual review
+        if: always() && (inputs.phase == 'collect' || inputs.phase == 'collect-error')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: preops-candidates-${{ matrix.os }}
+          path: tests/payments-e2e/customer-journey.spec.js-snapshots/cleanup-regression/preops-ci/*-${{ matrix.platform }}.png
+          if-no-files-found: error
+          retention-days: 2
+      - name: Bounded synthetic comparison differences
+        if: failure() && inputs.phase == 'compare'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: preops-differences-${{ matrix.os }}
+          path: |
+            test-results/preops-customer/**/*-actual.png
+            test-results/preops-customer/**/*-diff.png
+          if-no-files-found: warn
+          retention-days: 2

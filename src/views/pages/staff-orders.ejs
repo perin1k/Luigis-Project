@@ -1,0 +1,90 @@
+<%# Staff queue/detail shell binds to authorized order APIs; warnings, progress and financial review are distinct states. %><!doctype html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { bStaffPage: true }) %>
+  <meta name="robots" content="noindex, nofollow">
+  <script type="module" src="<%= strScriptBase %>/js/staff-orders.js"></script>
+  <% if (objOrder) { %><script type="module" src="<%= strScriptBase %>/js/staff-notifications.js"></script><% } %>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <% function readyTime(dtValue) { return dtValue ? new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short' }).format(new Date(dtValue)) : 'Ready time unavailable'; } %>
+  <% function pageUrl(intPage) { const objQuery = new URLSearchParams({date:objQueue.strDate,status:objQueue.strStatus,page:String(intPage)}); return '/staff/orders?' + objQuery; } %>
+  <main id="main-content" class="container staff-page" tabindex="-1" data-order-status="<%= objOrder?.strStatus ?? '' %>" data-order-held="<%= Boolean(objOrder?.arrWarnings.length) %>" data-order-revision="<%= objOrder?.intRevision ?? '' %>" data-order-reference="<%= objOrder?.strReference ?? '' %>">
+    <nav aria-label="Staff navigation"><a class="staff-secondary" href="/staff/menu">Menu management</a> · <% if (objQueue?.bOwner) { %><a class="staff-secondary" href="/staff/analytics">Owner sales</a> · <% } %><a class="staff-secondary" href="/staff/account">Staff account</a><% if (objOrder) { %> · <a class="staff-secondary" href="/staff/orders">Back to order queue</a><% } %></nav>
+    <div class="staff-intro"><p class="eyebrow">Behind the counter</p><h1><%= objOrder ? 'Order details.' : 'Ready for the rush.' %></h1><p>Confirmed-payment orders, organized by ready time. All times are Central.</p></div>
+    <p id="orders-status" role="status" aria-live="polite"><%= objQueue ? `${objQueue.arrOrders.length} orders on this page.` : 'Order loaded.' %></p>
+    <p id="orders-error" role="alert" class="staff-notice" hidden></p>
+    <a id="orders-signin" class="btn btn-primary" href="/staff/sign-in" hidden>Sign in again</a>
+    <section class="staff-card" aria-labelledby="orders-heading">
+      <h2 id="orders-heading"><%= objOrder ? 'Preparation details' : 'Order queue' %></h2>
+      <% if (objQueue) { %>
+      <form method="get" action="/staff/orders" class="staff-queue-filters">
+        <div><label for="queue-date" class="form-label">Service date (optional)</label><input id="queue-date" name="date" type="date" class="form-control" value="<%= objQueue.strDate %>"></div>
+        <div><label for="queue-status" class="form-label">Order status</label><select id="queue-status" name="status" class="form-select"><% for (const strStatus of ['active','Received','Preparing','Baking','Ready','Completed','Cancelled','Not collected']) { %><option value="<%= strStatus %>" <%= strStatus === objQueue.strStatus ? 'selected' : '' %>><%= strStatus === 'active' ? 'All active orders' : strStatus %></option><% } %></select></div>
+        <button class="btn btn-primary" type="submit">Apply filters</button>
+      </form>
+      <% } %>
+      <button id="refresh-orders" type="button" class="btn btn-outline-primary" hidden><%= objOrder ? 'Refresh order' : 'Refresh orders' %></button>
+      <div id="orders-content">
+      <% if (objQueue) { %>
+        <p id="orders-empty" <%= objQueue.arrOrders.length ? 'hidden' : '' %>>No confirmed-payment orders match these filters.</p>
+        <ul class="staff-records" id="orders-list"><% for (const objItem of objQueue.arrOrders) { %><li>
+          <h3><a href="/staff/orders/<%= encodeURIComponent(objItem.strReference) %>"><%= objItem.strCustomerName %> · <span class="staff-order-reference font-monospace"><%= objItem.strReference %></span></a></h3>
+          <p><%= objItem.strService === 'carry-out' ? 'Carry-out' : 'Dine-in' %> · <%= objItem.strStatus %> · <%= readyTime(objItem.dtReadyAt) %></p>
+          <p><%= objItem.intPizzaQuantity %> pizzas · <%= objItem.intDrinkQuantity %> drinks<%= objItem.bReadyTimePassed ? ' · Ready time passed' : '' %></p>
+          <% if (objItem.arrWarnings.length) { %><div class="staff-review-notice"><p class="fw-bold">Staff review required</p><ul><% for (const strWarning of objItem.arrWarnings) { %><li><%= strWarning %></li><% } %></ul></div><% } %>
+        </li><% } %></ul>
+      <% } else { %>
+        <h3 id="detail-reference"><%= objOrder.strCustomerName %> · <span class="staff-order-reference font-monospace"><%= objOrder.strReference %></span></h3>
+        <p id="detail-summary"><%= objOrder.strService === 'carry-out' ? 'Carry-out' : 'Dine-in' %> · <%= objOrder.strStatus %> · <%= readyTime(objOrder.dtReadyAt) %><%= objOrder.bReadyTimePassed ? ' · Ready time passed' : '' %></p>
+        <div id="detail-review" class="staff-review-notice" <%= objOrder.arrWarnings.length ? '' : 'hidden' %>><p class="fw-bold">Staff review required</p><ul id="detail-warnings"><% for (const strWarning of objOrder.arrWarnings) { %><li><%= strWarning %></li><% } %></ul></div>
+        <h3>Items to prepare</h3><ul id="detail-items"><% for (const objItem of objOrder.arrItems) { %><li><%= objItem.intQuantity %> × <%= objItem.strDescription %></li><% } %></ul>
+        <h3>Customer contact</h3><p id="detail-contact"><%= objOrder.objContact ? [objOrder.objContact.strName,objOrder.objContact.strPhone || objOrder.objContact.strEmail].filter(Boolean).join(' · ') : 'Contact details have been removed.' %></p>
+      <% } %>
+      </div>
+      <% if (objOrder && bOrderProgress) { %>
+      <% if (objOrder.bCanAdminister) { %>
+      <section class="mt-3" aria-labelledby="admin-order-heading"><h3 id="admin-order-heading">Administrator review</h3>
+        <label for="admin-order-action" class="form-label">Decision</label><select id="admin-order-action" class="form-control">
+          <option value="deny-cancellation">Deny pending cancellation</option><option value="cancel">Cancel: restaurant cannot fulfill</option>
+          <option value="resolve-review">Resolve hours or inventory review</option><option value="not-collected">Mark not collected at closing</option><option value="tracking-replacement">Replace private tracking link</option><% if (bPrivacy) { %><option value="privacy">Customer privacy review</option><% } %>
+        </select>
+        <div class="form-check staff-order-approval mt-2"><input id="admin-order-reviewed" type="checkbox" class="form-check-input"><label for="admin-order-reviewed" class="form-check-label">I reviewed this order and the selected decision.</label></div>
+        <p>Cancellation does not confirm a refund. Financial review remains separate.</p><button id="admin-order-submit" class="btn btn-outline-primary" type="button" hidden>Save reviewed decision</button><p id="admin-order-result" role="status"></p>
+      </section>
+      <% } %>
+      <% if (objOrder.bCanAdminister) { const objRefund = objOrder.objRefund; %>
+      <section id="refund-panel" class="mt-3" aria-labelledby="refund-heading" <%= objRefund?.strState === 'not-applicable' ? 'hidden' : '' %>>
+        <h3 id="refund-heading">Demonstration refund</h3>
+        <p id="refund-summary">State: <%= objRefund?.strState ?? 'unavailable' %> · Full amount: <%= new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((objRefund?.centsTotal ?? 0)/100) %> · Recorded net: <%= new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format((objRefund?.centsNetRecorded ?? 0)/100) %></p>
+        <p>No real money is transferred. Refunds include items, tax and tip, without a fee deduction.</p>
+        <div class="form-check staff-order-approval"><input id="refund-reviewed" type="checkbox" class="form-check-input" aria-describedby="refund-review-help refund-error"><label class="form-check-label" for="refund-reviewed">I approve the full demonstration refund.</label></div>
+        <p id="refund-review-help">After refreshing this order, review and check this approval again.</p>
+        <p id="refund-error" class="form-error" role="alert" hidden></p>
+        <button id="refund-submit" type="button" tabindex="0" class="btn btn-primary mt-2" <%= objRefund?.bCanApprove ? '' : 'disabled' %>>Approve demo refund</button>
+        <p id="refund-status" role="status" aria-live="polite"></p>
+      </section>
+      <% } %>
+      <div id="order-progress" class="mt-3">
+        <p>Status changes are saved for the whole team. Refresh before retrying an uncertain update.</p>
+        <button id="advance-order" type="button" class="btn btn-primary" hidden>Update status</button>
+        <noscript><p>Enable JavaScript to update order status. You can still read and navigate orders.</p></noscript>
+      </div>
+      <% } %>
+      <% if (objQueue) { %><nav class="staff-pagination" aria-label="Order queue pages" id="orders-pages"><% if (objQueue.intPage > 0) { %><a class="btn btn-outline-primary" href="<%= pageUrl(objQueue.intPage-1) %>">Previous page</a><% } %><% if (objQueue.bHasNext) { %><a class="btn btn-outline-primary" href="<%= pageUrl(objQueue.intPage+1) %>">Next page</a><% } %></nav><% } %>
+      <% if (objOrder) { %>
+      <details id="notification-panel" class="staff-notifications mt-3">
+        <summary tabindex="0">Internal notification previews</summary>
+        <p class="mt-2">Email and SMS previews for this order. Nothing is sent or delivered.</p>
+        <button id="notification-refresh" type="button" tabindex="0" class="btn btn-outline-primary">Refresh previews</button>
+        <p id="notification-status" role="status" aria-live="polite"></p><p id="notification-error" role="alert" hidden></p>
+        <ul id="notification-list" class="staff-records"></ul>
+        <noscript><p>Enable JavaScript to load private notification previews.</p></noscript>
+      </details>
+      <% } %>
+    </section>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

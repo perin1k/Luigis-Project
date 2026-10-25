@@ -1,0 +1,9 @@
+<%# Service-specific contact form labels and hints. Browser validation assists entry; the order service validates required contact details. %><section data-step="3" aria-labelledby="details-title" hidden>
+  <h2 id="details-title" tabindex="-1">Let’s put a name to it.</h2>
+  <p id="contact-intro" class="step-description">Who’s picking up? We’ll use your number if we need to reach you about your order.</p>
+  <% const objSaved=typeof objCustomerProfile!=='undefined'&&objCustomerProfile?objCustomerProfile:{strName:'',strPhone:'',strEmail:''}; %>
+  <% if(typeof objCustomerProfile!=='undefined'&&objCustomerProfile){ %><p>We filled in your saved contact details. Review them for this order; changes here do not update your saved profile.</p><% } %>
+  <div class="field"><label for="customer-name" class="form-label">Your name</label><input id="customer-name" class="form-control" name="customerName" autocomplete="name" maxlength="100" value="<%= objSaved.strName %>" required></div>
+  <div id="phone-field" class="field"><label for="customer-phone" class="form-label">Phone number</label><input id="customer-phone" class="form-control" name="customerPhone" type="tel" autocomplete="tel" inputmode="tel" aria-describedby="phone-hint" value="<%= objSaved.strPhone %>" required><p id="phone-hint" class="field-hint">Include your area code.</p></div>
+<% if (bOrderSubmission) { %><div id="email-field" class="field" hidden><label for="customer-email" class="form-label">Email address</label><input id="customer-email" class="form-control" type="email" autocomplete="email" maxlength="254" value="<%= objSaved.strEmail %>"><p class="field-hint">For dine-in, provide a phone number or email address.</p></div><% } %>
+</section>

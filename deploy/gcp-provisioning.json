@@ -1,0 +1,14 @@
+{
+  "strProject": "capstone-510915",
+  "strZone": "us-central1-a",
+  "strRegion": "us-central1",
+  "strVm": "luigis-preview",
+  "strNetwork": "luigis-preview-net",
+  "strSubnet": "luigis-preview-subnet",
+  "strCidr": "10.42.0.0/24",
+  "strDataDisk": "luigis-preview-data",
+  "strMachine": "e2-small",
+  "strImage": "ubuntu-2404-noble-amd64-v20261021",
+  "strImageProject": "ubuntu-os-cloud",
+  "strStopAt": "2026-11-02T05:00:00Z"
+}

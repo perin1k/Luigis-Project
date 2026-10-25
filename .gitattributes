@@ -1,0 +1,2 @@
+src/auth/blocklists/common-passwords.txt text eol=lf
+deploy/*.sh text eol=lf

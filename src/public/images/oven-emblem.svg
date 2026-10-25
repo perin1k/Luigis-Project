@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 400">
+  <!-- Original Luigi's brick-oven and pizza-peel drawing, authored for this project. -->
+  <g stroke="#664b3c" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M57 313V185C57 98 126 43 214 43s164 56 164 142v128z" fill="#ad715b"/>
+    <path d="M62 184h311M71 143h294M94 104h247M132 69h166M58 226h319M58 269h320M105 145v40M151 106v38M205 69v37M257 105v40M316 143v42M113 185v41M170 145v38M229 106v39M283 185v41M343 226v43M88 227v41M138 270v42M303 270v42" fill="none" stroke="#dfbea1" stroke-width="2.5"/>
+    <path d="M105 310V197c0-60 47-106 109-106s116 46 116 106v113z" fill="#d8c2a0"/>
+    <path d="M126 311V199c0-47 38-85 88-85s94 38 94 85v112z" fill="#302824"/>
+    <path d="M128 273c47-24 130-24 178 0v38H128z" fill="#654635" stroke="none"/>
+    <path d="M147 280h139M153 273h126M167 266h99" fill="none" stroke="#b58b5f" stroke-width="1.2" opacity=".65"/>
+    <path d="M181 258c-8-12 5-19 1-30M223 256c7-13-5-18-1-29M261 260c-6-9 3-15 1-23" fill="none" stroke="#c4a074" opacity=".75"/>
+    <path d="M103 179l-20-7M119 137l-17-13M153 104l-10-19M195 93l-3-24M236 94l5-23M277 111l13-18M311 144l18-13M329 181l22-5" fill="none"/>
+    <path d="M42 311h350v23H42z" fill="#c7af8b"/>
+    <path d="M62 335h310v27H62z" fill="#93604b"/>
+    <path d="M281 310l116 62 10-15-116-64z" fill="#b4966c"/>
+    <ellipse cx="256" cy="298" rx="79" ry="24" fill="#cdb48a"/>
+    <ellipse cx="254" cy="291" rx="68" ry="22" fill="#bf935e"/>
+    <ellipse cx="254" cy="288" rx="60" ry="17" fill="#e5d2ab" stroke-width="1"/>
+    <g fill="#a25e46" stroke-width=".7"><ellipse cx="224" cy="286" rx="8" ry="4"/><ellipse cx="252" cy="279" rx="8" ry="4"/><ellipse cx="282" cy="289" rx="8" ry="4"/><ellipse cx="249" cy="297" rx="8" ry="3.5"/></g>
+    <path d="M206 289l7 3M270 279l6 3M269 298l7-3M233 277l5 2" fill="none" stroke="#70774e" stroke-width="2"/>
+    <g fill="none" stroke="#70513f" stroke-width=".8" opacity=".55"><path d="M67 290l29-13M67 298l29-13M67 306l29-13M341 290l28-13M341 298l28-13M341 306l28-13M78 350h48M157 350h49M304 350h43M302 315l87 47M72 324h91M198 320h48"/></g>
+  </g>
+</svg>

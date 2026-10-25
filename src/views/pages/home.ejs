@@ -1,0 +1,44 @@
+<%# Public landing page with server-rendered menu and service details; shared fragments supply navigation, metadata and footer. %><!doctype html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" tabindex="-1">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container"><div class="row align-items-center g-5 hero-grid">
+        <div class="hero-copy col-lg-6">
+          <p class="eyebrow">A little Italian warmth. A lot to love.</p>
+          <h1 id="hero-title">Good pizza.<br>Great company.</h1>
+          <p class="hero-description">Marinara, cheese, and all your favorites. Build your kind of pizza, then pull up a chair or take it to go.</p>
+          <a class="btn btn-primary" href="/order">Start your order <span aria-hidden="true">↗</span></a>
+          <a class="btn btn-outline-primary menu-link" href="/menu">Explore the menu</a>
+          <p class="hero-note">Dine-in &amp; carry-out · Open every day</p>
+        </div>
+        <div class="col-lg-6"><figure class="oven-scene">
+          <div class="oven-plaque"><span>Luigi’s Pizza</span><small>Gather around the good stuff.</small></div>
+          <img src="/images/oven-emblem.svg" width="440" height="400" alt="" class="hero-oven">
+          <figcaption>Good food. Familiar faces. Your kind of place.</figcaption>
+        </figure></div>
+      </div></div>
+    </section>
+    <div class="service-strip"><div class="container">Two crusts. Nine toppings. One delicious decision.</div></div>
+    <section id="menu" class="section container welcome-section" aria-labelledby="welcome-title">
+      <p class="eyebrow">Your neighborhood pizza place</p><h2 id="welcome-title">Come hungry. Feel at home.</h2>
+      <div class="welcome-grid">
+        <div><h3>Make it yours</h3><p>Build your favorite combination, with every choice and price together on our menu.</p><a class="btn btn-outline-primary" href="/menu">Explore the full menu <span aria-hidden="true">→</span></a></div>
+        <div><h3>Stay or take it along</h3><p>Share a table or choose carry-out. Pick an available ready time when you order.</p><a class="btn btn-primary" href="/order">Start your order <span aria-hidden="true">→</span></a></div>
+        <div><h3>A familiar welcome</h3><p>Ordering again? Sign in to use your saved contact details and find your recent orders.</p><a class="btn btn-outline-primary" href="/account">Visit My account <span aria-hidden="true">→</span></a></div>
+      </div>
+    </section>
+    <section id="visit" class="visit-section" aria-labelledby="visit-title">
+      <div class="container"><div class="row g-4 visit-grid">
+        <div class="col-md-8"><p class="eyebrow">Stay a while. Or take a little warmth home.</p><h2 id="visit-title">We’ll save you a slice.</h2><p>Dine-in and carry-out, seven days a week.</p></div>
+        <div class="col-md-4"><div class="hours"><p class="eyebrow">Seven days a week</p><h3>Hours</h3><p>Monday–Sunday<br><strong>10:00 AM–11:00 PM</strong></p><a class="btn btn-outline-primary" href="/order">Start your order</a></div></div>
+      </div></div>
+    </section>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

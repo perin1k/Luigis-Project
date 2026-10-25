@@ -1,0 +1,42 @@
+<%# Verified customer-information review, correction and temporary limited-copy controls; avoid embedding unneeded private data in markup. %><!doctype html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { bStaffPage: true }) %>
+  <meta name="robots" content="noindex, nofollow">
+  <script type="module" src="<%= strScriptBase %>/js/staff-privacy.js"></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" class="container staff-page" tabindex="-1" data-privacy-reference="<%= objPrivacy.strReference %>" data-privacy-revision="<%= objPrivacy.intRevision %>">
+    <nav aria-label="Staff navigation"><a class="staff-secondary" href="/staff/orders/<%= encodeURIComponent(objPrivacy.strReference) %>">Back to order details</a> · <a class="staff-secondary" href="/staff/account">Staff account</a></nav>
+    <div class="staff-intro"><p class="eyebrow">Customer care</p><h1>Customer privacy.</h1><p>Review this order’s contact information with the requester.</p></div>
+    <p id="privacy-status" role="status" aria-live="polite">Order contact loaded.</p>
+    <p id="privacy-error" role="alert" class="staff-notice" hidden></p>
+    <a id="privacy-signin" class="btn btn-primary" href="/staff/sign-in" hidden>Sign in again</a>
+    <section id="privacy-content" class="staff-card" aria-labelledby="privacy-heading">
+      <h2 id="privacy-heading">Contact review</h2>
+      <p>Verify the requester in person or through an already known contact channel. A name or order number alone is insufficient. Do not request a password, card number or authenticator code.</p>
+      <p>Correction changes current contact details only. It does not change purchased prices, order history, private tracking links or the privacy expiry date. Notification previews remain internal.</p>
+      <div class="form-check staff-order-approval mb-3"><input id="privacy-reviewed" type="checkbox" class="form-check-input"><label for="privacy-reviewed" class="form-check-label">I verified the requester and reviewed this order.</label></div>
+      <form id="privacy-form" autocomplete="off">
+        <fieldset id="privacy-fields">
+          <legend class="h3">Correct contact details</legend>
+          <p id="privacy-instructions">Carry-out requires a phone. Dine-in requires a phone or email. Use invented contact details for demonstration orders.</p>
+          <div class="mb-3"><label for="privacy-name" class="form-label">Customer name</label><input id="privacy-name" class="form-control" type="text" maxlength="100" required value="<%= objPrivacy.objContact.strName %>" aria-describedby="privacy-instructions"></div>
+          <div class="mb-3"><label for="privacy-phone" class="form-label">Phone number</label><input id="privacy-phone" class="form-control" type="tel" maxlength="40" <%= objPrivacy.strService === 'carry-out' ? 'required' : '' %> value="<%= objPrivacy.objContact.strPhone %>" aria-describedby="privacy-instructions"></div>
+          <div class="mb-3"><label for="privacy-email" class="form-label">Email address</label><input id="privacy-email" class="form-control" type="email" maxlength="254" value="<%= objPrivacy.objContact.strEmail %>" aria-describedby="privacy-instructions"></div>
+          <button id="privacy-save" class="btn btn-primary" type="submit" disabled>Save contact correction</button>
+          <button id="privacy-show" class="btn btn-outline-primary" type="button" disabled>Show limited data copy</button>
+        </fieldset>
+      </form>
+      <div id="privacy-copy-panel" class="mt-3" hidden>
+        <label for="privacy-copy" class="form-label">Limited order data copy</label><textarea id="privacy-copy" class="form-control" readonly rows="12" spellcheck="false"></textarea>
+        <p>Review before sharing through an approved private channel. Nothing has been sent or downloaded. This view contains the saved contact details, not unsaved edits.</p>
+        <button id="privacy-hide" class="btn btn-outline-primary" type="button">Hide data copy</button>
+      </div>
+      <noscript><p>Enable JavaScript to submit a reviewed correction or show a limited copy. Current contact details remain readable.</p></noscript>
+    </section>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "name": "luigis-pizza",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.22.1 <25"
+  },
+  "scripts": {
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "node scripts/seed-menu.js",
+    "admin:setup": "node scripts/setup-admin.js",
+    "owner:designate": "node scripts/designate-owner.js",
+    "account:recover": "node scripts/recover-account.js",
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "playwright test",
+    "test:unit": "node --test tests/unit/*.test.js",
+    "test:storage": "node scripts/verify-storage.js",
+    "test:staff:unit": "node scripts/verify-staff.js",
+    "test:staff:functional": "playwright test -c playwright.staff-ci.config.js",
+    "test:visual": "playwright test --grep visual",
+    "test:report": "playwright show-report"
+  },
+  "dependencies": {
+    "bootstrap": "5.3.8",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "otpauth": "9.5.2",
+    "qrcode": "1.5.4"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.56.0",
+    "lighthouse": "^13.0.0"
+  }
+}
