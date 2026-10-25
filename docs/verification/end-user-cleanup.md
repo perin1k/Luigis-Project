@@ -95,3 +95,34 @@ The source-only no-JavaScript home test originally still expected the menu headi
 on home; it now verifies the welcome heading and follows the menu link without
 JavaScript. Its corrected check passes. Further visual reference reconciliation
 and final current-source verification are recorded separately as they complete.
+
+## Final focused automated checkpoint
+
+The final design collection on source `34fed800868a92da95a595764423fa464c0b07ca`
+passed Windows, macOS and Linux in run
+[40169386337](https://github.com/perin1k/Luigis-Project/actions/runs/40169386337).
+All 128 synthetic native reference images were inspected internally before being
+committed in `04c996dd595dfb74057020758f2a34a1114cb6d1`; the adjacent
+`cleanup-reference-manifest.json` records their source and hashes. Existing
+historical references were preserved.
+
+Strict comparison run
+[40170142816](https://github.com/perin1k/Luigis-Project/actions/runs/40170142816)
+then passed all three OS jobs on that reference commit, with automatic reference
+replacement disabled. Coverage includes Windows Chromium/Firefox and
+macOS/Linux Chromium/Firefox/WebKit, each at desktop and mobile viewports.
+An earlier comparison was dispatched before the reference push completed; that
+obsolete run was cancelled and replaced rather than accepted as evidence.
+
+The final local Lighthouse 13.5.0 audit also passed all four required categories
+at 100 for home, menu and ordering on standard mobile and desktop profiles.
+It records source `34fed800868a92da95a595764423fa464c0b07ca` and matching
+stylesheet fingerprint `8017a2e195aa`, after the last button changes. No application
+source changed in the reference-only commit.
+
+Manual keyboard/Narrator/zoom/refund confirmation remains pending: the human's
+design feedback does not establish a passing grouped accessibility review.
+Affected historical screenshot reconciliation and final hosted HTTPS acceptance
+remain linked to integrated QA and TEST-04. The focused pass is not a claim that
+all historical Playwright suites pass or that the application is commercial-ready.
+These changes have not been deployed to the public VM.
