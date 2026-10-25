@@ -1,3 +1,8 @@
+/**
+ * Browser display model and price previews. Server catalog responses configure displayed
+ * choices; persisted prices, eligibility and final totals remain server
+ * responsibilities.
+ */
 // Display data and browser price previews only; not authoritative checkout logic.
 export const SIZES = {
   small: { strLabel: 'Small · 12 inch', centsBase: 500, centsTopping: 100, centsDrink: 100 },

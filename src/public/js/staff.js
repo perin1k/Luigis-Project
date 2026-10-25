@@ -1,3 +1,7 @@
+/**
+ * Progressive staff account controls with keyboard/focus and private-token handling.
+ * Server-side session, MFA, role and CSRF checks remain authoritative for every action.
+ */
 const elMain = document.querySelector('[data-staff-mode]');
 const elStatus = document.querySelector('#staff-status');
 let bSubmitting = false;

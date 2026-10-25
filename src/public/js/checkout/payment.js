@@ -1,3 +1,8 @@
+/**
+ * Posts a no-charge demonstration payment and interprets the server result. Interrupted
+ * responses remain uncertain: retry the same request rather than creating another
+ * checkout.
+ */
 // Local demo adapter only. No card entry, live charge, Stripe call or native Wallet sheet.
 export async function openSecureCheckout(objInput) {
   if(!objInput)throw new Error('We couldn’t open secure checkout. Your selections are still here. Please try again.');

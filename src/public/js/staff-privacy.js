@@ -1,3 +1,8 @@
+/**
+ * Protected contact correction and temporary limited-data copy UI. Verification is
+ * explicit; hiding/aborting clears private content rather than saving it in browser
+ * storage.
+ */
 const elMain=document.querySelector('[data-privacy-reference]');
 const elForm=document.querySelector('#privacy-form');const elFields=document.querySelector('#privacy-fields');
 const elReviewed=document.querySelector('#privacy-reviewed');const elStatus=document.querySelector('#privacy-status');

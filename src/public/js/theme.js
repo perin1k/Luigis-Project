@@ -1,3 +1,7 @@
+/**
+ * Shared light/dark preference control. Only a theme preference is stored; inaccessible
+ * browser storage must not prevent using the page or switching themes.
+ */
 // A classic head script applies the theme before styles paint, avoiding a flash.
 (() => {
   'use strict';
