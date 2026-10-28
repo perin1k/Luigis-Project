@@ -151,8 +151,8 @@ Post-cutover trusted-HTTPS Chromium smoke passed on home, menu, ordering, accoun
 entry and staff sign-in. Axe WCAG 2/2.1/2.2 AA-tag checks found no violations;
 versioned ordering modules and drink expansion worked without page errors. No
 order was submitted and no credentials were used by that public smoke check.
-An additional Owner sign-in confirmation was requested after cutover; no fresh
-manual Owner pass is claimed while that reply is pending. Existing accepted manual
-UI evidence is reused for the unchanged templates/assets, alongside fresh native
-authentication/role checks and verified preservation of the actual Owner credentials,
-MFA records and private keys. This follow-up introduced no new manual UI interaction.
+Brody subsequently confirmed actual post-cutover Owner sign-in and all three tools:
+Order queue, Menu management and Sales & analytics. All passed using the existing
+Owner credentials and authenticator; no private values were shared. Existing manual
+UI evidence for unchanged templates/assets and fresh native authentication/role
+checks remain retained. The additional requested hosted Owner confirmation is complete.
