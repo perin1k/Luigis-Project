@@ -12,8 +12,9 @@ dependency, migration, provider evidence, external service or financial action.
 
 `src/staff/analytics-service.js` authorizes through the existing `analytics.read`
 permission and persisted MFA Owner session in the same synchronous transaction as
-the reads. Admins, Employees, invalid/expired sessions and missing MFA cannot obtain a
-report. `src/staff/orders-router.js` adds GET `/api/staff/analytics?from=YYYY-MM-DD&to=YYYY-MM-DD`
+the reads. The approved October 27 presentation update also permits MFA-protected
+Admins to read these reports; Employees, invalid/expired sessions and missing MFA
+remain excluded. No financial editing permission is added. `src/staff/orders-router.js` adds GET `/api/staff/analytics?from=YYYY-MM-DD&to=YYYY-MM-DD`
 under its direct HTTPS, pinned host/origin, fetch-site, no-store/noindex and cookie
 guards. Exactly two valid calendar dates are required, in ascending order, with
 at most 366 inclusive days and four-digit years 1000–9999. SQL is fixed; no caller

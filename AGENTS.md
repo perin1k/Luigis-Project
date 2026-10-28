@@ -189,7 +189,7 @@ on its existing cards.
 - Staff access has three effective roles: Owner, Admin and Employee. Only the
   Owner assigns Employee/Admin roles and manages admin accounts; admins may
   invite, deactivate and reactivate employees only. The Owner alone edits menu,
-  prices and hours and reads sales analytics. Admins and Owner retain operational
+  prices and hours. Admins and Owner may read sales analytics and retain operational
   cancellation/refund/review permissions. Follow `docs/staff-role-policy.md`.
 - Require authenticator MFA for both Owner and Admin. Promotion requires first
   MFA enrollment before access. Role/state changes revoke sessions and pending

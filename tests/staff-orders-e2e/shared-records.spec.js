@@ -122,7 +122,7 @@ test('INT-02 account deactivation revokes another staff session and clears priva
     await expect(objEmployee.locator('#orders-content')).toBeEmpty();
     await expect(objEmployee.getByRole('link',{name:'Sign in again',exact:true})).toBeVisible();
     expect((await objEmployee.request.get('/api/staff/orders')).status()).toBe(401);
-    await expect(objAdmin.objPage.getByRole('link',{name:'Owner sales',exact:true})).toHaveCount(0);
+    await expect(objAdmin.objPage.getByRole('link',{name:'Sales & analytics',exact:true})).toHaveCount(1);
   }finally{await objAdmin.objContext.close();}
 });
 

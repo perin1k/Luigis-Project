@@ -5,9 +5,9 @@
 const STAFF_ACTIONS = new Set(['orders.read', 'orders.prepare', 'availability.update', 'account.password.change']);
 const ADMIN_ACTIONS = new Set([
   ...STAFF_ACTIONS, 'employees.manage',
-  'cancellation.decide', 'refund.approve', 'notifications.retry', 'privacy.manage',
+  'cancellation.decide', 'refund.approve', 'notifications.retry', 'privacy.manage', 'analytics.read',
 ]);
-const OWNER_ACTIONS = new Set([...ADMIN_ACTIONS, 'menu.edit', 'hours.manage', 'analytics.read', 'staff.roles.change']);
+const OWNER_ACTIONS = new Set([...ADMIN_ACTIONS, 'menu.edit', 'hours.manage', 'staff.roles.change']);
 
 /** Internal policy only: the role must come from a validated persisted session. */
 export function canPerformAction(strRole, strAction) {

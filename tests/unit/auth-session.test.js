@@ -89,11 +89,11 @@ test('the complete staff permission matrix separates owner business controls', (
     assert.equal(canPerformAction('employee', strAction), true);
     assert.equal(canPerformAction('admin', strAction), true);
   }
-  for (const strAction of ['employees.manage', 'cancellation.decide', 'refund.approve']) {
+  for (const strAction of ['employees.manage', 'cancellation.decide', 'refund.approve', 'analytics.read']) {
     assert.equal(canPerformAction('employee', strAction), false);
     assert.equal(canPerformAction('admin', strAction), true);
   }
-  for(const strAction of ['menu.edit','hours.manage','analytics.read','staff.roles.change']) {
+  for(const strAction of ['menu.edit','hours.manage','staff.roles.change']) {
     assert.equal(canPerformAction('owner',strAction),true);
     assert.equal(canPerformAction('admin',strAction),false);
     assert.equal(canPerformAction('employee',strAction),false);

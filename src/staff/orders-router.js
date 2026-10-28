@@ -128,25 +128,25 @@ export function createStaffOrdersRouter({ objStaffOrdersService, objOrderProgres
   if (objAnalyticsService) objRouter.get('/staff/analytics',(objRequest, objResponse, fnNext) => {
     let objRanges;
     let objFilter = objRequest.query;
-    function denyOwnerReport() {
+    function denySalesReport() {
       objResponse.status(403);
       return fnRender(objRequest, objResponse, fnNext, 'pages/error', {
-        strTitle: 'Owner access required | Luigi’s Pizza',
-        strDescription: 'Private owner access.',
+        strTitle: 'Manager or Owner access required | Luigi’s Pizza',
+        strDescription: 'Private staff sales access.',
         intStatus: 403,
-        strHeading: 'Owner access required.',
-        strMessage: 'Sign in with your individual Owner account to view sales.'
+        strHeading: 'Manager or Owner access required.',
+        strMessage: 'Sign in with your individual Admin or Owner account to view sales.'
       });
     }
     try {
       objRanges = objAnalyticsService.readDateRanges(objResponse.locals.strSessionToken);
-      if (!objRanges) return denyOwnerReport();
+      if (!objRanges) return denySalesReport();
       objFilter = Object.keys(objRequest.query).length ? objRequest.query: { from: objRanges.strToday, to: objRanges.strToday };
       const objReport = objAnalyticsService.read(objResponse.locals.strSessionToken, objFilter);
-      if (!objReport) return denyOwnerReport();
+      if (!objReport) return denySalesReport();
       fnRender(objRequest, objResponse, fnNext, 'pages/staff-analytics', {
-        strTitle: 'Owner sales | Luigi’s Pizza',
-        strDescription: 'Private owner sales reporting.',
+        strTitle: 'Sales & analytics | Luigi’s Pizza',
+        strDescription: 'Private manager and owner sales reporting.',
         objReport,
         objFilter,
         objRanges,
@@ -156,8 +156,8 @@ export function createStaffOrdersRouter({ objStaffOrdersService, objOrderProgres
       const intStatus = objError instanceof StaffOrderError ? objError.intStatus: 503;
       objResponse.status(intStatus);
       fnRender(objRequest, objResponse, fnNext, 'pages/staff-analytics', {
-        strTitle: 'Owner sales | Luigi’s Pizza',
-        strDescription: 'Private owner sales reporting.',
+        strTitle: 'Sales & analytics | Luigi’s Pizza',
+        strDescription: 'Private manager and owner sales reporting.',
         objReport: null,
         objFilter,
         objRanges,

@@ -28,11 +28,13 @@ function setup(bOwner=true){
   return {objDb,objSessions,objService:createStaffAccountService(objDb,{fnNow:()=>new Date(TIME)}),strOwner:session('owner'),strManager:session('manager'),strEmployee:session('employee')};
 }
 test('three-tier permission matrix keeps business controls owner-only',()=>{
-  for(const strAction of ['menu.edit','hours.manage','analytics.read','staff.roles.change']){
+  for(const strAction of ['menu.edit','hours.manage','staff.roles.change']){
     assert.equal(canPerformAction('owner',strAction),true);assert.equal(canPerformAction('admin',strAction),false);assert.equal(canPerformAction('employee',strAction),false);
   }
   assert.equal(canPerformAction('admin','employees.manage'),true);
   assert.equal(canPerformAction('admin','refund.approve'),true);
+  assert.equal(canPerformAction('admin','analytics.read'),true);
+  assert.equal(canPerformAction('employee','analytics.read'),false);
 });
 test('owner resolution, role boundaries and stale edit rejection',()=>{
  const objFixture=setup();try{

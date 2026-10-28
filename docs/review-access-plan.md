@@ -30,7 +30,8 @@ customer access does not include permission to use staff accounts.
 4. Have an authorized employee use their own account to show **Order queue** and
    the order’s progress. Mark stages only when agreed for this practice order.
 5. Have a manager explain cancellation/refund review and an owner show menu controls
-   and **Owner sales**. Avoid publishing price/hour changes just to show a screen.
+   and **Sales & analytics**. Managers also have read-only report access. Avoid
+   publishing price/hour changes just to show a screen.
 6. Ask each person to sign out when finished. The organizer checks that any practice
    orders and temporary access are handled appropriately.
 

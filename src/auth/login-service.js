@@ -8,6 +8,11 @@ import { verifyPassword } from './password-service.js';
 import { runTransaction } from '../data/database.js';
 
 const WINDOW_MS = 15 * 60 * 1000;
+// Successful attempts also consume this budget. Allow staff to switch accounts
+// during demonstrations while retaining finite password and MFA throttles.
+const ACCOUNT_ATTEMPTS_PER_WINDOW = 30;
+const SOURCE_ATTEMPTS_PER_WINDOW = 120;
+const STORED_COUNTER_MAXIMUM = 30; // Immutable migration 008 CHECK constraint.
 const DUMMY_HASH = `scrypt-v1$131072$8$1$${'0'.repeat(32)}$${'0'.repeat(128)}`;
 // Process-wide bound, including multiple factories. No unbounded password queue.
 let intActiveHashes = 0;
@@ -39,13 +44,24 @@ export function createLoginService(objDatabase, { objMfaService, fnNow = () => n
       objDatabase.prepare('DELETE FROM login_limits WHERE window_start_ms <= ?').run(numNow - WINDOW_MS);
       objDatabase.prepare('DELETE FROM login_challenges WHERE expires_ms <= ?').run(numNow);
       if (objDatabase.prepare('SELECT count(*) AS total FROM login_limits').get().total >= 5000) return false;
+      const arrWrites = [];
       for (const [strBucket, intLimit] of arrBuckets) {
-        const objRow = objDatabase.prepare('SELECT * FROM login_limits WHERE bucket_digest = ?').get(strBucket);
-        if (objRow && (numNow < objRow.window_start_ms || objRow.attempts >= intLimit)) return false;
+        // Aggregate bounded physical counters into one logical budget. All shards
+        // share the first attempt's window start, so adding a shard cannot extend
+        // the window. The original key remains shard zero for existing records.
+        const arrKeys = Array.from({ length: Math.ceil(intLimit / STORED_COUNTER_MAXIMUM) },
+          (_, intIndex) => intIndex === 0 ? strBucket : digest(`${strBucket}:part:${intIndex}`));
+        const arrRows = arrKeys.map(strKey => objDatabase.prepare('SELECT * FROM login_limits WHERE bucket_digest = ?').get(strKey));
+        if (arrRows.some(objRow => objRow && numNow < objRow.window_start_ms)
+          || arrRows.reduce((intSum, objRow) => intSum + (objRow?.attempts ?? 0), 0) >= intLimit) return false;
+        const intIndex = arrRows.findIndex(objRow => !objRow || objRow.attempts < STORED_COUNTER_MAXIMUM);
+        if (intIndex < 0) return false;
+        const numWindowStart = Math.min(numNow, ...arrRows.filter(Boolean).map(objRow => objRow.window_start_ms));
+        arrWrites.push([arrKeys[intIndex], numWindowStart]);
       }
-      for (const [strBucket] of arrBuckets) {
+      for (const [strBucket, numWindowStart] of arrWrites) {
         objDatabase.prepare(`INSERT INTO login_limits VALUES (?, ?, 1)
-          ON CONFLICT(bucket_digest) DO UPDATE SET attempts = attempts + 1`).run(strBucket, numNow);
+          ON CONFLICT(bucket_digest) DO UPDATE SET attempts = attempts + 1`).run(strBucket, numWindowStart);
       }
       return true;
     });
@@ -69,8 +85,8 @@ export function createLoginService(objDatabase, { objMfaService, fnNow = () => n
         || typeof strSource !== 'string' || !strSource.length || strSource.length > 256) return null;
       const strCanonical = strUsername.toLowerCase();
       const dtStarted = now();
-      if (intActiveHashes >= 2 || !reserve([[digest(`account:${strCanonical}`), 5],
-        [digest(`source:${strSource}`), 30]], dtStarted.getTime())) return null;
+      if (intActiveHashes >= 2 || !reserve([[digest(`account:${strCanonical}`), ACCOUNT_ATTEMPTS_PER_WINDOW],
+        [digest(`source:${strSource}`), SOURCE_ATTEMPTS_PER_WINDOW]], dtStarted.getTime())) return null;
       const objBefore = identity(strCanonical);
       let bVerified;
       intActiveHashes += 1;
@@ -99,7 +115,7 @@ export function createLoginService(objDatabase, { objMfaService, fnNow = () => n
       const objChallenge = objDatabase.prepare('SELECT * FROM login_challenges WHERE token_digest = ?').get(digest(strChallenge));
       if (!objChallenge || objChallenge.consumed || dtNow.getTime() < objChallenge.created_ms
         || dtNow.getTime() >= objChallenge.expires_ms || objChallenge.source_digest !== digest(strSource)) return null;
-      if (!reserve([[digest(`mfa-account:${objChallenge.user_id}`), 5], [digest(`mfa-source:${strSource}`), 30]], dtNow.getTime())) return null;
+      if (!reserve([[digest(`mfa-account:${objChallenge.user_id}`), ACCOUNT_ATTEMPTS_PER_WINDOW], [digest(`mfa-source:${strSource}`), SOURCE_ATTEMPTS_PER_WINDOW]], dtNow.getTime())) return null;
       // MFA consumes its counter in its own synchronous transaction. Failure after that
       // point may consume a valid code, but must never grant a session on partial work.
       if (!objMfaService.verifyCode(objChallenge.user_id, strCode)) return null;

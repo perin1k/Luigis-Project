@@ -1,5 +1,5 @@
 /**
- * Owner-only reporting separates payment/refund event dates from purchased-order and
+ * Admin/Owner read-only reporting separates payment/refund event dates from purchased-order and
  * pickup cohorts. Missing timing data stays explicit rather than being invented as zero.
  */
 import { chicagoDate } from '../ordering/scheduling-service.js';

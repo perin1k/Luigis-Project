@@ -119,8 +119,10 @@ For contact corrections, use [Customer information requests](customer-informatio
 
 ## Owner: prices, hours and sales
 
-Only the **Owner** can change prices or service hours, view sales reports and manage
-Admin accounts. Managers can manage Employee accounts but cannot create more Admins.
+Only the **Owner** can change prices or service hours and manage Admin accounts.
+Managers can manage Employee accounts but cannot create more Admins. Managers and
+the Owner can open **Sales & analytics** directly from their staff account page;
+these reports let you read figures without changing orders or prices.
 
 For prices, open **Menu management**, enter the intended dollar amounts and review
 all affected prices. Select **Publish reviewed prices**, then check the success
@@ -132,7 +134,7 @@ Choose **Closed all day** or enter opening/closing hours. The screen uses a 24-h
 clock: 10 means 10 AM, 23 means 11 PM. Select **Save reviewed hours** and review
 orders affected by the change; their promised times do not move automatically.
 
-For reports, open **Owner sales**. Choose **Today**, **Last 7 Days**, **Last 30 Days**,
+For reports, open **Sales & analytics**. Choose **Today**, **Last 7 Days**, **Last 30 Days**,
 or enter **From date** and **Through date** and select **Update report**. You can
 review sales, refunds, popular items and busy days/hours whenever needed.
 Payments are counted on the date paid; refunds on the date refunded. Busy-period

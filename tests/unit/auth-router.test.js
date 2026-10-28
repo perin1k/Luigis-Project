@@ -196,11 +196,14 @@ test('idle expiry denies identity and forwarded addresses do not bypass account/
     await obj.post('/login', { strUsername: 'employee', strPassword: PASSWORD });
     obj.advance(30 * 60000);
     assert.equal((await obj.send('/session')).intStatus, 401);
-    for (let intIndex = 0; intIndex < 5; intIndex++) await obj.post('/login',
+    // Seed only the attempt counter, retaining real transport/address checks.
+    await obj.post('/login', {strUsername:'employee',strPassword:'incorrect'});
+    obj.objDb.exec('UPDATE login_limits SET attempts=29');
+    for (let intIndex = 0; intIndex < 1; intIndex++) await obj.post('/login',
       { strUsername: 'employee', strPassword: 'incorrect' }, { 'x-forwarded-for': `192.0.2.${intIndex}` });
     assert.equal((await obj.post('/login', { strUsername: 'employee', strPassword: PASSWORD },
       { 'x-forwarded-for': '192.0.2.99' })).intStatus, 401);
-    // All five password attempts used one real socket source, despite distinct headers.
+    // Spoofed forwarded headers cannot bypass the real socket's account/source buckets.
     assert.equal(obj.objDb.prepare('SELECT count(*) AS total FROM login_limits').get().total, 2);
   } finally { await obj.close(); }
 });

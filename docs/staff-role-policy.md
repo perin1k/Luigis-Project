@@ -12,13 +12,22 @@ single-admin delivery restrictions and statements that reactivation is out of sc
 | Read orders, advance preparation, toggle ingredient availability | Yes | Yes | Yes |
 | Decide cancellations, approve demo refunds, resolve operational holds, retry internal notifications | No | Yes | Yes |
 | Review requester-verified contact corrections and limited private data copies | No | Yes | Yes |
-| Edit menu/prices/special hours; read sales analytics | No | No | Yes |
+| Edit menu/prices/special hours | No | No | Yes |
+| Read sales analytics and closing reports | No | Yes | Yes |
 | Invite, deactivate or reactivate employees | No | Yes | Yes |
 | Invite/manage admins; change Employee/Admin role | No | No | Yes |
 
 Owner and Admin require password plus authenticator MFA. Employee authentication
 uses an individual password. Existing idle/absolute expiry, CSRF, pinned direct
 HTTPS, password policy, throttling and recovery protections remain mandatory.
+
+Staff password and authenticator sign-in each allow 30 attempts per account and
+120 per trusted source address in a 15-minute window, including successful attempts.
+This October 27 presentation adjustment retains finite limits, the two-hash
+concurrency cap, MFA replay protection, 30-minute idle expiry and eight-hour
+absolute expiry. Recovery, enrollment and password-change throttles are unchanged.
+Source budgets use four counters with a shared window start, respecting the
+immutable storage limit of 30 per row without a schema change.
 
 ## Additive storage and compatibility
 
@@ -31,8 +40,9 @@ without rebuilding the staff table or editing migrations 001–013. Application
 authorization uses the server-resolved effective role, never a browser role claim.
 
 The migration grants nobody ownership automatically. Existing admins become
-managers under the new policy and cannot edit business settings or read analytics
-until the intended owner is explicitly designated. Fresh bootstrap through
+managers under the new policy and cannot edit business settings. The October 27
+presentation update authorizes MFA-protected managers to read sales analytics;
+it does not grant menu, price, hours or role-management permissions. Fresh bootstrap through
 `npm run admin:setup` creates the first **Owner**, with verified MFA and once-only
 recovery codes; the command name is retained for existing setup instructions.
 

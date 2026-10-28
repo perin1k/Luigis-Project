@@ -85,7 +85,7 @@ are documented in the linked guides; disabling them is not setup troubleshooting
 | --- | --- |
 | Customer | Select carry-out/dine-in, build/review items, supply required contact, choose ready time and confirm no-charge demo checkout. Save the private tracking link. Request cancellation before Preparing; requests require staff review |
 | Employee | Sign in individually; read queue/details, advance permitted preparation states and manage ingredient availability. No Owner analytics, menu-price edits or refund authority |
-| Admin | Complete MFA; manage Employees only, review cancellations/fulfillment exceptions and approve full demo refunds. Use internal notification previews without claiming delivery |
+| Admin | Complete MFA; read sales analytics for closing reports, manage Employees only, review cancellations/fulfillment exceptions and approve full demo refunds. Use internal notification previews without claiming delivery |
 | Owner | Complete MFA; manage Admin/Employee roles, menu/prices/hours and sales analytics. Review existing bookings affected by changes; never silently substitute or rewrite purchased totals |
 
 Every order needs usable contact information; carry-out needs a phone. The server
