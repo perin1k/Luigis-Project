@@ -183,6 +183,11 @@ on its existing cards.
   notation. Keep authoritative validation and integer-cent calculations server-side.
 - SQLite transactions are synchronous; never hold them across an `await`. Recheck
   account/record revisions after asynchronous work before committing decisions.
+- File-backed SQLite connections use WAL with FULL synchronization, a five-second
+  busy timeout and bounded automatic checkpoints. Preserve private WAL/SHM files
+  with the live database. Public catalog caching must invalidate local/external
+  writes and bypass uncommitted/authoritative pricing work; never cache permissions
+  or weaken exact session expiry to improve throughput. See `docs/concurrency-operations.md`.
 - Preserve the reviewed session and password primitives in `src/auth/`. Passwords
   are hashed, not encrypted as recoverable values; synthetic card encryption is a
   separate requirement. No default/shared staff password or browser-supplied role.
