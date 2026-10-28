@@ -113,12 +113,46 @@ retries/tracking and role/session behavior.
 Forward staging was verified without changing the live schema. Archives:
 fallback `ea258b5e03ebe31aba8ad6046fe36b19874ded0456c0fe21d1d5f98245063d4d`;
 optimized `b9505142048abb041c48ffc2418606d21f574f529dac68d65490585e6226a0aa`.
-Final hosted migration, custody, readiness and human acceptance outcomes are recorded
-below after execution; preparation is not claimed as deployment.
+Hosted execution is recorded below; preparation alone was not claimed as deployment.
 
 The first live cutover command was rejected by automatic approval review before
 execution because it requested more explicit production downtime/schema/release
-authorization. The live release remains `c8f657c` with migration 16 at this checkpoint.
+authorization. At that checkpoint, the live release remained `c8f657c` with migration 16.
 The user was asked to approve the exact service stop, index-only migration, baseline
 and optimized release switches, data/private-setting verification and compatible
 recovery policy. No workaround or retry was attempted while approval was pending.
+
+## Approved hosted execution
+
+Brody then explicitly answered **Approve live cutover now** for the exact service
+stop, migration 017, baseline/optimized switches, WAL/FULL, preservation and recovery
+policy. The same reviewed command subsequently completed successfully.
+
+- Before: migration 16, journal `delete`, 20 orders and 6 staff accounts.
+- Applied only migration 017 explicitly while the application was stopped. All
+  original rows/private settings matched; migration 001–016 history was unchanged,
+  and the only schema additions were the three approved indexes and migration row.
+- Activated the migration-compatible `bfe4749` baseline and reached trusted HTTPS
+  readiness before depending on it as fallback.
+- Activated `40abaea` and reached trusted HTTPS readiness with zero pending migrations.
+  Startup 502 responses were retried during the short, approved restart windows.
+- After: migration 17, journal **wal**, 20 orders and 6 staff accounts. Every
+  non-migration table digest and private runtime/proxy/payment-key/TLS/access-file
+  hash and ownership/mode matched the capture. WAL and SHM files were present.
+  FULL synchronization, five-second waits and 1,000-page checkpoints are set by
+  the verified application connection code and covered by native storage tests.
+
+No fixture data, credentials, capacity policy, pricing or role change was deployed.
+Normal later sign-ins and worker activity can update records as designed; preservation
+hashes refer to the cutover window. The original submitted `main` remains unchanged;
+this follow-up is published on `dev`.
+
+Post-cutover trusted-HTTPS Chromium smoke passed on home, menu, ordering, account
+entry and staff sign-in. Axe WCAG 2/2.1/2.2 AA-tag checks found no violations;
+versioned ordering modules and drink expansion worked without page errors. No
+order was submitted and no credentials were used by that public smoke check.
+An additional Owner sign-in confirmation was requested after cutover; no fresh
+manual Owner pass is claimed while that reply is pending. Existing accepted manual
+UI evidence is reused for the unchanged templates/assets, alongside fresh native
+authentication/role checks and verified preservation of the actual Owner credentials,
+MFA records and private keys. This follow-up introduced no new manual UI interaction.

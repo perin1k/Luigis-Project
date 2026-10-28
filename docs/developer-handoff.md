@@ -20,7 +20,7 @@ is required. Email/SMS are internal previews, not sent messages. Stripe/native
 Apple Pay and rewards/student deals remain future scope, not delivered integrations.
 
 The observed hosted application source is
-`c8f657c0c055530836a2c8762e5346c05c8a4ec2` on Ubuntu 24.04, Node 24.22.1/npm
+`40abaeae23f32fee8fcc0846e45c0a0145571e38` on Ubuntu 24.04, Node 24.22.1/npm
 11.19.1. Documentation and acceptance tooling have later commits on `dev`.
 Record both the delivered repository commit and actual deployed release in the
 receiving record; do not assume a documentation push deploys application code.
@@ -28,12 +28,17 @@ The October 25 release includes the accepted cleanup, versioned public JavaScrip
 and bundled public CSS; Nginx negotiates HTTP/2. See
 [deployment evidence](verification/cleanup-deployment.md). The October 27 release
 adds dashboard navigation, read-only Admin reporting and larger bounded sign-in
-budgets without migrations or data replacement. The October 25 release remains a
-compatible staged fallback. For the approved course
+budgets without migrations or data replacement. The October 28 concurrency release
+adds WAL/FULL, safe public-catalog caching and index-only migration 017, preserving
+the existing data and exact session policy. The compatible staged fallback is
+`bfe4749e80548857f2ffbf5bbb36a65a85a382a9`, which also recognizes migration 017;
+do not restore the older migration-16 application. See the
+[concurrency execution record](verification/concurrency-followup.md) and
+[maintenance instructions](concurrency-operations.md). For the approved course
 deliverable (source ZIP plus class presentation), see [submission guide](submission.md).
 
 Public HTTPS now passes through Nginx to authenticated loopback Node TLS, with
-customer migration 016 applied. Same-release direct HTTPS recovery, renewal and
+customer migration 016 and index migration 017 applied. Same-release direct HTTPS recovery, renewal and
 Owner sign-in were exercised. Read the [proxy operator guide](nginx-proxy.md) and
 [current execution record](verification/ops-08-proxy.md) before maintenance; do not
 restore the older application against the newer schema. Restaurant users still
