@@ -88,8 +88,9 @@ export async function runHostedInt02({objBrowser,strOrigin,strUsername,strPasswo
       await expect(objPage.getByRole('link',{name:'Order queue',exact:true})).toBeVisible();
       await objPage.goto('/staff/menu');
       await expect(objPage.getByRole('button',{name:'Publish reviewed prices',exact:true})).toHaveCount(0);
-      expect((await objPage.request.get('/staff/analytics')).status()).toBe(403);
-      expect((await objPage.request.get(strReport)).status()).toBe(403);
+      const intReportStatus=objPage===objAdmin?200:403;
+      expect((await objPage.request.get('/staff/analytics')).status()).toBe(intReportStatus);
+      expect((await objPage.request.get(strReport)).status()).toBe(intReportStatus);
       await objPage.goto('/staff/orders');await expect(objPage.getByRole('link',{name:'Owner sales',exact:true})).toHaveCount(0);
     }
     await post(objAdmin,'/auth/employees/invitations',{strUsername:`int02.denied.${strRunId}`,strRole:'admin'},403);

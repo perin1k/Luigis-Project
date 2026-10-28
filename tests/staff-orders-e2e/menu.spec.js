@@ -31,11 +31,11 @@ test('menu concurrent tabs reject stale prices and hours while preserving entere
   }finally{await objOther.close();}
 });
 
-test('manager can update availability but cannot read analytics or edit prices/hours',async({page:objPage,request:objRequest})=>{
+test('manager can read analytics and update availability but cannot edit prices/hours',async({page:objPage,request:objRequest})=>{
  await signIn(objPage,objRequest,'admin');await objPage.goto('/staff/menu');
  await expect(objPage.getByRole('heading',{name:'Menu prices',exact:true})).toHaveCount(0);
  expect((await objPage.request.get('/api/staff/menu/hours?date=2026-10-21')).status()).toBe(403);
- expect((await objPage.request.get('/api/staff/analytics?from=2026-10-21&to=2026-10-21')).status()).toBe(403);
+ expect((await objPage.request.get('/api/staff/analytics?from=2026-10-21&to=2026-10-21')).status()).toBe(200);
  const objCsrf=await(await objPage.request.get('/api/staff/menu/csrf')).json();
  expect((await objPage.request.post('/api/staff/menu/prices',{headers:{Origin:'https://localhost:3444','X-CSRF-Token':objCsrf.strCsrfToken},data:{}})).status()).toBe(403);
  await objPage.getByRole('button',{name:'Mark Pepperoni unavailable',exact:true}).click();await expect(objPage.locator('#menu-status')).toContainText('Saved.');

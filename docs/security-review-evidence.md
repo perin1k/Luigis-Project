@@ -1,5 +1,10 @@
 # SEC-01 dependency, credential-pattern and route review
 
+Current October 27 role-policy follow-up: Admins and Owner may read sales analytics;
+menu/prices/hours remain Owner-only. The dated evidence below retains its original
+scope. See [the role policy](staff-role-policy.md) for current permissions and
+[the proxy guide](nginx-proxy.md) for the later approved Nginx deployment.
+
 Final October 23 review: see [accepted SEC evidence](verification/sec-acceptance.md).
 The final scan found newly reported fast-uri advisories in the development-tool
 tree after the earlier zero-advisory results below. The human approved updating

@@ -33,8 +33,8 @@ use demonstration adapters, not application persistence or authorization.
 The runtime composes customer ordering/payment, staff queues/progress, menu,
 account, tracking and owner reporting services around the same configured SQLite
 database. The [INT-02 record](verification/int-02-shared-records.md) documents
-connected browser evidence and remaining acceptance. Owner alone can edit prices
-or read analytics; Admin handles operational exceptions/refunds and employee
+connected browser evidence and remaining acceptance. Owner alone can edit prices;
+Admins and Owner may read analytics. Admin handles operational exceptions/refunds and employee
 lifecycle; Employee handles preparation and ingredient availability. The approved
 [role policy](staff-role-policy.md) supersedes older admin-only analytics wording.
 

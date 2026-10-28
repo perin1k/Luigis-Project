@@ -6,6 +6,9 @@ operator setup and acceptance remain on [BE-08](https://trello.com/c/JWv5cz7J) a
 changes no role and does not certify completed rollout.
 
 Current implementation follow-up: [three-tier staff role policy](staff-role-policy.md).
+October 27 presentation follow-up: MFA-protected Admins may also read sales
+analytics; menu/prices/hours remain Owner-only. The decision table below preserves
+the original October 22 checkpoint rather than revising its historical evidence.
 The coordinated role services, additive migration and screens now exist; the table
 records the decision checkpoint below. Current BE-08/FE-08 verification and operator
 acceptance remain separate from this decision card's completion.

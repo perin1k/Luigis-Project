@@ -25,7 +25,7 @@ test('acceptance summary allows only safe stages and cannot copy supplied privat
   assert.throws(()=>sanitizedHostedResult({...objResult,strFailureStage:'PRIVATE'}));
 });
 test('private verifier rejects noninteractive invocation and secret arguments without echo',()=>{
- for(const strScript of ['verify-hosted-int02','verify-hosted-completion','verify-hosted-audits']){
+ for(const strScript of ['verify-hosted-int02','verify-hosted-completion','verify-hosted-audits','verify-hosted-dashboard']){
   const objResult=spawnSync(process.execPath,[`scripts/${strScript}.js`,'PRIVATE-ARGUMENT-MARKER'],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
   assert.equal(objResult.status,1);assert.equal((objResult.stdout+objResult.stderr).includes('PRIVATE-ARGUMENT-MARKER'),false);
  }

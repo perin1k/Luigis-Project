@@ -5,8 +5,9 @@
 > [Find the right guide](README.md). This technical reference is not an everyday user manual.
 
 Prepared October 24, 2026 for [DOC-01](https://trello.com/c/9ldFFK0U).
-Status: course reader/integrated QA review completed October 25; independent final
-TEST-04 remains. Exact acceptance evidence: [completion record](verification/final-completion.md).
+Status: original course release accepted under TEST-04 October 25. The October 27
+presentation follow-up is tracked separately in [its release record](verification/presentation-followup.md).
+Original acceptance evidence: [completion record](verification/final-completion.md).
 This guide does not transfer accounts, authorize spending or establish acceptance.
 
 ## Delivery and current environment
@@ -19,13 +20,16 @@ is required. Email/SMS are internal previews, not sent messages. Stripe/native
 Apple Pay and rewards/student deals remain future scope, not delivered integrations.
 
 The observed hosted application source is
-`da2a2bdbe3ef0beb06f0e96dd0e07d64ef60140a` on Ubuntu 24.04, Node 24.22.1/npm
+`c8f657c0c055530836a2c8762e5346c05c8a4ec2` on Ubuntu 24.04, Node 24.22.1/npm
 11.19.1. Documentation and acceptance tooling have later commits on `dev`.
 Record both the delivered repository commit and actual deployed release in the
 receiving record; do not assume a documentation push deploys application code.
 The October 25 release includes the accepted cleanup, versioned public JavaScript
 and bundled public CSS; Nginx negotiates HTTP/2. See
-[deployment evidence](verification/cleanup-deployment.md). For the approved course
+[deployment evidence](verification/cleanup-deployment.md). The October 27 release
+adds dashboard navigation, read-only Admin reporting and larger bounded sign-in
+budgets without migrations or data replacement. The October 25 release remains a
+compatible staged fallback. For the approved course
 deliverable (source ZIP plus class presentation), see [submission guide](submission.md).
 
 Public HTTPS now passes through Nginx to authenticated loopback Node TLS, with

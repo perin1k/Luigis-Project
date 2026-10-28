@@ -18,7 +18,8 @@ The approved [three-tier account policy](staff-role-policy.md) supersedes earlie
 two-role and no-reactivation boundaries below. Owner controls Employee/Admin
 assignment and admin accounts; Admin manages employees only. Owner/Admin require
 MFA. Reactivation is supported without restoring revoked sessions. Menu/prices/hours
-and analytics are Owner-only. Migration 014 resolves ownership additively and does
+remain Owner-only. Admins and Owner may read sales analytics under the October 27
+presentation update. Migration 014 resolves ownership additively and does
 not promote existing admins automatically; see the private designation procedure.
 
 The mounted runtime/screens, enrollment, recovery and account lifecycle are
