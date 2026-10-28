@@ -82,7 +82,9 @@ export function createCustomerService(objDatabase, { fnNow =() => new Date() } =
       objDatabase.prepare('DELETE FROM customer_sessions WHERE token_digest=?').run(strDigest);
       return null;
     }
-    objDatabase.prepare('UPDATE customer_sessions SET last_activity_at=? WHERE token_digest=?').run(dtNow.toISOString(), strDigest);
+    // Preserve exact expiry semantics while avoiding duplicate same-time writes.
+    const dtActivity = dtNow.toISOString();
+    if (objRow.last_activity_at !== dtActivity) objDatabase.prepare('UPDATE customer_sessions SET last_activity_at=? WHERE token_digest=?').run(dtActivity, strDigest);
     return objRow;
   }
   // Authenticate and execute synchronous account work under the same SQLite write lock.

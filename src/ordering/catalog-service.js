@@ -24,6 +24,7 @@ function roundedRatio(centsAmount, intNumerator, intDenominator) {
 
 /** Read-only current-menu pricing. Never accepts a client price or creates a paid order. */
 export function createCatalogService(objDatabase) {
+  let objPublicReadCache = null;
   function readCatalogSnapshot() {
     // Unpublished future drafts are never exposed. The reviewed v1 seed is the demo baseline.
     const objVersion = objDatabase.prepare(`SELECT id,revision FROM catalog_versions WHERE published_at IS NOT NULL
@@ -121,9 +122,23 @@ export function createCatalogService(objDatabase) {
     } catch (objError) { if (!bWithinTransaction) objDatabase.exec('ROLLBACK'); throw objError; }
   }
   function readCatalog({ bWithinTransaction = false } = {}) {
-    if (!bWithinTransaction) objDatabase.exec('BEGIN');
-    try { const objCatalog = readCatalogSnapshot(); if (!bWithinTransaction) objDatabase.exec('COMMIT'); return objCatalog; }
-    catch (objError) { if (!bWithinTransaction) objDatabase.exec('ROLLBACK'); throw objError; }
+    // Authoritative pricing/menu writes must always read their current transaction,
+    // never cache uncommitted changes that could subsequently roll back.
+    if (bWithinTransaction) return readCatalogSnapshot();
+    objDatabase.exec('BEGIN');
+    try {
+      // data_version detects other connections; total_changes detects this
+      // connection's writes (including triggers/rollbacks). Invalidate on ANY
+      // change rather than risk serving stale ingredient availability or prices.
+      const intExternalVersion = objDatabase.prepare('PRAGMA data_version').get().data_version;
+      const intLocalChanges = objDatabase.prepare('SELECT total_changes() AS n').get().n;
+      const strKey = `${intExternalVersion}:${intLocalChanges}`;
+      const objCatalog = objPublicReadCache?.strKey === strKey
+        ? structuredClone(objPublicReadCache.objCatalog) : readCatalogSnapshot();
+      objDatabase.exec('COMMIT');
+      if (objPublicReadCache?.strKey !== strKey) objPublicReadCache = {strKey, objCatalog: structuredClone(objCatalog)};
+      return objCatalog;
+    } catch (objError) { objDatabase.exec('ROLLBACK'); throw objError; }
   }
   return { readCatalog, priceOrder };
 }

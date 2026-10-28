@@ -18,9 +18,9 @@ import {createApp} from '../../src/app.js';
 import {createStaffOrdersService} from '../../src/staff/orders-service.js';
 import {createStaffFixture} from './staff-app.js';
 import {seedStaffOrders} from './staff-orders-data.js';
-export function createOrdersFixture(strOrigin,{bCustomerCheckout=false,objProxyConfig}={}){
+export function createOrdersFixture(strOrigin,{bCustomerCheckout=false,objProxyConfig,strDatabasePath=':memory:'}={}){
   let bRefundApproved=true;let arrOrders=[];let arrTrackingPaths=[];let objNotices;let fnFailPreviews;
-  const objFixture=createStaffFixture(strOrigin,{fnCreateApp(objOptions,objDatabase,{fnNow}){
+  const objFixture=createStaffFixture(strOrigin,{strDatabasePath,fnCreateApp(objOptions,objDatabase,{fnNow}){
     // The authentication fixture clock begins at 13:00 Chicago plus 30 seconds.
     // Align order seed promises to the existing 20-minute grid without changing auth time.
     arrOrders=seedStaffOrders(objDatabase,{intCount:3,strName:'Synthetic Guest',bStableIds:true,fnNow:()=>new Date('2026-10-21T18:00:00.000Z')});

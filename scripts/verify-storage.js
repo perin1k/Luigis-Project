@@ -11,7 +11,7 @@ console.log(JSON.stringify({ strPlatform: process.platform, strArchitecture: pro
 
 // Explicit paths avoid shell-dependent wildcard expansion on Windows/macOS/Linux.
 const arrTests = [
-  'database', 'order-storage', 'payment-storage', 'scheduling-storage',
+  'database', 'concurrency-database', 'order-storage', 'payment-storage', 'scheduling-storage',
   'access-storage', 'demo-refund-storage', 'disposable-recreation',
   'demo-payment', 'demo-payment-concurrency', 'notification-service', 'staff-roles',
 ].map((strName) => fileURLToPath(new URL(`../tests/unit/${strName}.test.js`, import.meta.url)));

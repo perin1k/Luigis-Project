@@ -10,8 +10,8 @@ import { createApp } from '../../src/app.js';
 export const PASSWORD = 'Synthetic staff browser passphrase only';
 const PASSWORD_HASH = await hashPassword(PASSWORD);
 /** Isolated synthetic identities. Never mounted by the application runtime. */
-export function createStaffFixture(strOrigin, { fnCreateApp = createApp } = {}) {
-  const objDatabase = openDatabase(':memory:'); applyMigrations(objDatabase);
+export function createStaffFixture(strOrigin, { fnCreateApp = createApp, strDatabasePath = ':memory:' } = {}) {
+  const objDatabase = openDatabase(strDatabasePath); applyMigrations(objDatabase);
   let numNow = Date.parse('2026-10-21T18:00:00.000Z');
   const fnNow = () => new Date(numNow);
   for (const strRole of ['employee', 'admin', 'owner']) {

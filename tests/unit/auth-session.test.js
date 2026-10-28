@@ -63,6 +63,16 @@ test('absolute expiry is enforced even with recent activity', () => withSessions
   assert.equal(objService.validateSession('3'.repeat(64)), null);
 }));
 
+test('same-time session reads avoid no-op writes without rounding activity or extending expiry',()=>withSessions((objDatabase,objService,fnSetTime)=>{
+  assert.ok(objService.validateSession(EMPLOYEE_TOKEN));
+  const intChanges=objDatabase.prepare('SELECT total_changes() AS n').get().n;
+  assert.ok(objService.validateSession(EMPLOYEE_TOKEN));
+  assert.equal(objDatabase.prepare('SELECT total_changes() AS n').get().n,intChanges);
+  fnSetTime('2026-10-21T12:10:00.001Z');assert.ok(objService.validateSession(EMPLOYEE_TOKEN));
+  assert.equal(objDatabase.prepare("SELECT last_activity_at FROM staff_sessions WHERE id='employee-session'").get().last_activity_at,'2026-10-21T12:10:00.001Z');
+  fnSetTime('2026-10-21T12:40:00.001Z');assert.equal(objService.validateSession(EMPLOYEE_TOKEN),null);
+}));
+
 test('permission checks deny unknown actions and employee access to admin capabilities', () => withSessions((objDatabase, objService) => {
   assert.equal(objService.authorizeSession(EMPLOYEE_TOKEN, 'menu.edit'), null);
   assert.equal(objService.authorizeSession(EMPLOYEE_TOKEN, 'refund.approve'), null);

@@ -11,6 +11,15 @@ export function openDatabase(strPath) {
   const objDatabase = new DatabaseSync(strPath);
   try {
     objDatabase.exec('PRAGMA foreign_keys = ON; PRAGMA recursive_triggers = ON; PRAGMA busy_timeout = 5000;');
+    if (strPath !== ':memory:') {
+      // WAL allows other local connections to read while one writer commits.
+      // It does not create multiple writers or make DatabaseSync asynchronous.
+      const strMode = objDatabase.prepare('PRAGMA journal_mode = WAL').get().journal_mode;
+      if (strMode !== 'wal') throw new Error('File database requires WAL mode.');
+    }
+    // Keep committed-order durability and bound normal WAL growth. Short reads
+    // let automatic checkpoints progress; never checkpoint on every request.
+    objDatabase.exec('PRAGMA synchronous = FULL; PRAGMA wal_autocheckpoint = 1000;');
     return objDatabase;
   } catch (objError) {
     objDatabase.close();

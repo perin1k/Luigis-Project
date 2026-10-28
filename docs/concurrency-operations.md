@@ -29,3 +29,42 @@ It never accepts a hosted origin or production database path. Timings include
 expected retries; last-slot conflicts are verified separately. Same-network
 60/minute checkout limits remain enabled and must not be mistaken for database
 capacity. These tests exclude password hashing and Internet/network latency.
+
+## WAL and runtime behavior
+
+File-backed connections opened by `src/data/database.js` require WAL, keep
+`synchronous=FULL`, use a five-second busy timeout and retain automatic checkpoints
+at 1,000 pages. In-memory test databases remain in memory journal mode. Verify the
+actual `sqlite_version()` before switching a deployment: tested Node 24.22.1 embeds
+SQLite 3.53.4, newer than the WAL-reset fix in SQLite 3.51.3. The tested retained
+disk is local ext4. Do not put this database on a shared/network filesystem.
+
+WAL still permits one writer. Node DatabaseSync and current transaction work remain
+synchronous. The change improves measured throughput/disk behavior and permits
+separate local connections to read while a writer holds a transaction; it does
+not claim a nonblocking database worker or unlimited parallel writes.
+
+Public catalog snapshots have a single-entry, cloned cache per service instance.
+Both this connection's `total_changes()` and other connections' `data_version`
+invalidate it. Transactional catalog reads and authoritative price checks bypass
+the cache, preventing uncommitted changes from leaking after rollback. No customer,
+session or private order data is cached. Activity timestamps are written whenever
+they actually change; only identical timestamp writes are omitted. No activity
+rounding, delayed persistence, permission cache or expiry change was introduced.
+
+The database directory must allow its application user to create private `-wal`
+and `-shm` files. Keep these files with a live database; never delete them while
+connections are open or copy only the main file as a live backup. A maintenance
+copy requires a consistent SQLite snapshot/backup operation or a verified stopped,
+checkpointed database. This does not introduce an application backup guarantee.
+Leave automatic checkpoints enabled; long readers can delay checkpoint progress.
+If changing journal mode during recovery, stop all connections first and verify
+the result; a persistent WAL database is readable by the migration-compatible
+fallback and does not require weakening FULL durability.
+
+Use `node tests/operations/concurrency-benchmark.js wal 20 3` for the primary
+three-round workload; `wal 50 1` and `wal 100 1` are bounded larger observations.
+The benchmark binds real loopback peer addresses to exercise distinct clients
+without trusting spoofed forwarding headers. It needs the existing OpenSSL test
+prerequisite and has been load-tested on Windows and Linux, not claimed on macOS.
+WAL/caching/isolation unit checks run on all supported native CI systems.

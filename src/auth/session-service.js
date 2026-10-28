@@ -70,7 +70,10 @@ export function createSessionService(objDatabase, { fnNow = () => new Date() } =
         if (!Number.isFinite(numMfa) || numMfa < numAuthenticated || numMfa > numActivity) return null;
       }
       if (bCheckPermission && !canPerformAction(objSession.effective_role, strAction)) return null;
-      objDatabase.prepare('UPDATE staff_sessions SET last_activity_at = ? WHERE id = ?').run(dtNow.toISOString(), objSession.id);
+      // A page can resolve the same session several times in one millisecond.
+      // Skip only an identical write; persist every actual activity-time change.
+      const dtActivity = dtNow.toISOString();
+      if (objSession.last_activity_at !== dtActivity) objDatabase.prepare('UPDATE staff_sessions SET last_activity_at = ? WHERE id = ?').run(dtActivity, objSession.id);
       const objIdentity = Object.freeze({ strSessionId: objSession.id, strUserId: objSession.user_id, strRole: objSession.effective_role });
       return fnWork ? fnWork(objIdentity, dtNow) : objIdentity;
     });
