@@ -1,2 +1,3 @@
 src/auth/blocklists/common-passwords.txt text eol=lf
 deploy/*.sh text eol=lf
+src/data/migrations/017-concurrency-indexes.sql text eol=crlf

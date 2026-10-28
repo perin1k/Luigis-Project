@@ -25,7 +25,7 @@ if [[ "$strMode" == stage ]]; then
   fi
   [[ "$("$strPatched/bin/node" --version)" == v24.22.1 && "$("$strPatched/bin/node" "$strPatched/lib/node_modules/npm/bin/npm-cli.js" --version)" == 11.19.1 ]] || exit 1
   echo 'Patched runtime staged; active application unchanged.'
-elif [[ "$strMode" == prepare ]]; then
+elif [[ "$strMode" == prepare || "$strMode" == prepare-forward ]]; then
   strCommit=${2:-}
   [[ $# == 2 && "$strCommit" =~ ^[a-f0-9]{40}$ && -x "$strPatched/bin/node" ]] || exit 1
   command -v git >/dev/null
@@ -48,7 +48,9 @@ elif [[ "$strMode" == prepare ]]; then
   (cd "$strRelease"; "$strPatched/bin/node" "$strPatched/lib/node_modules/npm/bin/npm-cli.js" ci --omit=dev --ignore-scripts)
   "$strPatched/bin/node" "$strRelease/scripts/release.js" manifest "$strRelease" "$strCommit"
   chown -R root:root "$strRelease";chmod -R go-w "$strRelease"
-  runuser -u luigis -- env DATABASE_PATH=/var/lib/luigis-data/luigis-demo.sqlite "$strPatched/bin/node" "$strRelease/scripts/release.js" check "$strRelease" ready
+  strCheckMode=ready
+  if [[ "$strMode" == prepare-forward ]]; then strCheckMode=forward;fi
+  runuser -u luigis -- env DATABASE_PATH=/var/lib/luigis-data/luigis-demo.sqlite "$strPatched/bin/node" "$strRelease/scripts/release.js" check "$strRelease" "$strCheckMode"
   echo 'Clean-checkout release prepared; no hosted seed, migration or credential replacement performed.'
 elif [[ "$strMode" == activate ]]; then
   strCommit=${2:-};strFallback=${3:-}
@@ -78,4 +80,4 @@ elif [[ "$strMode" == activate ]]; then
   curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 --resolve luigispizzeria.duckdns.org:443:127.0.0.1 https://luigispizzeria.duckdns.org/health/ready
   trap - ERR
   echo 'Patched runtime and reviewed release active; prior data/keys retained.'
-else echo 'Expected stage, prepare COMMIT, or activate COMMIT FALLBACK_COMMIT.' >&2;exit 1;fi
+else echo 'Expected stage, prepare/prepare-forward COMMIT, or activate COMMIT FALLBACK_COMMIT.' >&2;exit 1;fi

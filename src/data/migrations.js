@@ -79,10 +79,11 @@ const STAFF_ROLES_MIGRATION=Object.freeze({intVersion:14,strName:'staff-roles',s
 
 const PRIVACY_ACTIONS_MIGRATION=Object.freeze({intVersion:15,strName:'privacy-actions',strSql:readFileSync(new URL('./migrations/015-privacy-actions.sql',import.meta.url),'utf8')});
 const CUSTOMER_ACCOUNTS_MIGRATION=Object.freeze({intVersion:16,strName:'customer-accounts',strSql:readFileSync(new URL('./migrations/016-customer-accounts.sql',import.meta.url),'utf8')});
+const CONCURRENCY_INDEXES_MIGRATION=Object.freeze({intVersion:17,strName:'concurrency-indexes',strSql:readFileSync(new URL('./migrations/017-concurrency-indexes.sql',import.meta.url),'utf8')});
 
 export function applyMigrations(objDatabase, arrMigrations = [
   CATALOG_MIGRATION, ORDERS_MIGRATION, PAYMENTS_MIGRATION, SCHEDULING_MIGRATION, ACCESS_MIGRATION,
-  CREDENTIALS_MIGRATION, MFA_MIGRATION, LOGIN_MIGRATION, INVITATIONS_MIGRATION, RECOVERY_MIGRATION, DEMO_PAYMENTS_MIGRATION, DEMO_REFUNDS_MIGRATION, NOTIFICATION_PREVIEWS_MIGRATION, STAFF_ROLES_MIGRATION, PRIVACY_ACTIONS_MIGRATION, CUSTOMER_ACCOUNTS_MIGRATION,
+  CREDENTIALS_MIGRATION, MFA_MIGRATION, LOGIN_MIGRATION, INVITATIONS_MIGRATION, RECOVERY_MIGRATION, DEMO_PAYMENTS_MIGRATION, DEMO_REFUNDS_MIGRATION, NOTIFICATION_PREVIEWS_MIGRATION, STAFF_ROLES_MIGRATION, PRIVACY_ACTIONS_MIGRATION, CUSTOMER_ACCOUNTS_MIGRATION, CONCURRENCY_INDEXES_MIGRATION,
 ]) {
   let intPrevious = 0;
   for (const objMigration of arrMigrations) {
